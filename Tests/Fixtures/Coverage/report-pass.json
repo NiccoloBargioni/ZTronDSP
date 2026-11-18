@@ -1,0 +1,89 @@
+{
+ "coveredLines": 545,
+ "executableLines": 1180,
+ "lineCoverage": 0.461864406779661,
+ "targets": [
+  {
+   "buildProductPath": "/build/DerivedData/ZTronDSPCoreTests",
+   "coveredLines": 298,
+   "executableLines": 880,
+   "files": [
+    {
+     "coveredLines": 198,
+     "executableLines": 200,
+     "functions": [],
+     "lineCoverage": 0.99,
+     "name": "Toolkit.swift",
+     "path": "/build/ZTronDSP/Sources/ZTronDSPCore/Toolkit.swift"
+    },
+    {
+     "coveredLines": 50,
+     "executableLines": 50,
+     "functions": [],
+     "lineCoverage": 1.0,
+     "name": "kernel.c",
+     "path": "/build/ZTronDSP/Sources/CZTronDSP/kernel.c"
+    },
+    {
+     "coveredLines": 0,
+     "executableLines": 100,
+     "functions": [],
+     "lineCoverage": 0.0,
+     "name": "Probe.swift",
+     "path": "/build/ZTronDSP/Sources/ZTronDSPTesting/Probe.swift"
+    },
+    {
+     "coveredLines": 50,
+     "executableLines": 100,
+     "functions": [],
+     "lineCoverage": 0.5,
+     "name": "UnitsTests.swift",
+     "path": "/build/ZTronDSP/Tests/ZTronDSPCoreTests/UnitsTests.swift"
+    },
+    {
+     "coveredLines": 0,
+     "executableLines": 400,
+     "functions": [],
+     "lineCoverage": 0.0,
+     "name": "Gallery.swift",
+     "path": "/build/ZTronDSP/Examples/ZTronDSPGallery/Gallery.swift"
+    },
+    {
+     "coveredLines": 0,
+     "executableLines": 30,
+     "functions": [],
+     "lineCoverage": 0,
+     "name": "resource_bundle_accessor.swift",
+     "path": "/build/DerivedData/Build/Intermediates.noindex/DerivedSources/resource_bundle_accessor.swift"
+    }
+   ],
+   "lineCoverage": 0.3386363636363636,
+   "name": "ZTronDSPCoreTests"
+  },
+  {
+   "buildProductPath": "/build/DerivedData/ZTronDSPDesignTests",
+   "coveredLines": 247,
+   "executableLines": 300,
+   "files": [
+    {
+     "coveredLines": 150,
+     "executableLines": 200,
+     "functions": [],
+     "lineCoverage": 0.75,
+     "name": "Toolkit.swift",
+     "path": "/build/ZTronDSP/Sources/ZTronDSPCore/Toolkit.swift"
+    },
+    {
+     "coveredLines": 97,
+     "executableLines": 100,
+     "functions": [],
+     "lineCoverage": 0.97,
+     "name": "Design.swift",
+     "path": "/build/ZTronDSP/Sources/ZTronDSPDesign/Design.swift"
+    }
+   ],
+   "lineCoverage": 0.8233333333333334,
+   "name": "ZTronDSPDesignTests"
+  }
+ ]
+}

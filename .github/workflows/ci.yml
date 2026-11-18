@@ -1,0 +1,140 @@
+# The gates of §10.3, in order (WP-014). Every job runs Scripts/ci.sh, which is also how the
+# gates are run on a developer's machine: what fails here fails there with the same message.
+#
+# A gate whose input does not exist yet is skipped with a warning annotation, never passed
+# silently. Dispatching the workflow by hand with `strict` turns every skip into a failure:
+# that is the run a release needs (WP-906).
+#
+# Repository variables:
+#   ZTD_RUNNER             the label of the macOS runner (default: macos-latest)
+#   ZTD_XCODE              the path of the Xcode to use (default: /Applications/Xcode_27.0.app)
+#   ZTD_BENCHMARK_RUNNER   `true` when a self-hosted runner labelled `ztrondsp-benchmark` exists;
+#                          benchmarks are only comparable on one pinned machine (gate 8)
+
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+    inputs:
+      strict:
+        description: A skipped gate fails the run (the release check)
+        type: boolean
+        default: false
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  DEVELOPER_DIR: ${{ vars.ZTD_XCODE || '/Applications/Xcode_27.0.app' }}/Contents/Developer
+  ZTD_CI_STRICT: ${{ (github.event_name == 'workflow_dispatch' && inputs.strict) && '--strict' || '' }}
+
+jobs:
+  gates-1-4:
+    name: Gates 1–4 · build, lint, compile fixtures, API digest
+    runs-on: ${{ vars.ZTD_RUNNER || 'macos-latest' }}
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+      - name: The self-tests of the gates
+        run: Scripts/tests/run-all.sh
+      - name: Gate 1 · build for simulator and device, warnings as errors in production targets
+        run: Scripts/ci.sh $ZTD_CI_STRICT --gate 1
+      - name: Gate 2 · lint-bans, all four parts, and the dependency graph
+        run: Scripts/ci.sh $ZTD_CI_STRICT --gate 2
+      - name: Gate 3 · compile fixtures and the order matrix
+        run: Scripts/ci.sh $ZTD_CI_STRICT --gate 3
+      - name: Gate 4 · API digest
+        run: Scripts/ci.sh $ZTD_CI_STRICT --gate 4
+
+  gate-5-tests:
+    name: Gate 5 · tests on ${{ matrix.runtime }}
+    needs: gates-1-4
+    runs-on: ${{ vars.ZTD_RUNNER || 'macos-latest' }}
+    timeout-minutes: 90
+    strategy:
+      fail-fast: false
+      matrix:
+        # PLAT-3: the oldest runtime that runs on the current host, then the newest of each
+        # major version. iOS 15 and 16 cannot be simulated (E-17): the device run covers them.
+        runtime: [iOS-17-5, iOS-18-6, iOS-26-5, iOS-27-0]
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Gate 5 · tests in Debug; the allocation-audit tests once more in Release
+        run: Scripts/ci.sh $ZTD_CI_STRICT --gate 5 --runtime com.apple.CoreSimulator.SimRuntime.${{ matrix.runtime }}
+      - name: Gate 6 · coverage, from the run on the newest runtime
+        if: matrix.runtime == 'iOS-27-0'
+        env:
+          ZTD_CI_BASE_REF: ${{ github.event_name == 'pull_request' && format('origin/{0}', github.base_ref) || '' }}
+        run: Scripts/ci.sh $ZTD_CI_STRICT --gate 6
+      - name: Keep the result bundle of a failed run
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: results-${{ matrix.runtime }}
+          path: .build/ci-results
+          if-no-files-found: ignore
+
+  gate-5-thread-sanitizer:
+    name: Gate 5 · Thread Sanitizer
+    needs: gates-1-4
+    runs-on: ${{ vars.ZTD_RUNNER || 'macos-latest' }}
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@v4
+      - name: Gate 5 · tests under the Thread Sanitizer
+        run: Scripts/ci.sh $ZTD_CI_STRICT --gate 5 --tsan-only
+
+  gate-7-golden:
+    name: Gate 7 · golden vectors
+    needs: [gate-5-tests, gate-5-thread-sanitizer]
+    runs-on: ${{ vars.ZTD_RUNNER || 'macos-latest' }}
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - name: Gate 7 · the vectors against their manifest
+        run: Scripts/ci.sh $ZTD_CI_STRICT --gate 7
+      - name: The pinned oracles reproduce the vectors
+        run: |
+          python3 -m pip install --quiet -r Tests/Golden/generators/requirements.txt
+          Scripts/golden.sh --reproduce
+
+  gate-8-benchmarks:
+    name: Gate 8 · benchmark regression check
+    needs: gate-7-golden
+    if: vars.ZTD_BENCHMARK_RUNNER == 'true'
+    # The pinned runner: timings are compared with baselines that were measured on this machine.
+    runs-on: [self-hosted, macOS, ARM64, ztrondsp-benchmark]
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+      - name: Gate 8 · benchmarks against their committed baselines
+        run: Scripts/ci.sh $ZTD_CI_STRICT --gate 8
+
+  gate-8-not-pinned:
+    name: Gate 8 · no pinned runner
+    needs: gate-7-golden
+    if: vars.ZTD_BENCHMARK_RUNNER != 'true'
+    runs-on: ${{ vars.ZTD_RUNNER || 'macos-latest' }}
+    steps:
+      - name: Gate 8 was not run
+        run: |
+          echo "::warning title=CI gate 8 (benchmarks) skipped::No pinned benchmark runner is configured (repository variable ZTD_BENCHMARK_RUNNER)."
+          if [ -n "$ZTD_CI_STRICT" ]; then echo "A strict run needs gate 8." ; exit 1; fi
+
+  gate-9-external-parity:
+    name: Gate 9 · external parity suite
+    needs: [gate-8-benchmarks, gate-8-not-pinned]
+    # One of the two jobs of gate 8 is always skipped; run when neither failed.
+    if: ${{ !failure() && !cancelled() }}
+    runs-on: ${{ vars.ZTD_RUNNER || 'macos-latest' }}
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+      - name: Gate 9 · a package outside this one against the stock stages (EXT-4)
+        run: Scripts/ci.sh $ZTD_CI_STRICT --gate 9

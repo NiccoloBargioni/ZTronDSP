@@ -1,0 +1,10 @@
+# The oracles of the golden vectors (STG-2), pinned: a vector is reproducible with these versions
+# only. Scripts/golden.sh refuses to generate when an installed version differs from its pin, and
+# Scripts/golden.sh --check compares the pins with the ones Tests/Golden/manifest.json recorded.
+numpy==2.2.6
+scipy==1.15.3
+# librosa is the oracle of the generators that import it. It was not installed on the machine the
+# first vectors were generated on: a generator that stops on `import librosa` is recorded as
+# pending in the manifest until it is. The pin is the release that was current when this file
+# was written; it has not been exercised here.
+librosa==0.11.0

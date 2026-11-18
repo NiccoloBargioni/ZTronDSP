@@ -1,0 +1,36 @@
+Currency check (§7.3), 2026-11-15: the registered source of this row was confirmed from the specification's register (§7.2 row 23, "Heat-map rendering: ring texture, one column uploaded per frame, max-reduced levels, colour mapping in the fragment shader"; the register names no external source for it). No literature search was possible offline, so none was made.
+
+Currency of the whole register was looked at again with network access on 2026-11-15 (`currency-2026-11.md`, row 23): this row registers a definition, a standard routine or the package's own design, so there was no method to look for a successor of, and no search was made for it.
+
+# Heat-map rendering (WP-604, WP-605)
+
+Stability register row 23. Code: `Sources/ZTronDSPMetal/Heatmap/HeatmapTexture.swift`, `HeatmapPass.swift`, `Sources/ZTronDSPMetal/Rendering/FrequencyScale.swift` (the warp table), `Sources/ZTronDSPMetal/Shaders/Heatmap.metal`. Tests: `Tests/ZTronDSPMetalTests/HeatmapTextureTests.swift`, `HeatmapGoldenTests.swift`, `FrequencyScaleTests.swift`. Golden images: `Tests/Golden/generators/metal_images.py`. Figures are from the iOS 27.0 simulator ("Apple iOS simulator GPU") on the host of §3, and are the same in Debug and in Release.
+
+## Hazard
+
+1. **Half-float quantisation.** A texel holds eleven significant bits. A value is stored with a relative error of up to 2⁻¹¹.
+2. **Values a half float cannot hold.** Above 65 504 in magnitude the conversion gives an infinity; a value that is not a number stays one. Neither has a colour: the shader's clamp of such a value is undefined, and the reduced levels above it would carry it into every pixel that reads them.
+3. **A pixel that covers several rows.** Sampling one row per pixel, or one reduced level chosen by the pixel's size, misses a one-bin peak or widens it: a level's entries are aligned to powers of two, not to pixels, so the two entries a pixel would read cover up to twice its footprint.
+4. **The axis warp in single precision.** A logarithmic or mel axis is evaluated per pixel; the shader has it as a table of 4 096 entries and interpolates.
+5. **Ties.** Which column a pixel shows, and with nearest-row filtering which rows, are floors of positions. A position that falls exactly on a whole number is decided by the last bit of the arithmetic.
+
+## Bound or measured behaviour
+
+- Quantisation: at most 2⁻¹¹ = 4.9·10⁻⁴ of the stored value; measured 4.07·10⁻⁴ on seeded levels between −120 and +10 (`readBackEqualsTheInputWithinHalfFloatPrecision`). The texel is the value rounded to a half float by vImage, bit for bit. For levels stored in decibels that is at most 2⁻⁵ = 0.031 dB between 64 and 128 dB in magnitude, where a half float steps by a sixteenth (measured 0.031), and 0.016 dB between 32 and 64. **The register's "under 0.005 dB" does not hold for levels stored in decibels**: it holds only below 16 dB in magnitude. It is harmless all the same: 0.031 dB of a 90 dB range is a tenth of one of the 255 colour steps.
+- The picture: against images computed in double precision from the definition (no shader, no table: `metal_images.py`), PSNR is 68.7 dB at the least over the seventeen heat-map fixtures (each scale, each colour map, ring wrap-around, a ring not yet full, clamping at both ends, a one-bin peak under each scale, a visible band and time span, rows drawn bin for bin with both filters). The largest difference of any pixel is one level of 255; six fixtures are equal pixel for pixel. The bar of §8.5 is 40 dB.
+- The warp table: the row the shader reads is within 8.1·10⁻⁴ of a row of the exact position for 2 049 rows on a logarithmic axis from 20 Hz to 24 kHz, 5.2·10⁻⁴ on a mel axis, 6.1·10⁻⁵ on a linear one (single precision alone), and half of each for 1 025 rows (`theWarpTableFollowsTheScaleToAThousandthOfARow`).
+- A one-bin peak: for a peak in any of thirteen rows of 1 025 spread from the first to the last (and in row 0 where the axis reaches it: a logarithmic axis starts at 20 Hz, above row 0), under each scale, on axes 7, 16, 61 and 128 pixels high, one row of pixels (two when the peak sits on their common edge) shows the peak's colour at full strength, in every column (`aOneBinPeakSurvivesEveryScale`).
+
+## Mitigation
+
+- Hazard 1: values are uploaded as they arrive, which for a spectrogram is decibels (§8.2), so the error is a fixed small part of a decibel at every level instead of a fixed part of a linear magnitude that spans nine decades.
+- Hazard 2: `HeatmapTexture.stage` clamps every value to ±65 504 with `vDSP_vclip` before the levels are built and before the conversion, and sets a value that is not a number to −65 504, the lowest: it is drawn in the first colour of the map. The check for such values is one `vDSP_sve` per column (a sum of clamped values is a number unless one of them is not); the replacement loop runs only when it is needed.
+- Hazard 3: the shader takes the **exact** maximum over the stretch of rows a pixel covers: of the interpolant at the stretch's two ends, and of every row inside it by a bottom-up walk of the reduced levels (`ztd_heatmap_range_max`, a segment-tree query, at most two reads per level). No level is chosen by size and nothing is over-covered.
+- Hazard 4: the table spans the feed's whole axis, so its 4 096 entries do not thin out when a view zooms; the visible band is two uniforms. The shader reads texels and interpolates itself, so the result does not depend on whether the device filters float textures (`MetalCapabilities` records that it filters half floats and not 32-bit floats on the simulator).
+- Hazard 5: with linear filtering the value a pixel shows is continuous in the position of its edges (a row that leaves the stretch is approached by the interpolant at its end), so there is no tie. With nearest filtering the stretch gives up a sliver at each end, a 32nd of itself and at most a 64th of a row, so a cell boundary that coincides with a pixel's edge, which is the common case of whole pixels per row, belongs to one pixel. The generator of the golden images refuses a fixture in which a floored position lies within 0.001 of a whole number, so no golden image asks single precision to reproduce a tie.
+
+## Stress test
+
+`HeatmapTextureTests.valuesAHalfFloatCannotHoldAreClampedAndNotANumberBecomesTheLowest`, on `StressFixture.nonFiniteSignal` (WP-016) scaled by 10⁶ so that every value is past what a half float holds, plus a column of plain extremes (±the largest float, ±∞, NaN, ±65 504, 65 520, ±0, 10⁻³⁰): every texel read back is finite and within ±65 504, equals the clamped value rounded to a half float, and the levels are built from the cleaned values. With the clamp removed (the column copied instead of `vDSP_vclip`) the test fails: texels read back infinite. With the replacement of values that are not numbers removed it fails: the texel and every level above it read back as not a number. Both checked by making exactly those changes, 2026-11-15.
+
+For hazard 3: with the walk of the levels switched off in the shader (only the two ends of the stretch are read) `HeatmapGoldenTests.aOneBinPeakSurvivesEveryScale` fails for every scale, and the golden images of the peak under the three scales fall below 40 dB. With a level built by `vDSP_vmin` instead of `vDSP_vmax`, `eachLevelIsTheMaximumOfTheTwoEntriesBelowIt` fails. Checked the same way, 2026-11-15.

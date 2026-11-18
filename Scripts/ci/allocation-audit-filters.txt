@@ -1,0 +1,17 @@
+# The tests that hold the allocation audit (RT-7, item 3): everything that runs inside
+# `expectNoAllocations { }`.
+#
+# Gate 5 of Scripts/ci.sh runs all tests in Debug, and these once more in Release (CR-002): a
+# Debug build shows that the hot path does not allocate at -Onone, a Release build shows it for
+# the code that ships.
+#
+# One filter per line, as `xcodebuild -only-testing:` takes them: a test target, Target/Suite
+# or Target/Suite/test. While the list is empty and no test calls `expectNoAllocations`, the
+# Release run is reported as skipped; once a test calls it, an empty list fails gate 5.
+CZTronDSPTests
+ZTronDSPCoreTests
+ZTronDSPTestingTests
+ZTronDSPDesignTests
+ZTronDSPMetalTests
+ZTronDSPAnalysisTests
+ZTronDSPUITests

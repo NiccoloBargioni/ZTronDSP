@@ -1,0 +1,987 @@
+{
+ "generators": [
+  {
+   "generator": "analog_prototypes",
+   "outputs": [
+    {
+     "path": "Tests/ZTronDSPDesignTests/Golden/analog_prototypes.json",
+     "sha256": "a25cce052d85b18fabaa6353560bfa5349f416895f0db2dcb9dff6a74a093308"
+    }
+   ],
+   "source": "Tests/Golden/generators/analog_prototypes.py",
+   "sourceSha256": "944173c61aec8fed43b381b9734ac1ebcca989ed6d1ff48a8fff10ca9f6ebf87"
+  },
+  {
+   "generator": "buttap",
+   "outputs": [
+    {
+     "path": "Tests/ZTronDSPDesignTests/Golden/buttap.json",
+     "sha256": "268b190ee178f166b8b2057e764449318fac9e54a2612060eff48e0bc75fd84d"
+    }
+   ],
+   "source": "Tests/Golden/generators/buttap.py",
+   "sourceSha256": "2641d1a1d6adcb3cc6c984a794737ebbb309d59978973042a98ad6400072d44d"
+  },
+  {
+   "generator": "c_kernel_fixtures",
+   "outputs": [
+    {
+     "path": "Tests/CZTronDSPTests/KernelFixtures.swift",
+     "sha256": "2f85a5388d133049b97f5854dbf38c6c36c61d6e3969b3daccc0ac8b5520b4a3"
+    }
+   ],
+   "source": "Tests/Golden/generators/c_kernel_fixtures.py",
+   "sourceSha256": "b071926a29244767301f08f7031f3d1c6aca13c8799fcb37e948fb8e5a24c3e7"
+  },
+  {
+   "generator": "cepstrum",
+   "outputs": [
+    {
+     "path": "Tests/ZTronDSPAnalysisTests/Golden/cepstrum.json",
+     "sha256": "5153f25acc619f16cc8cae44e67c6d46df452ebfbd3d1d8ce467cf03cb790d91"
+    },
+    {
+     "path": "Tests/ZTronDSPAnalysisTests/Golden/cepstrum_power_music.f64",
+     "sha256": "77f0e8ca1a658c1e804ba188b89be3d2c87e382e9b1d35e1da0b1075034bf8fe"
+    },
+    {
+     "path": "Tests/ZTronDSPAnalysisTests/Golden/cepstrum_power_speech.f64",
+     "sha256": "cfa48a8c5f6248e3eb822de8cdfb915bf50b9f87a4563242bd7fefb15bce780c"
+    },
+    {
+     "path": "Tests/ZTronDSPAnalysisTests/Golden/cepstrum_real_music.f64",
+     "sha256": "d5d7b6124a5371d798618214ca141ce11700b67b0f570252658735b746477f18"
+    },
+    {
+     "path": "Tests/ZTronDSPAnalysisTests/Golden/cepstrum_real_speech.f64",
+     "sha256": "a04f6f522e451dbbdf6b518594e60b6bb03ddce700ef4950208f9a0b18d0f43d"
+    },
+    {
+     "path": "Tests/ZTronDSPAnalysisTests/Golden/mfcc_music_128_128.f64",
+     "sha256": "98acfbd6a041d65e713884239bbcd88f9083e6b8b7f1581a1d84111160fb08f1"
+    },
+    {
+     "path": "Tests/ZTronDSPAnalysisTests/Golden/mfcc_music_26_26.f64",
+     "sha256": "775dd61fe0e3b7e09cbbfe3d9ab132340931ee4648d77820a91bd82c59f11326"
+    },
+    {
+     "path": "Tests/ZTronDSPAnalysisTests/Golden/mfcc_music_40_13.f64",
+     "sha256": "248ec50e8f2a605b371cb9d95980b0e754fdecd43dcaf9a7b124a39420fee38d"
+    },
+    {
+     "path": "Tests/ZTronDSPAnalysisTests/Golden/mfcc_music_64_20.f64",
+     "sha256": "7e2c1c85ee0392b3c1236f58cec8682e99e44e1b0d1781ef8e8edd185e743024"
+    },
+    {
+     "path": "Tests/ZTronDSPAnalysisTests/Golden/mfcc_speech_128_128.f64",
+     "sha256": "cd8ecda5680dc78fa1b9a02f945fbe6bf31f0c360262103b04a96f1ed75925b9"
+    },
+    {
+     "path": "Tests/ZTronDSPAnalysisTests/Golden/mfcc_speech_26_26.f64",
+     "sha256": "dbb757778b9db0817872d191c20a6bb4d0465c22773323601a111f0aab5efaf0"
+    },
+    {
+     "path": "Tests/ZTronDSPAnalysisTests/Golden/mfcc_speech_40_13.f64",
+     "sha256": "1d96667fc833bb03398675bdf8b6c31ef1fe0f1a6a431ed60b85566ad7528853"
+    },
+    {
+     "path": "Tests/ZTronDSPAnalysisTests/Golden/mfcc_speech_64_20.f64",
+     "sha256": "137d38cc0dd4c1732923cd88fb0b7b867461f328335b42acbe34d361eff929fb"
+    }
+   ],
+   "source": "Tests/Golden/generators/cepstrum.py",
+   "sourceSha256": "0366686ae97a29891fdf9dda1d8fb35b1798668c2dd32855085bc52968bfa805"
+  },
+  {
+   "generator": "colormaps",
+   "outputs": [
+    {
+     "path": "Tests/ZTronDSPMetalTests/Golden/colormaps.json",
+     "sha256": "fceb4f04e78cd334f818b68b706b005fa43d70d0317060736a14231b8ca10919"
+    }
+   ],
+   "source": "Tests/Golden/generators/colormaps.py",
+   "sourceSha256": "01961926050e85313a9e23e9e61b31f3297b7c29d2a9d3333ed00e0107f9dadf"
+  },
+  {
+   "generator": "constant_q",
+   "outputs": [
+    {
+     "path": "Tests/ZTronDSPAnalysisTests/Golden/constant_q.json",
+     "sha256": "4b56fec6599e3e7e7d60a960fc75bb65f7fc16e4fa6a53d951bd9b133fc8fc3a"
+    },
+    {
+     "path": "Tests/ZTronDSPAnalysisTests/Golden/constant_q_kernel_defaults-22050_imaginary.f64",
+     "sha256": "72f9afef845d801fd300e0e032319356a6ea3abe257e7e54dedd1f571842be9d"
+    },
+    {
+     "path": "Tests/ZTronDSPAnalysisTests/Golden/constant_q_kernel_defaults-22050_real.f64",
+     "sha256": "2be7c8f3f72d4ead137ce11dc6fd65b28b68aea9d40e8cae70aeeeaf56ca381b"
+    },
+    {
+     "path": "Tests/ZTronDSPAnalysisTests/Golden/constant_q_kernel_semitones-tuned_imaginary.f64",
+     "sha256": "158fcceeb36697a56afb4ebd03d77d94e87c5f7a5367944c7c2fd7ffe818f6c6"
+    },
+    {
+     "path": "Tests/ZTronDSPAnalysisTests/Golden/constant_q_kernel_semitones-tuned_real.f64",
+     "sha256": "0b747af7b75108f9787f1e385adee371bc931373edb78cce74598092ff2ccd26"
+    },
+    {
+     "path": "Tests/ZTronDSPAnalysisTests/Golden/constant_q_kernel_variable-q_imaginary.f64",
+     "sha256": "9935e85fa5d7245c926dd3b8884da4a1adbd6d34897a91a7850c32b411aa90e4"
+    },
+    {
+     "path": "Tests/ZTronDSPAnalysisTests/Golden/constant_q_kernel_variable-q_real.f64",
+     "sha256": "12d4d85df54864b89083a893fccc152cd85b6d01224e7d80c920b1b6096b1a12"
+    },
+    {
+     "path": "Tests/ZTronDSPAnalysisTests/Golden/constant_q_music-defaults_chroma.f64",
+     "sha256": "6e889588f2088ac3e2eab8db295a45cc7c00c3dcb1a915951e313536b257c940"
+    },
+    {
+     "path": "Tests/ZTronDSPAnalysisTests/Golden/constant_q_music-defaults_chroma_sums.f64",
+     "sha256": "63670a049cf3dcff38380009591452d67877039e80a78c89ca8e8616b320f508"
+    },
+    {
+     "path": "Tests/ZTronDSPAnalysisTests/Golden/constant_q_music-defaults_imaginary.f64",
+     "sha256": "f5045760508d52a08038506ea20e7ebc7885b8c7f1d253f7d9db2f01f8f84bbb"
+    },
+    {
+     "path": "Tests/ZTronDSPAnalysisTests/Golden/constant_q_music-defaults_real.f64",
+     "sha256": "94908340b077d91e3e7d94d8bc36b4e427a298dc2316c0d58e30b282c9037d37"
+    },
+    {
+     "path": "Tests/ZTronDSPAnalysisTests/Golden/constant_q_music-top-octave_chroma.f64",
+     "sha256": "78cdd59ff4634c1085ddccffaa7d968d5d9c852036697c31300c4eeaf6b04357"
+    },
+    {
+     "path": "Tests/ZTronDSPAnalysisTests/Golden/constant_q_music-top-octave_chroma_sums.f64",
+     "sha256": "c662b7588fd7d43424505efb058b87fb4736e2ab7812e7309d25fe8bdecd0897"
+    },
+    {
+     "path": "Tests/ZTronDSPAnalysisTests/Golden/constant_q_music-top-octave_imaginary.f64",
+     "sha256": "476659f68667080558d97712da028b910bad6cc842b1815135d756878b985abe"
+    },
+    {
+     "path": "Tests/ZTronDSPAnalysisTests/Golden/constant_q_music-top-octave_real.f64",
+     "sha256": "2660420a6fe684b6d1ee49fbdee52da1511d8fde424a1f2a1c35288997f78ec2"
+    },
+    {
+     "path": "Tests/ZTronDSPAnalysisTests/Golden/constant_q_music-variable-q_chroma.f64",
+     "sha256": "e9b12cf2fb90a9d005a7cd412d0b9df4f791d1b25a3e679074a4690eac83264f"
+    },
+    {
+     "path": "Tests/ZTronDSPAnalysisTests/Golden/constant_q_music-variable-q_chroma_sums.f64",
+     "sha256": "b8c701b9be36ef612369df265180cf295ce6e30f463cbaa4d62348a69d5a689b"
+    },
+    {
+     "path": "Tests/ZTronDSPAnalysisTests/Golden/constant_q_music-variable-q_imaginary.f64",
+     "sha256": "16b3903f3461e12aea1da7297c058d75b2cd5f8271e3e4d589b6c89923795d81"
+    },
+    {
+     "path": "Tests/ZTronDSPAnalysisTests/Golden/constant_q_music-variable-q_real.f64",
+     "sha256": "17c8bd5b9570a3970f6f9b4477c0f9cbec3d84c1bba4d2125a5e1eb2ea0db44a"
+    },
+    {
+     "path": "Tests/ZTronDSPAnalysisTests/Golden/constant_q_pseudo_music-semitones_magnitudes.f64",
+     "sha256": "4beefda3a5004defa0f5e3ee4135c7d0130876260d00b554de0471195b025a01"
+    },
+    {
+     "path": "Tests/ZTronDSPAnalysisTests/Golden/constant_q_pseudo_music-semitones_powers.f64",
+     "sha256": "2bab809c362d6176f57ea41474f6a2231e2657843ddb565a53763357700c7cb9"
+    },
+    {
+     "path": "Tests/ZTronDSPAnalysisTests/Golden/constant_q_pseudo_speech-thirds-of-semitones_magnitudes.f64",
+     "sha256": "30d64f5919a9d1bb0baf2fbc7dcd0564cf5d323f828469e8c688531c8f2922e9"
+    },
+    {
+     "path": "Tests/ZTronDSPAnalysisTests/Golden/constant_q_pseudo_speech-thirds-of-semitones_powers.f64",
+     "sha256": "9588b836620aaa5266bd1b476c53725001ee39e6625ac53c5c447b26f56d233c"
+    },
+    {
+     "path": "Tests/ZTronDSPAnalysisTests/Golden/constant_q_speech-semitones_chroma.f64",
+     "sha256": "d2d2f5979be4f981f8bf8556cf3a2c3cd94fed7ea6734e8d3c7783cc92a9f34e"
+    },
+    {
+     "path": "Tests/ZTronDSPAnalysisTests/Golden/constant_q_speech-semitones_chroma_sums.f64",
+     "sha256": "1a4855a260f07d8606cbd6e4fcdf2b0fe1b536927b12752173d8a0eca87b2224"
+    },
+    {
+     "path": "Tests/ZTronDSPAnalysisTests/Golden/constant_q_speech-semitones_imaginary.f64",
+     "sha256": "4087e4f3ad7faa25a6e7f2119a268b9dd245573cbdd36241d784e5793d06a0a5"
+    },
+    {
+     "path": "Tests/ZTronDSPAnalysisTests/Golden/constant_q_speech-semitones_real.f64",
+     "sha256": "a7ebaa0a59e77a00eec15c59cb12e32ee0668b769085c7ca398163caa9385b84"
+    }
+   ],
+   "source": "Tests/Golden/generators/constant_q.py",
+   "sourceSha256": "aba81bef41e31506d57ea0738cb5a4fa22ca3ca5644bd612dfd92674745da3de"
+  },
+  {
+   "generator": "convolution",
+   "outputs": [
+    {
+     "path": "Tests/ZTronDSPAnalysisTests/Golden/convolution.json",
+     "sha256": "6569347962e566b1ebfef7ebad35bf3d8bb8bcf36e6e581bfe37f55f1e5f856b"
+    },
+    {
+     "path": "Tests/ZTronDSPAnalysisTests/Golden/convolution_input_1024.f32",
+     "sha256": "bd24d6f69c68713c5fc639e77438c5ddaa39bdc56a490b832fcb2ff45a537469"
+    },
+    {
+     "path": "Tests/ZTronDSPAnalysisTests/Golden/convolution_input_16.f32",
+     "sha256": "be88b734379c41cb94f6a9b080526619bf02fab51d49d2d166f5b4f46d0e2a25"
+    },
+    {
+     "path": "Tests/ZTronDSPAnalysisTests/Golden/convolution_input_255.f32",
+     "sha256": "142353e58d9d976807a8f0c318a49591dcff12cec7f6d6286a300c9691a91a6e"
+    },
+    {
+     "path": "Tests/ZTronDSPAnalysisTests/Golden/convolution_input_4096.f32",
+     "sha256": "1cdab33803799745972dcc88c7684fc9daf76d82804c58697993aa58a50cf0f6"
+    },
+    {
+     "path": "Tests/ZTronDSPAnalysisTests/Golden/convolution_input_48000.f32",
+     "sha256": "bc221e3fc42b9c456bc9856fbc3b8abbda47474e9eb48fb9a95fb0d0a028fe15"
+    },
+    {
+     "path": "Tests/ZTronDSPAnalysisTests/Golden/convolution_input_5.f32",
+     "sha256": "282f0daf3558f0bb0c219a806b464741c42e22afe8203a232533b365eb02e55f"
+    },
+    {
+     "path": "Tests/ZTronDSPAnalysisTests/Golden/convolve_1024_255_full.f32",
+     "sha256": "d8fc9171e6428ba728d2fe3c746a7a00331f65846475366c338757c8f7455fb0"
+    },
+    {
+     "path": "Tests/ZTronDSPAnalysisTests/Golden/convolve_1024_255_same.f32",
+     "sha256": "175e72cc9aa968b9f8bdeff4f2f79d902add2fb3714f13e49be40a97c1dedd7c"
+    },
+    {
+     "path": "Tests/ZTronDSPAnalysisTests/Golden/convolve_1024_255_valid.f32",
+     "sha256": "91409d5f8f05d81934fe1a9b7057ff11fd81fc0fb2e7391fa8e2895fe5d9bb5b"
+    },
+    {
+     "path": "Tests/ZTronDSPAnalysisTests/Golden/convolve_16_5_full.f32",
+     "sha256": "4cf22a1913b6278fd30333b297d06cb44fe1465faeb74e1b6e118a317315bb11"
+    },
+    {
+     "path": "Tests/ZTronDSPAnalysisTests/Golden/convolve_16_5_same.f32",
+     "sha256": "0f74ec5266f5cb171af1b8136b59e1ef20b81d8fbadbae772c93c24732e305a0"
+    },
+    {
+     "path": "Tests/ZTronDSPAnalysisTests/Golden/convolve_16_5_valid.f32",
+     "sha256": "d7fb654a0430f635c5b9f9fe9c49bdf13bd8a6055c4e28210687e9f2804295e9"
+    },
+    {
+     "path": "Tests/ZTronDSPAnalysisTests/Golden/convolve_255_1024_full.f32",
+     "sha256": "d8fc9171e6428ba728d2fe3c746a7a00331f65846475366c338757c8f7455fb0"
+    },
+    {
+     "path": "Tests/ZTronDSPAnalysisTests/Golden/convolve_255_1024_same.f32",
+     "sha256": "4103af38b7679f3f1b2b061794e5dc0dc9f66e78156217789fb65f9e74d8e892"
+    },
+    {
+     "path": "Tests/ZTronDSPAnalysisTests/Golden/convolve_255_1024_valid.f32",
+     "sha256": "91409d5f8f05d81934fe1a9b7057ff11fd81fc0fb2e7391fa8e2895fe5d9bb5b"
+    },
+    {
+     "path": "Tests/ZTronDSPAnalysisTests/Golden/convolve_48000_4096_full.f32",
+     "sha256": "dbb8188b81f06090e6f33bef086c2ca6433ef2f327df01c11daca49e3ad26630"
+    },
+    {
+     "path": "Tests/ZTronDSPAnalysisTests/Golden/convolve_48000_4096_same.f32",
+     "sha256": "4d17a62d91079c25f8cd11f57082ddc0110e7f66e2c73fdb681221f27ad4c324"
+    },
+    {
+     "path": "Tests/ZTronDSPAnalysisTests/Golden/convolve_48000_4096_valid.f32",
+     "sha256": "8ff0d24fa846abd20daec40aaf3d1e2335d1782e69b69124f2f33b9ae0e098c7"
+    },
+    {
+     "path": "Tests/ZTronDSPAnalysisTests/Golden/convolve_5_16_full.f32",
+     "sha256": "4cf22a1913b6278fd30333b297d06cb44fe1465faeb74e1b6e118a317315bb11"
+    },
+    {
+     "path": "Tests/ZTronDSPAnalysisTests/Golden/convolve_5_16_same.f32",
+     "sha256": "ab16f3fa1afe23c30e1bfd7f0f501f099ac30ba70f26d06f80aa13cc8b7c3cb9"
+    },
+    {
+     "path": "Tests/ZTronDSPAnalysisTests/Golden/convolve_5_16_valid.f32",
+     "sha256": "d7fb654a0430f635c5b9f9fe9c49bdf13bd8a6055c4e28210687e9f2804295e9"
+    },
+    {
+     "path": "Tests/ZTronDSPAnalysisTests/Golden/correlate_1024_1024_biased.f32",
+     "sha256": "bad3baa5f750a9416030e85da595b9e75e81e759134c4c0d71aaea2544d120b8"
+    },
+    {
+     "path": "Tests/ZTronDSPAnalysisTests/Golden/correlate_1024_1024_coefficient.f32",
+     "sha256": "fb372d9b28e7495c31f2267e272fa3e9502467418ba1a79b7564426906cdc249"
+    },
+    {
+     "path": "Tests/ZTronDSPAnalysisTests/Golden/correlate_1024_1024_none.f32",
+     "sha256": "84745ae83fd4418906fab90c423b7e2e9b19601aafa67366dbc6fcdeafeff21d"
+    },
+    {
+     "path": "Tests/ZTronDSPAnalysisTests/Golden/correlate_1024_1024_unbiased.f32",
+     "sha256": "c7a658b3d2fe6b3e826c0c52ef820b781403ee0639fde1e8195d17811ffbbb87"
+    },
+    {
+     "path": "Tests/ZTronDSPAnalysisTests/Golden/correlate_1024_255_biased.f32",
+     "sha256": "bded402b16a53cf6afcf0511fe251ff4d6bad873cf52aa4cca8f21d9b86b16aa"
+    },
+    {
+     "path": "Tests/ZTronDSPAnalysisTests/Golden/correlate_1024_255_coefficient.f32",
+     "sha256": "5480ab35e7dce5bbfbb5d8e057ac853ee9c95c62d9d60ddbf9b29ca071399159"
+    },
+    {
+     "path": "Tests/ZTronDSPAnalysisTests/Golden/correlate_1024_255_full.f32",
+     "sha256": "b991d920da1981a93d4e052f9caa2b1e7c6b629b48788cf507b506588cb8a62a"
+    },
+    {
+     "path": "Tests/ZTronDSPAnalysisTests/Golden/correlate_1024_255_none.f32",
+     "sha256": "b991d920da1981a93d4e052f9caa2b1e7c6b629b48788cf507b506588cb8a62a"
+    },
+    {
+     "path": "Tests/ZTronDSPAnalysisTests/Golden/correlate_1024_255_same.f32",
+     "sha256": "75fe86113d303d382017e11ac11892810380dd1e08e57d1824fd4bdae1410375"
+    },
+    {
+     "path": "Tests/ZTronDSPAnalysisTests/Golden/correlate_1024_255_unbiased.f32",
+     "sha256": "5ed133521f8afedb1c4e2d942bb6319e4ceabd6e0c277a843cd2aa335cda53d4"
+    },
+    {
+     "path": "Tests/ZTronDSPAnalysisTests/Golden/correlate_1024_255_valid.f32",
+     "sha256": "f5afffad9f071c98dfe8e4fd3612f0ea3264a12978e35a25b9f1a432a9c3ab54"
+    },
+    {
+     "path": "Tests/ZTronDSPAnalysisTests/Golden/correlate_16_5_biased.f32",
+     "sha256": "5accc8838b9d232db52f94a567563c4d7840d6480c5d6ce533a9694a68a1df1e"
+    },
+    {
+     "path": "Tests/ZTronDSPAnalysisTests/Golden/correlate_16_5_coefficient.f32",
+     "sha256": "3dc8d8d6259e989181ef7693ef59ae5c01ce2fe551563fb1b2ab6ecff8cd5840"
+    },
+    {
+     "path": "Tests/ZTronDSPAnalysisTests/Golden/correlate_16_5_full.f32",
+     "sha256": "2c556d947fee5410c57344fd2d0cacb875c6e8aa90695ef85b1e27c77fc79585"
+    },
+    {
+     "path": "Tests/ZTronDSPAnalysisTests/Golden/correlate_16_5_none.f32",
+     "sha256": "2c556d947fee5410c57344fd2d0cacb875c6e8aa90695ef85b1e27c77fc79585"
+    },
+    {
+     "path": "Tests/ZTronDSPAnalysisTests/Golden/correlate_16_5_same.f32",
+     "sha256": "bd2d06837b0a0cab1ac66679fb173405409c577a10cc0d977a06a45a7da2c0df"
+    },
+    {
+     "path": "Tests/ZTronDSPAnalysisTests/Golden/correlate_16_5_unbiased.f32",
+     "sha256": "583f979488c0276a0f1bf5a7f0c73e66bc1a5403a9502cef9dda379a5a2db9ac"
+    },
+    {
+     "path": "Tests/ZTronDSPAnalysisTests/Golden/correlate_16_5_valid.f32",
+     "sha256": "f277fdac7c14c9473bdd56b29fb51ee1aff475e133c685f22a514e37cee9890e"
+    },
+    {
+     "path": "Tests/ZTronDSPAnalysisTests/Golden/correlate_255_1024_biased.f32",
+     "sha256": "666a5e08096a0b9e676b1292d41772fd9d40caa37427534213e6e43c47cb7454"
+    },
+    {
+     "path": "Tests/ZTronDSPAnalysisTests/Golden/correlate_255_1024_coefficient.f32",
+     "sha256": "9a9acddd9eaf1fd20e8297e40eaee3c346da7964cacb77a6a7a00a20437904cf"
+    },
+    {
+     "path": "Tests/ZTronDSPAnalysisTests/Golden/correlate_255_1024_full.f32",
+     "sha256": "f33472cbfb694605a96cabf0bb2209f11d955d62f78940b94a98e2d8cc478988"
+    },
+    {
+     "path": "Tests/ZTronDSPAnalysisTests/Golden/correlate_255_1024_none.f32",
+     "sha256": "f33472cbfb694605a96cabf0bb2209f11d955d62f78940b94a98e2d8cc478988"
+    },
+    {
+     "path": "Tests/ZTronDSPAnalysisTests/Golden/correlate_255_1024_same.f32",
+     "sha256": "7aca34b73c403a47619f3afefb5a24378a7f288440319592b8482f753b17cd7f"
+    },
+    {
+     "path": "Tests/ZTronDSPAnalysisTests/Golden/correlate_255_1024_unbiased.f32",
+     "sha256": "2464b013d1996a0e3db9644da3b48ef5c7b14942a3ee23531e652b223c077575"
+    },
+    {
+     "path": "Tests/ZTronDSPAnalysisTests/Golden/correlate_255_1024_valid.f32",
+     "sha256": "c0a8aa3e7fd1083d44372116861739b1f58fe7cf3dd3be3f379ec887c63d722c"
+    },
+    {
+     "path": "Tests/ZTronDSPAnalysisTests/Golden/correlate_48000_4096_full.f32",
+     "sha256": "7d244f04018e0837edd92fa8c2bb565803fa9fe5ada506ee7375983b632625bb"
+    },
+    {
+     "path": "Tests/ZTronDSPAnalysisTests/Golden/correlate_48000_4096_same.f32",
+     "sha256": "7be9699847bad2dc6fffe9103bfa97fafd096da6e8446dc0d63817773f35b509"
+    },
+    {
+     "path": "Tests/ZTronDSPAnalysisTests/Golden/correlate_48000_4096_valid.f32",
+     "sha256": "dcb7b8b94013ae49ee3410c661789703e47d9f220fdf21f8631b4d3856325e7c"
+    },
+    {
+     "path": "Tests/ZTronDSPAnalysisTests/Golden/correlate_5_16_full.f32",
+     "sha256": "b5555916526b64e2fd1ddc7b8354dfc47b9536539bf3ec817f32f0b65f3c5c00"
+    },
+    {
+     "path": "Tests/ZTronDSPAnalysisTests/Golden/correlate_5_16_same.f32",
+     "sha256": "828e68005d69bcb510d9c876d96d747e65ba1b1d02a6ab1682dcf3d4f528f942"
+    },
+    {
+     "path": "Tests/ZTronDSPAnalysisTests/Golden/correlate_5_16_valid.f32",
+     "sha256": "5ab13a2f88f8b03d7e3d7af180b7b26229674d01054f103001ccc2293d8feab4"
+    },
+    {
+     "path": "Tests/ZTronDSPAnalysisTests/Golden/correlate_second_1024.f32",
+     "sha256": "7d879d955d2124d9bfae6b4b259abc7bd964dbc8f92ba0ce2fa96b58ab1cd0e3"
+    }
+   ],
+   "source": "Tests/Golden/generators/convolution.py",
+   "sourceSha256": "3606fe2b31354456a453aca15848d73ec787f6efc82be331b6324b1dac3ab264"
+  },
+  {
+   "generator": "cookbook_equalizers",
+   "outputs": [
+    {
+     "path": "Tests/ZTronDSPDesignTests/Golden/cookbook_equalizers.json",
+     "sha256": "5192575a881da217668fb3453f68f4a6ecdd46e12fbc4e37a892388975cd1799"
+    }
+   ],
+   "source": "Tests/Golden/generators/cookbook_equalizers.py",
+   "sourceSha256": "550656a60b7e7fd07222ed506cb3479c77b04d380f80ca5a596d8516fb9a7e01"
+  },
+  {
+   "generator": "elliptic_functions",
+   "outputs": [
+    {
+     "path": "Tests/ZTronDSPDesignTests/Golden/elliptic_functions.json",
+     "sha256": "413d780af5690552f18bf3da09ef2056df3d65563bf2c584e75b157c19e1d86a"
+    }
+   ],
+   "source": "Tests/Golden/generators/elliptic_functions.py",
+   "sourceSha256": "a82f19cd20303027046d6b99db4d5b8f4e0e212b807e47f4ea0abca5847d22a4"
+  },
+  {
+   "generator": "fir_design",
+   "outputs": [
+    {
+     "path": "Tests/ZTronDSPDesignTests/Golden/fir_design.json",
+     "sha256": "d35c9e20fe5b11ea6583d5bcf32c3bb44067788f74f4f0913af7f19ea6a65b63"
+    }
+   ],
+   "source": "Tests/Golden/generators/fir_design.py",
+   "sourceSha256": "6f75baee1b6793679f79d0170dfeaa4ccea4473ac8a4db304df40e06c58b7931"
+  },
+  {
+   "generator": "fixtures",
+   "outputs": [
+    {
+     "path": "Tests/ZTronDSPAnalysisTests/Golden/fixture_music.f32",
+     "sha256": "dae4c682ab4980b2ee47cde68b3c8e43bf65e16041711771b8e577721582f0ca"
+    },
+    {
+     "path": "Tests/ZTronDSPAnalysisTests/Golden/fixture_speech.f32",
+     "sha256": "09227e385ddf5a2d0a9b00e62baf7fef63b1faa6fe66eab8611f03947b79009f"
+    },
+    {
+     "path": "Tests/ZTronDSPAnalysisTests/Golden/fixtures.json",
+     "sha256": "9ce84fcecfafa954c5c39894111dd09d4fe05ace715c516d37cb75d41d96da4c"
+    }
+   ],
+   "source": "Tests/Golden/generators/fixtures.py",
+   "sourceSha256": "550b63f6ecdc3283fe9faff8970aad80dfc1e643dc1369908bd9647fb376104f"
+  },
+  {
+   "generator": "frequency_transformations",
+   "outputs": [
+    {
+     "path": "Tests/ZTronDSPDesignTests/Golden/frequency_transformations.json",
+     "sha256": "2c430cff31c68addacd17c9d786441bc95b6112e06728986c15d520c2d3aa630"
+    }
+   ],
+   "source": "Tests/Golden/generators/frequency_transformations.py",
+   "sourceSha256": "f2af3761e19d3dd66642f275dc348491c53499786eb32f202057d0a85b7ddaeb"
+  },
+  {
+   "generator": "generate-stress-fixtures",
+   "outputs": [
+    {
+     "path": "Sources/ZTronDSPTesting/StressFixtureData.swift",
+     "sha256": "62a6b5ce75bcc926a5a862947acfc4587b3106749fc668d60f5fb002b1948060"
+    }
+   ],
+   "source": "Scripts/generate-stress-fixtures.py",
+   "sourceSha256": "10b9712d66e995d1a08b47970072fef013ca8aa94c69c04bc80dada79649cc38"
+  },
+  {
+   "generator": "hpss",
+   "outputs": [
+    {
+     "path": "Tests/ZTronDSPAnalysisTests/Golden/hpss.json",
+     "sha256": "9a32bf0dea14e7beda351ad8ab6b010fcdaef218264429623b6748fecfea3181"
+    },
+    {
+     "path": "Tests/ZTronDSPAnalysisTests/Golden/hpss_music-hard-31-31_harmonic.f32",
+     "sha256": "30d7700266be1e218cb14fb2b355090be1b6d99b010440e1c3582bd8196ef608"
+    },
+    {
+     "path": "Tests/ZTronDSPAnalysisTests/Golden/hpss_music-hard-31-31_percussive.f32",
+     "sha256": "70e1c70462cfb82a510c6893d5d84a794811c98c3dffdd81fcea4a06fc60306b"
+    },
+    {
+     "path": "Tests/ZTronDSPAnalysisTests/Golden/hpss_music-soft1-17-17-margins_harmonic.f32",
+     "sha256": "00230f4bc555d83a751b4d3be11b40669f898936cacde4a8376e7fb9c5c57256"
+    },
+    {
+     "path": "Tests/ZTronDSPAnalysisTests/Golden/hpss_music-soft1-17-17-margins_percussive.f32",
+     "sha256": "0b23e58fc93ba8fb4c0e7866fd1db4882e2df348a4e98fd0728d1a02002c01a0"
+    },
+    {
+     "path": "Tests/ZTronDSPAnalysisTests/Golden/hpss_music-soft2-31-31_harmonic.f32",
+     "sha256": "4c484a0e3fd7e4091caa7edac31f5a17b3f1a1531d1d50c52ab6de49d61a7b6f"
+    },
+    {
+     "path": "Tests/ZTronDSPAnalysisTests/Golden/hpss_music-soft2-31-31_percussive.f32",
+     "sha256": "22c69ce89b656e3b35d1ec15557daffa605171ed5f0cb9fc0ada27fe4eae2bcf"
+    },
+    {
+     "path": "Tests/ZTronDSPAnalysisTests/Golden/hpss_speech-soft2-17-31_harmonic.f32",
+     "sha256": "c549c9c5550616468c3efd18a9a79b2150ff1604df1af4b65059876127cd6786"
+    },
+    {
+     "path": "Tests/ZTronDSPAnalysisTests/Golden/hpss_speech-soft2-17-31_percussive.f32",
+     "sha256": "d8cfb3c9e2a48b2f99d9b7c25ef4a77d2d07790e676eca9010865373b449428f"
+    }
+   ],
+   "source": "Tests/Golden/generators/hpss.py",
+   "sourceSha256": "90555d823281125eb0a9e6a37b4877e9ac65ce992e271955829896c039f34995"
+  },
+  {
+   "generator": "iir_design",
+   "outputs": [
+    {
+     "path": "Tests/ZTronDSPDesignTests/Golden/iir_design.json",
+     "sha256": "c1dba01bec51ecdaf73bde34e44887e4fa8fa947a016ec6d0eae0be8a9982105"
+    },
+    {
+     "path": "Tests/ZTronDSPDesignTests/Golden/iir_design_analog.f64",
+     "sha256": "ada929a3449693b03834f41d9890a6297b736adfaf5a129ab75cd2f27baacf62"
+    },
+    {
+     "path": "Tests/ZTronDSPDesignTests/Golden/iir_design_digital.f64",
+     "sha256": "63213ece8b581fbd3c875554a28c48c1648f188013d049bc7ae417778372be29"
+    },
+    {
+     "path": "Tests/ZTronDSPDesignTests/Golden/iir_design_digital_tf.f64",
+     "sha256": "34a4f439dff222f9cb28cd07e6a83808a166824f42a418de77bb895efc3ed7ab"
+    }
+   ],
+   "source": "Tests/Golden/generators/iir_design.py",
+   "sourceSha256": "f03452a586fa9205ecfbf277860ca98f08a8c65d438c1b20e40baeaa34c6a2c9"
+  },
+  {
+   "generator": "iir_order",
+   "outputs": [
+    {
+     "path": "Tests/ZTronDSPDesignTests/Golden/iir_order.json",
+     "sha256": "947bd4b693bb2bb3681fa8cd17e6d2fde4aa1c9f65a6816e3547e1c357a92e19"
+    }
+   ],
+   "source": "Tests/Golden/generators/iir_order.py",
+   "sourceSha256": "6a03776fbeb4f9e0d006db1c51a934fc53331b55505c471f89e07b67c35491a4"
+  },
+  {
+   "generator": "matlab_scripts",
+   "outputs": [
+    {
+     "path": "Tests/ZTronDSPAnalysisTests/Golden/matlab_scripts.json",
+     "sha256": "7dd2d863e2c68a061ad18140391a59713197ab6594beae3c5a6b891e644ec49d"
+    },
+    {
+     "path": "Tests/ZTronDSPAnalysisTests/Golden/script_heatmap-linear.m",
+     "sha256": "c2dfc56b18158a02fd5e897542af21e6ebfeb9b561caf5c1473a767cc0ef05aa"
+    },
+    {
+     "path": "Tests/ZTronDSPAnalysisTests/Golden/script_heatmap-mel.m",
+     "sha256": "362af42eae6d06cc7d28b4688d8e8ae0e7c661429859f9bfbe889b372699ee11"
+    },
+    {
+     "path": "Tests/ZTronDSPAnalysisTests/Golden/script_inversion-conditions.m",
+     "sha256": "439bf5ecae916061183dd3f28540c6c7b1a87ccd3bb6f281e1ddf5d8e0e97a4f"
+    },
+    {
+     "path": "Tests/ZTronDSPAnalysisTests/Golden/script_inversion-frames.m",
+     "sha256": "f38cc3c4984c88178de77e7bec543b9ab95529bfdac64ad848490f7982e45bd1"
+    },
+    {
+     "path": "Tests/ZTronDSPAnalysisTests/Golden/script_inversion.m",
+     "sha256": "137b679cb083ff44a84fa91c57e2bb5d9b14a873a33e5c7ad0c7baaf808714fd"
+    },
+    {
+     "path": "Tests/ZTronDSPAnalysisTests/Golden/script_scalar-track.m",
+     "sha256": "6fa7e5e6e414d1a6d509e209401f98708bf721a5ae5ad558a520574a134a75da"
+    },
+    {
+     "path": "Tests/ZTronDSPAnalysisTests/Golden/script_waveform.m",
+     "sha256": "aff156019ae35cb0f2dfdd91b510c36a720bcfaf68d31be3d7ef44702f3790b9"
+    },
+    {
+     "path": "Tests/ZTronDSPAnalysisTests/Golden/script_window-analysis.m",
+     "sha256": "05cb6d2e4e91b85a140c29ee82a439f6c19de6a5e0b22d1fa81339649b54c5d0"
+    }
+   ],
+   "source": "Tests/Golden/generators/matlab_scripts.py",
+   "sourceSha256": "c330157107122b036852daef1f9326dc70661417da67f9e8ecedd4aa658a379c"
+  },
+  {
+   "generator": "mel",
+   "outputs": [
+    {
+     "path": "Tests/ZTronDSPAnalysisTests/Golden/mel.json",
+     "sha256": "f19c27e0e781ef8249995eaa5df653d2602690d84e21ae13f659f2604b003c96"
+    },
+    {
+     "path": "Tests/ZTronDSPAnalysisTests/Golden/mel_bank_default-22050-2048-128.f64",
+     "sha256": "6bf56b539923c6e01b737b42d7e37307f8e8172f9d31b7887545352bc288a257"
+    },
+    {
+     "path": "Tests/ZTronDSPAnalysisTests/Golden/mel_bank_htk-44100-4096-64-area.f64",
+     "sha256": "3b6d1297d05799651be5c28ed5ce4e414094c7d41d965d0625546a21e20505e6"
+    },
+    {
+     "path": "Tests/ZTronDSPAnalysisTests/Golden/mel_bank_htk-48000-1024-40-peak.f64",
+     "sha256": "ab0b083f61d2609656f96d1c0104f266ebae3e18e3e233913acc7456443ad30a"
+    },
+    {
+     "path": "Tests/ZTronDSPAnalysisTests/Golden/mel_bank_slaney-16000-512-26-range.f64",
+     "sha256": "38c01f95c6d68dbafacf1aa955d4c7ef7b68430193fababc52f2b860450be083"
+    },
+    {
+     "path": "Tests/ZTronDSPAnalysisTests/Golden/mel_bank_slaney-48000-240-12-peak.f64",
+     "sha256": "368efc5965938396a9117476ddf99a980a36332f49b9b9f3827f01d23d0289b6"
+    },
+    {
+     "path": "Tests/ZTronDSPAnalysisTests/Golden/mel_spectrogram_music.f64",
+     "sha256": "05b20d9641dc26bbd98952beb62a3906dc8358b2df06c0fb3a59465b5e00bc4a"
+    },
+    {
+     "path": "Tests/ZTronDSPAnalysisTests/Golden/mel_spectrogram_speech.f64",
+     "sha256": "9de7965c7895953da02a236ac5013f66e4549062e645eca50335129852690f93"
+    }
+   ],
+   "source": "Tests/Golden/generators/mel.py",
+   "sourceSha256": "4ef4a7832cf147bce4d5ccaa6376604ae2a289dcdc04e46f68ff2be19f5c6421"
+  },
+  {
+   "generator": "metal_images",
+   "outputs": [
+    {
+     "path": "Tests/ZTronDSPMetalTests/Golden/heatmap-band-range.png",
+     "sha256": "25b6a50b65a2163c389cb1ca1775f1896845df5f0df3dfba11424ad0e9ecab28"
+    },
+    {
+     "path": "Tests/ZTronDSPMetalTests/Golden/heatmap-bands.png",
+     "sha256": "17e3991bf42a0f25b9642f925f25ee1b0ac0efe4002795fcef3e41ed653dac01"
+    },
+    {
+     "path": "Tests/ZTronDSPMetalTests/Golden/heatmap-chroma.png",
+     "sha256": "3bae441fbc549bc5a3b83b49281755ab0a705cae1d87899210d5d43f8078de67"
+    },
+    {
+     "path": "Tests/ZTronDSPMetalTests/Golden/heatmap-clamp.png",
+     "sha256": "700749f9f2a9474634d102946c7b81ad2b8433b45a8139d327f40e8f831885e1"
+    },
+    {
+     "path": "Tests/ZTronDSPMetalTests/Golden/heatmap-grayscale.png",
+     "sha256": "a1f593750c6d291e02e757b77091544aec4dd7833ef1369c630dce1d140e2b50"
+    },
+    {
+     "path": "Tests/ZTronDSPMetalTests/Golden/heatmap-inferno.png",
+     "sha256": "5bc7f1beaf1c1a0135c95adf960109c0676ebb053264b8e064bd6985dda090e9"
+    },
+    {
+     "path": "Tests/ZTronDSPMetalTests/Golden/heatmap-linear.png",
+     "sha256": "84ee79047e62e32070201ac3d0a3d20f3f6e8cecdcb9968950775895f87af8c3"
+    },
+    {
+     "path": "Tests/ZTronDSPMetalTests/Golden/heatmap-logarithmic.png",
+     "sha256": "f9cc15d2c819b26fdabe5807f2addb793681fd7c4ac98170219ade4af7dff4a5"
+    },
+    {
+     "path": "Tests/ZTronDSPMetalTests/Golden/heatmap-magma.png",
+     "sha256": "01bf6dccb60d68bf432fea6403090b752ffcdec48b99f67fa65ae33119244283"
+    },
+    {
+     "path": "Tests/ZTronDSPMetalTests/Golden/heatmap-mel.png",
+     "sha256": "9dd023724de80be63348c30bce5b6f825fe104f03167d836ec57809872da903f"
+    },
+    {
+     "path": "Tests/ZTronDSPMetalTests/Golden/heatmap-partial.png",
+     "sha256": "b342a81f173f0c8e6e74f62a8803919802b9ce46dbc59e83310dedc8cd6f3d1d"
+    },
+    {
+     "path": "Tests/ZTronDSPMetalTests/Golden/heatmap-peak-linear.png",
+     "sha256": "f708154281ba025b4b396e6600f6b2b8e3c70df1fa4e5ffffbc19e54e8fef4dc"
+    },
+    {
+     "path": "Tests/ZTronDSPMetalTests/Golden/heatmap-peak-logarithmic.png",
+     "sha256": "0d128a7d016978694ca078aae90cb6e633bc138a0331b6ec3463696cac001666"
+    },
+    {
+     "path": "Tests/ZTronDSPMetalTests/Golden/heatmap-peak-mel.png",
+     "sha256": "fbd1d812bd9d191a6bd2c155e7c71c350857ccf0e2f27bc3cfb2a610e0f2b0b8"
+    },
+    {
+     "path": "Tests/ZTronDSPMetalTests/Golden/heatmap-turbo.png",
+     "sha256": "9c653b47dff5a353aa527405e8b708d8ada16e7cb522f8e3fbcdb5a8b642b7e2"
+    },
+    {
+     "path": "Tests/ZTronDSPMetalTests/Golden/heatmap-wrap.png",
+     "sha256": "44c103ed584d02cbab00b45895becd45fc351969ee42dddc541623be1d543c38"
+    },
+    {
+     "path": "Tests/ZTronDSPMetalTests/Golden/heatmap-zoom.png",
+     "sha256": "8f0e8b5de09e78009e23b45cb0701e02c79a7b9203c50419d61e72d8a0779cf7"
+    },
+    {
+     "path": "Tests/ZTronDSPMetalTests/Golden/loader-pattern.png",
+     "sha256": "548fba0b4c52a10ba3794ee5972b1891f1a89861a778c10d9f603c1b8d8d9d37"
+    },
+    {
+     "path": "Tests/ZTronDSPMetalTests/Golden/metal_images.json",
+     "sha256": "3e0c78c91ee23858a3f494b6196e5d4d73b0d4fb00916499ef34ae2ad4604a43"
+    },
+    {
+     "path": "Tests/ZTronDSPMetalTests/Golden/metal_images_bands.f32",
+     "sha256": "968ca5f6c96e147c15468c8ca5f4c2b26d26f91797b4b1171964a111790d8f9e"
+    },
+    {
+     "path": "Tests/ZTronDSPMetalTests/Golden/metal_images_chroma.f32",
+     "sha256": "ad3c08abeac0db61afa822392e44b0ccb4a7148c4494f5d699d6153c13a4bb5a"
+    },
+    {
+     "path": "Tests/ZTronDSPMetalTests/Golden/metal_images_peaks.f32",
+     "sha256": "0101943e66d18cddfb0f8556d9fee7648876b4b827fd4a457f403f25e4aa205a"
+    },
+    {
+     "path": "Tests/ZTronDSPMetalTests/Golden/metal_images_spectrogram.f32",
+     "sha256": "18dd94c610d5617fb2d74764d2bd3e2ef2b86535485b0954fa67de1efb08805a"
+    },
+    {
+     "path": "Tests/ZTronDSPMetalTests/Golden/metal_images_wave_clipped.f32",
+     "sha256": "a1e3fe7bbe60e79fd282b4de24b31feeb7fde5bf378e5425e3590badd426142d"
+    },
+    {
+     "path": "Tests/ZTronDSPMetalTests/Golden/metal_images_wave_impulse.f32",
+     "sha256": "fc05d9672f95bd038ef804557a4eae5f14c6b20aff548c5b14b99ba09d9cf51e"
+    },
+    {
+     "path": "Tests/ZTronDSPMetalTests/Golden/metal_images_wave_long.f32",
+     "sha256": "57649b9ebeb41df8ce13724db8d7fc47b38ea2b42a57984b28c1cda0935901c1"
+    },
+    {
+     "path": "Tests/ZTronDSPMetalTests/Golden/metal_images_wave_silence.f32",
+     "sha256": "e5a00aa9991ac8a5ee3109844d84a55583bd20572ad3ffcd42792f3c36b183ad"
+    },
+    {
+     "path": "Tests/ZTronDSPMetalTests/Golden/metal_images_wave_sine.f32",
+     "sha256": "ff5c0aae29ca0f4c13b892bc54be16127dd7c5faa7ea8565f09558728aaef8f4"
+    },
+    {
+     "path": "Tests/ZTronDSPMetalTests/Golden/metal_images_wave_swell.f32",
+     "sha256": "a31eded9302a092e61e1f499fce07c9375d189d3188ce35a297b8dc1e19c465b"
+    },
+    {
+     "path": "Tests/ZTronDSPMetalTests/Golden/waveform-clipped.png",
+     "sha256": "17d2ea248682dc74744c09e9a4a336944a9d8360c3db538b5a1fab0be868b34a"
+    },
+    {
+     "path": "Tests/ZTronDSPMetalTests/Golden/waveform-impulse.png",
+     "sha256": "91c417adadb0f11fd4f4504be7acdf08413dfe3eaba33ae6edac74f00ec57ff8"
+    },
+    {
+     "path": "Tests/ZTronDSPMetalTests/Golden/waveform-minified.png",
+     "sha256": "0fcde145ab839e7279e4ec4b2223f77e4be0c824889d4e981f0d80fbb5d2ef0d"
+    },
+    {
+     "path": "Tests/ZTronDSPMetalTests/Golden/waveform-silence.png",
+     "sha256": "09bb67c4cd10a5a2111676d9bc9573698807d6caef8fb4514fcefd88aedd2021"
+    },
+    {
+     "path": "Tests/ZTronDSPMetalTests/Golden/waveform-sine.png",
+     "sha256": "99ec4b08d80218b08eec6b6163a177fef2c35815daeb5f63f67f09bd603d82c7"
+    },
+    {
+     "path": "Tests/ZTronDSPMetalTests/Golden/waveform-wrap.png",
+     "sha256": "9a5235507bf385f82d954e1510fcb888cc39a6c0951f9ebacbb887520e6143b8"
+    }
+   ],
+   "source": "Tests/Golden/generators/metal_images.py",
+   "sourceSha256": "1a27964fb23a8c455215e01547f3ac5bea8906a918eaec8db795233530520b5a"
+  },
+  {
+   "generator": "onset_strength",
+   "outputs": [
+    {
+     "path": "Tests/ZTronDSPAnalysisTests/Golden/onset_strength.json",
+     "sha256": "f7a3d7ea80258723218a75d956c4af1cee637acb446977b9123838dc0aa044cc"
+    }
+   ],
+   "source": "Tests/Golden/generators/onset_strength.py",
+   "sourceSha256": "eb998739808440a89307da66d25a8c0de93e426dad42f60cc5fc044beca57847"
+  },
+  {
+   "generator": "savitzky_golay",
+   "outputs": [
+    {
+     "path": "Tests/ZTronDSPDesignTests/Golden/savitzky_golay.json",
+     "sha256": "fbfc8d002e8e5355cf324e09f5eb0abd2ee028c08396d96de77bdc1d37fe1b4c"
+    },
+    {
+     "path": "Tests/ZTronDSPDesignTests/Golden/savitzky_golay_filtered.f32",
+     "sha256": "0b9838bb54f12e5bf1b647310b3a64ddf0d1126d16ede4d747f96e738e7a4c1d"
+    }
+   ],
+   "source": "Tests/Golden/generators/savitzky_golay.py",
+   "sourceSha256": "deadf2e82c769b8098ee54dfbbf27bd143863d3b16c1d70bdeba7ca2cce846ef"
+  },
+  {
+   "generator": "section_pairing",
+   "outputs": [
+    {
+     "path": "Tests/ZTronDSPDesignTests/Golden/section_pairing.json",
+     "sha256": "db35f8e6098deb8527db553d4bfec593603088e61022cb86b3a776ea8b6f8205"
+    }
+   ],
+   "source": "Tests/Golden/generators/section_pairing.py",
+   "sourceSha256": "8e119088ec1ca856e807491bf6dcb073a3af5b9a9e03d6da28db45f42f4aee30"
+  },
+  {
+   "generator": "spectral_transforms",
+   "outputs": [
+    {
+     "path": "Tests/ZTronDSPAnalysisTests/Golden/fft.json",
+     "sha256": "f2bc47532f7db5237182f6d076ba202b6f2597ebf930462e2b91a6910c82ef23"
+    },
+    {
+     "path": "Tests/ZTronDSPAnalysisTests/Golden/stft.json",
+     "sha256": "bb63d6ab60485eecca9cbfe7d2e0b80aeda11db2acacdc9c20f55a575f381412"
+    },
+    {
+     "path": "Tests/ZTronDSPAnalysisTests/Golden/stft_imaginary.f64",
+     "sha256": "1f5c92af146fc3a01df8bf71d1e77c1bb4e29c8de237a83a219fa6137d851ad6"
+    },
+    {
+     "path": "Tests/ZTronDSPAnalysisTests/Golden/stft_real.f64",
+     "sha256": "da3c107f5bc18eb1403ae72709c1ca61605490cafdac972335f2dbae653a155d"
+    },
+    {
+     "path": "Tests/ZTronDSPAnalysisTests/Golden/stft_signals.f32",
+     "sha256": "54c732180c5f5d3e5aa74b90d1e28d77bbac961b10e7019239e040ab5a735f53"
+    }
+   ],
+   "source": "Tests/Golden/generators/spectral_transforms.py",
+   "sourceSha256": "b60ef7e68896521d202bbe85963f97cc8a7960e23bc7c608c23eb6278d0eb77d"
+  },
+  {
+   "generator": "system_analysis_matlab",
+   "outputs": [
+    {
+     "path": "Tests/ZTronDSPDesignTests/Golden/system_analysis.m",
+     "sha256": "57b1994cc4499a9fc72e3460ec5a695bdf17b09444a655f9e4044453ae52eef4"
+    }
+   ],
+   "source": "Tests/Golden/generators/system_analysis_matlab.py",
+   "sourceSha256": "c27704b45725ade6ff2eec1d501f368f690f9d9029bd5f7c86c469530a697667"
+  },
+  {
+   "generator": "tempogram",
+   "outputs": [
+    {
+     "path": "Tests/ZTronDSPAnalysisTests/Golden/tempogram.json",
+     "sha256": "84b86f05615d2365dcc917392ee96f357ebb9070991a17b07c7a826af72c2f8e"
+    },
+    {
+     "path": "Tests/ZTronDSPAnalysisTests/Golden/tempogram_curve-autocorrelation-101-hamming-60-240-centred.f32",
+     "sha256": "6c287a1f95c908a4a85dbff9f8c2fee89e9a4cd7e350df4f36fc88b6849991e5"
+    },
+    {
+     "path": "Tests/ZTronDSPAnalysisTests/Golden/tempogram_curve-autocorrelation-384-hann-30-300-causal.f32",
+     "sha256": "7b61905a4f07c6bf69794d00ffaf59e27769142d3f080f2b848df43864c1d08d"
+    },
+    {
+     "path": "Tests/ZTronDSPAnalysisTests/Golden/tempogram_curve-autocorrelation-384-hann-30-300-centred.f32",
+     "sha256": "28220a07785b064831694b0fee1fa8082e359f7c36fe88d8b3812deb1bbce6cb"
+    },
+    {
+     "path": "Tests/ZTronDSPAnalysisTests/Golden/tempogram_curve-fourier-101-hamming-60-240-causal-x8.f32",
+     "sha256": "f9fceb2538e95bbfe6396b9d91d4ae67a4398fed9bd6b58726e45224c02b5204"
+    },
+    {
+     "path": "Tests/ZTronDSPAnalysisTests/Golden/tempogram_curve-fourier-128-hann-30-300-centred-x1.f32",
+     "sha256": "b8f33fe4d405365352686f42a5f17efd45a2538b96a53f8bd406b1087bd8e0cb"
+    },
+    {
+     "path": "Tests/ZTronDSPAnalysisTests/Golden/tempogram_curve-fourier-384-hann-30-300-causal-x4.f32",
+     "sha256": "80f86626a09082b7b94c738ce6e10b8aa25f753ac0f30ad6be823d4c987a2a21"
+    },
+    {
+     "path": "Tests/ZTronDSPAnalysisTests/Golden/tempogram_curve-fourier-384-hann-30-300-centred-x4.f32",
+     "sha256": "9ad5873a3de30a93d2ac39d515f447aea27218210d257dfbba3fc4e4e8c41274"
+    },
+    {
+     "path": "Tests/ZTronDSPAnalysisTests/Golden/tempogram_curve.f32",
+     "sha256": "82008c80b386292749c2513b1524e457490fe7e5b7bd5fd11bc26d8aafc1eeea"
+    },
+    {
+     "path": "Tests/ZTronDSPAnalysisTests/Golden/tempogram_music-autocorrelation-64-hann-30-300-causal.f32",
+     "sha256": "62169b4e94e41adb98a574e39c0c6682b5a248a0ef03b233e19983f17d30c102"
+    },
+    {
+     "path": "Tests/ZTronDSPAnalysisTests/Golden/tempogram_music-autocorrelation-64-hann-30-300-centred.f32",
+     "sha256": "e2dc0b720325dca0e8a17ec110c6c31b3d7a129233ebf5538c59ed01d34397a0"
+    },
+    {
+     "path": "Tests/ZTronDSPAnalysisTests/Golden/tempogram_music-fourier-64-hann-30-300-causal-x4.f32",
+     "sha256": "30cf0672d9657c19137b1e3e98d09135276ddf9ae29ad9ca96ceebed065c28a9"
+    },
+    {
+     "path": "Tests/ZTronDSPAnalysisTests/Golden/tempogram_music-fourier-64-hann-30-300-centred-x4.f32",
+     "sha256": "15c076fdc4e190f893baad5d992bb19721bd7f1d27dd950d8a8ca49feca1d0e5"
+    }
+   ],
+   "source": "Tests/Golden/generators/tempogram.py",
+   "sourceSha256": "de418a8d4ee3b9a4aabd141d48008fba9e1637ca3cfb957f852dab8ffb582fec"
+  },
+  {
+   "generator": "window_analysis",
+   "outputs": [
+    {
+     "path": "Tests/ZTronDSPAnalysisTests/Golden/window_analysis.json",
+     "sha256": "3aa863993d3ca614b2d142f17abb24302198c98162e3eb07590984a02401d9e1"
+    }
+   ],
+   "source": "Tests/Golden/generators/window_analysis.py",
+   "sourceSha256": "5924ad3ef1506e96ee49531c4081a705e43ce37d6e450db7c6bd9dcbac1f9b96"
+  },
+  {
+   "generator": "windows",
+   "outputs": [
+    {
+     "path": "Tests/ZTronDSPCoreTests/Golden/windows.json",
+     "sha256": "840588d05ac3adb2bcde02440749126b91d4768fc05d64f79391c5272f5db81d"
+    }
+   ],
+   "source": "Tests/Golden/generators/windows.py",
+   "sourceSha256": "a14efd4dd21ef523a3d372b42d50939733a49fa4e8884c6ff8ee914d24137278"
+  }
+ ],
+ "pending": [],
+ "pins": {
+  "librosa": "0.11.0",
+  "numpy": "2.2.6",
+  "scipy": "1.15.3"
+ }
+}

@@ -1,0 +1,32 @@
+{
+ "coveredLines": 250,
+ "executableLines": 250,
+ "lineCoverage": 1.0,
+ "targets": [
+  {
+   "buildProductPath": "/build/DerivedData/ZTronDSPCoreTests",
+   "coveredLines": 250,
+   "executableLines": 250,
+   "files": [
+    {
+     "coveredLines": 200,
+     "executableLines": 200,
+     "functions": [],
+     "lineCoverage": 1.0,
+     "name": "Toolkit.swift",
+     "path": "/build/ZTronDSP/Sources/ZTronDSPCore/Toolkit.swift"
+    },
+    {
+     "coveredLines": 50,
+     "executableLines": 50,
+     "functions": [],
+     "lineCoverage": 1.0,
+     "name": "kernel.c",
+     "path": "/build/ZTronDSP/Sources/CZTronDSP/kernel.c"
+    }
+   ],
+   "lineCoverage": 1.0,
+   "name": "ZTronDSPCoreTests"
+  }
+ ]
+}

@@ -1,0 +1,1748 @@
+# ZTronDSPCore — public API digest (VIS-3).
+# Generated from the built module by Scripts/api-digest.sh --update. Do not edit: a difference
+# from the build fails CI gate 4, and changing the public API is a change request.
+
+conformance            ActivatedSequenceStage : SequenceStage
+conformance            ActivatedSequenceStage : StageValue
+conformance            ActivatedSequenceStage : Swift.Equatable
+conformance            ActivatedSequenceStage : Swift.Hashable
+conformance            ActivatedSequenceStage : Swift.Sendable
+conformance            ActivatedSequenceStage : Swift.SendableMetatype
+conformance            ActivatedStage : PipelineStage
+conformance            ActivatedStage : StageValue
+conformance            ActivatedStage : Swift.Equatable
+conformance            ActivatedStage : Swift.Hashable
+conformance            ActivatedStage : Swift.Sendable
+conformance            ActivatedStage : Swift.SendableMetatype
+conformance            Activation : ActivationSource
+conformance            Activation : Swift.Equatable
+conformance            Activation : Swift.Hashable
+conformance            Activation : Swift.Sendable
+conformance            Activation : Swift.SendableMetatype
+conformance            ActivationSource : Swift.Sendable
+conformance            ActivationSource : Swift.SendableMetatype
+conformance            Amplification : Swift.CustomStringConvertible
+conformance            Amplification : Swift.Equatable
+conformance            Amplification : Swift.Hashable
+conformance            Amplification : Swift.Sendable
+conformance            Amplification : Swift.SendableMetatype
+conformance            AnalysisScheduling : Swift.Equatable
+conformance            AnalysisScheduling : Swift.Hashable
+conformance            AnalysisScheduling : Swift.Sendable
+conformance            AnalysisScheduling : Swift.SendableMetatype
+conformance            AnalysisStep : Swift.Equatable
+conformance            AnalysisStep : Swift.Hashable
+conformance            AnalysisStep : Swift.Sendable
+conformance            AnalysisStep : Swift.SendableMetatype
+conformance            AnyStrategy : Swift.Equatable
+conformance            AnyStrategy : Swift.Hashable
+conformance            AnyStrategy : Swift.Sendable
+conformance            AnyStrategy : Swift.SendableMetatype
+conformance            BackgroundWork.Checkpoint : Swift.Sendable
+conformance            BackgroundWork.Checkpoint : Swift.SendableMetatype
+conformance            BiquadPrecision : Swift.CaseIterable
+conformance            BiquadPrecision : Swift.Decodable
+conformance            BiquadPrecision : Swift.Encodable
+conformance            BiquadPrecision : Swift.Equatable
+conformance            BiquadPrecision : Swift.Hashable
+conformance            BiquadPrecision : Swift.RawRepresentable
+conformance            BiquadPrecision : Swift.Sendable
+conformance            BiquadPrecision : Swift.SendableMetatype
+conformance            BiquadPrecisionKey : DSPEnvironmentKey
+conformance            BiquadPrecisionKey : SettableDSPEnvironmentKey
+conformance            BiquadSection : Swift.Equatable
+conformance            BiquadSection : Swift.Hashable
+conformance            BiquadSection : Swift.Sendable
+conformance            BiquadSection : Swift.SendableMetatype
+conformance            BlockSizeKey : DSPEnvironmentKey
+conformance            BoundResult : Swift.Equatable
+conformance            BoundResult : Swift.Hashable
+conformance            BoundResult : Swift.Sendable
+conformance            BoundResult : Swift.SendableMetatype
+conformance            BoundResult.Kind : Swift.Equatable
+conformance            BoundResult.Kind : Swift.Hashable
+conformance            BoundResult.Kind : Swift.Sendable
+conformance            BoundResult.Kind : Swift.SendableMetatype
+conformance            BoundSwitch : Swift.Equatable
+conformance            BoundSwitch : Swift.Hashable
+conformance            BoundSwitch : Swift.Sendable
+conformance            BoundSwitch : Swift.SendableMetatype
+conformance            BufferSource : PullSampleSource
+conformance            BufferSource : SampleSource
+conformance            BufferSource : Swift.Sendable
+conformance            BufferSource : Swift.SendableMetatype
+conformance            ChannelCountKey : DSPEnvironmentKey
+conformance            ChannelPolicy : Swift.Equatable
+conformance            ChannelPolicy : Swift.Hashable
+conformance            ChannelPolicy : Swift.Sendable
+conformance            ChannelPolicy : Swift.SendableMetatype
+conformance            Chroma : RealVectorDomain
+conformance            Chroma : SignalDomain
+conformance            Chroma : Swift.Sendable
+conformance            Chroma : Swift.SendableMetatype
+conformance            Complex : Swift.CustomStringConvertible
+conformance            Complex : Swift.Equatable
+conformance            Complex : Swift.Hashable
+conformance            Complex : Swift.Sendable
+conformance            Complex : Swift.SendableMetatype
+conformance            ComplexValues : SpectralValues
+conformance            ComplexValues : Swift.Sendable
+conformance            ComplexValues : Swift.SendableMetatype
+conformance            ConstantQFrequency : SpectralAxis
+conformance            ConstantQFrequency : Swift.Sendable
+conformance            ConstantQFrequency : Swift.SendableMetatype
+conformance            CrossoverTable : Swift.Decodable
+conformance            CrossoverTable : Swift.Encodable
+conformance            CrossoverTable : Swift.Equatable
+conformance            CrossoverTable : Swift.Hashable
+conformance            CrossoverTable : Swift.Sendable
+conformance            CrossoverTable : Swift.SendableMetatype
+conformance            CustomKernel : Swift.Equatable
+conformance            CustomKernel : Swift.Hashable
+conformance            CustomKernel : Swift.Sendable
+conformance            CustomKernel : Swift.SendableMetatype
+conformance            CustomProcessor : Swift.Equatable
+conformance            CustomProcessor : Swift.Hashable
+conformance            CustomProcessor : Swift.Sendable
+conformance            CustomProcessor : Swift.SendableMetatype
+conformance            DSPEngine : Swift.Sendable
+conformance            DSPEngine : Swift.SendableMetatype
+conformance            DSPEnvironment : Swift.Equatable
+conformance            DSPEnvironment : Swift.Hashable
+conformance            DSPEnvironment : Swift.Sendable
+conformance            DSPEnvironment : Swift.SendableMetatype
+conformance            DSPEnvironment.SettableKeys : Swift.Sendable
+conformance            DSPEnvironment.SettableKeys : Swift.SendableMetatype
+conformance            DSPError : Swift.CustomStringConvertible
+conformance            DSPError : Swift.Equatable
+conformance            DSPError : Swift.Error
+conformance            DSPError : Swift.Hashable
+conformance            DSPError : Swift.Sendable
+conformance            DSPError : Swift.SendableMetatype
+conformance            DecibelValues : RealValued
+conformance            DecibelValues : SpectralValues
+conformance            DecibelValues : Swift.Sendable
+conformance            DecibelValues : Swift.SendableMetatype
+conformance            DomainRule : Swift.Equatable
+conformance            DomainRule : Swift.Hashable
+conformance            DomainRule : Swift.Sendable
+conformance            DomainRule : Swift.SendableMetatype
+conformance            DomainTag : Swift.CustomStringConvertible
+conformance            DomainTag : Swift.Equatable
+conformance            DomainTag : Swift.Hashable
+conformance            DomainTag : Swift.Sendable
+conformance            DomainTag : Swift.SendableMetatype
+conformance            DomainTag.Axis : Swift.Equatable
+conformance            DomainTag.Axis : Swift.Hashable
+conformance            DomainTag.Axis : Swift.Sendable
+conformance            DomainTag.Axis : Swift.SendableMetatype
+conformance            DomainTag.FrameKind : Swift.Equatable
+conformance            DomainTag.FrameKind : Swift.Hashable
+conformance            DomainTag.FrameKind : Swift.Sendable
+conformance            DomainTag.FrameKind : Swift.SendableMetatype
+conformance            DomainTag.Values : Swift.Equatable
+conformance            DomainTag.Values : Swift.Hashable
+conformance            DomainTag.Values : Swift.Sendable
+conformance            DomainTag.Values : Swift.SendableMetatype
+conformance            DynamicPipeline : Swift.Equatable
+conformance            DynamicPipeline : Swift.Hashable
+conformance            DynamicPipeline : Swift.Sendable
+conformance            DynamicPipeline : Swift.SendableMetatype
+conformance            Emit : StageValue
+conformance            Emit : Swift.Equatable
+conformance            Emit : Swift.Hashable
+conformance            Emit : Swift.Sendable
+conformance            Emit : Swift.SendableMetatype
+conformance            Envelope : SignalDomain
+conformance            Envelope : Swift.Sendable
+conformance            Envelope : Swift.SendableMetatype
+conformance            EnvelopePyramid : Swift.Equatable
+conformance            EnvelopePyramid : Swift.Hashable
+conformance            EnvelopePyramid : Swift.Sendable
+conformance            EnvelopePyramid : Swift.SendableMetatype
+conformance            EnvelopePyramid.Level : Swift.Equatable
+conformance            EnvelopePyramid.Level : Swift.Hashable
+conformance            EnvelopePyramid.Level : Swift.Sendable
+conformance            EnvelopePyramid.Level : Swift.SendableMetatype
+conformance            EnvironmentReader : PipelineStage
+conformance            EnvironmentReader : SequenceStage
+conformance            EnvironmentReader : StageValue
+conformance            EnvironmentReader : Swift.Equatable
+conformance            EnvironmentReader : Swift.Hashable
+conformance            EnvironmentReader : Swift.Sendable
+conformance            EnvironmentReader : Swift.SendableMetatype
+conformance            FeatureCallback : FeatureSink
+conformance            FeatureCallback : Swift.Sendable
+conformance            FeatureCallback : Swift.SendableMetatype
+conformance            FeatureFrame : Swift.Equatable
+conformance            FeatureFrame : Swift.Hashable
+conformance            FeatureFrame : Swift.Sendable
+conformance            FeatureFrame : Swift.SendableMetatype
+conformance            FeatureRateKey : DSPEnvironmentKey
+conformance            FeatureSink : Swift.Sendable
+conformance            FeatureSink : Swift.SendableMetatype
+conformance            FeatureStream : FeatureSink
+conformance            FeatureStream : Swift.Sendable
+conformance            FeatureStream : Swift.SendableMetatype
+conformance            FeatureStream : _Concurrency.AsyncSequence
+conformance            FeatureStream.Iterator : _Concurrency.AsyncIteratorProtocol
+conformance            FeedAxis : Swift.Equatable
+conformance            FeedAxis : Swift.Hashable
+conformance            FeedAxis : Swift.Sendable
+conformance            FeedAxis : Swift.SendableMetatype
+conformance            FeedAxis.Unit : Swift.Equatable
+conformance            FeedAxis.Unit : Swift.Hashable
+conformance            FeedAxis.Unit : Swift.Sendable
+conformance            FeedAxis.Unit : Swift.SendableMetatype
+conformance            FeedCursor : Swift.Equatable
+conformance            FeedCursor : Swift.Hashable
+conformance            FeedCursor : Swift.Sendable
+conformance            FeedCursor : Swift.SendableMetatype
+conformance            FeedObservation : Swift.Sendable
+conformance            FeedObservation : Swift.SendableMetatype
+conformance            FeedRead : Swift.Equatable
+conformance            FeedRead : Swift.Hashable
+conformance            FeedRead : Swift.Sendable
+conformance            FeedRead : Swift.SendableMetatype
+conformance            FeedSnapshot : Swift.Equatable
+conformance            FeedSnapshot : Swift.Hashable
+conformance            FeedSnapshot : Swift.Sendable
+conformance            FeedSnapshot : Swift.SendableMetatype
+conformance            FeedSnapshot.Content : Swift.Equatable
+conformance            FeedSnapshot.Content : Swift.Hashable
+conformance            FeedSnapshot.Content : Swift.Sendable
+conformance            FeedSnapshot.Content : Swift.SendableMetatype
+conformance            FrameFormat : Swift.Equatable
+conformance            FrameFormat : Swift.Hashable
+conformance            FrameFormat : Swift.Sendable
+conformance            FrameFormat : Swift.SendableMetatype
+conformance            FrameSizeKey : DSPEnvironmentKey
+conformance            Frequency : Swift.CustomStringConvertible
+conformance            Frequency : Swift.Equatable
+conformance            Frequency : Swift.Hashable
+conformance            Frequency : Swift.Sendable
+conformance            Frequency : Swift.SendableMetatype
+conformance            FrequencyAxisKey : DSPEnvironmentKey
+conformance            FrequencyResolutionKey : DSPEnvironmentKey
+conformance            GeneratorSource : PullSampleSource
+conformance            GeneratorSource : SampleSource
+conformance            GeneratorSource : Swift.Sendable
+conformance            GeneratorSource : Swift.SendableMetatype
+conformance            GeneratorSource.Signal : Swift.Sendable
+conformance            GeneratorSource.Signal : Swift.SendableMetatype
+conformance            Group : PipelineStage
+conformance            Group : SequenceStage
+conformance            Group : StageValue
+conformance            Group : Swift.Equatable
+conformance            Group : Swift.Hashable
+conformance            Group : Swift.Sendable
+conformance            Group : Swift.SendableMetatype
+conformance            HTKMelFormula : MelFormula
+conformance            HTKMelFormula : Swift.Equatable
+conformance            HTKMelFormula : Swift.Hashable
+conformance            HTKMelFormula : Swift.Sendable
+conformance            HTKMelFormula : Swift.SendableMetatype
+conformance            HeatmapFeed : Swift.Sendable
+conformance            HeatmapFeed : Swift.SendableMetatype
+conformance            HopSizeKey : DSPEnvironmentKey
+conformance            Implementation : Swift.CaseIterable
+conformance            Implementation : Swift.Decodable
+conformance            Implementation : Swift.Encodable
+conformance            Implementation : Swift.Equatable
+conformance            Implementation : Swift.Hashable
+conformance            Implementation : Swift.RawRepresentable
+conformance            Implementation : Swift.Sendable
+conformance            Implementation : Swift.SendableMetatype
+conformance            ImplementationKey : DSPEnvironmentKey
+conformance            ImplementationKey : SettableDSPEnvironmentKey
+conformance            IsRealTimeKey : DSPEnvironmentKey
+conformance            KernelSpec : Swift.Equatable
+conformance            KernelSpec : Swift.Hashable
+conformance            KernelSpec : Swift.Sendable
+conformance            KernelSpec : Swift.SendableMetatype
+conformance            Lags : RealVectorDomain
+conformance            Lags : SignalDomain
+conformance            Lags : Swift.Sendable
+conformance            Lags : Swift.SendableMetatype
+conformance            LatencyKey : DSPEnvironmentKey
+conformance            LinearFrequency : SpectralAxis
+conformance            LinearFrequency : Swift.Sendable
+conformance            LinearFrequency : Swift.SendableMetatype
+conformance            LinearValued : RealValued
+conformance            LinearValued : SpectralValues
+conformance            LinearValued : Swift.Sendable
+conformance            LinearValued : Swift.SendableMetatype
+conformance            MATLABExportable : Swift.Sendable
+conformance            MATLABExportable : Swift.SendableMetatype
+conformance            MATLABScript : Swift.Equatable
+conformance            MATLABScript : Swift.Hashable
+conformance            MATLABScript : Swift.Sendable
+conformance            MATLABScript : Swift.SendableMetatype
+conformance            MagnitudeValues : LinearValued
+conformance            MagnitudeValues : RealValued
+conformance            MagnitudeValues : SpectralValues
+conformance            MagnitudeValues : Swift.Sendable
+conformance            MagnitudeValues : Swift.SendableMetatype
+conformance            Measuring : PipelineStage
+conformance            Measuring : StageValue
+conformance            Measuring : Swift.Equatable
+conformance            Measuring : Swift.Hashable
+conformance            Measuring : Swift.Sendable
+conformance            Measuring : Swift.SendableMetatype
+conformance            MedianNetwork : Swift.Equatable
+conformance            MedianNetwork : Swift.Hashable
+conformance            MedianNetwork : Swift.Sendable
+conformance            MedianNetwork : Swift.SendableMetatype
+conformance            MedianNetwork.Exchange : Swift.Equatable
+conformance            MedianNetwork.Exchange : Swift.Hashable
+conformance            MedianNetwork.Exchange : Swift.Sendable
+conformance            MedianNetwork.Exchange : Swift.SendableMetatype
+conformance            MelCepstrum : RealVectorDomain
+conformance            MelCepstrum : SignalDomain
+conformance            MelCepstrum : Swift.Sendable
+conformance            MelCepstrum : Swift.SendableMetatype
+conformance            MelFormula : Swift.Equatable
+conformance            MelFormula : Swift.Hashable
+conformance            MelFormula : Swift.Sendable
+conformance            MelFormula : Swift.SendableMetatype
+conformance            MelFrequency : SpectralAxis
+conformance            MelFrequency : Swift.Sendable
+conformance            MelFrequency : Swift.SendableMetatype
+conformance            MemoryPressureLevel : Swift.Equatable
+conformance            MemoryPressureLevel : Swift.Hashable
+conformance            MemoryPressureLevel : Swift.Sendable
+conformance            MemoryPressureLevel : Swift.SendableMetatype
+conformance            Novelty : SampledSequence
+conformance            Novelty : ScalarValuedDomain
+conformance            Novelty : SignalDomain
+conformance            Novelty : Swift.Sendable
+conformance            Novelty : Swift.SendableMetatype
+conformance            NyquistFrequencyKey : DSPEnvironmentKey
+conformance            Pacing : Swift.Equatable
+conformance            Pacing : Swift.Hashable
+conformance            Pacing : Swift.Sendable
+conformance            Pacing : Swift.SendableMetatype
+conformance            ParameterVector : Swift.Equatable
+conformance            ParameterVector : Swift.Hashable
+conformance            ParameterVector : Swift.Sendable
+conformance            ParameterVector : Swift.SendableMetatype
+conformance            Pipeline : PipelineContent
+conformance            Pipeline : PipelineStage
+conformance            Pipeline : StageValue
+conformance            Pipeline : Swift.Equatable
+conformance            Pipeline : Swift.Hashable
+conformance            Pipeline : Swift.Sendable
+conformance            Pipeline : Swift.SendableMetatype
+conformance            PipelineContent : Swift.Equatable
+conformance            PipelineContent : Swift.Hashable
+conformance            PipelineContent : Swift.Sendable
+conformance            PipelineContent : Swift.SendableMetatype
+conformance            PipelineSession : Swift.Identifiable
+conformance            PipelineSession : Swift.Sendable
+conformance            PipelineSession : Swift.SendableMetatype
+conformance            PipelineStage : StageValue
+conformance            PipelineStage : Swift.Equatable
+conformance            PipelineStage : Swift.Hashable
+conformance            PipelineStage : Swift.Sendable
+conformance            PipelineStage : Swift.SendableMetatype
+conformance            PowerValues : LinearValued
+conformance            PowerValues : RealValued
+conformance            PowerValues : SpectralValues
+conformance            PowerValues : Swift.Sendable
+conformance            PowerValues : Swift.SendableMetatype
+conformance            Primitive : Swift.CaseIterable
+conformance            Primitive : Swift.Decodable
+conformance            Primitive : Swift.Encodable
+conformance            Primitive : Swift.Equatable
+conformance            Primitive : Swift.Hashable
+conformance            Primitive : Swift.RawRepresentable
+conformance            Primitive : Swift.Sendable
+conformance            Primitive : Swift.SendableMetatype
+conformance            ProcessedSource : SampleSource
+conformance            ProcessedSource : Swift.Sendable
+conformance            ProcessedSource : Swift.SendableMetatype
+conformance            PullSampleSource : SampleSource
+conformance            PullSampleSource : Swift.Sendable
+conformance            PullSampleSource : Swift.SendableMetatype
+conformance            PushSampleSource : SampleSource
+conformance            PushSampleSource : Swift.Sendable
+conformance            PushSampleSource : Swift.SendableMetatype
+conformance            Quefrency : RealVectorDomain
+conformance            Quefrency : SignalDomain
+conformance            Quefrency : Swift.Sendable
+conformance            Quefrency : Swift.SendableMetatype
+conformance            Ramp : Swift.Sendable
+conformance            Ramp : Swift.SendableMetatype
+conformance            RealValued : SpectralValues
+conformance            RealValued : Swift.Sendable
+conformance            RealValued : Swift.SendableMetatype
+conformance            RealVectorDomain : SignalDomain
+conformance            RealVectorDomain : Swift.Sendable
+conformance            RealVectorDomain : Swift.SendableMetatype
+conformance            Recipe : PipelineStage
+conformance            Recipe : StageValue
+conformance            Recipe : Swift.Equatable
+conformance            Recipe : Swift.Hashable
+conformance            Recipe : Swift.Sendable
+conformance            Recipe : Swift.SendableMetatype
+conformance            ReplanReason : Swift.Equatable
+conformance            ReplanReason : Swift.Hashable
+conformance            ReplanReason : Swift.Sendable
+conformance            ReplanReason : Swift.SendableMetatype
+conformance            ResultRateKey : DSPEnvironmentKey
+conformance            ResultRateKey : SettableDSPEnvironmentKey
+conformance            RingWriter : Swift.Sendable
+conformance            RingWriter : Swift.SendableMetatype
+conformance            RollOff : Swift.CustomStringConvertible
+conformance            RollOff : Swift.Equatable
+conformance            RollOff : Swift.Hashable
+conformance            RollOff : Swift.Sendable
+conformance            RollOff : Swift.SendableMetatype
+conformance            RollOffRounding : Swift.Equatable
+conformance            RollOffRounding : Swift.Hashable
+conformance            RollOffRounding : Swift.Sendable
+conformance            RollOffRounding : Swift.SendableMetatype
+conformance            RouteChange : Swift.Equatable
+conformance            RouteChange : Swift.Hashable
+conformance            RouteChange : Swift.Sendable
+conformance            RouteChange : Swift.SendableMetatype
+conformance            SampleRateKey : DSPEnvironmentKey
+conformance            SampleSource : Swift.Sendable
+conformance            SampleSource : Swift.SendableMetatype
+conformance            SampledSequence : SignalDomain
+conformance            SampledSequence : Swift.Sendable
+conformance            SampledSequence : Swift.SendableMetatype
+conformance            Samples : SampledSequence
+conformance            Samples : SignalDomain
+conformance            Samples : Swift.Sendable
+conformance            Samples : Swift.SendableMetatype
+conformance            Scalar : SampledSequence
+conformance            Scalar : ScalarValuedDomain
+conformance            Scalar : SignalDomain
+conformance            Scalar : Swift.Sendable
+conformance            Scalar : Swift.SendableMetatype
+conformance            ScalarFrame : ScalarResultValue
+conformance            ScalarFrame : Swift.Equatable
+conformance            ScalarFrame : Swift.Hashable
+conformance            ScalarFrame : Swift.Sendable
+conformance            ScalarFrame : Swift.SendableMetatype
+conformance            ScalarResultTarget : Swift.Sendable
+conformance            ScalarResultTarget : Swift.SendableMetatype
+conformance            ScalarResultValue : Swift.Sendable
+conformance            ScalarResultValue : Swift.SendableMetatype
+conformance            ScalarValuedDomain : SignalDomain
+conformance            ScalarValuedDomain : Swift.Sendable
+conformance            ScalarValuedDomain : Swift.SendableMetatype
+conformance            ScopeChange : Swift.Equatable
+conformance            ScopeChange : Swift.Hashable
+conformance            ScopeChange : Swift.Sendable
+conformance            ScopeChange : Swift.SendableMetatype
+conformance            ScriptedSource : PullSampleSource
+conformance            ScriptedSource : SampleSource
+conformance            ScriptedSource : Swift.Sendable
+conformance            ScriptedSource : Swift.SendableMetatype
+conformance            ScriptedSource.Step : Swift.Sendable
+conformance            ScriptedSource.Step : Swift.SendableMetatype
+conformance            SequenceChain : PipelineContent
+conformance            SequenceChain : SequenceStage
+conformance            SequenceChain : StageValue
+conformance            SequenceChain : Swift.Equatable
+conformance            SequenceChain : Swift.Hashable
+conformance            SequenceChain : Swift.Sendable
+conformance            SequenceChain : Swift.SendableMetatype
+conformance            SequenceStage : StageValue
+conformance            SequenceStage : Swift.Equatable
+conformance            SequenceStage : Swift.Hashable
+conformance            SequenceStage : Swift.Sendable
+conformance            SequenceStage : Swift.SendableMetatype
+conformance            SessionEvent : Swift.Equatable
+conformance            SessionEvent : Swift.Hashable
+conformance            SessionEvent : Swift.Sendable
+conformance            SessionEvent : Swift.SendableMetatype
+conformance            SessionState : Swift.Equatable
+conformance            SessionState : Swift.Hashable
+conformance            SessionState : Swift.Sendable
+conformance            SessionState : Swift.SendableMetatype
+conformance            SettableDSPEnvironmentKey : DSPEnvironmentKey
+conformance            SignalDomain : Swift.Sendable
+conformance            SignalDomain : Swift.SendableMetatype
+conformance            SignalFormat : Swift.CustomStringConvertible
+conformance            SignalFormat : Swift.Equatable
+conformance            SignalFormat : Swift.Hashable
+conformance            SignalFormat : Swift.Sendable
+conformance            SignalFormat : Swift.SendableMetatype
+conformance            SinkDescription : Swift.Equatable
+conformance            SinkDescription : Swift.Hashable
+conformance            SinkDescription : Swift.Sendable
+conformance            SinkDescription : Swift.SendableMetatype
+conformance            SlaneyMelFormula : MelFormula
+conformance            SlaneyMelFormula : Swift.Equatable
+conformance            SlaneyMelFormula : Swift.Hashable
+conformance            SlaneyMelFormula : Swift.Sendable
+conformance            SlaneyMelFormula : Swift.SendableMetatype
+conformance            SourceEvent : Swift.Equatable
+conformance            SourceEvent : Swift.Hashable
+conformance            SourceEvent : Swift.Sendable
+conformance            SourceEvent : Swift.SendableMetatype
+conformance            SourceEventChannel : Swift.Sendable
+conformance            SourceEventChannel : Swift.SendableMetatype
+conformance            SourceKind : Swift.Equatable
+conformance            SourceKind : Swift.Hashable
+conformance            SourceKind : Swift.Sendable
+conformance            SourceKind : Swift.SendableMetatype
+conformance            SourceKindKey : DSPEnvironmentKey
+conformance            SpectralAxis : Swift.Sendable
+conformance            SpectralAxis : Swift.SendableMetatype
+conformance            SpectralValues : Swift.Sendable
+conformance            SpectralValues : Swift.SendableMetatype
+conformance            Spectrum : RealVectorDomain
+conformance            Spectrum : SignalDomain
+conformance            Spectrum : Swift.Sendable
+conformance            Spectrum : Swift.SendableMetatype
+conformance            StageActivation : Swift.Equatable
+conformance            StageActivation : Swift.Hashable
+conformance            StageActivation : Swift.Sendable
+conformance            StageActivation : Swift.SendableMetatype
+conformance            StageDescription : Swift.Equatable
+conformance            StageDescription : Swift.Hashable
+conformance            StageDescription : Swift.Sendable
+conformance            StageDescription : Swift.SendableMetatype
+conformance            StageDescription.Kind : Swift.Equatable
+conformance            StageDescription.Kind : Swift.Hashable
+conformance            StageDescription.Kind : Swift.Sendable
+conformance            StageDescription.Kind : Swift.SendableMetatype
+conformance            StagePath : Swift.CustomStringConvertible
+conformance            StagePath : Swift.Equatable
+conformance            StagePath : Swift.Hashable
+conformance            StagePath : Swift.Sendable
+conformance            StagePath : Swift.SendableMetatype
+conformance            StagePath.Component : Swift.CustomStringConvertible
+conformance            StagePath.Component : Swift.Equatable
+conformance            StagePath.Component : Swift.Hashable
+conformance            StagePath.Component : Swift.Sendable
+conformance            StagePath.Component : Swift.SendableMetatype
+conformance            StageValue : Swift.Equatable
+conformance            StageValue : Swift.Hashable
+conformance            StageValue : Swift.Sendable
+conformance            StageValue : Swift.SendableMetatype
+conformance            Swift.Bool : ActivationSource
+conformance            Swift.Bool : Swift.Sendable
+conformance            Swift.Bool : Swift.SendableMetatype
+conformance            Swift.Float : ScalarResultValue
+conformance            Swift.Float : Swift.Sendable
+conformance            Swift.Float : Swift.SendableMetatype
+conformance            SwiftUI.Binding : ActivationSource
+conformance            SwiftUI.Binding : ScalarResultTarget
+conformance            SwiftUI.Binding : Swift.Sendable
+conformance            SwiftUI.Binding : Swift.SendableMetatype
+conformance            SwiftUI.Binding : VectorResultTarget
+conformance            Tap : PipelineStage
+conformance            Tap : StageValue
+conformance            Tap : Swift.Equatable
+conformance            Tap : Swift.Hashable
+conformance            Tap : Swift.Sendable
+conformance            Tap : Swift.SendableMetatype
+conformance            TempoSpectrum : RealVectorDomain
+conformance            TempoSpectrum : SignalDomain
+conformance            TempoSpectrum : Swift.Sendable
+conformance            TempoSpectrum : Swift.SendableMetatype
+conformance            Vector.Bound : Swift.Sendable
+conformance            Vector.Bound : Swift.SendableMetatype
+conformance            VectorResultTarget : Swift.Sendable
+conformance            VectorResultTarget : Swift.SendableMetatype
+conformance            WaveformFeed : Swift.Sendable
+conformance            WaveformFeed : Swift.SendableMetatype
+conformance            Window : Swift.CustomStringConvertible
+conformance            Window : Swift.Equatable
+conformance            Window : Swift.Hashable
+conformance            Window : Swift.Sendable
+conformance            Window : Swift.SendableMetatype
+conformance            Window.HannScaling : Swift.Equatable
+conformance            Window.HannScaling : Swift.Hashable
+conformance            Window.HannScaling : Swift.Sendable
+conformance            Window.HannScaling : Swift.SendableMetatype
+conformance            ZeroPadding : Swift.Equatable
+conformance            ZeroPadding : Swift.Hashable
+conformance            ZeroPadding : Swift.Sendable
+conformance            ZeroPadding : Swift.SendableMetatype
+swift.associatedtype   DSPEnvironmentKey.Value : associatedtype Value : Sendable
+swift.associatedtype   FeatureSink.Domain : associatedtype Domain : SignalDomain
+swift.associatedtype   PipelineStage.Input : associatedtype Input : SignalDomain
+swift.associatedtype   PipelineStage.Output : associatedtype Output : SignalDomain
+swift.class            AlignedBuffer : final class AlignedBuffer<Element> where Element : BitwiseCopyable
+swift.class            AudioBuffer : final class AudioBuffer
+swift.class            BufferSource : final class BufferSource
+swift.class            DSPEngine : final class DSPEngine
+swift.class            FeatureCallback : final class FeatureCallback<Domain> where Domain : SignalDomain
+swift.class            FeatureStream : final class FeatureStream<Domain> where Domain : SignalDomain
+swift.class            FeedObservation : final class FeedObservation
+swift.class            GeneratorSource : final class GeneratorSource
+swift.class            HeatmapFeed : final class HeatmapFeed
+swift.class            HistoryBuffer : final class HistoryBuffer
+swift.class            OverlapAdder : final class OverlapAdder
+swift.class            PipelineSession : final class PipelineSession
+swift.class            ProcessedSource : final class ProcessedSource
+swift.class            ScriptedSource : final class ScriptedSource
+swift.class            SourceEventChannel : final class SourceEventChannel
+swift.class            WaveformFeed : final class WaveformFeed
+swift.enum             AnalysisScheduling : enum AnalysisScheduling
+swift.enum             BackgroundWork : enum BackgroundWork
+swift.enum             BiquadPrecision : enum BiquadPrecision
+swift.enum             BiquadPrecisionKey : enum BiquadPrecisionKey
+swift.enum             BlockSizeKey : enum BlockSizeKey
+swift.enum             BoundResult.Kind : enum Kind
+swift.enum             ChannelCountKey : enum ChannelCountKey
+swift.enum             ChannelPolicy : enum ChannelPolicy
+swift.enum             Chroma : enum Chroma
+swift.enum             ComplexValues : enum ComplexValues
+swift.enum             ConstantQFrequency : enum ConstantQFrequency
+swift.enum             DSP : enum DSP
+swift.enum             DSPError : enum DSPError
+swift.enum             DecibelValues : enum DecibelValues
+swift.enum             DomainTag : enum DomainTag
+swift.enum             DomainTag.Axis : enum Axis
+swift.enum             DomainTag.FrameKind : enum FrameKind
+swift.enum             DomainTag.Values : enum Values
+swift.enum             Envelope : enum Envelope
+swift.enum             FeatureRateKey : enum FeatureRateKey
+swift.enum             FeedAxis : enum FeedAxis
+swift.enum             FeedAxis.Unit : enum Unit
+swift.enum             FeedSnapshot.Content : enum Content
+swift.enum             FrameFormat : enum FrameFormat
+swift.enum             FrameSizeKey : enum FrameSizeKey
+swift.enum             FrequencyAxisKey : enum FrequencyAxisKey
+swift.enum             FrequencyResolutionKey : enum FrequencyResolutionKey
+swift.enum             HopSizeKey : enum HopSizeKey
+swift.enum             Implementation : enum Implementation
+swift.enum             ImplementationKey : enum ImplementationKey
+swift.enum             IsRealTimeKey : enum IsRealTimeKey
+swift.enum             KernelSpec : enum KernelSpec
+swift.enum             Lags : enum Lags
+swift.enum             LatencyKey : enum LatencyKey
+swift.enum             LinearFrequency : enum LinearFrequency
+swift.enum             MagnitudeValues : enum MagnitudeValues
+swift.enum             MelCepstrum : enum MelCepstrum
+swift.enum             MelFrequency : enum MelFrequency
+swift.enum             MemoryPressureLevel : enum MemoryPressureLevel
+swift.enum             Novelty : enum Novelty
+swift.enum             NyquistFrequencyKey : enum NyquistFrequencyKey
+swift.enum             Pacing : enum Pacing
+swift.enum             PipelineBuilder : @resultBuilder enum PipelineBuilder
+swift.enum             PowerValues : enum PowerValues
+swift.enum             Primitive : enum Primitive
+swift.enum             Quefrency : enum Quefrency
+swift.enum             ReplanReason : enum ReplanReason
+swift.enum             ResultRateKey : enum ResultRateKey
+swift.enum             RollOffRounding : enum RollOffRounding
+swift.enum             RouteChange : enum RouteChange
+swift.enum             SampleRateKey : enum SampleRateKey
+swift.enum             Samples : enum Samples
+swift.enum             Scalar : enum Scalar
+swift.enum             ScalarBindingTarget : enum ScalarBindingTarget
+swift.enum             ScopeChange : enum ScopeChange
+swift.enum             ScriptedSource.Step : enum Step
+swift.enum             SessionEvent : enum SessionEvent
+swift.enum             SessionState : enum SessionState
+swift.enum             SourceEvent : enum SourceEvent
+swift.enum             SourceKind : enum SourceKind
+swift.enum             SourceKindKey : enum SourceKindKey
+swift.enum             Spectrum : enum Spectrum<Axis, Values> where Axis : SpectralAxis, Values : SpectralValues
+swift.enum             StageActivation : enum StageActivation
+swift.enum             StageDescription.Kind : enum Kind
+swift.enum             StageValidation : enum StageValidation
+swift.enum             TempoSpectrum : enum TempoSpectrum
+swift.enum             Vector : enum Vector
+swift.enum             Vector.Accelerated : enum Accelerated
+swift.enum             Vector.Crossover : enum Crossover
+swift.enum             Vector.Native : enum Native
+swift.enum             VectorBindingTarget : enum VectorBindingTarget
+swift.enum             Window.HannScaling : enum HannScaling
+swift.enum             ZeroPadding : enum ZeroPadding
+swift.enum.case        AnalysisScheduling.notStarted : case notStarted
+swift.enum.case        AnalysisScheduling.qualityOfServiceOnly : case qualityOfServiceOnly
+swift.enum.case        AnalysisScheduling.timeConstrained : case timeConstrained
+swift.enum.case        BiquadPrecision.automatic : case automatic
+swift.enum.case        BiquadPrecision.double : case double
+swift.enum.case        BiquadPrecision.single : case single
+swift.enum.case        BoundResult.Kind.frame : case frame
+swift.enum.case        BoundResult.Kind.value : case value
+swift.enum.case        BoundResult.Kind.vector : case vector
+swift.enum.case        ChannelPolicy.channel(_:) : case channel(Int)
+swift.enum.case        ChannelPolicy.mixdown : case mixdown
+swift.enum.case        ChannelPolicy.perChannel : case perChannel
+swift.enum.case        DSPError.backendUnavailable(reason:stage:) : case backendUnavailable(reason: String, stage: StagePath? = nil)
+swift.enum.case        DSPError.cancelled : case cancelled
+swift.enum.case        DSPError.exportTooLarge(elements:limit:) : case exportTooLarge(elements: Int, limit: Int)
+swift.enum.case        DSPError.invalidParameter(stage:parameter:reason:) : case invalidParameter(stage: StagePath, parameter: String, reason: String)
+swift.enum.case        DSPError.invalidStageOrder(stage:found:) : case invalidStageOrder(stage: StagePath, found: DomainTag)
+swift.enum.case        DSPError.numericalFailure(routine:info:stage:) : case numericalFailure(routine: String, info: Int, stage: StagePath? = nil)
+swift.enum.case        DSPError.permissionDenied : case permissionDenied
+swift.enum.case        DSPError.resourceAllocationFailed(what:stage:) : case resourceAllocationFailed(what: String, stage: StagePath? = nil)
+swift.enum.case        DSPError.sessionConfigurationFailed(reason:) : case sessionConfigurationFailed(reason: String)
+swift.enum.case        DSPError.sessionDetached : case sessionDetached
+swift.enum.case        DSPError.sinkInUse(sink:) : case sinkInUse(sink: String)
+swift.enum.case        DSPError.sourceUnavailable(reason:) : case sourceUnavailable(reason: String)
+swift.enum.case        DSPError.unstableDesign(maxPoleRadius:stage:) : case unstableDesign(maxPoleRadius: Double, stage: StagePath? = nil)
+swift.enum.case        DSPError.unsupportedConfiguration(reason:stage:) : case unsupportedConfiguration(reason: String, stage: StagePath? = nil)
+swift.enum.case        DomainTag.Axis.constantQ : case constantQ
+swift.enum.case        DomainTag.Axis.linear : case linear
+swift.enum.case        DomainTag.Axis.mel : case mel
+swift.enum.case        DomainTag.FrameKind.complex : case complex
+swift.enum.case        DomainTag.FrameKind.envelope : case envelope
+swift.enum.case        DomainTag.FrameKind.real : case real
+swift.enum.case        DomainTag.FrameKind.samples : case samples
+swift.enum.case        DomainTag.FrameKind.scalar : case scalar
+swift.enum.case        DomainTag.Values.complex : case complex
+swift.enum.case        DomainTag.Values.decibel : case decibel
+swift.enum.case        DomainTag.Values.magnitude : case magnitude
+swift.enum.case        DomainTag.Values.power : case power
+swift.enum.case        DomainTag.chroma : case chroma
+swift.enum.case        DomainTag.custom(_:) : case custom(String)
+swift.enum.case        DomainTag.envelope : case envelope
+swift.enum.case        DomainTag.lags : case lags
+swift.enum.case        DomainTag.melCepstrum : case melCepstrum
+swift.enum.case        DomainTag.novelty : case novelty
+swift.enum.case        DomainTag.quefrency : case quefrency
+swift.enum.case        DomainTag.samples : case samples
+swift.enum.case        DomainTag.scalar : case scalar
+swift.enum.case        DomainTag.spectrum(axis:values:) : case spectrum(axis: DomainTag.Axis, values: DomainTag.Values)
+swift.enum.case        DomainTag.tempoSpectrum : case tempoSpectrum
+swift.enum.case        FeedAxis.Unit.beatsPerMinute : case beatsPerMinute
+swift.enum.case        FeedAxis.Unit.hertz : case hertz
+swift.enum.case        FeedAxis.Unit.index : case index
+swift.enum.case        FeedAxis.Unit.pitchClass : case pitchClass
+swift.enum.case        FeedAxis.Unit.seconds : case seconds
+swift.enum.case        FeedAxis.constantQ(minimumFrequency:binsPerOctave:binCount:) : case constantQ(minimumFrequency: Double, binsPerOctave: Int, binCount: Int)
+swift.enum.case        FeedAxis.indices(count:) : case indices(count: Int)
+swift.enum.case        FeedAxis.lags(count:sampleRate:) : case lags(count: Int, sampleRate: Double)
+swift.enum.case        FeedAxis.linearFrequency(binCount:nyquist:) : case linearFrequency(binCount: Int, nyquist: Double)
+swift.enum.case        FeedAxis.mel(centers:) : case mel(centers: [Double])
+swift.enum.case        FeedAxis.pitchClasses : case pitchClasses
+swift.enum.case        FeedAxis.quefrency(count:sampleRate:) : case quefrency(count: Int, sampleRate: Double)
+swift.enum.case        FeedAxis.tempo(beatsPerMinute:) : case tempo(beatsPerMinute: [Double])
+swift.enum.case        FeedSnapshot.Content.heatmap : case heatmap
+swift.enum.case        FeedSnapshot.Content.waveform : case waveform
+swift.enum.case        FrameFormat.complex(count:) : case complex(count: Int)
+swift.enum.case        FrameFormat.envelope(maximumCount:) : case envelope(maximumCount: Int)
+swift.enum.case        FrameFormat.real(count:) : case real(count: Int)
+swift.enum.case        FrameFormat.samples(channelCount:maximumFrames:) : case samples(channelCount: Int, maximumFrames: Int)
+swift.enum.case        FrameFormat.scalar : case scalar
+swift.enum.case        Implementation.accelerate : case accelerate
+swift.enum.case        Implementation.automatic : case automatic
+swift.enum.case        Implementation.metal : case metal
+swift.enum.case        Implementation.native : case native
+swift.enum.case        KernelSpec.alphaBeta(alpha:beta:initialPosition:initialVelocity:outputVelocity:) : case alphaBeta(alpha: Float, beta: Float, initialPosition: Float, initialVelocity: Float, outputVelocity: Bool)
+swift.enum.case        KernelSpec.analysis(_:) : case analysis(AnalysisStep)
+swift.enum.case        KernelSpec.biquad(sections:precision:) : case biquad(sections: [BiquadSection], precision: BiquadPrecision)
+swift.enum.case        KernelSpec.channelGains(factors:ramp:) : case channelGains(factors: [Float], ramp: TimeInterval)
+swift.enum.case        KernelSpec.custom(_:) : case custom(CustomKernel)
+swift.enum.case        KernelSpec.decimator(factor:taps:latency:) : case decimator(factor: Int, taps: [Float], latency: Int)
+swift.enum.case        KernelSpec.fir(taps:latency:) : case fir(taps: [Float], latency: Int)
+swift.enum.case        KernelSpec.gain(factor:ramp:) : case gain(factor: Float, ramp: TimeInterval)
+swift.enum.case        KernelSpec.gainCascade(factors:ramp:) : case gainCascade(factors: [Float], ramp: TimeInterval)
+swift.enum.case        KernelSpec.interpolator(factor:taps:latency:) : case interpolator(factor: Int, taps: [Float], latency: Int)
+swift.enum.case        KernelSpec.processor(_:) : case processor(CustomProcessor)
+swift.enum.case        KernelSpec.subsample(factor:phase:) : case subsample(factor: Int, phase: Int)
+swift.enum.case        KernelSpec.zeroStuff(factor:) : case zeroStuff(factor: Int)
+swift.enum.case        MemoryPressureLevel.critical : case critical
+swift.enum.case        MemoryPressureLevel.warning : case warning
+swift.enum.case        Pacing.asFastAsPossible : case asFastAsPossible
+swift.enum.case        Pacing.realTime : case realTime
+swift.enum.case        Primitive.biquadKernel : case biquadKernel
+swift.enum.case        Primitive.elementwise : case elementwise
+swift.enum.case        Primitive.fir : case fir
+swift.enum.case        Primitive.gainKernel : case gainKernel
+swift.enum.case        Primitive.laneExchange : case laneExchange
+swift.enum.case        Primitive.median : case median
+swift.enum.case        Primitive.melProjection : case melProjection
+swift.enum.case        Primitive.polynomialRoots : case polynomialRoots
+swift.enum.case        Primitive.reduction : case reduction
+swift.enum.case        ReplanReason.formatChanged : case formatChanged
+swift.enum.case        ReplanReason.update : case update
+swift.enum.case        RollOffRounding.exact(relativeTolerance:) : case exact(relativeTolerance: Double = 0.02)
+swift.enum.case        RollOffRounding.nearest : case nearest
+swift.enum.case        RollOffRounding.up : case up
+swift.enum.case        RouteChange.inputChanged : case inputChanged
+swift.enum.case        RouteChange.inputLost : case inputLost
+swift.enum.case        RouteChange.inputRestored : case inputRestored
+swift.enum.case        RouteChange.other : case other
+swift.enum.case        ScopeChange.axis(_:) : case axis(FeedAxis)
+swift.enum.case        ScopeChange.featureSequence(rate:) : case featureSequence(rate: Double)
+swift.enum.case        ScopeChange.none : case none
+swift.enum.case        ScopeChange.samples(maximumBlockFrames:channelCount:) : case samples(maximumBlockFrames: Int, channelCount: Int)
+swift.enum.case        ScopeChange.spectral(frameSize:hopSize:axis:) : case spectral(frameSize: Int, hopSize: Int, axis: FeedAxis)
+swift.enum.case        ScriptedSource.Step.event(_:) : case event(SourceEvent)
+swift.enum.case        ScriptedSource.Step.failure(_:) : case failure(DSPError)
+swift.enum.case        ScriptedSource.Step.formatChange(_:) : case formatChange(SignalFormat)
+swift.enum.case        ScriptedSource.Step.samples(_:) : case samples([[Float]])
+swift.enum.case        SessionEvent.memoryPressure(_:) : case memoryPressure(MemoryPressureLevel)
+swift.enum.case        SessionEvent.nonFiniteInput(count:) : case nonFiniteInput(count: Int)
+swift.enum.case        SessionEvent.outputChanged : case outputChanged
+swift.enum.case        SessionEvent.overrun(droppedFrames:) : case overrun(droppedFrames: Int)
+swift.enum.case        SessionEvent.replanned(_:) : case replanned(ReplanReason)
+swift.enum.case        SessionEvent.stateChanged(_:) : case stateChanged(SessionState)
+swift.enum.case        SessionState.detached : case detached
+swift.enum.case        SessionState.failed(_:) : case failed(DSPError)
+swift.enum.case        SessionState.finished : case finished
+swift.enum.case        SessionState.idle : case idle
+swift.enum.case        SessionState.interrupted : case interrupted
+swift.enum.case        SessionState.running : case running
+swift.enum.case        SourceEvent.ended : case ended
+swift.enum.case        SourceEvent.failed(_:) : case failed(DSPError)
+swift.enum.case        SourceEvent.formatChanged(_:) : case formatChanged(SignalFormat)
+swift.enum.case        SourceEvent.interrupted : case interrupted
+swift.enum.case        SourceEvent.mediaServicesReset : case mediaServicesReset
+swift.enum.case        SourceEvent.overrun(droppedFrames:) : case overrun(droppedFrames: Int)
+swift.enum.case        SourceEvent.resumed : case resumed
+swift.enum.case        SourceEvent.routeChanged(_:) : case routeChanged(RouteChange)
+swift.enum.case        SourceKind.derived : case derived
+swift.enum.case        SourceKind.offline : case offline
+swift.enum.case        SourceKind.pull : case pull
+swift.enum.case        SourceKind.push : case push
+swift.enum.case        StageActivation.bound(_:) : case bound(BoundSwitch)
+swift.enum.case        StageActivation.constant(_:) : case constant(Bool)
+swift.enum.case        StageDescription.Kind.emit : case emit
+swift.enum.case        StageDescription.Kind.environmentReader : case environmentReader
+swift.enum.case        StageDescription.Kind.group : case group
+swift.enum.case        StageDescription.Kind.stage : case stage
+swift.enum.case        StageDescription.Kind.tap : case tap
+swift.enum.case        Window.HannScaling.denormalized : case denormalized
+swift.enum.case        Window.HannScaling.normalized : case normalized
+swift.enum.case        ZeroPadding.centered : case centered
+swift.enum.case        ZeroPadding.trailing : case trailing
+swift.func             flushSmallState(_:count:threshold:) : func flushSmallState(_ state: UnsafeMutablePointer<Double>, count: Int, threshold: Double = 1e-20)
+swift.func             flushSmallState(_:count:threshold:) : func flushSmallState(_ state: UnsafeMutablePointer<Float>, count: Int, threshold: Float = 1e-20)
+swift.func             subsample(_:count:by:phase:into:) : func subsample(_ source: UnsafePointer<Float>, count: Int, by factor: Int, phase: Int, into destination: UnsafeMutablePointer<Float>) -> (written: Int, nextPhase: Int)
+swift.func             subsampled(_:by:phase:) : func subsampled<Element>(_ samples: [Element], by factor: Int, phase: Int = 0) -> [Element]
+swift.func             upsample(_:count:by:into:) : func upsample(_ source: UnsafePointer<Float>, count: Int, by factor: Int, into destination: UnsafeMutablePointer<Float>)
+swift.func             upsampled(_:by:) : func upsampled<Element>(_ samples: [Element], by factor: Int) -> [Element] where Element : AdditiveArithmetic
+swift.func             zeroPad(_:count:into:paddedCount:placement:) : func zeroPad(_ source: UnsafePointer<Float>, count: Int, into destination: UnsafeMutablePointer<Float>, paddedCount: Int, placement: ZeroPadding = .trailing)
+swift.func             zeroPadded(_:to:placement:) : func zeroPadded<Element>(_ samples: [Element], to count: Int, placement: ZeroPadding = .trailing) -> [Element] where Element : AdditiveArithmetic
+swift.func.op          AnalysisStep.==(_:_:) : static func == (lhs: AnalysisStep, rhs: AnalysisStep) -> Bool
+swift.func.op          AnyStrategy.==(_:_:) : static func == (lhs: AnyStrategy, rhs: AnyStrategy) -> Bool
+swift.func.op          BoundResult.==(_:_:) : static func == (lhs: BoundResult, rhs: BoundResult) -> Bool
+swift.func.op          BoundSwitch.==(_:_:) : static func == (lhs: BoundSwitch, rhs: BoundSwitch) -> Bool
+swift.func.op          Complex.*(_:_:) : static func * (lhs: Complex, rhs: Complex) -> Complex
+swift.func.op          Complex.*(_:_:) : static func * (lhs: Complex, rhs: Double) -> Complex
+swift.func.op          Complex.*(_:_:) : static func * (lhs: Double, rhs: Complex) -> Complex
+swift.func.op          Complex.+(_:_:) : static func + (lhs: Complex, rhs: Complex) -> Complex
+swift.func.op          Complex.+(_:_:) : static func + (lhs: Complex, rhs: Double) -> Complex
+swift.func.op          Complex.+(_:_:) : static func + (lhs: Double, rhs: Complex) -> Complex
+swift.func.op          Complex.-(_:) : static func - (value: Complex) -> Complex
+swift.func.op          Complex.-(_:_:) : static func - (lhs: Complex, rhs: Complex) -> Complex
+swift.func.op          Complex.-(_:_:) : static func - (lhs: Complex, rhs: Double) -> Complex
+swift.func.op          Complex.-(_:_:) : static func - (lhs: Double, rhs: Complex) -> Complex
+swift.func.op          Complex./(_:_:) : static func / (lhs: Complex, rhs: Complex) -> Complex
+swift.func.op          Complex./(_:_:) : static func / (lhs: Complex, rhs: Double) -> Complex
+swift.func.op          Complex./(_:_:) : static func / (lhs: Double, rhs: Complex) -> Complex
+swift.func.op          CustomKernel.==(_:_:) : static func == (lhs: CustomKernel, rhs: CustomKernel) -> Bool
+swift.func.op          CustomProcessor.==(_:_:) : static func == (lhs: CustomProcessor, rhs: CustomProcessor) -> Bool
+swift.func.op          DomainRule.==(_:_:) : static func == (lhs: DomainRule, rhs: DomainRule) -> Bool
+swift.func.op          ParameterVector.+(_:_:) : static func + (lhs: ParameterVector, rhs: ParameterVector) -> ParameterVector
+swift.func.op          ParameterVector.-(_:_:) : static func - (lhs: ParameterVector, rhs: ParameterVector) -> ParameterVector
+swift.func.op          SinkDescription.==(_:_:) : static func == (lhs: SinkDescription, rhs: SinkDescription) -> Bool
+swift.init             AlignedBuffer.init(copying:alignment:) : convenience init(copying elements: some Collection<Element>, alignment: Int = 64) throws(DSPError)
+swift.init             AlignedBuffer.init(count:alignment:) : init(count: Int, alignment: Int = 64) throws(DSPError)
+swift.init             AnalysisStep.init(name:key:output:scope:latency:make:) : init(name: String, key: some Hashable & Sendable, output: FrameFormat, scope: ScopeChange = .none, latency: TimeInterval = 0, make: @escaping @Sendable () throws(DSPError) -> any AnalysisNode)
+swift.init             AnyStrategy.init(_:) : init(_ base: some Hashable & Sendable)
+swift.init             AudioBlock.init(channels:channelCount:capacity:frameCount:) : init(channels: UnsafePointer<UnsafeMutablePointer<Float>?>, channelCount: Int, capacity: Int, frameCount: Int)
+swift.init             AudioBuffer.init(channelCount:capacity:) : init(channelCount: Int, capacity: Int) throws(DSPError)
+swift.init             AudioBuffer.init(channels:) : convenience init(channels: [[Float]]) throws(DSPError)
+swift.init             BiquadPrecision.init(rawValue:) : init?(rawValue: String)
+swift.init             BiquadSection.init(b0:b1:b2:a1:a2:) : init(b0: Double, b1: Double, b2: Double, a1: Double, a2: Double)
+swift.init             BufferSource.init(_:sampleRate:pacing:loops:) : convenience init(_ samples: [Float], sampleRate: Double, pacing: Pacing = .asFastAsPossible, loops: Bool = false)
+swift.init             BufferSource.init(channels:sampleRate:pacing:loops:) : init(channels: [[Float]], sampleRate: Double, pacing: Pacing = .asFastAsPossible, loops: Bool = false)
+swift.init             Complex.init(_:_:) : init(_ real: Double, _ imaginary: Double = 0)
+swift.init             Complex.init(magnitude:phase:) : init(magnitude: Double, phase: Double)
+swift.init             ComplexFrame.init(real:imaginary:index:time:) : init(real: UnsafeBufferPointer<Float>, imaginary: UnsafeBufferPointer<Float>, index: Int, time: Double)
+swift.init             CrossoverTable.init(elementwise:reductionSIMD:reductionAccelerate:laneExchange:gainKernel:biquadKernel:firPartitioned:convolutionFFTFactor:melDense:medianGPU:polynomialClosedForm:) : init(elementwise: Int = Vector.Crossover.elementwise, reductionSIMD: Int = Vector.Crossover.reductionSIMD, reductionAccelerate: Int = Vector.Crossover.reductionAccelerate, laneExchange: Int = 1_024, gainKernel: Int = 512, biquadKernel: Int = 4, firPartitioned: Int = 256, convolutionFFTFactor: Double = 4, melDense: Int = 1 << 20, medianGPU: Int = 1 << 24, polynomialClosedForm: Int = 2)
+swift.init             CrossoverTable.init(from:) : init(from decoder: any Decoder) throws
+swift.init             CustomKernel.init(name:key:interpolation:decimation:latencyFrames:make:) : init(name: String, key: some Hashable & Sendable, interpolation: Int = 1, decimation: Int = 1, latencyFrames: Int = 0, make: @escaping @Sendable (Int, Double, Int) -> ztd_kernel_t)
+swift.init             CustomProcessor.init(name:key:latencyFrames:make:) : init(name: String, key: some Hashable & Sendable, latencyFrames: Int = 0, make: @escaping @Sendable (DSPEnvironment) throws(DSPError) -> any SampleProcessor)
+swift.init             DSPEngine.init(blockSize:crossovers:) : init(blockSize: Int = 512, crossovers: CrossoverTable = .shipped)
+swift.init             DSPEnvironment.init(sampleRate:channelCount:blockSize:isRealTime:) : init(sampleRate: Double = 48_000, channelCount: Int = 1, blockSize: Int = 512, isRealTime: Bool = false)
+swift.init             DomainRule.init(_:_:) : init(_ name: String, _ transform: @escaping @Sendable (DomainTag) -> DomainTag?)
+swift.init             DynamicPipeline.init() : init()
+swift.init             DynamicPipeline.init(_:) : init<Output>(_ pipeline: Pipeline<Samples, Output>) throws(DSPError) where Output : SignalDomain
+swift.init             Emit.init(to:isActive:) : init(to binding: some ScalarResultTarget, isActive: some ActivationSource = .active)
+swift.init             Emit.init(to:isActive:) : init(to binding: some VectorResultTarget, isActive: some ActivationSource = .active)
+swift.init             Emit.init(to:isActive:) : init(to feed: HeatmapFeed, isActive: some ActivationSource = .active)
+swift.init             Emit.init(to:isActive:) : init(to feed: WaveformFeed, isActive: some ActivationSource = .active)
+swift.init             Emit.init(to:isActive:) : init(to sink: Target, isActive: some ActivationSource = .active)
+swift.init             EnvelopeFrame.init(minima:maxima:index:time:) : init(minima: UnsafeBufferPointer<Float>, maxima: UnsafeBufferPointer<Float>, index: Int, time: Double)
+swift.init             EnvelopePyramid.init(minima:maxima:) : init(minima: [Float], maxima: [Float])
+swift.init             EnvironmentReader.init(_:) : init(@PipelineBuilder _ content: @escaping @Sendable (DSPEnvironment) -> Content)
+swift.init             FeatureCallback.init(_:) : init(_ body: @escaping @Sendable (FrameView) -> Void)
+swift.init             FeatureFrame.init(_:) : init(_ frame: FrameView)
+swift.init             FeatureFrame.init(kind:index:time:values:secondary:scalar:channelCount:) : init(kind: DomainTag.FrameKind, index: Int, time: Double, values: [Float] = [], secondary: [Float] = [], scalar: ScalarFrame = .none, channelCount: Int = 1)
+swift.init             FeatureStream.init(capacity:) : init(capacity: Int = 64)
+swift.init             FeedCursor.init() : init()
+swift.init             FeedSnapshot.init(content:axis:environment:rowCount:values:times:) : init(content: FeedSnapshot.Content, axis: FeedAxis?, environment: DSPEnvironment?, rowCount: Int, values: [Float], times: [Double])
+swift.init             FrameView.init(minima:maxima:index:time:) : init(minima: UnsafeBufferPointer<Float>, maxima: UnsafeBufferPointer<Float>, index: Int, time: Double)
+swift.init             FrameView.init(real:imaginary:index:time:) : init(real: UnsafeBufferPointer<Float>, imaginary: UnsafeBufferPointer<Float>, index: Int, time: Double)
+swift.init             FrameView.init(real:index:time:) : init(real values: UnsafeBufferPointer<Float>, index: Int, time: Double)
+swift.init             FrameView.init(samples:index:time:) : init(samples block: AudioBlock, index: Int, time: Double)
+swift.init             FrameView.init(scalar:index:time:) : init(scalar: ScalarFrame, index: Int, time: Double)
+swift.init             GeneratorSource.init(_:sampleRate:channelCount:duration:pacing:) : init(_ signal: GeneratorSource.Signal, sampleRate: Double = 48_000, channelCount: Int = 1, duration: TimeInterval? = nil, pacing: Pacing = .realTime)
+swift.init             Group.init(isActive:_:) : init(isActive: some ActivationSource = .active, @PipelineBuilder _ content: () -> Content)
+swift.init             HTKMelFormula.init() : init()
+swift.init             HeatmapFeed.init(history:minimumHistory:) : init(history: Int = 512, minimumHistory: Int? = nil)
+swift.init             HistoryBuffer.init(count:) : init(count: Int) throws(DSPError)
+swift.init             Implementation.init(rawValue:) : init?(rawValue: String)
+swift.init             MATLABScript.init() : init()
+swift.init             Measuring.init(_:to:isActive:) : init(_ step: Step, to binding: some ScalarResultTarget, isActive: some ActivationSource = .active)
+swift.init             MedianNetwork.Exchange.init(low:high:) : init(low: Int, high: Int)
+swift.init             MedianNetwork.init(count:) : init(count: Int) throws(DSPError)
+swift.init             OverlapAdder.init(frameSize:hopSize:window:floor:) : init(frameSize: Int, hopSize: Int, window: [Float], floor: Float = 1e-10) throws(DSPError)
+swift.init             ParameterVector.init(_:) : init(_ values: [Double] = [])
+swift.init             Pipeline.init() : init()
+swift.init             Pipeline.init(_:) : init(@PipelineBuilder _ content: () -> Pipeline<Input, Output>)
+swift.init             Pipeline.init(_:) : init(@PipelineBuilder _ content: () -> SequenceChain)
+swift.init             Pipeline.init(unchecked:) : init(unchecked stages: [StageDescription])
+swift.init             Primitive.init(rawValue:) : init?(rawValue: String)
+swift.init             Ramp.init(value:duration:) : init(value: Float, duration: Int)
+swift.init             RealFrame.init(values:index:time:) : init(values: UnsafeBufferPointer<Float>, index: Int, time: Double)
+swift.init             ScalarFrame.init(value:confidence:) : init(value: Float, confidence: Float = 1)
+swift.init             ScriptedSource.init(_:sampleRate:batchSizes:pacing:) : convenience init(_ samples: [Float], sampleRate: Double, batchSizes: [Int], pacing: Pacing = .asFastAsPossible)
+swift.init             ScriptedSource.init(format:pacing:_:) : init(format: SignalFormat, pacing: Pacing = .asFastAsPossible, _ steps: [ScriptedSource.Step])
+swift.init             SequenceChain.init(stages:) : init(stages: [StageDescription] = [])
+swift.init             SignalFormat.init(sampleRate:channelCount:) : init(sampleRate: Double, channelCount: Int = 1)
+swift.init             SlaneyMelFormula.init() : init()
+swift.init             SourceEventChannel.init(capacity:) : init(capacity: Int = 64)
+swift.init             StageDescription.init(_:rule:) : init(_ stage: some StageValue, rule: DomainRule)
+swift.init             StagePath.Component.init(name:index:) : init(name: String, index: Int)
+swift.init             StagePath.init(components:) : init(components: [StagePath.Component] = [])
+swift.init             Tap.init(isActive:_:) : init(isActive: some ActivationSource = .active, @PipelineBuilder _ content: () -> Pipeline<Domain, BranchOutput>)
+swift.init             Tap.init(isActive:_:) : init(isActive: some ActivationSource = .active, @PipelineBuilder _ content: () -> SequenceChain)
+swift.init             Vector.Bound.init(count:implementation:crossovers:) : init(count: Int, implementation: Implementation = .automatic, crossovers: CrossoverTable = .shipped)
+swift.init             WaveformFeed.init(history:minimumHistory:) : init(history: Int = 2_048, minimumHistory: Int? = nil)
+swift.method           ActivatedSequenceStage.lower(_:) : func lower(_ context: inout LoweringContext) throws(DSPError)
+swift.method           ActivatedSequenceStage.replacingParameters(_:) : func replacingParameters(_ values: ArraySlice<Double>) -> ActivatedSequenceStage<Base>
+swift.method           ActivatedStage.lower(_:) : func lower(_ context: inout LoweringContext) throws(DSPError)
+swift.method           ActivatedStage.replacingParameters(_:) : func replacingParameters(_ values: ArraySlice<Double>) -> ActivatedStage<Base>
+swift.method           AlignedBuffer.clear() : func clear()
+swift.method           AlignedBuffer.copy(from:count:) : func copy(from source: UnsafePointer<Element>, count elements: Int)
+swift.method           AlignedBuffer.fill(with:) : func fill(with value: Element)
+swift.method           Amplification.decibels(floor:) : func decibels(floor: Double) -> Double
+swift.method           Amplification.replacing(animatableValue:) : func replacing(animatableValue: Double) -> Amplification
+swift.method           AnalysisNode.process(_:_:) : func process(_ input: FrameView, _ output: inout FrameWriter)
+swift.method           AnalysisNode.reset() : func reset()
+swift.method           AnalysisStep.hash(into:) : func hash(into hasher: inout Hasher)
+swift.method           AnyStrategy.hash(into:) : func hash(into hasher: inout Hasher)
+swift.method           AnyStrategy.value(as:) : func value<T>(as type: T.Type = T.self) -> T?
+swift.method           AudioBlock.channel(_:) : func channel(_ index: Int) -> UnsafeMutablePointer<Float>
+swift.method           AudioBlock.clear() : func clear()
+swift.method           AudioBlock.copy(from:) : @discardableResult mutating func copy(from source: AudioBlock) -> Int
+swift.method           AudioBlock.samples(ofChannel:) : func samples(ofChannel index: Int) -> UnsafeMutableBufferPointer<Float>
+swift.method           AudioBlock.setFrameCount(_:) : mutating func setFrameCount(_ count: Int)
+swift.method           AudioBuffer.array(ofChannel:frameCount:) : func array(ofChannel index: Int, frameCount: Int? = nil) -> [Float]
+swift.method           AudioBuffer.block(frameCount:) : func block(frameCount: Int? = nil) -> AudioBlock
+swift.method           AudioBuffer.channel(_:) : func channel(_ index: Int) -> UnsafeMutablePointer<Float>
+swift.method           AudioBuffer.clear() : func clear()
+swift.method           BackgroundWork.Checkpoint.check() : func check() throws(DSPError)
+swift.method           BoundResult.hash(into:) : func hash(into hasher: inout Hasher)
+swift.method           BoundSwitch.hash(into:) : func hash(into hasher: inout Hasher)
+swift.method           BoundSwitch.read() : @MainActor func read() -> Bool
+swift.method           BufferSource.prepare() : func prepare() async throws(DSPError)
+swift.method           BufferSource.render(into:) : func render(into block: inout AudioBlock) -> Int
+swift.method           BufferSource.start() : func start() throws(DSPError)
+swift.method           BufferSource.stop() : func stop()
+swift.method           CrossoverTable.convolutionUsesFFT(_:_:) : func convolutionUsesFFT(_ n: Int, _ k: Int) -> Bool
+swift.method           CrossoverTable.implementation(for:size:requested:) : func implementation(for primitive: Primitive, size: Int, requested: Implementation = .automatic) -> Implementation
+swift.method           CrossoverTable.reductionUsesSIMD(count:) : func reductionUsesSIMD(count: Int) -> Bool
+swift.method           CustomKernel.hash(into:) : func hash(into hasher: inout Hasher)
+swift.method           CustomProcessor.hash(into:) : func hash(into hasher: inout Hasher)
+swift.method           DSPEngine.attach(_:to:) : func attach(_ pipeline: DynamicPipeline, to source: any SampleSource) async throws(DSPError) -> PipelineSession
+swift.method           DSPEngine.attach(_:to:) : func attach<Output>(_ pipeline: Pipeline<Samples, Output>, to source: any SampleSource) async throws(DSPError) -> PipelineSession where Output : SignalDomain
+swift.method           DSPEnvironment.setting(_:to:) : func setting<K>(_ key: K.Type, to value: K.Value) -> DSPEnvironment where K : SettableDSPEnvironmentKey
+swift.method           DSPEnvironment.setting(_:to:) : func setting<K>(_ keyPath: KeyPath<DSPEnvironment.SettableKeys, K.Type>, to value: K.Value) -> DSPEnvironment where K : SettableDSPEnvironmentKey
+swift.method           DSPError.inStage(_:) : func inStage(_ path: StagePath) -> DSPError
+swift.method           DomainRule.callAsFunction(_:) : func callAsFunction(_ input: DomainTag) -> DomainTag?
+swift.method           DomainRule.hash(into:) : func hash(into hasher: inout Hasher)
+swift.method           DynamicPipeline.append(_:) : mutating func append(_ description: StageDescription) throws(DSPError)
+swift.method           DynamicPipeline.append(_:) : mutating func append(_ stage: some PipelineStage) throws(DSPError)
+swift.method           DynamicPipeline.append(_:) : mutating func append(_ stage: some SequenceStage) throws(DSPError)
+swift.method           DynamicPipeline.append(contentsOf:) : mutating func append(contentsOf descriptions: [StageDescription]) throws(DSPError)
+swift.method           DynamicPipeline.appending(_:) : func appending(_ description: StageDescription) throws(DSPError) -> DynamicPipeline
+swift.method           DynamicPipeline.appending(_:) : func appending(_ stage: some PipelineStage) throws(DSPError) -> DynamicPipeline
+swift.method           DynamicPipeline.appending(_:) : func appending(_ stage: some SequenceStage) throws(DSPError) -> DynamicPipeline
+swift.method           DynamicPipeline.appending(contentsOf:) : func appending(contentsOf descriptions: [StageDescription]) throws(DSPError) -> DynamicPipeline
+swift.method           Emit.lower(_:) : func lower(_ context: inout LoweringContext) throws(DSPError)
+swift.method           EnvelopePyramid.level(forPairsPerPoint:) : func level(forPairsPerPoint pairsPerPoint: Double) -> EnvelopePyramid.Level?
+swift.method           EnvironmentReader.lower(_:) : func lower(_ context: inout LoweringContext) throws(DSPError)
+swift.method           FeatureCallback.claim(axis:environment:) : func claim(axis: FeedAxis?, environment: DSPEnvironment) throws(DSPError)
+swift.method           FeatureCallback.release() : func release()
+swift.method           FeatureCallback.write(_:) : func write(_ frame: FrameView)
+swift.method           FeatureFrame.samples(ofChannel:) : func samples(ofChannel channel: Int) -> ArraySlice<Float>
+swift.method           FeatureSink.claim(axis:environment:) : func claim(axis: FeedAxis?, environment: DSPEnvironment) throws(DSPError)
+swift.method           FeatureSink.release() : func release()
+swift.method           FeatureSink.write(_:) : func write(_ frame: FrameView)
+swift.method           FeatureStream.Iterator.next() : mutating func next() async -> FeatureFrame?
+swift.method           FeatureStream.claim(axis:environment:) : func claim(axis: FeedAxis?, environment: DSPEnvironment) throws(DSPError)
+swift.method           FeatureStream.finish() : func finish()
+swift.method           FeatureStream.makeAsyncIterator() : func makeAsyncIterator() -> FeatureStream<Domain>.Iterator
+swift.method           FeatureStream.release() : func release()
+swift.method           FeatureStream.write(_:) : func write(_ frame: FrameView)
+swift.method           FeedAxis.value(ofRow:) : func value(ofRow row: Int) -> Double
+swift.method           FeedObservation.cancel() : func cancel()
+swift.method           FeedSnapshot.column(_:) : func column(_ index: Int) -> ArraySlice<Float>
+swift.method           FeedSnapshot.pyramid() : func pyramid() -> EnvelopePyramid
+swift.method           FeedSnapshot.row(_:) : func row(_ index: Int) -> [Float]
+swift.method           FrameWriter.emit(count:time:) : mutating func emit(count: Int? = nil, time: Double? = nil)
+swift.method           FrameWriter.emit(scalar:time:) : mutating func emit(scalar: ScalarFrame, time: Double? = nil)
+swift.method           Frequency.fractionOfNyquist(sampleRate:) : func fractionOfNyquist(sampleRate: Double) throws(DSPError) -> Double
+swift.method           Frequency.hertz(sampleRate:) : func hertz(sampleRate: Double) throws(DSPError) -> Double
+swift.method           Frequency.mel(sampleRate:formula:) : func mel(sampleRate: Double, formula: some MelFormula = .slaney) throws(DSPError) -> Double
+swift.method           Frequency.midiNote(sampleRate:) : func midiNote(sampleRate: Double) throws(DSPError) -> Double
+swift.method           Frequency.normalized(sampleRate:) : func normalized(sampleRate: Double) throws(DSPError) -> Double
+swift.method           Frequency.radiansPerSample(sampleRate:) : func radiansPerSample(sampleRate: Double) throws(DSPError) -> Double
+swift.method           Frequency.replacing(animatableValue:) : func replacing(animatableValue: Double) -> Frequency
+swift.method           GeneratorSource.prepare() : func prepare() async throws(DSPError)
+swift.method           GeneratorSource.render(into:) : func render(into block: inout AudioBlock) -> Int
+swift.method           GeneratorSource.start() : func start() throws(DSPError)
+swift.method           GeneratorSource.stop() : func stop()
+swift.method           Group.environment(_:_:) : func environment<K>(_ keyPath: KeyPath<DSPEnvironment.SettableKeys, K.Type>, _ value: K.Value) -> Group<Content> where K : SettableDSPEnvironmentKey
+swift.method           Group.lower(_:) : func lower(_ context: inout LoweringContext) throws(DSPError)
+swift.method           HTKMelFormula.hertz(fromMel:) : func hertz(fromMel mel: Double) -> Double
+swift.method           HTKMelFormula.mel(fromHertz:) : func mel(fromHertz hertz: Double) -> Double
+swift.method           HeatmapFeed.onLivenessChange(_:) : func onLivenessChange(_ handler: @escaping @MainActor @Sendable (Bool) -> Void) -> FeedObservation
+swift.method           HeatmapFeed.read(_:into:times:) : func read(_ cursor: inout FeedCursor, into values: UnsafeMutableBufferPointer<Float>, times: UnsafeMutableBufferPointer<Double>? = nil) -> FeedRead
+swift.method           HeatmapFeed.snapshot() : func snapshot() -> FeedSnapshot
+swift.method           HistoryBuffer.append(_:) : func append(_ sample: Float)
+swift.method           HistoryBuffer.append(_:count:) : func append(_ samples: UnsafePointer<Float>, count sampleCount: Int)
+swift.method           HistoryBuffer.latest(_:) : func latest(_ length: Int) -> UnsafePointer<Float>
+swift.method           HistoryBuffer.reset() : func reset()
+swift.method           LoweringContext.emit(_:) : mutating func emit(_ spec: KernelSpec)
+swift.method           LoweringContext.implementation(for:size:) : func implementation(for primitive: Primitive, size: Int) -> Implementation
+swift.method           LoweringContext.invalid(_:_:) : func invalid(_ parameter: String, _ reason: String) -> DSPError
+swift.method           LoweringContext.structuralStage() : func structuralStage() -> DSPError
+swift.method           MATLABExportable.matlabScript() : func matlabScript() async throws(DSPError) -> String
+swift.method           MATLABScript.appending(_:) : func appending(_ other: MATLABScript) -> MATLABScript
+swift.method           MATLABScript.axis(_:) : func axis(_ keyword: String) -> MATLABScript
+swift.method           MATLABScript.axis(x:y:) : func axis(x: ClosedRange<Double>, y: ClosedRange<Double>) -> MATLABScript
+swift.method           MATLABScript.colorbar() : func colorbar() -> MATLABScript
+swift.method           MATLABScript.comment(_:) : func comment(_ text: String) -> MATLABScript
+swift.method           MATLABScript.grid(_:) : func grid(_ on: Bool = true) -> MATLABScript
+swift.method           MATLABScript.hold(_:) : func hold(_ on: Bool = true) -> MATLABScript
+swift.method           MATLABScript.imagesc(_:_:_:) : func imagesc(_ x: String, _ y: String, _ c: String) -> MATLABScript
+swift.method           MATLABScript.loglog(_:_:style:) : func loglog(_ x: String, _ y: String, style: String? = nil) -> MATLABScript
+swift.method           MATLABScript.matrix(_:rows:) : func matrix(_ name: String, rows: [[Double]]) throws(DSPError) -> MATLABScript
+swift.method           MATLABScript.matrix(_:values:rows:columns:) : func matrix(_ name: String, values: [Float], rows: Int, columns: Int) throws(DSPError) -> MATLABScript
+swift.method           MATLABScript.plot(_:_:style:) : func plot(_ x: String, _ y: String, style: String? = nil) -> MATLABScript
+swift.method           MATLABScript.scalar(_:_:) : func scalar(_ name: String, _ value: Double) throws(DSPError) -> MATLABScript
+swift.method           MATLABScript.semilogx(_:_:style:) : func semilogx(_ x: String, _ y: String, style: String? = nil) -> MATLABScript
+swift.method           MATLABScript.stem(_:_:style:) : func stem(_ x: String, _ y: String, style: String? = nil) -> MATLABScript
+swift.method           MATLABScript.subplot(_:_:_:) : func subplot(_ rows: Int, _ columns: Int, _ index: Int) -> MATLABScript
+swift.method           MATLABScript.title(_:) : func title(_ text: String) -> MATLABScript
+swift.method           MATLABScript.vector(_:_:) : func vector(_ name: String, _ values: [Double]) throws(DSPError) -> MATLABScript
+swift.method           MATLABScript.vector(_:_:) : func vector(_ name: String, _ values: [Float]) throws(DSPError) -> MATLABScript
+swift.method           MATLABScript.vector(_:optional:) : func vector(_ name: String, optional values: [Double?]) throws(DSPError) -> MATLABScript
+swift.method           MATLABScript.vector(_:real:imaginary:) : func vector(_ name: String, real: [Double], imaginary: [Double]) throws(DSPError) -> MATLABScript
+swift.method           MATLABScript.xlabel(_:) : func xlabel(_ text: String) -> MATLABScript
+swift.method           MATLABScript.ylabel(_:) : func ylabel(_ text: String) -> MATLABScript
+swift.method           Measuring.lower(_:) : func lower(_ context: inout LoweringContext) throws(DSPError)
+swift.method           MedianNetwork.median(of:) : func median(of values: inout [Float]) -> Float
+swift.method           MelFormula.hertz(fromMel:) : func hertz(fromMel mel: Double) -> Double
+swift.method           MelFormula.mel(fromHertz:) : func mel(fromHertz hertz: Double) -> Double
+swift.method           OverlapAdder.add(_:into:) : func add(_ frame: UnsafePointer<Float>, into output: UnsafeMutablePointer<Float>)
+swift.method           OverlapAdder.flush(into:) : func flush(into output: UnsafeMutablePointer<Float>)
+swift.method           OverlapAdder.reset() : func reset()
+swift.method           ParameterVector.appending(_:) : func appending(_ other: ParameterVector) -> ParameterVector
+swift.method           ParameterVector.scaled(by:) : func scaled(by factor: Double) -> ParameterVector
+swift.method           Pipeline.appending(_:) : func appending<S>(_ stage: S) -> Pipeline<Input, Output> where Output : SampledSequence, S : SequenceStage
+swift.method           Pipeline.appending(_:) : func appending<S>(_ stage: S) -> Pipeline<Input, S.Output> where Output == S.Input, S : PipelineStage
+swift.method           Pipeline.appending(_:producing:) : func appending<NewOutput>(_ description: StageDescription, producing output: NewOutput.Type = NewOutput.self) -> Pipeline<Input, NewOutput> where NewOutput : SignalDomain
+swift.method           Pipeline.emit(to:isActive:) : func emit(to binding: some ScalarResultTarget, isActive: some ActivationSource = .active) -> Pipeline<Input, Output>
+swift.method           Pipeline.emit(to:isActive:) : func emit(to binding: some VectorResultTarget, isActive: some ActivationSource = .active) -> Pipeline<Input, Output>
+swift.method           Pipeline.emit(to:isActive:) : func emit(to feed: HeatmapFeed, isActive: some ActivationSource = .active) -> Pipeline<Input, Output>
+swift.method           Pipeline.emit(to:isActive:) : func emit(to feed: WaveformFeed, isActive: some ActivationSource = .active) -> Pipeline<Input, Output>
+swift.method           Pipeline.emit(to:isActive:) : func emit<Sink>(to sink: Sink, isActive: some ActivationSource = .active) -> Pipeline<Input, Output> where Output == Sink.Domain, Sink : FeatureSink
+swift.method           Pipeline.environment(_:_:) : func environment<K>(_ keyPath: KeyPath<DSPEnvironment.SettableKeys, K.Type>, _ value: K.Value) -> Pipeline<Input, Output> where K : SettableDSPEnvironmentKey
+swift.method           Pipeline.lower(_:) : func lower(_ context: inout LoweringContext) throws(DSPError)
+swift.method           Pipeline.process(_:format:blockSize:crossovers:) : func process(_ samples: [Float], format: SignalFormat, blockSize: Int = 512, crossovers: CrossoverTable = .shipped) throws(DSPError) -> [Float]
+swift.method           Pipeline.process(_:format:blockSize:crossovers:) : func process(_ samples: [Float], format: SignalFormat, blockSize: Int = 512, crossovers: CrossoverTable = .shipped) throws(DSPError) -> [ScalarFrame]
+swift.method           Pipeline.process(_:format:blockSize:crossovers:) : func process(_ samples: [Float], format: SignalFormat, blockSize: Int = 512, crossovers: CrossoverTable = .shipped) throws(DSPError) -> [[Float]]
+swift.method           Pipeline.process(channels:format:blockSize:crossovers:) : func process(channels: [[Float]], format: SignalFormat, blockSize: Int = 512, crossovers: CrossoverTable = .shipped) throws(DSPError) -> [[Float]]
+swift.method           Pipeline.replacingParameters(_:) : func replacingParameters(_ vector: ParameterVector) -> Pipeline<Input, Output>
+swift.method           Pipeline.run(on:format:blockSize:crossovers:) : func run(on samples: [Float], format: SignalFormat, blockSize: Int = 512, crossovers: CrossoverTable = .shipped) throws(DSPError)
+swift.method           Pipeline.tap(isActive:_:) : func tap<BranchOutput>(isActive: some ActivationSource = .active, _ branch: (Pipeline<Output, Output>) -> Pipeline<Output, BranchOutput>) -> Pipeline<Input, Output> where BranchOutput : SignalDomain
+swift.method           PipelineSession.detach() : func detach()
+swift.method           PipelineSession.start() : func start() throws(DSPError)
+swift.method           PipelineSession.stop() : func stop()
+swift.method           PipelineSession.syncBindings() : @MainActor func syncBindings()
+swift.method           PipelineSession.update(_:) : func update(_ pipeline: DynamicPipeline) async throws(DSPError)
+swift.method           PipelineSession.update(_:) : func update<Output>(_ pipeline: Pipeline<Samples, Output>) async throws(DSPError) where Output : SignalDomain
+swift.method           PipelineStage.active(_:) : func active(_ isActive: some ActivationSource) -> ActivatedStage<Self>
+swift.method           ProcessedSource.prepare() : func prepare() async throws(DSPError)
+swift.method           ProcessedSource.start() : func start() throws(DSPError)
+swift.method           ProcessedSource.stop() : func stop()
+swift.method           PullSampleSource.render(into:) : func render(into block: inout AudioBlock) -> Int
+swift.method           PushSampleSource.connect(to:) : func connect(to ring: RingWriter)
+swift.method           Ramp.advance(by:) : mutating func advance(by count: Int) -> (start: Float, increment: Float, movingFrames: Int)
+swift.method           Ramp.jump(to:) : mutating func jump(to value: Float)
+swift.method           Ramp.next() : mutating func next() -> Float
+swift.method           Ramp.render(into:count:) : mutating func render(into values: UnsafeMutablePointer<Float>, count: Int)
+swift.method           Ramp.setTarget(_:) : mutating func setTarget(_ target: Float)
+swift.method           Recipe.lower(_:) : func lower(_ context: inout LoweringContext) throws(DSPError)
+swift.method           RingWriter.write(_:) : @discardableResult func write(_ block: AudioBlock) -> Int
+swift.method           RingWriter.write(channels:frameCount:) : @discardableResult func write(channels: UnsafePointer<UnsafePointer<Float>?>, frameCount: Int) -> Int
+swift.method           RingWriter.write(interleaved:frameCount:) : @discardableResult func write(interleaved samples: UnsafePointer<Float>, frameCount: Int) -> Int
+swift.method           RingWriter.writeWaiting(_:) : @discardableResult func writeWaiting(_ block: AudioBlock) -> Int
+swift.method           RollOff.order(rounding:) : func order(rounding: RollOffRounding = .exact()) throws(DSPError) -> Int
+swift.method           SampleProcessor.process(_:) : func process(_ block: inout AudioBlock)
+swift.method           SampleProcessor.reset() : func reset()
+swift.method           SampleSource.prepare() : func prepare() async throws(DSPError)
+swift.method           SampleSource.processed(by:) : func processed(by pipeline: Pipeline<Samples, Samples>) -> ProcessedSource
+swift.method           SampleSource.start() : func start() throws(DSPError)
+swift.method           SampleSource.stop() : func stop()
+swift.method           ScriptedSource.prepare() : func prepare() async throws(DSPError)
+swift.method           ScriptedSource.render(into:) : func render(into block: inout AudioBlock) -> Int
+swift.method           ScriptedSource.start() : func start() throws(DSPError)
+swift.method           ScriptedSource.stop() : func stop()
+swift.method           SequenceChain.lower(_:) : func lower(_ context: inout LoweringContext) throws(DSPError)
+swift.method           SequenceStage.active(_:) : func active(_ isActive: some ActivationSource) -> ActivatedSequenceStage<Self>
+swift.method           SignalFormat.withChannelCount(_:) : func withChannelCount(_ count: Int) -> SignalFormat
+swift.method           SignalFormat.withSampleRate(_:) : func withSampleRate(_ rate: Double) -> SignalFormat
+swift.method           SinkDescription.hash(into:) : func hash(into hasher: inout Hasher)
+swift.method           SlaneyMelFormula.hertz(fromMel:) : func hertz(fromMel mel: Double) -> Double
+swift.method           SlaneyMelFormula.mel(fromHertz:) : func mel(fromHertz hertz: Double) -> Double
+swift.method           SourceEventChannel.send(_:) : func send(_ event: SourceEvent)
+swift.method           StageDescription.stage(as:) : func stage<T>(as type: T.Type = T.self) -> T? where T : StageValue
+swift.method           StagePath.appending(_:index:) : func appending(_ name: String, index: Int) -> StagePath
+swift.method           StageValue.lower(_:) : func lower(_ context: inout LoweringContext) throws(DSPError)
+swift.method           StageValue.replacingParameters(_:) : func replacingParameters(_ values: ArraySlice<Double>) -> Self
+swift.method           Tap.lower(_:) : func lower(_ context: inout LoweringContext) throws(DSPError)
+swift.method           WaveformFeed.onLivenessChange(_:) : func onLivenessChange(_ handler: @escaping @MainActor @Sendable (Bool) -> Void) -> FeedObservation
+swift.method           WaveformFeed.read(_:into:times:) : func read(_ cursor: inout FeedCursor, into pairs: UnsafeMutableBufferPointer<Float>, times: UnsafeMutableBufferPointer<Double>? = nil) -> FeedRead
+swift.method           WaveformFeed.snapshot() : func snapshot() -> FeedSnapshot
+swift.method           Window.doubleSamples(count:) : func doubleSamples(count: Int) throws(DSPError) -> [Double]
+swift.method           Window.logged() : func logged() -> Window
+swift.method           Window.samples(count:) : func samples(count: Int) throws(DSPError) -> [Float]
+swift.property         ActivatedSequenceStage.activation : let activation: StageActivation
+swift.property         ActivatedSequenceStage.base : let base: Base
+swift.property         ActivatedSequenceStage.parameters : var parameters: [Double] { get }
+swift.property         ActivatedSequenceStage.stageDescriptions : var stageDescriptions: [StageDescription] { get }
+swift.property         ActivatedStage.activation : let activation: StageActivation
+swift.property         ActivatedStage.base : let base: Base
+swift.property         ActivatedStage.parameters : var parameters: [Double] { get }
+swift.property         ActivatedStage.stageDescriptions : var stageDescriptions: [StageDescription] { get }
+swift.property         Activation.isActive : let isActive: Bool
+swift.property         Activation.stageActivation : var stageActivation: StageActivation { get }
+swift.property         ActivationSource.stageActivation : var stageActivation: StageActivation { get }
+swift.property         AlignedBuffer.alignment : let alignment: Int
+swift.property         AlignedBuffer.array : var array: [Element] { get }
+swift.property         AlignedBuffer.baseAddress : var baseAddress: UnsafeMutablePointer<Element> { get }
+swift.property         AlignedBuffer.buffer : var buffer: UnsafeMutableBufferPointer<Element> { get }
+swift.property         AlignedBuffer.count : let count: Int
+swift.property         Amplification.animatableValue : var animatableValue: Double { get }
+swift.property         Amplification.decibels : var decibels: Double { get }
+swift.property         Amplification.description : var description: String { get }
+swift.property         Amplification.isUnity : var isUnity: Bool { get }
+swift.property         Amplification.linear : var linear: Double { get }
+swift.property         Amplification.powerRatio : var powerRatio: Double { get }
+swift.property         Amplification.value : let value: Double
+swift.property         AnalysisNode.latencyFrames : var latencyFrames: Int { get }
+swift.property         AnalysisNode.settlingFrames : var settlingFrames: Int { get }
+swift.property         AnalysisStep.key : let key: AnyStrategy
+swift.property         AnalysisStep.latency : let latency: TimeInterval
+swift.property         AnalysisStep.name : let name: String
+swift.property         AnalysisStep.output : let output: FrameFormat
+swift.property         AnalysisStep.scope : let scope: ScopeChange
+swift.property         AnyStrategy.base : let base: any Hashable & Sendable
+swift.property         AudioBlock.capacity : let capacity: Int
+swift.property         AudioBlock.channelCount : let channelCount: Int
+swift.property         AudioBlock.channelTable : var channelTable: UnsafePointer<UnsafeMutablePointer<Float>?> { get }
+swift.property         AudioBlock.constantChannelTable : var constantChannelTable: UnsafePointer<UnsafePointer<Float>?> { get }
+swift.property         AudioBlock.frameCount : var frameCount: Int { get }
+swift.property         AudioBuffer.capacity : let capacity: Int
+swift.property         AudioBuffer.channelCount : let channelCount: Int
+swift.property         BackgroundWork.Checkpoint.isCancelled : var isCancelled: Bool { get }
+swift.property         Binding.boundResult : var boundResult: BoundResult { get }   [extends SwiftUICore]
+swift.property         Binding.stageActivation : var stageActivation: StageActivation { get }   [extends SwiftUICore]
+swift.property         BiquadSection.a1 : let a1: Double
+swift.property         BiquadSection.a2 : let a2: Double
+swift.property         BiquadSection.b0 : let b0: Double
+swift.property         BiquadSection.b1 : let b1: Double
+swift.property         BiquadSection.b2 : let b2: Double
+swift.property         BiquadSection.coefficients : var coefficients: [Double] { get }
+swift.property         Bool.stageActivation : var stageActivation: StageActivation { get }   [extends Swift]
+swift.property         BoundResult.kind : var kind: BoundResult.Kind { get }
+swift.property         BufferSource.events : var events: AsyncStream<SourceEvent> { get }
+swift.property         BufferSource.format : let format: SignalFormat
+swift.property         BufferSource.pacing : let pacing: Pacing
+swift.property         Complex.conjugate : var conjugate: Complex { get }
+swift.property         Complex.description : var description: String { get }
+swift.property         Complex.imaginary : let imaginary: Double
+swift.property         Complex.isFinite : var isFinite: Bool { get }
+swift.property         Complex.isReal : var isReal: Bool { get }
+swift.property         Complex.magnitude : var magnitude: Double { get }
+swift.property         Complex.phase : var phase: Double { get }
+swift.property         Complex.real : let real: Double
+swift.property         Complex.reciprocal : var reciprocal: Complex { get }
+swift.property         Complex.squaredMagnitude : var squaredMagnitude: Double { get }
+swift.property         ComplexFrame.count : var count: Int { get }
+swift.property         ComplexFrame.imaginary : let imaginary: UnsafeBufferPointer<Float>
+swift.property         ComplexFrame.index : let index: Int
+swift.property         ComplexFrame.real : let real: UnsafeBufferPointer<Float>
+swift.property         ComplexFrame.time : let time: Double
+swift.property         CrossoverTable.biquadKernel : let biquadKernel: Int
+swift.property         CrossoverTable.convolutionFFTFactor : let convolutionFFTFactor: Double
+swift.property         CrossoverTable.elementwise : let elementwise: Int
+swift.property         CrossoverTable.firPartitioned : let firPartitioned: Int
+swift.property         CrossoverTable.gainKernel : let gainKernel: Int
+swift.property         CrossoverTable.laneExchange : let laneExchange: Int
+swift.property         CrossoverTable.medianGPU : let medianGPU: Int
+swift.property         CrossoverTable.melDense : let melDense: Int
+swift.property         CrossoverTable.polynomialClosedForm : let polynomialClosedForm: Int
+swift.property         CrossoverTable.reductionAccelerate : let reductionAccelerate: Int
+swift.property         CrossoverTable.reductionSIMD : let reductionSIMD: Int
+swift.property         CustomKernel.decimation : let decimation: Int
+swift.property         CustomKernel.interpolation : let interpolation: Int
+swift.property         CustomKernel.key : let key: AnyStrategy
+swift.property         CustomKernel.latencyFrames : let latencyFrames: Int
+swift.property         CustomKernel.name : let name: String
+swift.property         CustomProcessor.key : let key: AnyStrategy
+swift.property         CustomProcessor.latencyFrames : let latencyFrames: Int
+swift.property         CustomProcessor.name : let name: String
+swift.property         DSPEngine.analysisScheduling : var analysisScheduling: AnalysisScheduling { get }
+swift.property         DSPEngine.blockSize : var blockSize: Int { get }
+swift.property         DSPEngine.crossovers : var crossovers: CrossoverTable { get }
+swift.property         DSPEnvironment.SettableKeys.biquadPrecision : var biquadPrecision: BiquadPrecisionKey.Type { get }
+swift.property         DSPEnvironment.SettableKeys.implementation : var implementation: ImplementationKey.Type { get }
+swift.property         DSPEnvironment.SettableKeys.resultRate : var resultRate: ResultRateKey.Type { get }
+swift.property         DSPEnvironment.biquadPrecision : var biquadPrecision: BiquadPrecision { get }
+swift.property         DSPEnvironment.blockSize : var blockSize: Int { get }
+swift.property         DSPEnvironment.channelCount : var channelCount: Int { get }
+swift.property         DSPEnvironment.featureRate : var featureRate: Double? { get }
+swift.property         DSPEnvironment.format : var format: SignalFormat { get }
+swift.property         DSPEnvironment.frameSize : var frameSize: Int? { get }
+swift.property         DSPEnvironment.frequencyAxis : var frequencyAxis: FeedAxis? { get }
+swift.property         DSPEnvironment.frequencyResolution : var frequencyResolution: Double? { get }
+swift.property         DSPEnvironment.hopSize : var hopSize: Int? { get }
+swift.property         DSPEnvironment.implementation : var implementation: Implementation { get }
+swift.property         DSPEnvironment.isInSpectralScope : var isInSpectralScope: Bool { get }
+swift.property         DSPEnvironment.isRealTime : var isRealTime: Bool { get }
+swift.property         DSPEnvironment.latency : var latency: TimeInterval { get }
+swift.property         DSPEnvironment.nyquistFrequency : var nyquistFrequency: Double { get }
+swift.property         DSPEnvironment.resultRate : var resultRate: Double { get }
+swift.property         DSPEnvironment.sampleRate : var sampleRate: Double { get }
+swift.property         DSPEnvironment.sourceKind : var sourceKind: SourceKind { get }
+swift.property         DSPError.description : var description: String { get }
+swift.property         DSPError.stage : var stage: StagePath? { get }
+swift.property         DomainRule.name : let name: String
+swift.property         DomainTag.description : var description: String { get }
+swift.property         DomainTag.frameKind : var frameKind: DomainTag.FrameKind { get }
+swift.property         DomainTag.isRealVector : var isRealVector: Bool { get }
+swift.property         DomainTag.isSampledSequence : var isSampledSequence: Bool { get }
+swift.property         DomainTag.isScalarValued : var isScalarValued: Bool { get }
+swift.property         DomainTag.isSpectrum : var isSpectrum: Bool { get }
+swift.property         DynamicPipeline.outputTag : let outputTag: DomainTag
+swift.property         DynamicPipeline.stages : let stages: [StageDescription]
+swift.property         Emit.activation : let activation: StageActivation
+swift.property         Emit.stageDescription : var stageDescription: StageDescription { get }
+swift.property         EnvelopeFrame.count : var count: Int { get }
+swift.property         EnvelopeFrame.index : let index: Int
+swift.property         EnvelopeFrame.maxima : let maxima: UnsafeBufferPointer<Float>
+swift.property         EnvelopeFrame.minima : let minima: UnsafeBufferPointer<Float>
+swift.property         EnvelopeFrame.time : let time: Double
+swift.property         EnvelopePyramid.Level.count : var count: Int { get }
+swift.property         EnvelopePyramid.Level.maxima : let maxima: [Float]
+swift.property         EnvelopePyramid.Level.minima : let minima: [Float]
+swift.property         EnvelopePyramid.Level.span : let span: Int
+swift.property         EnvelopePyramid.levels : let levels: [EnvelopePyramid.Level]
+swift.property         EnvironmentReader.stageDescriptions : var stageDescriptions: [StageDescription] { get }
+swift.property         FeatureFrame.channelCount : let channelCount: Int
+swift.property         FeatureFrame.count : var count: Int { get }
+swift.property         FeatureFrame.index : let index: Int
+swift.property         FeatureFrame.kind : let kind: DomainTag.FrameKind
+swift.property         FeatureFrame.scalar : let scalar: ScalarFrame
+swift.property         FeatureFrame.secondary : let secondary: [Float]
+swift.property         FeatureFrame.time : let time: Double
+swift.property         FeatureFrame.values : let values: [Float]
+swift.property         FeatureStream.capacity : let capacity: Int
+swift.property         FeatureStream.droppedFrames : var droppedFrames: Int { get }
+swift.property         FeedAxis.isLinearFrequency : var isLinearFrequency: Bool { get }
+swift.property         FeedAxis.rowCount : var rowCount: Int { get }
+swift.property         FeedAxis.unit : var unit: FeedAxis.Unit { get }
+swift.property         FeedRead.columnCount : let columnCount: Int
+swift.property         FeedRead.firstColumn : let firstColumn: Int
+swift.property         FeedRead.history : let history: Int
+swift.property         FeedRead.isReset : let isReset: Bool
+swift.property         FeedRead.rowCount : let rowCount: Int
+swift.property         FeedRead.skipped : let skipped: Int
+swift.property         FeedSnapshot.axis : let axis: FeedAxis?
+swift.property         FeedSnapshot.columnCount : var columnCount: Int { get }
+swift.property         FeedSnapshot.content : let content: FeedSnapshot.Content
+swift.property         FeedSnapshot.environment : let environment: DSPEnvironment?
+swift.property         FeedSnapshot.maxima : var maxima: [Float] { get }
+swift.property         FeedSnapshot.minima : var minima: [Float] { get }
+swift.property         FeedSnapshot.rowCount : let rowCount: Int
+swift.property         FeedSnapshot.times : let times: [Double]
+swift.property         FeedSnapshot.values : let values: [Float]
+swift.property         FrameFormat.kind : var kind: DomainTag.FrameKind { get }
+swift.property         FrameView.channelCount : let channelCount: Int
+swift.property         FrameView.complex : var complex: ComplexFrame? { get }
+swift.property         FrameView.count : let count: Int
+swift.property         FrameView.envelope : var envelope: EnvelopeFrame? { get }
+swift.property         FrameView.index : let index: Int
+swift.property         FrameView.kind : let kind: DomainTag.FrameKind
+swift.property         FrameView.real : var real: RealFrame? { get }
+swift.property         FrameView.samples : var samples: AudioBlock? { get }
+swift.property         FrameView.scalar : var scalar: ScalarFrame? { get }
+swift.property         FrameView.time : let time: Double
+swift.property         FrameWriter.format : let format: FrameFormat
+swift.property         FrameWriter.imaginary : var imaginary: UnsafeMutableBufferPointer<Float> { get }
+swift.property         FrameWriter.maxima : var maxima: UnsafeMutableBufferPointer<Float> { get }
+swift.property         FrameWriter.minima : var minima: UnsafeMutableBufferPointer<Float> { get }
+swift.property         FrameWriter.real : var real: UnsafeMutableBufferPointer<Float> { get }
+swift.property         FrameWriter.samples : var samples: AudioBlock? { get }
+swift.property         Frequency.animatableValue : var animatableValue: Double { get }
+swift.property         Frequency.dependsOnSampleRate : var dependsOnSampleRate: Bool { get }
+swift.property         Frequency.description : var description: String { get }
+swift.property         Frequency.value : let value: Double
+swift.property         GeneratorSource.events : var events: AsyncStream<SourceEvent> { get }
+swift.property         GeneratorSource.format : let format: SignalFormat
+swift.property         GeneratorSource.pacing : let pacing: Pacing
+swift.property         Group.activation : let activation: StageActivation
+swift.property         Group.stageDescriptions : var stageDescriptions: [StageDescription] { get }
+swift.property         HeatmapFeed.axis : var axis: FeedAxis? { get }
+swift.property         HeatmapFeed.columnCount : var columnCount: Int { get }
+swift.property         HeatmapFeed.environment : var environment: DSPEnvironment? { get }
+swift.property         HeatmapFeed.generation : var generation: UInt64 { get }
+swift.property         HeatmapFeed.history : var history: Int { get }
+swift.property         HeatmapFeed.isLive : var isLive: Bool { get }
+swift.property         HeatmapFeed.minimumHistory : var minimumHistory: Int { get }
+swift.property         HeatmapFeed.rowCount : var rowCount: Int { get }
+swift.property         HistoryBuffer.count : let count: Int
+swift.property         HistoryBuffer.isFull : var isFull: Bool { get }
+swift.property         HistoryBuffer.totalAppended : var totalAppended: Int { get }
+swift.property         HistoryBuffer.window : var window: UnsafePointer<Float> { get }
+swift.property         KernelSpec.isIdentity : var isIdentity: Bool { get }
+swift.property         KernelSpec.keepsRate : var keepsRate: Bool { get }
+swift.property         KernelSpec.latencyFrames : var latencyFrames: Int { get }
+swift.property         KernelSpec.rate : var rate: (interpolation: Int, decimation: Int) { get }
+swift.property         LoweringContext.channelCount : var channelCount: Int { get }
+swift.property         LoweringContext.crossovers : let crossovers: CrossoverTable
+swift.property         LoweringContext.domain : var domain: DomainTag { get }
+swift.property         LoweringContext.environment : var environment: DSPEnvironment { get }
+swift.property         LoweringContext.maximumBlockFrames : var maximumBlockFrames: Int { get }
+swift.property         LoweringContext.path : let path: StagePath
+swift.property         MATLABScript.lines : let lines: [String]
+swift.property         MATLABScript.text : var text: String { get }
+swift.property         Measuring.activation : var activation: StageActivation { get }
+swift.property         Measuring.stageDescriptions : var stageDescriptions: [StageDescription] { get }
+swift.property         MedianNetwork.Exchange.high : let high: Int
+swift.property         MedianNetwork.Exchange.low : let low: Int
+swift.property         MedianNetwork.count : let count: Int
+swift.property         MedianNetwork.exchanges : let exchanges: [MedianNetwork.Exchange]
+swift.property         MedianNetwork.medianLane : let medianLane: Int
+swift.property         OverlapAdder.floor : let floor: Float
+swift.property         OverlapAdder.frameSize : let frameSize: Int
+swift.property         OverlapAdder.hopSize : let hopSize: Int
+swift.property         ParameterVector.count : var count: Int { get }
+swift.property         ParameterVector.isEmpty : var isEmpty: Bool { get }
+swift.property         ParameterVector.isReplacement : let isReplacement: Bool
+swift.property         ParameterVector.magnitudeSquared : var magnitudeSquared: Double { get }
+swift.property         ParameterVector.values : let values: [Double]
+swift.property         Pipeline.inputTag : var inputTag: DomainTag { get }
+swift.property         Pipeline.outputTag : var outputTag: DomainTag { get }
+swift.property         Pipeline.parameters : var parameters: ParameterVector { get }
+swift.property         Pipeline.stageDescriptions : var stageDescriptions: [StageDescription] { get }
+swift.property         Pipeline.stages : let stages: [StageDescription]
+swift.property         PipelineContent.stages : var stages: [StageDescription] { get }
+swift.property         PipelineSession.environment : var environment: DSPEnvironment { get }
+swift.property         PipelineSession.events : var events: AsyncStream<SessionEvent> { get }
+swift.property         PipelineSession.id : var id: UUID { get }
+swift.property         PipelineSession.state : var state: SessionState { get }
+swift.property         PipelineStage.stageDescriptions : var stageDescriptions: [StageDescription] { get }
+swift.property         ProcessedSource.events : var events: AsyncStream<SourceEvent> { get }
+swift.property         ProcessedSource.format : var format: SignalFormat { get }
+swift.property         ProcessedSource.upstream : let upstream: any SampleSource
+swift.property         PullSampleSource.pacing : var pacing: Pacing { get }
+swift.property         Ramp.duration : let duration: Int
+swift.property         Ramp.isMoving : var isMoving: Bool { get }
+swift.property         Ramp.remainingFrames : var remainingFrames: Int { get }
+swift.property         Ramp.target : var target: Float { get }
+swift.property         Ramp.value : var value: Float { get }
+swift.property         RealFrame.count : var count: Int { get }
+swift.property         RealFrame.index : let index: Int
+swift.property         RealFrame.time : let time: Double
+swift.property         RealFrame.values : let values: UnsafeBufferPointer<Float>
+swift.property         Recipe.expansion : var expansion: Pipeline<Self.Input, Self.Output> { get }
+swift.property         Recipe.stageDescriptions : var stageDescriptions: [StageDescription] { get }
+swift.property         RingWriter.availableSpace : var availableSpace: Int { get }
+swift.property         RingWriter.capacity : var capacity: Int { get }
+swift.property         RingWriter.channelCount : var channelCount: Int { get }
+swift.property         RingWriter.droppedFrames : var droppedFrames: Int { get }
+swift.property         RingWriter.ring : var ring: OpaquePointer { get }
+swift.property         RollOff.decibelsPerDecade : var decibelsPerDecade: Double { get }
+swift.property         RollOff.decibelsPerOctave : var decibelsPerOctave: Double { get }
+swift.property         RollOff.description : var description: String { get }
+swift.property         RollOff.fractionalOrder : var fractionalOrder: Double { get }
+swift.property         RollOff.value : let value: Double
+swift.property         SampleProcessor.latencyFrames : var latencyFrames: Int { get }
+swift.property         SampleProcessor.settlingFrames : var settlingFrames: Int { get }
+swift.property         SampleSource.events : var events: AsyncStream<SourceEvent> { get }
+swift.property         SampleSource.format : var format: SignalFormat { get }
+swift.property         ScalarFrame.confidence : let confidence: Float
+swift.property         ScalarFrame.value : let value: Float
+swift.property         ScalarResultTarget.boundResult : var boundResult: BoundResult { get }
+swift.property         ScriptedSource.events : var events: AsyncStream<SourceEvent> { get }
+swift.property         ScriptedSource.format : var format: SignalFormat { get }
+swift.property         ScriptedSource.pacing : let pacing: Pacing
+swift.property         ScriptedSource.renderCount : var renderCount: Int { get }
+swift.property         SequenceChain.stageDescriptions : var stageDescriptions: [StageDescription] { get }
+swift.property         SequenceChain.stages : let stages: [StageDescription]
+swift.property         SequenceStage.stageDescriptions : var stageDescriptions: [StageDescription] { get }
+swift.property         SignalFormat.channelCount : let channelCount: Int
+swift.property         SignalFormat.description : var description: String { get }
+swift.property         SignalFormat.isValid : var isValid: Bool { get }
+swift.property         SignalFormat.sampleRate : let sampleRate: Double
+swift.property         SourceEventChannel.stream : let stream: AsyncStream<SourceEvent>
+swift.property         StageActivation.constantValue : var constantValue: Bool? { get }
+swift.property         StageActivation.isBound : var isBound: Bool { get }
+swift.property         StageDescription.activation : let activation: StageActivation
+swift.property         StageDescription.kind : var kind: StageDescription.Kind { get }
+swift.property         StageDescription.name : let name: String
+swift.property         StageDescription.nestedStages : var nestedStages: [StageDescription] { get }
+swift.property         StageDescription.parameters : var parameters: [Double] { get }
+swift.property         StageDescription.rule : let rule: DomainRule
+swift.property         StagePath.Component.description : var description: String { get }
+swift.property         StagePath.Component.index : let index: Int
+swift.property         StagePath.Component.name : let name: String
+swift.property         StagePath.components : let components: [StagePath.Component]
+swift.property         StagePath.description : var description: String { get }
+swift.property         StagePath.isEmpty : var isEmpty: Bool { get }
+swift.property         StagePath.stageName : var stageName: String? { get }
+swift.property         StageValue.activation : var activation: StageActivation { get }
+swift.property         StageValue.parameters : var parameters: [Double] { get }
+swift.property         Tap.activation : let activation: StageActivation
+swift.property         Tap.stageDescriptions : var stageDescriptions: [StageDescription] { get }
+swift.property         Vector.Bound.add : let add: Vector.Bound.Binary
+swift.property         Vector.Bound.clip : let clip: Vector.Bound.Clip
+swift.property         Vector.Bound.count : let count: Int
+swift.property         Vector.Bound.dot : let dot: Vector.Bound.BinaryReduction
+swift.property         Vector.Bound.elementwise : let elementwise: Implementation
+swift.property         Vector.Bound.maximum : let maximum: Vector.Bound.Reduction
+swift.property         Vector.Bound.meanSquare : let meanSquare: Vector.Bound.Reduction
+swift.property         Vector.Bound.minimum : let minimum: Vector.Bound.Reduction
+swift.property         Vector.Bound.multiply : let multiply: Vector.Bound.Binary
+swift.property         Vector.Bound.reduction : let reduction: Implementation
+swift.property         Vector.Bound.reductionUsesSIMD : let reductionUsesSIMD: Bool
+swift.property         Vector.Bound.scale : let scale: Vector.Bound.Scale
+swift.property         Vector.Bound.subtract : let subtract: Vector.Bound.Binary
+swift.property         Vector.Bound.sum : let sum: Vector.Bound.Reduction
+swift.property         VectorResultTarget.boundResult : var boundResult: BoundResult { get }
+swift.property         WaveformFeed.columnCount : var columnCount: Int { get }
+swift.property         WaveformFeed.environment : var environment: DSPEnvironment? { get }
+swift.property         WaveformFeed.generation : var generation: UInt64 { get }
+swift.property         WaveformFeed.history : var history: Int { get }
+swift.property         WaveformFeed.isLive : var isLive: Bool { get }
+swift.property         WaveformFeed.minimumHistory : var minimumHistory: Int { get }
+swift.property         Window.description : var description: String { get }
+swift.property         Window.half : var half: Window { get }
+swift.property         Window.isGeneratedByVDSP : var isGeneratedByVDSP: Bool { get }
+swift.property         Window.isHalf : let isHalf: Bool
+swift.property         Window.isLogged : let isLogged: Bool
+swift.property         Window.isSymmetric : let isSymmetric: Bool
+swift.property         Window.periodic : var periodic: Window { get }
+swift.property         Window.symmetric : var symmetric: Window { get }
+swift.protocol         ActivationSource : protocol ActivationSource : Sendable
+swift.protocol         AnalysisNode : protocol AnalysisNode : AnyObject
+swift.protocol         DSPEnvironmentKey : protocol DSPEnvironmentKey
+swift.protocol         FeatureSink : protocol FeatureSink : AnyObject, Sendable
+swift.protocol         LinearValued : protocol LinearValued : RealValued
+swift.protocol         MATLABExportable : protocol MATLABExportable : Sendable
+swift.protocol         MelFormula : protocol MelFormula : Hashable, Sendable
+swift.protocol         PipelineContent : protocol PipelineContent : Hashable, Sendable
+swift.protocol         PipelineStage : protocol PipelineStage : StageValue
+swift.protocol         PullSampleSource : protocol PullSampleSource : SampleSource
+swift.protocol         PushSampleSource : protocol PushSampleSource : SampleSource
+swift.protocol         RealValued : protocol RealValued : SpectralValues
+swift.protocol         RealVectorDomain : protocol RealVectorDomain : SignalDomain
+swift.protocol         Recipe : protocol Recipe : PipelineStage
+swift.protocol         SampleProcessor : protocol SampleProcessor : AnyObject
+swift.protocol         SampleSource : protocol SampleSource : AnyObject, Sendable
+swift.protocol         SampledSequence : protocol SampledSequence : SignalDomain
+swift.protocol         ScalarResultTarget : protocol ScalarResultTarget : Sendable
+swift.protocol         ScalarResultValue : protocol ScalarResultValue : Sendable
+swift.protocol         ScalarValuedDomain : protocol ScalarValuedDomain : SignalDomain
+swift.protocol         SequenceStage : protocol SequenceStage : StageValue
+swift.protocol         SettableDSPEnvironmentKey : protocol SettableDSPEnvironmentKey : DSPEnvironmentKey where Self.Value : Hashable
+swift.protocol         SignalDomain : protocol SignalDomain : Sendable
+swift.protocol         SpectralAxis : protocol SpectralAxis : Sendable
+swift.protocol         SpectralValues : protocol SpectralValues : Sendable
+swift.protocol         StageValue : protocol StageValue : Hashable, Sendable
+swift.protocol         VectorResultTarget : protocol VectorResultTarget : Sendable
+swift.struct           ActivatedSequenceStage : struct ActivatedSequenceStage<Base> where Base : SequenceStage
+swift.struct           ActivatedStage : struct ActivatedStage<Base> where Base : PipelineStage
+swift.struct           Activation : struct Activation
+swift.struct           Amplification : struct Amplification
+swift.struct           AnalysisStep : struct AnalysisStep
+swift.struct           AnyStrategy : struct AnyStrategy
+swift.struct           AudioBlock : struct AudioBlock
+swift.struct           BackgroundWork.Checkpoint : struct Checkpoint
+swift.struct           BiquadSection : struct BiquadSection
+swift.struct           BoundResult : struct BoundResult
+swift.struct           BoundSwitch : struct BoundSwitch
+swift.struct           Complex : struct Complex
+swift.struct           ComplexFrame : struct ComplexFrame
+swift.struct           CrossoverTable : struct CrossoverTable
+swift.struct           CustomKernel : struct CustomKernel
+swift.struct           CustomProcessor : struct CustomProcessor
+swift.struct           DSPEnvironment : struct DSPEnvironment
+swift.struct           DSPEnvironment.SettableKeys : struct SettableKeys
+swift.struct           DomainRule : struct DomainRule
+swift.struct           DynamicPipeline : struct DynamicPipeline
+swift.struct           Emit : struct Emit<Target>
+swift.struct           EnvelopeFrame : struct EnvelopeFrame
+swift.struct           EnvelopePyramid : struct EnvelopePyramid
+swift.struct           EnvelopePyramid.Level : struct Level
+swift.struct           EnvironmentReader : struct EnvironmentReader<Content> where Content : PipelineContent
+swift.struct           FeatureFrame : struct FeatureFrame
+swift.struct           FeatureStream.Iterator : struct Iterator
+swift.struct           FeedCursor : struct FeedCursor
+swift.struct           FeedRead : struct FeedRead
+swift.struct           FeedSnapshot : struct FeedSnapshot
+swift.struct           FrameView : struct FrameView
+swift.struct           FrameWriter : struct FrameWriter
+swift.struct           Frequency : struct Frequency
+swift.struct           GeneratorSource.Signal : struct Signal
+swift.struct           Group : struct Group<Content> where Content : PipelineContent
+swift.struct           HTKMelFormula : struct HTKMelFormula
+swift.struct           LoweringContext : struct LoweringContext
+swift.struct           MATLABScript : struct MATLABScript
+swift.struct           Measuring : struct Measuring<Step> where Step : PipelineStage, Step.Output : ScalarValuedDomain
+swift.struct           MedianNetwork : struct MedianNetwork
+swift.struct           MedianNetwork.Exchange : struct Exchange
+swift.struct           ParameterVector : struct ParameterVector
+swift.struct           Pipeline : struct Pipeline<Input, Output> where Input : SignalDomain, Output : SignalDomain
+swift.struct           Ramp : struct Ramp
+swift.struct           RealFrame : struct RealFrame
+swift.struct           RingWriter : struct RingWriter
+swift.struct           RollOff : struct RollOff
+swift.struct           ScalarFrame : struct ScalarFrame
+swift.struct           SequenceChain : struct SequenceChain
+swift.struct           SignalFormat : struct SignalFormat
+swift.struct           SinkDescription : struct SinkDescription
+swift.struct           SlaneyMelFormula : struct SlaneyMelFormula
+swift.struct           StageDescription : struct StageDescription
+swift.struct           StagePath : struct StagePath
+swift.struct           StagePath.Component : struct Component
+swift.struct           Tap : struct Tap<Domain, BranchOutput> where Domain : SignalDomain, BranchOutput : SignalDomain
+swift.struct           Vector.Bound : struct Bound
+swift.struct           Window : struct Window
+swift.subscript        AlignedBuffer.subscript(_:) : subscript(index: Int) -> Element { get }
+swift.subscript        DSPEnvironment.subscript(_:) : subscript<K>(key: K.Type) -> K.Value where K : DSPEnvironmentKey { get }
+swift.type.method      Amplification.decibels(_:) : static func decibels(_ value: Double) -> Amplification
+swift.type.method      Amplification.linear(_:) : static func linear(_ factor: Double) -> Amplification
+swift.type.method      BackgroundWork.run(_:) : static func run<Result>(_ work: @escaping @Sendable (BackgroundWork.Checkpoint) throws(DSPError) -> Result) async throws(DSPError) -> Result where Result : Sendable
+swift.type.method      Complex.exp(_:) : static func exp(_ z: Complex) -> Complex
+swift.type.method      Complex.log(_:) : static func log(_ z: Complex) -> Complex
+swift.type.method      Complex.pow(_:_:) : static func pow(_ z: Complex, _ exponent: Int) -> Complex
+swift.type.method      Complex.sqrt(_:) : static func sqrt(_ z: Complex) -> Complex
+swift.type.method      DSP.amplitude(fromDecibels:into:count:reference:) : static func amplitude(fromDecibels decibels: UnsafePointer<Float>, into result: UnsafeMutablePointer<Float>, count: Int, reference: Float = 1)
+swift.type.method      DSP.amplitude(fromDecibels:reference:) : static func amplitude(fromDecibels decibels: Double, reference: Double = 1) -> Double
+swift.type.method      DSP.amplitude(fromDecibels:reference:) : static func amplitude(fromDecibels decibels: [Float], reference: Float = 1) -> [Float]
+swift.type.method      DSP.decibels(fromAmplitude:into:count:reference:floor:) : static func decibels(fromAmplitude amplitude: UnsafePointer<Float>, into result: UnsafeMutablePointer<Float>, count: Int, reference: Float = 1, floor: Float = Float(decibelFloor))
+swift.type.method      DSP.decibels(fromAmplitude:reference:floor:) : static func decibels(fromAmplitude amplitude: Double, reference: Double = 1, floor: Double = decibelFloor) -> Double
+swift.type.method      DSP.decibels(fromAmplitude:reference:floor:) : static func decibels(fromAmplitude amplitude: [Float], reference: Float = 1, floor: Float = Float(decibelFloor)) -> [Float]
+swift.type.method      DSP.decibels(fromPower:into:count:reference:floor:) : static func decibels(fromPower power: UnsafePointer<Float>, into result: UnsafeMutablePointer<Float>, count: Int, reference: Float = 1, floor: Float = Float(decibelFloor))
+swift.type.method      DSP.decibels(fromPower:reference:floor:) : static func decibels(fromPower power: Double, reference: Double = 1, floor: Double = decibelFloor) -> Double
+swift.type.method      DSP.decibels(fromPower:reference:floor:) : static func decibels(fromPower power: [Float], reference: Float = 1, floor: Float = Float(decibelFloor)) -> [Float]
+swift.type.method      DSP.hertz(fromMel:formula:) : static func hertz(fromMel mel: Double, formula: some MelFormula = .slaney) -> Double
+swift.type.method      DSP.hertz(fromMel:formula:) : static func hertz(fromMel mel: [Double], formula: some MelFormula = .slaney) -> [Double]
+swift.type.method      DSP.isFastLength(_:) : static func isFastLength(_ length: Int) -> Bool
+swift.type.method      DSP.mel(fromHertz:formula:) : static func mel(fromHertz hertz: Double, formula: some MelFormula = .slaney) -> Double
+swift.type.method      DSP.mel(fromHertz:formula:) : static func mel(fromHertz hertz: [Double], formula: some MelFormula = .slaney) -> [Double]
+swift.type.method      DSP.nextFastLength(_:) : static func nextFastLength(_ length: Int) -> Int
+swift.type.method      DSP.power(fromDecibels:into:count:reference:) : static func power(fromDecibels decibels: UnsafePointer<Float>, into result: UnsafeMutablePointer<Float>, count: Int, reference: Float = 1)
+swift.type.method      DSP.power(fromDecibels:reference:) : static func power(fromDecibels decibels: Double, reference: Double = 1) -> Double
+swift.type.method      DSP.power(fromDecibels:reference:) : static func power(fromDecibels decibels: [Float], reference: Float = 1) -> [Float]
+swift.type.method      DSP.previousFastLength(_:) : static func previousFastLength(_ length: Int) -> Int?
+swift.type.method      DomainRule.fixed(_:_:) : static func fixed(_ input: DomainTag, _ output: DomainTag) -> DomainRule
+swift.type.method      DomainRule.keeping(_:where:) : static func keeping(_ name: String, where accepts: @escaping @Sendable (DomainTag) -> Bool) -> DomainRule
+swift.type.method      DomainRule.spectral(_:_:) : static func spectral(_ name: String, _ transform: @escaping @Sendable (DomainTag.Axis, DomainTag.Values) -> DomainTag?) -> DomainRule
+swift.type.method      Float.boundResult(_:) : static func boundResult(_ binding: Binding<Float>) -> BoundResult   [extends Swift]
+swift.type.method      Frequency.fractionOfNyquist(_:) : static func fractionOfNyquist(_ fraction: Double) -> Frequency
+swift.type.method      Frequency.hertz(_:) : static func hertz(_ value: Double) -> Frequency
+swift.type.method      Frequency.mel(_:formula:) : static func mel(_ value: Double, formula: some MelFormula = .slaney) -> Frequency
+swift.type.method      Frequency.midiNote(_:) : static func midiNote(_ note: Double) -> Frequency
+swift.type.method      Frequency.normalized(_:) : static func normalized(_ cyclesPerSample: Double) -> Frequency
+swift.type.method      Frequency.radiansPerSample(_:) : static func radiansPerSample(_ value: Double) -> Frequency
+swift.type.method      GeneratorSource.Signal.chirp(from:to:duration:amplitude:) : static func chirp(from start: Frequency, to end: Frequency, duration: TimeInterval, amplitude: Float = 1) -> GeneratorSource.Signal
+swift.type.method      GeneratorSource.Signal.function(_:) : static func function(_ value: @escaping @Sendable (Int, Double) -> Float) -> GeneratorSource.Signal
+swift.type.method      GeneratorSource.Signal.impulse(amplitude:at:) : static func impulse(amplitude: Float = 1, at frame: Int = 0) -> GeneratorSource.Signal
+swift.type.method      GeneratorSource.Signal.impulseTrain(period:amplitude:) : static func impulseTrain(period: Int, amplitude: Float = 1) -> GeneratorSource.Signal
+swift.type.method      GeneratorSource.Signal.logarithmicChirp(from:to:duration:amplitude:) : static func logarithmicChirp(from start: Frequency, to end: Frequency, duration: TimeInterval, amplitude: Float = 1) -> GeneratorSource.Signal
+swift.type.method      GeneratorSource.Signal.pinkNoise(amplitude:seed:) : static func pinkNoise(amplitude: Float = 1, seed: UInt64 = 0) -> GeneratorSource.Signal
+swift.type.method      GeneratorSource.Signal.sine(frequency:amplitude:phase:) : static func sine(frequency: Frequency, amplitude: Float = 1, phase: Double = 0) -> GeneratorSource.Signal
+swift.type.method      GeneratorSource.Signal.step(amplitude:at:) : static func step(amplitude: Float = 1, at frame: Int = 0) -> GeneratorSource.Signal
+swift.type.method      GeneratorSource.Signal.whiteNoise(amplitude:seed:) : static func whiteNoise(amplitude: Float = 1, seed: UInt64 = 0) -> GeneratorSource.Signal
+swift.type.method      MATLABScript.format(_:) : static func format(_ value: Double) -> String
+swift.type.method      MATLABScript.format(_:) : static func format(_ value: Float) -> String
+swift.type.method      PipelineBuilder.buildArray(_:) : static func buildArray(_ components: [SequenceChain]) -> SequenceChain
+swift.type.method      PipelineBuilder.buildArray(_:) : static func buildArray<D>(_ components: [Pipeline<D, D>]) -> Pipeline<D, D> where D : SignalDomain
+swift.type.method      PipelineBuilder.buildEither(first:) : static func buildEither<Component>(first component: Component) -> Component where Component : PipelineContent
+swift.type.method      PipelineBuilder.buildEither(second:) : static func buildEither<Component>(second component: Component) -> Component where Component : PipelineContent
+swift.type.method      PipelineBuilder.buildExpression(_:) : static func buildExpression<Stage>(_ stage: Stage) -> Stage where Stage : StageValue
+swift.type.method      PipelineBuilder.buildLimitedAvailability(_:) : static func buildLimitedAvailability(_ component: SequenceChain) -> SequenceChain
+swift.type.method      PipelineBuilder.buildLimitedAvailability(_:) : static func buildLimitedAvailability<D>(_ component: Pipeline<D, D>) -> Pipeline<D, D> where D : SignalDomain
+swift.type.method      PipelineBuilder.buildOptional(_:) : static func buildOptional(_ component: SequenceChain?) -> SequenceChain
+swift.type.method      PipelineBuilder.buildOptional(_:) : static func buildOptional<D>(_ component: Pipeline<D, D>?) -> Pipeline<D, D> where D : SignalDomain
+swift.type.method      PipelineBuilder.buildPartialBlock(accumulated:next:) : static func buildPartialBlock<I, D>(accumulated: Pipeline<I, D>, next: Emit<HeatmapFeed>) -> Pipeline<I, D> where I : SignalDomain, D : RealVectorDomain
+swift.type.method      PipelineBuilder.buildPartialBlock(accumulated:next:) : static func buildPartialBlock<I, D>(accumulated: Pipeline<I, D>, next: Emit<ScalarBindingTarget>) -> Pipeline<I, D> where I : SignalDomain, D : ScalarValuedDomain
+swift.type.method      PipelineBuilder.buildPartialBlock(accumulated:next:) : static func buildPartialBlock<I, D>(accumulated: Pipeline<I, D>, next: Emit<VectorBindingTarget>) -> Pipeline<I, D> where I : SignalDomain, D : RealVectorDomain
+swift.type.method      PipelineBuilder.buildPartialBlock(accumulated:next:) : static func buildPartialBlock<I, M, S>(accumulated: Pipeline<I, M>, next: S) -> Pipeline<I, M> where I : SignalDomain, M : SampledSequence, S : SequenceStage
+swift.type.method      PipelineBuilder.buildPartialBlock(accumulated:next:) : static func buildPartialBlock<I, M, S>(accumulated: Pipeline<I, M>, next: S) -> Pipeline<I, S.Output> where I : SignalDomain, M == S.Input, S : PipelineStage
+swift.type.method      PipelineBuilder.buildPartialBlock(accumulated:next:) : static func buildPartialBlock<I, Sink>(accumulated: Pipeline<I, Sink.Domain>, next: Emit<Sink>) -> Pipeline<I, Sink.Domain> where I : SignalDomain, Sink : FeatureSink
+swift.type.method      PipelineBuilder.buildPartialBlock(accumulated:next:) : static func buildPartialBlock<I>(accumulated: Pipeline<I, Envelope>, next: Emit<WaveformFeed>) -> Pipeline<I, Envelope> where I : SignalDomain
+swift.type.method      PipelineBuilder.buildPartialBlock(accumulated:next:) : static func buildPartialBlock<S>(accumulated: SequenceChain, next: S) -> Pipeline<S.Input, S.Output> where S : PipelineStage, S.Input : SampledSequence
+swift.type.method      PipelineBuilder.buildPartialBlock(accumulated:next:) : static func buildPartialBlock<S>(accumulated: SequenceChain, next: S) -> SequenceChain where S : SequenceStage
+swift.type.method      PipelineBuilder.buildPartialBlock(accumulated:next:) : static func buildPartialBlock<Sink>(accumulated: SequenceChain, next: Emit<Sink>) -> Pipeline<Sink.Domain, Sink.Domain> where Sink : FeatureSink, Sink.Domain : SampledSequence
+swift.type.method      PipelineBuilder.buildPartialBlock(first:) : static func buildPartialBlock<S>(first: S) -> Pipeline<S.Input, S.Output> where S : PipelineStage
+swift.type.method      PipelineBuilder.buildPartialBlock(first:) : static func buildPartialBlock<S>(first: S) -> SequenceChain where S : SequenceStage
+swift.type.method      PipelineBuilder.buildPartialBlock(first:) : static func buildPartialBlock<Sink>(first: Emit<Sink>) -> Pipeline<Sink.Domain, Sink.Domain> where Sink : FeatureSink
+swift.type.method      RollOff.decibelsPerDecade(_:) : static func decibelsPerDecade(_ slope: Double) -> RollOff
+swift.type.method      RollOff.decibelsPerOctave(_:) : static func decibelsPerOctave(_ slope: Double) -> RollOff
+swift.type.method      RollOff.order(_:) : static func order(_ order: Int) -> RollOff
+swift.type.method      ScalarFrame.boundResult(_:) : static func boundResult(_ binding: Binding<ScalarFrame>) -> BoundResult
+swift.type.method      ScalarResultValue.boundResult(_:) : static func boundResult(_ binding: Binding<Self>) -> BoundResult
+swift.type.method      StageDescription.measuring(_:to:isActive:) : static func measuring(_ step: [StageDescription], to binding: some ScalarResultTarget, isActive: some ActivationSource = .active) -> StageDescription
+swift.type.method      StageValidation.band(from:to:named:in:) : static func band(from lower: Frequency, to upper: Frequency, named parameter: String, in context: LoweringContext) throws(DSPError) -> ClosedRange<Double>
+swift.type.method      StageValidation.finite(_:named:in:) : static func finite<T>(_ value: T, named parameter: String, in context: LoweringContext) throws(DSPError) -> T where T : BinaryFloatingPoint
+swift.type.method      StageValidation.frequency(_:named:in:allowingZero:allowingNyquist:) : static func frequency(_ frequency: Frequency, named parameter: String, in context: LoweringContext, allowingZero: Bool = false, allowingNyquist: Bool = false) throws(DSPError) -> Double
+swift.type.method      StageValidation.hop(_:frame:named:in:) : static func hop(_ hop: Int, frame: Int, named parameter: String, in context: LoweringContext) throws(DSPError) -> Int
+swift.type.method      StageValidation.transformLength(_:named:in:) : static func transformLength(_ length: Int, named parameter: String, in context: LoweringContext) throws(DSPError) -> Int
+swift.type.method      StageValidation.value(_:named:atLeast:context:) : static func value<T>(_ value: T, named parameter: String, atLeast minimum: T, context: LoweringContext) throws(DSPError) -> T where T : Comparable
+swift.type.method      StageValidation.value(_:named:in:context:) : static func value<T>(_ value: T, named parameter: String, in range: ClosedRange<T>, context: LoweringContext) throws(DSPError) -> T where T : Comparable
+swift.type.method      Vector.Accelerated.add(_:_:into:count:) : static func add(_ a: UnsafePointer<Float>, _ b: UnsafePointer<Float>, into result: UnsafeMutablePointer<Float>, count: Int)
+swift.type.method      Vector.Accelerated.clip(_:low:high:into:count:) : static func clip(_ source: UnsafePointer<Float>, low: Float, high: Float, into result: UnsafeMutablePointer<Float>, count: Int)
+swift.type.method      Vector.Accelerated.dot(_:_:count:) : static func dot(_ a: UnsafePointer<Float>, _ b: UnsafePointer<Float>, count: Int) -> Float
+swift.type.method      Vector.Accelerated.maximum(_:count:) : static func maximum(_ source: UnsafePointer<Float>, count: Int) -> Float
+swift.type.method      Vector.Accelerated.meanSquare(_:count:) : static func meanSquare(_ source: UnsafePointer<Float>, count: Int) -> Float
+swift.type.method      Vector.Accelerated.minimum(_:count:) : static func minimum(_ source: UnsafePointer<Float>, count: Int) -> Float
+swift.type.method      Vector.Accelerated.multiply(_:_:into:count:) : static func multiply(_ a: UnsafePointer<Float>, _ b: UnsafePointer<Float>, into result: UnsafeMutablePointer<Float>, count: Int)
+swift.type.method      Vector.Accelerated.scale(_:by:into:count:) : static func scale(_ source: UnsafePointer<Float>, by factor: Float, into result: UnsafeMutablePointer<Float>, count: Int)
+swift.type.method      Vector.Accelerated.subtract(_:_:into:count:) : static func subtract(_ a: UnsafePointer<Float>, _ b: UnsafePointer<Float>, into result: UnsafeMutablePointer<Float>, count: Int)
+swift.type.method      Vector.Accelerated.sum(_:count:) : static func sum(_ source: UnsafePointer<Float>, count: Int) -> Float
+swift.type.method      Vector.Native.add(_:_:into:count:) : static func add(_ a: UnsafePointer<Float>, _ b: UnsafePointer<Float>, into result: UnsafeMutablePointer<Float>, count: Int)
+swift.type.method      Vector.Native.clip(_:low:high:into:count:) : static func clip(_ source: UnsafePointer<Float>, low: Float, high: Float, into result: UnsafeMutablePointer<Float>, count: Int)
+swift.type.method      Vector.Native.dot(_:_:count:) : static func dot(_ a: UnsafePointer<Float>, _ b: UnsafePointer<Float>, count: Int) -> Float
+swift.type.method      Vector.Native.dotSIMD(_:_:count:) : static func dotSIMD(_ a: UnsafePointer<Float>, _ b: UnsafePointer<Float>, count: Int) -> Float
+swift.type.method      Vector.Native.maximum(_:count:) : static func maximum(_ source: UnsafePointer<Float>, count: Int) -> Float
+swift.type.method      Vector.Native.maximumSIMD(_:count:) : static func maximumSIMD(_ source: UnsafePointer<Float>, count: Int) -> Float
+swift.type.method      Vector.Native.meanSquare(_:count:) : static func meanSquare(_ source: UnsafePointer<Float>, count: Int) -> Float
+swift.type.method      Vector.Native.meanSquareSIMD(_:count:) : static func meanSquareSIMD(_ source: UnsafePointer<Float>, count: Int) -> Float
+swift.type.method      Vector.Native.minimum(_:count:) : static func minimum(_ source: UnsafePointer<Float>, count: Int) -> Float
+swift.type.method      Vector.Native.minimumSIMD(_:count:) : static func minimumSIMD(_ source: UnsafePointer<Float>, count: Int) -> Float
+swift.type.method      Vector.Native.multiply(_:_:into:count:) : static func multiply(_ a: UnsafePointer<Float>, _ b: UnsafePointer<Float>, into result: UnsafeMutablePointer<Float>, count: Int)
+swift.type.method      Vector.Native.scale(_:by:into:count:) : static func scale(_ source: UnsafePointer<Float>, by factor: Float, into result: UnsafeMutablePointer<Float>, count: Int)
+swift.type.method      Vector.Native.subtract(_:_:into:count:) : static func subtract(_ a: UnsafePointer<Float>, _ b: UnsafePointer<Float>, into result: UnsafeMutablePointer<Float>, count: Int)
+swift.type.method      Vector.Native.sum(_:count:) : static func sum(_ source: UnsafePointer<Float>, count: Int) -> Float
+swift.type.method      Vector.Native.sumSIMD(_:count:) : static func sumSIMD(_ source: UnsafePointer<Float>, count: Int) -> Float
+swift.type.method      Vector.add(_:_:into:count:) : static func add(_ a: UnsafePointer<Float>, _ b: UnsafePointer<Float>, into result: UnsafeMutablePointer<Float>, count: Int)
+swift.type.method      Vector.clip(_:low:high:into:count:) : static func clip(_ source: UnsafePointer<Float>, low: Float, high: Float, into result: UnsafeMutablePointer<Float>, count: Int)
+swift.type.method      Vector.dot(_:_:count:) : static func dot(_ a: UnsafePointer<Float>, _ b: UnsafePointer<Float>, count: Int) -> Float
+swift.type.method      Vector.maximum(_:count:) : static func maximum(_ source: UnsafePointer<Float>, count: Int) -> Float
+swift.type.method      Vector.meanSquare(_:count:) : static func meanSquare(_ source: UnsafePointer<Float>, count: Int) -> Float
+swift.type.method      Vector.minimum(_:count:) : static func minimum(_ source: UnsafePointer<Float>, count: Int) -> Float
+swift.type.method      Vector.multiply(_:_:into:count:) : static func multiply(_ a: UnsafePointer<Float>, _ b: UnsafePointer<Float>, into result: UnsafeMutablePointer<Float>, count: Int)
+swift.type.method      Vector.scale(_:by:into:count:) : static func scale(_ source: UnsafePointer<Float>, by factor: Float, into result: UnsafeMutablePointer<Float>, count: Int)
+swift.type.method      Vector.subtract(_:_:into:count:) : static func subtract(_ a: UnsafePointer<Float>, _ b: UnsafePointer<Float>, into result: UnsafeMutablePointer<Float>, count: Int)
+swift.type.method      Vector.sum(_:count:) : static func sum(_ source: UnsafePointer<Float>, count: Int) -> Float
+swift.type.method      Window.custom(_:) : static func custom(_ value: @escaping @Sendable (Double) -> Double) -> Window
+swift.type.method      Window.gaussian(sigma:) : static func gaussian(sigma: Double) -> Window
+swift.type.method      Window.hann(_:) : static func hann(_ scaling: Window.HannScaling) -> Window
+swift.type.method      Window.kaiser(beta:) : static func kaiser(beta: Double) -> Window
+swift.type.property    ActivatedSequenceStage.stageName : static var stageName: String { get }
+swift.type.property    ActivatedStage.stageName : static var stageName: String { get }
+swift.type.property    ActivationSource.active : static var active: Activation { get }
+swift.type.property    ActivationSource.bypassed : static var bypassed: Activation { get }
+swift.type.property    Amplification.unity : static let unity: Amplification
+swift.type.property    BackgroundWork.isCurrent : static var isCurrent: Bool { get }
+swift.type.property    BiquadPrecisionKey.defaultValue : static var defaultValue: BiquadPrecision { get }
+swift.type.property    BiquadSection.identity : static let identity: BiquadSection
+swift.type.property    BlockSizeKey.defaultValue : static var defaultValue: Int { get }
+swift.type.property    ChannelCountKey.defaultValue : static var defaultValue: Int { get }
+swift.type.property    Chroma.tag : static var tag: DomainTag { get }
+swift.type.property    Complex.i : static let i: Complex
+swift.type.property    Complex.one : static let one: Complex
+swift.type.property    Complex.zero : static let zero: Complex
+swift.type.property    ComplexValues.valuesTag : static var valuesTag: DomainTag.Values { get }
+swift.type.property    ConstantQFrequency.axisTag : static var axisTag: DomainTag.Axis { get }
+swift.type.property    CrossoverTable.shipped : static let shipped: CrossoverTable
+swift.type.property    DSP.decibelFloor : static let decibelFloor: Double
+swift.type.property    DSPEngine.shared : static let shared: DSPEngine
+swift.type.property    DSPEnvironment.reference : static let reference: DSPEnvironment
+swift.type.property    DSPEnvironmentKey.defaultValue : static var defaultValue: Self.Value { get }
+swift.type.property    DecibelValues.valuesTag : static var valuesTag: DomainTag.Values { get }
+swift.type.property    DomainRule.any : static let any: DomainRule
+swift.type.property    DomainRule.sequence : static let sequence: DomainRule
+swift.type.property    Envelope.tag : static var tag: DomainTag { get }
+swift.type.property    FeatureRateKey.defaultValue : static var defaultValue: Double? { get }
+swift.type.property    FeedAxis.pitchClassNames : static let pitchClassNames: [String]
+swift.type.property    FrameSizeKey.defaultValue : static var defaultValue: Int? { get }
+swift.type.property    FrequencyAxisKey.defaultValue : static var defaultValue: FeedAxis? { get }
+swift.type.property    FrequencyResolutionKey.defaultValue : static var defaultValue: Double? { get }
+swift.type.property    GeneratorSource.Signal.silence : static var silence: GeneratorSource.Signal { get }
+swift.type.property    GeneratorSource.maximumChannelCount : static let maximumChannelCount: Int
+swift.type.property    HopSizeKey.defaultValue : static var defaultValue: Int? { get }
+swift.type.property    ImplementationKey.defaultValue : static var defaultValue: Implementation { get }
+swift.type.property    IsRealTimeKey.defaultValue : static var defaultValue: Bool { get }
+swift.type.property    Lags.tag : static var tag: DomainTag { get }
+swift.type.property    LatencyKey.defaultValue : static var defaultValue: TimeInterval { get }
+swift.type.property    LinearFrequency.axisTag : static var axisTag: DomainTag.Axis { get }
+swift.type.property    MATLABScript.elementLimit : static let elementLimit: Int
+swift.type.property    MagnitudeValues.valuesTag : static var valuesTag: DomainTag.Values { get }
+swift.type.property    MedianNetwork.maximumCount : static let maximumCount: Int
+swift.type.property    MelCepstrum.tag : static var tag: DomainTag { get }
+swift.type.property    MelFormula.htk : static var htk: HTKMelFormula { get }
+swift.type.property    MelFormula.slaney : static var slaney: SlaneyMelFormula { get }
+swift.type.property    MelFrequency.axisTag : static var axisTag: DomainTag.Axis { get }
+swift.type.property    Novelty.tag : static var tag: DomainTag { get }
+swift.type.property    NyquistFrequencyKey.defaultValue : static var defaultValue: Double { get }
+swift.type.property    ParameterVector.zero : static let zero: ParameterVector
+swift.type.property    PowerValues.valuesTag : static var valuesTag: DomainTag.Values { get }
+swift.type.property    Quefrency.tag : static var tag: DomainTag { get }
+swift.type.property    ResultRateKey.defaultValue : static var defaultValue: Double { get }
+swift.type.property    RollOff.decibelsPerDecadePerOrder : static let decibelsPerDecadePerOrder: Double
+swift.type.property    RollOff.decibelsPerOctavePerOrder : static let decibelsPerOctavePerOrder: Double
+swift.type.property    SampleRateKey.defaultValue : static var defaultValue: Double { get }
+swift.type.property    Samples.tag : static var tag: DomainTag { get }
+swift.type.property    Scalar.tag : static var tag: DomainTag { get }
+swift.type.property    ScalarFrame.none : static let none: ScalarFrame
+swift.type.property    SignalDomain.tag : static var tag: DomainTag { get }
+swift.type.property    SourceKindKey.defaultValue : static var defaultValue: SourceKind { get }
+swift.type.property    SpectralAxis.axisTag : static var axisTag: DomainTag.Axis { get }
+swift.type.property    SpectralValues.valuesTag : static var valuesTag: DomainTag.Values { get }
+swift.type.property    Spectrum.tag : static var tag: DomainTag { get }
+swift.type.property    StageActivation.active : static let active: StageActivation
+swift.type.property    StagePath.none : static let none: StagePath
+swift.type.property    StageValue.stageName : static var stageName: String { get }
+swift.type.property    TempoSpectrum.tag : static var tag: DomainTag { get }
+swift.type.property    Vector.Crossover.elementwise : static var elementwise: Int { get }
+swift.type.property    Vector.Crossover.reductionAccelerate : static var reductionAccelerate: Int { get }
+swift.type.property    Vector.Crossover.reductionSIMD : static var reductionSIMD: Int { get }
+swift.type.property    Window.blackman : static var blackman: Window { get }
+swift.type.property    Window.blackmanHarris : static var blackmanHarris: Window { get }
+swift.type.property    Window.flatTop : static var flatTop: Window { get }
+swift.type.property    Window.hamming : static var hamming: Window { get }
+swift.type.property    Window.hann : static var hann: Window { get }
+swift.type.property    Window.rectangular : static var rectangular: Window { get }
+swift.typealias        ActivatedStage.Input : typealias Input = Base.Input
+swift.typealias        ActivatedStage.Output : typealias Output = Base.Output
+swift.typealias        EnvironmentReader.Input : typealias Input = Content.Input
+swift.typealias        EnvironmentReader.Output : typealias Output = Content.Output
+swift.typealias        FeatureStream.Element : typealias Element = FeatureFrame
+swift.typealias        Group.Input : typealias Input = Content.Input
+swift.typealias        Group.Output : typealias Output = Content.Output
+swift.typealias        Measuring.Input : typealias Input = Step.Input
+swift.typealias        Measuring.Output : typealias Output = Step.Input
+swift.typealias        Tap.Input : typealias Input = Domain
+swift.typealias        Tap.Output : typealias Output = Domain
+swift.typealias        Vector.Bound.Binary : typealias Binary = @Sendable (UnsafePointer<Float>, UnsafePointer<Float>, UnsafeMutablePointer<Float>, Int) -> Void
+swift.typealias        Vector.Bound.BinaryReduction : typealias BinaryReduction = @Sendable (UnsafePointer<Float>, UnsafePointer<Float>, Int) -> Float
+swift.typealias        Vector.Bound.Clip : typealias Clip = @Sendable (UnsafePointer<Float>, Float, Float, UnsafeMutablePointer<Float>, Int) -> Void
+swift.typealias        Vector.Bound.Reduction : typealias Reduction = @Sendable (UnsafePointer<Float>, Int) -> Float
+swift.typealias        Vector.Bound.Scale : typealias Scale = @Sendable (UnsafePointer<Float>, Float, UnsafeMutablePointer<Float>, Int) -> Void

@@ -1,0 +1,9 @@
+# ZTronDSP — public API digest (VIS-3).
+# Generated from the built module by Scripts/api-digest.sh --update. Do not edit: a difference
+# from the build fails CI gate 4, and changing the public API is a change request.
+
+reexport               ZTronDSPAnalysis
+reexport               ZTronDSPCore
+reexport               ZTronDSPDesign
+reexport               ZTronDSPIO
+reexport               ZTronDSPMetal

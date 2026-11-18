@@ -1,0 +1,32 @@
+# Unchecked Sendable register (§9.2)
+
+`@unchecked Sendable` is allowed only on types whose threading contract is written at the
+declaration (ring end-points, feeds). Each is listed here and reviewed under lens A.
+`Scripts/lint-bans.sh --part 4` keeps this register equal to the code.
+
+`Type` is the type as the lint reports it. `File` is its path under the package root.
+
+| Type | File | Threading contract |
+|---|---|---|
+| `UnfairLock` | `Sources/ZTronDSPCore/Support/UnfairLock.swift` | The lock word lives on stable heap storage and is touched only through `os_unfair_lock_lock` / `os_unfair_lock_unlock`. Taken on the control context, on the main thread (the binding pump, feed readers) and in background work, never on the analysis or I/O thread (RT-2). |
+| `Locked` | `Sources/ZTronDSPCore/Support/UnfairLock.swift` | The guarded value is read and written only inside `UnfairLock.withLock`. Control context, main thread and background work; never the analysis or I/O thread. |
+| `Handoff` | `Sources/ZTronDSPCore/Engine/Handoff.swift` | An atomic slot between two contexts (RT-4). The control context publishes, withdraws and drains; one consumer thread takes, installs and retires. The consumer's fields (`installed`, `limbo`) are touched by the consumer only, which is the analysis thread, or the control context while no thread runs the hub. |
+| `RunnerThread` | `Sources/ZTronDSPCore/Engine/RunnerThread.swift` | `start`, `stop`, `wake` and publishing the schedule belong to the control context, behind a lock. `turn` runs on the thread itself, or on a test's thread for an engine driven by hand. Counters are single atomic words. |
+| `HubRunner` | `Sources/ZTronDSPCore/Engine/Run/HubRunner.swift` | The analysis-side half of a hub. Its stage arrives through a `Handoff`; everything else (`position`, pacing) is touched by the one thread that runs the hub. `ended` is a single atomic word the control context reads. |
+| `SessionRunner` | `Sources/ZTronDSPCore/Engine/Run/SessionRunner.swift` | The analysis-side half of a session. Plans and consumers arrive through `Handoff`s, values and switches through two SPSC queues (one producer each: control context, main thread). State is touched by the thread that runs the session; `settle`, `finishFade` and `drop` are called by the control context only while the hub is paused. Status is three atomic words. |
+| `SessionCore` | `Sources/ZTronDSPCore/Engine/SessionCore.swift` | `state` and `environment` are behind a lock and readable anywhere. Every other field belongs to the engine's control context. |
+| `SourceHub` | `Sources/ZTronDSPCore/Engine/SourceHub.swift` | Control context only; `runner` is its half on the analysis side. |
+| `EngineCore` | `Sources/ZTronDSPCore/Engine/EngineCore.swift` | Immutable configuration plus state that is touched on the engine's serial control queue only; public entry points hop to it (`control.sync`, `control.run`). |
+| `Route` | `Sources/ZTronDSPCore/Engine/ControlContext.swift` | The handler is behind a lock; the weak reference to the source is written once at creation and read under the registry's lock. |
+| `RunLoopHooks` | `Sources/ZTronDSPCore/Bindings/BindingPump.swift` | Written on the main actor by the pump that owns it; its `deinit` only invalidates the observer and the timer, which CoreFoundation allows from any thread. |
+| `ResultSlot` | `Sources/ZTronDSPCore/Feeds/ResultSlot.swift` | One writer, the analysis thread; readers on the main thread. A scalar is one atomic word; a vector is guarded by a sequence counter, so a reader that overlaps a write sees it and reads again. `claim` allocates on the control context while no writer runs. |
+| `ColumnStore` | `Sources/ZTronDSPCore/Feeds/ColumnStore.swift` | The store of a feed: one writer (the analysis thread: `append`, `clear`), any number of readers that validate what they copied against the writer's two counters, and the control context, which hands the writer a new layout through a `Handoff`. Readers and the control context share a lock the writer never takes. |
+| `FeatureStream` | `Sources/ZTronDSPCore/Feeds/FeatureStream.swift` | `write` belongs to the analysis thread and touches pre-allocated storage and two atomic counters. The consumer's cursor, its waiter and the storage reference are behind a lock the writer never takes. `claim`, `connect` and `release` run on the control context while no writer runs. |
+| `SampleRing` | `Sources/ZTronDSPCore/Sources/RingWriter.swift` | Owns a `ztd_ring_t`: one writer thread (through `RingWriter`), one reader (the analysis thread); created and destroyed on the control context. |
+| `SourceAdapter` | `Sources/ZTronDSPCore/Sources/SourceAdapter.swift` | `next(into:)` and the assembly state belong to the one thread that runs the hub. `rewind`, `close` and `discardPending` are called by the control context while the hub is off its thread. The counters are single atomic words. |
+| `GeneratorSource` | `Sources/ZTronDSPCore/Sources/GeneratorSource.swift` | `render` advances the generator on the thread the engine paces the source on; `prepare` resets it on the control context while the source is not running. Everything else is immutable. |
+| `BufferSource` | `Sources/ZTronDSPCore/Sources/BufferSource.swift` | The samples are immutable. The read position is advanced by `render` on the pacing thread and reset by `prepare` while the source is not running. |
+| `ScriptedSource` | `Sources/ZTronDSPCore/Sources/ScriptedSource.swift` | A test double. The script position belongs to the thread that renders; the current format is behind a lock, because the control context reads it; events are sent from `render`, which is its stated exception to RT-2. |
+| `ProcessedSource` | `Sources/ZTronDSPCore/Sources/ProcessedSource.swift` | An immutable description plus the resolved format, which is behind a lock. |
+| `ThreadAllocationAudit` | `Sources/ZTronDSPTesting/AllocationAudit.swift` | `begin()` and `end()` are called on the one audited thread, which alone touches the token; the state and the counts are single atomic words, readable on any thread. |
+| `Guarded` | `Sources/ZTronDSPIO/Support/Guarded.swift` | The guarded value is read and written only between `os_unfair_lock_lock` and `os_unfair_lock_unlock` on a lock word that lives on stable heap storage. Taken on the control context, on a source's notification queue and on its reader or pacing thread; never on the audio I/O thread, which runs no Swift (RT-1), nor on the analysis thread (RT-2). Not recursive. |

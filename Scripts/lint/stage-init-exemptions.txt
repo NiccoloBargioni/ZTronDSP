@@ -1,0 +1,7 @@
+# Stage types whose public initialisers do not end in `isActive:` (the API-digest check of WP-013).
+# One type name per line. Adding a name is a change request: API-5 and ACT-1 say which stages
+# take the argument, and these are the ones they leave out.
+
+Pipeline             # the container of stages: it is switched stage by stage, or through Group(isActive:)
+EnvironmentReader    # ACT-1: "EnvironmentReader and .environment have nothing to switch"
+SequenceChain        # a run of sequence stages, spliced into the pipeline that holds it: it is switched stage by stage, or through Group(isActive:)

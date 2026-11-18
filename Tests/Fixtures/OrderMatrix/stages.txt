@@ -1,0 +1,4 @@
+# stages of the fixture
+OnA | OnA()
+OnAB | OnAB()
+Everywhere | Everywhere()

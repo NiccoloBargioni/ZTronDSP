@@ -1,0 +1,48 @@
+{
+ "coveredLines": 50,
+ "executableLines": 630,
+ "lineCoverage": 0.07936507936507936,
+ "targets": [
+  {
+   "buildProductPath": "/build/DerivedData/ZTronDSPCoreTests",
+   "coveredLines": 50,
+   "executableLines": 630,
+   "files": [
+    {
+     "coveredLines": 0,
+     "executableLines": 100,
+     "functions": [],
+     "lineCoverage": 0.0,
+     "name": "Probe.swift",
+     "path": "/build/ZTronDSP/Sources/ZTronDSPTesting/Probe.swift"
+    },
+    {
+     "coveredLines": 50,
+     "executableLines": 100,
+     "functions": [],
+     "lineCoverage": 0.5,
+     "name": "UnitsTests.swift",
+     "path": "/build/ZTronDSP/Tests/ZTronDSPCoreTests/UnitsTests.swift"
+    },
+    {
+     "coveredLines": 0,
+     "executableLines": 400,
+     "functions": [],
+     "lineCoverage": 0.0,
+     "name": "Gallery.swift",
+     "path": "/build/ZTronDSP/Examples/ZTronDSPGallery/Gallery.swift"
+    },
+    {
+     "coveredLines": 0,
+     "executableLines": 30,
+     "functions": [],
+     "lineCoverage": 0,
+     "name": "resource_bundle_accessor.swift",
+     "path": "/build/DerivedData/Build/Intermediates.noindex/DerivedSources/resource_bundle_accessor.swift"
+    }
+   ],
+   "lineCoverage": 0.07936507936507936,
+   "name": "ZTronDSPCoreTests"
+  }
+ ]
+}

@@ -1,0 +1,13 @@
+# The suites that record benchmarks (PERF-1): what Scripts/benchmarks.sh runs, one at a time,
+# in an optimised build, with ZTD_BENCHMARK_OUTPUT set.
+#
+# One filter per line, as `xcodebuild -only-testing:` takes them: a test target, Target/Suite
+# or Target/Suite/test. A suite that calls `Benchmark.record` belongs here; one that also holds
+# a timing against a budget of §5.7 does so only in this run.
+CZTronDSPTests
+ZTronDSPCoreTests/OverheadBudgetTests
+ZTronDSPCoreTests/BindingTests
+ZTronDSPMetalTests/CalibrationTests
+ZTronDSPAnalysisTests/ConstantQKernelTests
+ZTronDSPAnalysisTests/AnalysisCalibrationTests
+ZTronDSPAnalysisTests/FullAnalysisAuditTests

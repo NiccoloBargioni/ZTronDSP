@@ -1,0 +1,1 @@
+{"cases":[{"name":"speech","parameters":{"count":22050,"sampleRate":22050.0},"values":{"samples":{"raw":"fixture_speech.f32","shape":[22050]}}},{"name":"music","parameters":{"count":44100,"sampleRate":22050.0},"values":{"samples":{"raw":"fixture_music.f32","shape":[44100]}}}],"generator":"fixtures","oracle":{"numpy":"2.2.6","scipy":"1.15.3"}}

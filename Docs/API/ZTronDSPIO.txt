@@ -1,0 +1,88 @@
+# ZTronDSPIO — public API digest (VIS-3).
+# Generated from the built module by Scripts/api-digest.sh --update. Do not edit: a difference
+# from the build fails CI gate 4, and changing the public API is a change request.
+
+conformance            AudioInput : Swift.Equatable
+conformance            AudioInput : Swift.Hashable
+conformance            AudioInput : Swift.Identifiable
+conformance            AudioInput : Swift.Sendable
+conformance            AudioInput : Swift.SendableMetatype
+conformance            AudioInput.Kind : Swift.Equatable
+conformance            AudioInput.Kind : Swift.Hashable
+conformance            AudioInput.Kind : Swift.Sendable
+conformance            AudioInput.Kind : Swift.SendableMetatype
+conformance            AudioSessionControlling : Swift.Sendable
+conformance            AudioSessionControlling : Swift.SendableMetatype
+conformance            AudioSessionPolicy : Swift.Sendable
+conformance            AudioSessionPolicy : Swift.SendableMetatype
+conformance            EngineNodeTapSource : Swift.Sendable
+conformance            EngineNodeTapSource : Swift.SendableMetatype
+conformance            EngineNodeTapSource : ZTronDSPCore.PushSampleSource
+conformance            EngineNodeTapSource : ZTronDSPCore.SampleSource
+conformance            FileSource : Swift.Sendable
+conformance            FileSource : Swift.SendableMetatype
+conformance            FileSource : ZTronDSPCore.PushSampleSource
+conformance            FileSource : ZTronDSPCore.SampleSource
+conformance            HardwareInputSource : Swift.Sendable
+conformance            HardwareInputSource : Swift.SendableMetatype
+conformance            HardwareInputSource : ZTronDSPCore.PushSampleSource
+conformance            HardwareInputSource : ZTronDSPCore.SampleSource
+swift.class            EngineNodeTapSource : final class EngineNodeTapSource
+swift.class            FileSource : final class FileSource
+swift.class            HardwareInputSource : final class HardwareInputSource
+swift.enum             AudioInput.Kind : enum Kind
+swift.enum.case        AudioInput.Kind.bluetooth : case bluetooth
+swift.enum.case        AudioInput.Kind.builtIn : case builtIn
+swift.enum.case        AudioInput.Kind.continuity : case continuity
+swift.enum.case        AudioInput.Kind.other : case other
+swift.enum.case        AudioInput.Kind.usb : case usb
+swift.enum.case        AudioInput.Kind.wired : case wired
+swift.init             AudioInput.init(id:name:kind:dataSources:) : init(id: String, name: String, kind: AudioInput.Kind, dataSources: [String] = [])
+swift.init             EngineNodeTapSource.init(node:bus:blockSize:) : convenience init(node: AVAudioNode, bus: Int = 0, blockSize: Int = 512)
+swift.init             FileSource.init(url:pacing:sampleRate:blockSize:) : convenience init(url: URL, pacing: Pacing = .realTime, sampleRate: Double? = nil, blockSize: Int = 512)
+swift.init             HardwareInputSource.init(input:dataSource:policy:voiceProcessing:) : convenience init(input: AudioInput? = nil, dataSource: String? = nil, policy: AudioSessionPolicy = .playAndRecord, voiceProcessing: Bool = false)
+swift.method           AudioSessionControlling.setActive(_:options:) : func setActive(_ active: Bool, options: AVAudioSession.SetActiveOptions) throws(DSPError)
+swift.method           AudioSessionControlling.setAllowHapticsAndSystemSoundsDuringRecording(_:) : func setAllowHapticsAndSystemSoundsDuringRecording(_ allowed: Bool) throws(DSPError)
+swift.method           AudioSessionControlling.setCategory(_:mode:options:) : func setCategory(_ category: AVAudioSession.Category, mode: AVAudioSession.Mode, options: AVAudioSession.CategoryOptions) throws(DSPError)
+swift.method           AudioSessionControlling.setPreferredDataSource(_:for:) : func setPreferredDataSource(_ dataSource: String, for input: AudioInput) throws(DSPError)
+swift.method           AudioSessionControlling.setPreferredInput(_:) : func setPreferredInput(_ input: AudioInput?) throws(DSPError)
+swift.method           AudioSessionPolicy.allowingBluetoothHandsFree() : func allowingBluetoothHandsFree() -> AudioSessionPolicy
+swift.method           AudioSessionPolicy.allowingHighQualityBluetoothRecording() : func allowingHighQualityBluetoothRecording() -> AudioSessionPolicy @available(iOS, introduced: 26.0)
+swift.method           AudioSessionPolicy.deactivatingOnStop() : func deactivatingOnStop() -> AudioSessionPolicy
+swift.method           AudioSessionPolicy.mixingWithOthers() : func mixingWithOthers() -> AudioSessionPolicy
+swift.method           EngineNodeTapSource.connect(to:) : func connect(to ring: RingWriter)
+swift.method           EngineNodeTapSource.prepare() : func prepare() async throws(DSPError)
+swift.method           EngineNodeTapSource.start() : func start() throws(DSPError)
+swift.method           EngineNodeTapSource.stop() : func stop()
+swift.method           FileSource.connect(to:) : func connect(to ring: RingWriter)
+swift.method           FileSource.prepare() : func prepare() async throws(DSPError)
+swift.method           FileSource.start() : func start() throws(DSPError)
+swift.method           FileSource.stop() : func stop()
+swift.method           HardwareInputSource.connect(to:) : func connect(to ring: RingWriter)
+swift.method           HardwareInputSource.prepare() : func prepare() async throws(DSPError)
+swift.method           HardwareInputSource.start() : func start() throws(DSPError)
+swift.method           HardwareInputSource.stop() : func stop()
+swift.property         AudioInput.dataSources : let dataSources: [String]
+swift.property         AudioInput.id : let id: String
+swift.property         AudioInput.kind : let kind: AudioInput.Kind
+swift.property         AudioInput.name : let name: String
+swift.property         AudioSessionControlling.availableInputs : var availableInputs: [AudioInput] { get }
+swift.property         AudioSessionControlling.category : var category: AVAudioSession.Category { get }
+swift.property         AudioSessionControlling.categoryOptions : var categoryOptions: AVAudioSession.CategoryOptions { get }
+swift.property         AudioSessionControlling.currentInput : var currentInput: AudioInput? { get }
+swift.property         AudioSessionControlling.isInputAvailable : var isInputAvailable: Bool { get }
+swift.property         AudioSessionControlling.mode : var mode: AVAudioSession.Mode { get }
+swift.property         EngineNodeTapSource.events : var events: AsyncStream<SourceEvent> { get }
+swift.property         EngineNodeTapSource.format : var format: SignalFormat { get }
+swift.property         FileSource.events : var events: AsyncStream<SourceEvent> { get }
+swift.property         FileSource.format : var format: SignalFormat { get }
+swift.property         HardwareInputSource.events : var events: AsyncStream<SourceEvent> { get }
+swift.property         HardwareInputSource.format : var format: SignalFormat { get }
+swift.protocol         AudioSessionControlling : protocol AudioSessionControlling : AnyObject, Sendable
+swift.struct           AudioInput : struct AudioInput
+swift.struct           AudioSessionPolicy : struct AudioSessionPolicy
+swift.type.method      AudioSessionPolicy.custom(_:) : static func custom(_ configure: @escaping @Sendable (any AudioSessionControlling) throws -> Void) -> AudioSessionPolicy
+swift.type.method      HardwareInputSource.availableInputs(policy:) : static func availableInputs(policy: AudioSessionPolicy = .playAndRecord) async throws(DSPError) -> [AudioInput]
+swift.type.property    AudioSessionPolicy.external : static let external: AudioSessionPolicy
+swift.type.property    AudioSessionPolicy.measurement : static let measurement: AudioSessionPolicy
+swift.type.property    AudioSessionPolicy.playAndRecord : static let playAndRecord: AudioSessionPolicy

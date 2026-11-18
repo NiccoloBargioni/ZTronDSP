@@ -1,0 +1,36 @@
+{
+  "results": [
+    {
+      "iterations": 1000,
+      "mean": 3090.0,
+      "median": 3060.0,
+      "minimum": 3000.0,
+      "name": "biquad, 8 sections, 512 frames",
+      "samples": 21
+    },
+    {
+      "iterations": 1000,
+      "mean": 103.0,
+      "median": 102.0,
+      "minimum": 100.0,
+      "name": "gain, 512 frames",
+      "samples": 21
+    },
+    {
+      "iterations": 1000,
+      "mean": 9270.0,
+      "median": 9180.0,
+      "minimum": 9000.0,
+      "name": "partitioned FIR, 4 096 taps",
+      "samples": 21
+    },
+    {
+      "iterations": 1000,
+      "mean": 41.2,
+      "median": 40.8,
+      "minimum": 40.0,
+      "name": "ring write, 512 frames",
+      "samples": 21
+    }
+  ]
+}

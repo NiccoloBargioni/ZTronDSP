@@ -1,0 +1,304 @@
+# ZTronDSPMetal — public API digest (VIS-3).
+# Generated from the built module by Scripts/api-digest.sh --update. Do not edit: a difference
+# from the build fails CI gate 4, and changing the public API is a change request.
+
+conformance            CalibrationCandidate : Swift.Sendable
+conformance            CalibrationCandidate : Swift.SendableMetatype
+conformance            CalibrationCurve : Swift.Decodable
+conformance            CalibrationCurve : Swift.Encodable
+conformance            CalibrationCurve : Swift.Equatable
+conformance            CalibrationCurve : Swift.Hashable
+conformance            CalibrationCurve : Swift.Sendable
+conformance            CalibrationCurve : Swift.SendableMetatype
+conformance            CalibrationReport : Swift.Decodable
+conformance            CalibrationReport : Swift.Encodable
+conformance            CalibrationReport : Swift.Equatable
+conformance            CalibrationReport : Swift.Hashable
+conformance            CalibrationReport : Swift.Sendable
+conformance            CalibrationReport : Swift.SendableMetatype
+conformance            CalibrationReport : ZTronDSPCore.MATLABExportable
+conformance            ColorMap : Swift.Equatable
+conformance            ColorMap : Swift.Hashable
+conformance            ColorMap : Swift.Sendable
+conformance            ColorMap : Swift.SendableMetatype
+conformance            CrossoverEntry : Swift.CaseIterable
+conformance            CrossoverEntry : Swift.Decodable
+conformance            CrossoverEntry : Swift.Encodable
+conformance            CrossoverEntry : Swift.Equatable
+conformance            CrossoverEntry : Swift.Hashable
+conformance            CrossoverEntry : Swift.RawRepresentable
+conformance            CrossoverEntry : Swift.Sendable
+conformance            CrossoverEntry : Swift.SendableMetatype
+conformance            CrossoverMeasurement : Swift.Decodable
+conformance            CrossoverMeasurement : Swift.Encodable
+conformance            CrossoverMeasurement : Swift.Equatable
+conformance            CrossoverMeasurement : Swift.Hashable
+conformance            CrossoverMeasurement : Swift.Sendable
+conformance            CrossoverMeasurement : Swift.SendableMetatype
+conformance            DisplayColor : Swift.Equatable
+conformance            DisplayColor : Swift.Hashable
+conformance            DisplayColor : Swift.Sendable
+conformance            DisplayColor : Swift.SendableMetatype
+conformance            FrequencyScale : Swift.Equatable
+conformance            FrequencyScale : Swift.Hashable
+conformance            FrequencyScale : Swift.Sendable
+conformance            FrequencyScale : Swift.SendableMetatype
+conformance            GrayscaleColorMap : ColorMap
+conformance            GrayscaleColorMap : Swift.Equatable
+conformance            GrayscaleColorMap : Swift.Hashable
+conformance            GrayscaleColorMap : Swift.Sendable
+conformance            GrayscaleColorMap : Swift.SendableMetatype
+conformance            HeatmapRenderer : Swift.Sendable
+conformance            HeatmapRenderer : Swift.SendableMetatype
+conformance            LinearFrequencyScale : FrequencyScale
+conformance            LinearFrequencyScale : Swift.Equatable
+conformance            LinearFrequencyScale : Swift.Hashable
+conformance            LinearFrequencyScale : Swift.Sendable
+conformance            LinearFrequencyScale : Swift.SendableMetatype
+conformance            ListedColorMap : ColorMap
+conformance            ListedColorMap : Swift.Equatable
+conformance            ListedColorMap : Swift.Hashable
+conformance            ListedColorMap : Swift.Sendable
+conformance            ListedColorMap : Swift.SendableMetatype
+conformance            LogarithmicFrequencyScale : FrequencyScale
+conformance            LogarithmicFrequencyScale : Swift.Equatable
+conformance            LogarithmicFrequencyScale : Swift.Hashable
+conformance            LogarithmicFrequencyScale : Swift.Sendable
+conformance            LogarithmicFrequencyScale : Swift.SendableMetatype
+conformance            MelFrequencyScale : FrequencyScale
+conformance            MelFrequencyScale : Swift.Equatable
+conformance            MelFrequencyScale : Swift.Hashable
+conformance            MelFrequencyScale : Swift.Sendable
+conformance            MelFrequencyScale : Swift.SendableMetatype
+conformance            MetalCapabilities : Swift.Equatable
+conformance            MetalCapabilities : Swift.Hashable
+conformance            MetalCapabilities : Swift.Sendable
+conformance            MetalCapabilities : Swift.SendableMetatype
+conformance            MetalContext : Swift.Sendable
+conformance            MetalContext : Swift.SendableMetatype
+conformance            MetalMedianFilter : Swift.Sendable
+conformance            MetalMedianFilter : Swift.SendableMetatype
+conformance            MetalMedianFilter.Axis : Swift.Equatable
+conformance            MetalMedianFilter.Axis : Swift.Hashable
+conformance            MetalMedianFilter.Axis : Swift.Sendable
+conformance            MetalMedianFilter.Axis : Swift.SendableMetatype
+conformance            PixelImage : Swift.Equatable
+conformance            PixelImage : Swift.Hashable
+conformance            PixelImage : Swift.Sendable
+conformance            PixelImage : Swift.SendableMetatype
+conformance            RenderCauses : Swift.Equatable
+conformance            RenderCauses : Swift.ExpressibleByArrayLiteral
+conformance            RenderCauses : Swift.Hashable
+conformance            RenderCauses : Swift.OptionSet
+conformance            RenderCauses : Swift.RawRepresentable
+conformance            RenderCauses : Swift.Sendable
+conformance            RenderCauses : Swift.SendableMetatype
+conformance            RenderCauses : Swift.SetAlgebra
+conformance            RenderProbe : Swift.Sendable
+conformance            RenderProbe : Swift.SendableMetatype
+conformance            RowInterpolation : Swift.Equatable
+conformance            RowInterpolation : Swift.Hashable
+conformance            RowInterpolation : Swift.Sendable
+conformance            RowInterpolation : Swift.SendableMetatype
+conformance            TurboColorMap : ColorMap
+conformance            TurboColorMap : Swift.Equatable
+conformance            TurboColorMap : Swift.Hashable
+conformance            TurboColorMap : Swift.Sendable
+conformance            TurboColorMap : Swift.SendableMetatype
+conformance            WaveformRenderer : Swift.Sendable
+conformance            WaveformRenderer : Swift.SendableMetatype
+swift.class            HeatmapRenderer : @MainActor final class HeatmapRenderer
+swift.class            MetalContext : final class MetalContext
+swift.class            OffscreenTarget : final class OffscreenTarget
+swift.class            RenderProbe : @MainActor final class RenderProbe
+swift.class            WaveformRenderer : @MainActor final class WaveformRenderer
+swift.enum             Calibration : enum Calibration
+swift.enum             CrossoverEntry : enum CrossoverEntry
+swift.enum             MetalMedianFilter.Axis : enum Axis
+swift.enum             RowInterpolation : enum RowInterpolation
+swift.enum.case        CrossoverEntry.biquadKernel : case biquadKernel
+swift.enum.case        CrossoverEntry.elementwise : case elementwise
+swift.enum.case        CrossoverEntry.firPartitioned : case firPartitioned
+swift.enum.case        CrossoverEntry.gainKernel : case gainKernel
+swift.enum.case        CrossoverEntry.laneExchange : case laneExchange
+swift.enum.case        CrossoverEntry.medianGPU : case medianGPU
+swift.enum.case        CrossoverEntry.melDense : case melDense
+swift.enum.case        CrossoverEntry.reductionAccelerate : case reductionAccelerate
+swift.enum.case        CrossoverEntry.reductionSIMD : case reductionSIMD
+swift.enum.case        MetalMedianFilter.Axis.frequency : case frequency
+swift.enum.case        MetalMedianFilter.Axis.time : case time
+swift.enum.case        RowInterpolation.linear : case linear
+swift.enum.case        RowInterpolation.nearest : case nearest
+swift.init             CalibrationCandidate.init(_:label:measure:) : init(_ implementation: Implementation, label: String, measure: @escaping @Sendable (Int, (() -> Void) -> Double) -> Double)
+swift.init             CalibrationCurve.init(from:) : init(from decoder: any Decoder) throws
+swift.init             CalibrationCurve.init(implementation:label:nanoseconds:) : init(implementation: Implementation, label: String, nanoseconds: [Double])
+swift.init             CalibrationReport.init(from:) : init(from decoder: any Decoder) throws
+swift.init             CalibrationReport.init(measurements:startingFrom:) : init(measurements: [CrossoverMeasurement], startingFrom base: CrossoverTable = .shipped)
+swift.init             CrossoverEntry.init(rawValue:) : init?(rawValue: String)
+swift.init             CrossoverMeasurement.init(entry:sizes:curves:) : init(entry: CrossoverEntry, sizes: [Int], curves: [CalibrationCurve])
+swift.init             CrossoverMeasurement.init(from:) : init(from decoder: any Decoder) throws
+swift.init             DisplayColor.init(red:green:blue:) : init(red: Double, green: Double, blue: Double)
+swift.init             GrayscaleColorMap.init() : init()
+swift.init             HeatmapRenderer.init(context:feed:probe:) : @MainActor init(context: MetalContext, feed: HeatmapFeed, probe: RenderProbe? = nil) throws(DSPError)
+swift.init             LinearFrequencyScale.init() : init()
+swift.init             ListedColorMap.init(name:colors:) : init(name: String, colors: [DisplayColor])
+swift.init             LogarithmicFrequencyScale.init(lowestFrequency:) : init(lowestFrequency: Double = 20)
+swift.init             MelFrequencyScale.init(formula:) : init(formula: Formula)
+swift.init             MetalContext.init(device:) : convenience init(device: (any MTLDevice)?) throws(DSPError)
+swift.init             MetalMedianFilter.init(context:) : init(context: MetalContext)
+swift.init             OffscreenTarget.init(context:width:height:pixelFormat:) : init(context: MetalContext, width: Int, height: Int, pixelFormat: MTLPixelFormat = .rgba8Unorm) throws(DSPError)
+swift.init             PixelImage.init(_:) : init(_ image: CGImage) throws(DSPError)
+swift.init             PixelImage.init(pngData:) : init(pngData: Data) throws(DSPError)
+swift.init             PixelImage.init(width:height:pixels:) : init(width: Int, height: Int, pixels: [UInt8]) throws(DSPError)
+swift.init             RenderCauses.init(rawValue:) : init(rawValue: Int)
+swift.init             RenderProbe.init() : @MainActor init()
+swift.init             TurboColorMap.init() : init()
+swift.init             WaveformRenderer.init(context:feed:probe:) : @MainActor init(context: MetalContext, feed: WaveformFeed, probe: RenderProbe? = nil) throws(DSPError)
+swift.method           CalibrationReport.matlabScript() : func matlabScript() async throws(DSPError) -> String
+swift.method           ColorMap.color(at:) : func color(at position: Double) -> DisplayColor
+swift.method           CrossoverTable.replacing(_:with:) : func replacing(_ entry: CrossoverEntry, with size: Int) -> CrossoverTable   [extends ZTronDSPCore]
+swift.method           CrossoverTable.size(of:) : func size(of entry: CrossoverEntry) -> Int   [extends ZTronDSPCore]
+swift.method           FeedSnapshot.image(size:colorMap:valueRange:frequencyScale:) : func image(size: CGSize, colorMap: some ColorMap = .viridis, valueRange: ClosedRange<Float>, frequencyScale: some FrequencyScale = .linear) async throws(DSPError) -> CGImage   [extends ZTronDSPCore]
+swift.method           FrequencyScale.frequency(at:) : func frequency(at position: Double) -> Double
+swift.method           FrequencyScale.position(of:) : func position(of hertz: Double) -> Double
+swift.method           GrayscaleColorMap.color(at:) : func color(at position: Double) -> DisplayColor
+swift.method           HeatmapRenderer.becameVisible() : @MainActor func becameVisible()
+swift.method           HeatmapRenderer.draw(to:presenting:) : @discardableResult @MainActor func draw(to pass: MTLRenderPassDescriptor, presenting drawable: (any MTLDrawable)? = nil) -> Bool
+swift.method           HeatmapRenderer.drawableSizeChanged() : @MainActor func drawableSizeChanged()
+swift.method           HeatmapRenderer.needsDraw() : @MainActor func needsDraw() -> Bool
+swift.method           HeatmapRenderer.render(to:in:) : @MainActor func render(to pass: MTLRenderPassDescriptor, in commands: any MTLCommandBuffer) -> Bool
+swift.method           HeatmapRenderer.setColorMap(_:) : @MainActor func setColorMap(_ colorMap: some ColorMap)
+swift.method           HeatmapRenderer.setFeed(_:) : @MainActor func setFeed(_ feed: HeatmapFeed)
+swift.method           HeatmapRenderer.setFrequencyRange(_:) : @MainActor func setFrequencyRange(_ range: ClosedRange<Double>?)
+swift.method           HeatmapRenderer.setFrequencyScale(_:) : @MainActor func setFrequencyScale(_ scale: some FrequencyScale)
+swift.method           HeatmapRenderer.setRowInterpolation(_:) : @MainActor func setRowInterpolation(_ interpolation: RowInterpolation)
+swift.method           HeatmapRenderer.setRowRange(_:) : @MainActor func setRowRange(_ range: ClosedRange<Double>?)
+swift.method           HeatmapRenderer.setValueRange(_:) : @MainActor func setValueRange(_ range: ClosedRange<Float>)
+swift.method           HeatmapRenderer.setVisibleColumns(_:) : @MainActor func setVisibleColumns(_ columns: Double?)
+swift.method           LinearFrequencyScale.frequency(at:) : func frequency(at position: Double) -> Double
+swift.method           LinearFrequencyScale.position(of:) : func position(of hertz: Double) -> Double
+swift.method           ListedColorMap.color(at:) : func color(at position: Double) -> DisplayColor
+swift.method           LogarithmicFrequencyScale.frequency(at:) : func frequency(at position: Double) -> Double
+swift.method           LogarithmicFrequencyScale.position(of:) : func position(of hertz: Double) -> Double
+swift.method           MelFrequencyScale.frequency(at:) : func frequency(at position: Double) -> Double
+swift.method           MelFrequencyScale.position(of:) : func position(of hertz: Double) -> Double
+swift.method           MetalContext.waitUntilIdle() : func waitUntilIdle()
+swift.method           MetalMedianFilter.filter(_:rowCount:kernel:along:checkpoint:) : func filter(_ values: [Float], rowCount: Int, kernel: Int, along axis: MetalMedianFilter.Axis, checkpoint: BackgroundWork.Checkpoint? = nil) throws(DSPError) -> [Float]
+swift.method           OffscreenTarget.readPixels() : func readPixels() -> PixelImage
+swift.method           OffscreenTarget.renderPass(clearColor:) : func renderPass(clearColor: MTLClearColor = MTLClearColor(red: 0, green: 0, blue: 0, alpha: 0)) -> MTLRenderPassDescriptor
+swift.method           PixelImage.cgImage() : func cgImage() throws(DSPError) -> CGImage
+swift.method           PixelImage.largestDifference(from:) : func largestDifference(from other: PixelImage) -> Int?
+swift.method           PixelImage.peakSignalToNoiseRatio(against:) : func peakSignalToNoiseRatio(against reference: PixelImage) -> Double?
+swift.method           PixelImage.pixel(x:y:) : func pixel(x: Int, y: Int) -> (red: UInt8, green: UInt8, blue: UInt8, alpha: UInt8)
+swift.method           RenderProbe.recordAttach() : @MainActor func recordAttach()
+swift.method           RenderProbe.recordMake() : @MainActor func recordMake()
+swift.method           RenderProbe.recordUpdate() : @MainActor func recordUpdate()
+swift.method           TurboColorMap.color(at:) : func color(at position: Double) -> DisplayColor
+swift.method           WaveformRenderer.becameVisible() : @MainActor func becameVisible()
+swift.method           WaveformRenderer.draw(to:presenting:) : @discardableResult @MainActor func draw(to pass: MTLRenderPassDescriptor, presenting drawable: (any MTLDrawable)? = nil) -> Bool
+swift.method           WaveformRenderer.drawableSizeChanged() : @MainActor func drawableSizeChanged()
+swift.method           WaveformRenderer.needsDraw() : @MainActor func needsDraw() -> Bool
+swift.method           WaveformRenderer.render(to:in:) : @MainActor func render(to pass: MTLRenderPassDescriptor, in commands: any MTLCommandBuffer) -> Bool
+swift.method           WaveformRenderer.setAmplitudeRange(_:) : @MainActor func setAmplitudeRange(_ range: ClosedRange<Float>)
+swift.method           WaveformRenderer.setBackgroundColor(_:) : @MainActor func setBackgroundColor(_ color: DisplayColor?)
+swift.method           WaveformRenderer.setFeed(_:) : @MainActor func setFeed(_ feed: WaveformFeed)
+swift.method           WaveformRenderer.setFillColor(_:opacity:) : @MainActor func setFillColor(_ color: DisplayColor, opacity: Double = 1)
+swift.method           WaveformRenderer.setVisiblePairs(_:) : @MainActor func setVisiblePairs(_ pairs: Double?)
+swift.property         CalibrationCandidate.implementation : let implementation: Implementation
+swift.property         CalibrationCandidate.label : let label: String
+swift.property         CalibrationCurve.implementation : let implementation: Implementation
+swift.property         CalibrationCurve.label : let label: String
+swift.property         CalibrationCurve.nanoseconds : let nanoseconds: [Double]
+swift.property         CalibrationReport.measurements : let measurements: [CrossoverMeasurement]
+swift.property         CalibrationReport.table : let table: CrossoverTable
+swift.property         ColorMap.lookupTable : var lookupTable: [UInt8] { get }
+swift.property         CrossoverEntry.sizeLabel : var sizeLabel: String { get }
+swift.property         CrossoverEntry.title : var title: String { get }
+swift.property         CrossoverMeasurement.crossover : let crossover: Int?
+swift.property         CrossoverMeasurement.curves : let curves: [CalibrationCurve]
+swift.property         CrossoverMeasurement.entry : let entry: CrossoverEntry
+swift.property         CrossoverMeasurement.sizes : let sizes: [Int]
+swift.property         DisplayColor.blue : let blue: Double
+swift.property         DisplayColor.bytes : var bytes: (red: UInt8, green: UInt8, blue: UInt8) { get }
+swift.property         DisplayColor.green : let green: Double
+swift.property         DisplayColor.red : let red: Double
+swift.property         HeatmapRenderer.failure : @MainActor var failure: DSPError? { get }
+swift.property         HeatmapRenderer.pendingCauses : @MainActor var pendingCauses: RenderCauses { get }
+swift.property         HeatmapRenderer.probe : @MainActor let probe: RenderProbe
+swift.property         ListedColorMap.count : var count: Int { get }
+swift.property         ListedColorMap.entries : let entries: [UInt8]
+swift.property         ListedColorMap.name : let name: String
+swift.property         LogarithmicFrequencyScale.lowestFrequency : let lowestFrequency: Double
+swift.property         MelFrequencyScale.formula : let formula: Formula
+swift.property         MetalCapabilities.deviceName : let deviceName: String
+swift.property         MetalCapabilities.filtersFloatLinearly : let filtersFloatLinearly: Bool
+swift.property         MetalCapabilities.filtersHalfFloatLinearly : let filtersHalfFloatLinearly: Bool
+swift.property         MetalCapabilities.hasUnifiedMemory : let hasUnifiedMemory: Bool
+swift.property         MetalCapabilities.maximumBufferLength : let maximumBufferLength: Int
+swift.property         MetalCapabilities.maximumTextureDimension : let maximumTextureDimension: Int
+swift.property         MetalCapabilities.readWriteTextureTier : let readWriteTextureTier: Int
+swift.property         MetalContext.capabilities : let capabilities: MetalCapabilities
+swift.property         MetalContext.commandQueue : let commandQueue: any MTLCommandQueue
+swift.property         MetalContext.device : let device: any MTLDevice
+swift.property         MetalContext.library : let library: any MTLLibrary
+swift.property         MetalMedianFilter.context : let context: MetalContext
+swift.property         OffscreenTarget.height : let height: Int
+swift.property         OffscreenTarget.texture : let texture: any MTLTexture
+swift.property         OffscreenTarget.width : let width: Int
+swift.property         PixelImage.height : let height: Int
+swift.property         PixelImage.pixels : let pixels: [UInt8]
+swift.property         PixelImage.width : let width: Int
+swift.property         RenderCauses.rawValue : let rawValue: Int
+swift.property         RenderProbe.allocations : @MainActor var allocations: Int { get }
+swift.property         RenderProbe.attaches : @MainActor var attaches: Int { get }
+swift.property         RenderProbe.clears : @MainActor var clears: Int { get }
+swift.property         RenderProbe.drawCalls : @MainActor var drawCalls: Int { get }
+swift.property         RenderProbe.draws : @MainActor var draws: Int { get }
+swift.property         RenderProbe.makes : @MainActor var makes: Int { get }
+swift.property         RenderProbe.updates : @MainActor var updates: Int { get }
+swift.property         RenderProbe.uploadedColumns : @MainActor var uploadedColumns: Int { get }
+swift.property         RenderProbe.uploads : @MainActor var uploads: Int { get }
+swift.property         WaveformRenderer.failure : @MainActor var failure: DSPError? { get }
+swift.property         WaveformRenderer.pendingCauses : @MainActor var pendingCauses: RenderCauses { get }
+swift.property         WaveformRenderer.probe : @MainActor let probe: RenderProbe
+swift.protocol         ColorMap : protocol ColorMap : Hashable, Sendable
+swift.protocol         FrequencyScale : protocol FrequencyScale : Hashable, Sendable
+swift.struct           CalibrationCandidate : struct CalibrationCandidate
+swift.struct           CalibrationCurve : struct CalibrationCurve
+swift.struct           CalibrationReport : struct CalibrationReport
+swift.struct           CrossoverMeasurement : struct CrossoverMeasurement
+swift.struct           DisplayColor : struct DisplayColor
+swift.struct           GrayscaleColorMap : struct GrayscaleColorMap
+swift.struct           LinearFrequencyScale : struct LinearFrequencyScale
+swift.struct           ListedColorMap : struct ListedColorMap
+swift.struct           LogarithmicFrequencyScale : struct LogarithmicFrequencyScale
+swift.struct           MelFrequencyScale : struct MelFrequencyScale<Formula> where Formula : MelFormula
+swift.struct           MetalCapabilities : struct MetalCapabilities
+swift.struct           MetalMedianFilter : struct MetalMedianFilter
+swift.struct           PixelImage : struct PixelImage
+swift.struct           RenderCauses : struct RenderCauses
+swift.struct           TurboColorMap : struct TurboColorMap
+swift.type.method      Calibration.crossover(sizes:lighter:heavier:) : static func crossover(sizes: [Int], lighter: [Double], heavier: [Double]) -> Int?
+swift.type.method      Calibration.measure(startingFrom:) : static func measure(startingFrom base: CrossoverTable = .shipped) async throws(DSPError) -> CrossoverTable
+swift.type.method      Calibration.report(startingFrom:) : static func report(startingFrom base: CrossoverTable = .shipped) async throws(DSPError) -> CalibrationReport
+swift.type.method      Calibration.search(_:sizes:lighter:heavier:samples:sampleDuration:checkpoint:) : static func search(_ entry: CrossoverEntry, sizes: [Int], lighter: CalibrationCandidate, heavier: CalibrationCandidate?, samples: Int = 5, sampleDuration: TimeInterval = 0.000_2, checkpoint: BackgroundWork.Checkpoint? = nil) throws(DSPError) -> CrossoverMeasurement
+swift.type.method      ColorMap.stops(_:) : static func stops(_ colors: [DisplayColor]) -> ListedColorMap
+swift.type.method      FrequencyScale.logarithmic(from:) : static func logarithmic(from lowestFrequency: Double) -> LogarithmicFrequencyScale
+swift.type.method      FrequencyScale.mel(_:) : static func mel<Formula>(_ formula: Formula) -> MelFrequencyScale<Formula> where Self == MelFrequencyScale<Formula>, Formula : MelFormula
+swift.type.method      MetalContext.shared() : static func shared() async throws(DSPError) -> MetalContext
+swift.type.method      MetalContext.sharedBlocking() : static func sharedBlocking() throws(DSPError) -> MetalContext
+swift.type.property    ColorMap.grayscale : static var grayscale: GrayscaleColorMap { get }
+swift.type.property    ColorMap.inferno : static var inferno: ListedColorMap { get }
+swift.type.property    ColorMap.magma : static var magma: ListedColorMap { get }
+swift.type.property    ColorMap.turbo : static var turbo: TurboColorMap { get }
+swift.type.property    ColorMap.viridis : static var viridis: ListedColorMap { get }
+swift.type.property    DisplayColor.black : static let black: DisplayColor
+swift.type.property    DisplayColor.white : static let white: DisplayColor
+swift.type.property    FrequencyScale.linear : static var linear: LinearFrequencyScale { get }
+swift.type.property    FrequencyScale.logarithmic : static var logarithmic: LogarithmicFrequencyScale { get }
+swift.type.property    FrequencyScale.mel : static var mel: MelFrequencyScale<SlaneyMelFormula> { get }
+swift.type.property    RenderCauses.appearanceChanged : static let appearanceChanged: RenderCauses
+swift.type.property    RenderCauses.becameVisible : static let becameVisible: RenderCauses
+swift.type.property    RenderCauses.drawableSizeChanged : static let drawableSizeChanged: RenderCauses
+swift.type.property    RenderCauses.feedReplaced : static let feedReplaced: RenderCauses
+swift.type.property    RenderCauses.newData : static let newData: RenderCauses

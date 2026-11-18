@@ -1,0 +1,1026 @@
+# ZTronDSPDesign — public API digest (VIS-3).
+# Generated from the built module by Scripts/api-digest.sh --update. Do not edit: a difference
+# from the build fails CI gate 4, and changing the public API is a change request.
+
+conformance            AlphaBeta : Swift.Equatable
+conformance            AlphaBeta : Swift.Hashable
+conformance            AlphaBeta : Swift.Sendable
+conformance            AlphaBeta : Swift.SendableMetatype
+conformance            AlphaBeta : ZTronDSPCore.SequenceStage
+conformance            AlphaBeta : ZTronDSPCore.StageValue
+conformance            AlphaBeta.Output : Swift.Equatable
+conformance            AlphaBeta.Output : Swift.Hashable
+conformance            AlphaBeta.Output : Swift.Sendable
+conformance            AlphaBeta.Output : Swift.SendableMetatype
+conformance            BandBoost : IIRSystemElement
+conformance            BandBoost : Swift.Equatable
+conformance            BandBoost : Swift.Hashable
+conformance            BandBoost : Swift.Sendable
+conformance            BandBoost : Swift.SendableMetatype
+conformance            BandBoost : SystemElement
+conformance            BandBoost : ZTronDSPCore.SequenceStage
+conformance            BandBoost : ZTronDSPCore.StageValue
+conformance            BandPass : FIRSystemElement
+conformance            BandPass : IIRSystemElement
+conformance            BandPass : Swift.Equatable
+conformance            BandPass : Swift.Hashable
+conformance            BandPass : Swift.Sendable
+conformance            BandPass : Swift.SendableMetatype
+conformance            BandPass : SystemElement
+conformance            BandPass : ZTronDSPCore.SequenceStage
+conformance            BandPass : ZTronDSPCore.StageValue
+conformance            BandStop : FIRSystemElement
+conformance            BandStop : IIRSystemElement
+conformance            BandStop : Swift.Equatable
+conformance            BandStop : Swift.Hashable
+conformance            BandStop : Swift.Sendable
+conformance            BandStop : Swift.SendableMetatype
+conformance            BandStop : SystemElement
+conformance            BandStop : ZTronDSPCore.SequenceStage
+conformance            BandStop : ZTronDSPCore.StageValue
+conformance            Bandwidth : Swift.Equatable
+conformance            Bandwidth : Swift.Hashable
+conformance            Bandwidth : Swift.Sendable
+conformance            Bandwidth : Swift.SendableMetatype
+conformance            BesselFamily : FilterFamily
+conformance            BesselFamily : Swift.Equatable
+conformance            BesselFamily : Swift.Hashable
+conformance            BesselFamily : Swift.Sendable
+conformance            BesselFamily : Swift.SendableMetatype
+conformance            BesselNormalization : Swift.Equatable
+conformance            BesselNormalization : Swift.Hashable
+conformance            BesselNormalization : Swift.Sendable
+conformance            BesselNormalization : Swift.SendableMetatype
+conformance            ButterworthFamily : FilterFamily
+conformance            ButterworthFamily : Swift.Equatable
+conformance            ButterworthFamily : Swift.Hashable
+conformance            ButterworthFamily : Swift.Sendable
+conformance            ButterworthFamily : Swift.SendableMetatype
+conformance            ButterworthOrderStrategy : FilterOrderStrategy
+conformance            ButterworthOrderStrategy : Swift.Equatable
+conformance            ButterworthOrderStrategy : Swift.Hashable
+conformance            ButterworthOrderStrategy : Swift.Sendable
+conformance            ButterworthOrderStrategy : Swift.SendableMetatype
+conformance            Chebyshev1Family : FilterFamily
+conformance            Chebyshev1Family : Swift.Equatable
+conformance            Chebyshev1Family : Swift.Hashable
+conformance            Chebyshev1Family : Swift.Sendable
+conformance            Chebyshev1Family : Swift.SendableMetatype
+conformance            Chebyshev1OrderStrategy : FilterOrderStrategy
+conformance            Chebyshev1OrderStrategy : Swift.Equatable
+conformance            Chebyshev1OrderStrategy : Swift.Hashable
+conformance            Chebyshev1OrderStrategy : Swift.Sendable
+conformance            Chebyshev1OrderStrategy : Swift.SendableMetatype
+conformance            Chebyshev2Family : FilterFamily
+conformance            Chebyshev2Family : Swift.Equatable
+conformance            Chebyshev2Family : Swift.Hashable
+conformance            Chebyshev2Family : Swift.Sendable
+conformance            Chebyshev2Family : Swift.SendableMetatype
+conformance            Chebyshev2OrderStrategy : FilterOrderStrategy
+conformance            Chebyshev2OrderStrategy : Swift.Equatable
+conformance            Chebyshev2OrderStrategy : Swift.Hashable
+conformance            Chebyshev2OrderStrategy : Swift.Sendable
+conformance            Chebyshev2OrderStrategy : Swift.SendableMetatype
+conformance            CompanionQRRootFinder : PolynomialRootFinder
+conformance            CompanionQRRootFinder : Swift.Equatable
+conformance            CompanionQRRootFinder : Swift.Hashable
+conformance            CompanionQRRootFinder : Swift.Sendable
+conformance            CompanionQRRootFinder : Swift.SendableMetatype
+conformance            ConvolutionStrategy : Swift.CaseIterable
+conformance            ConvolutionStrategy : Swift.Equatable
+conformance            ConvolutionStrategy : Swift.Hashable
+conformance            ConvolutionStrategy : Swift.Sendable
+conformance            ConvolutionStrategy : Swift.SendableMetatype
+conformance            Convolve : Swift.Equatable
+conformance            Convolve : Swift.Hashable
+conformance            Convolve : Swift.Sendable
+conformance            Convolve : Swift.SendableMetatype
+conformance            Convolve : ZTronDSPCore.SequenceStage
+conformance            Convolve : ZTronDSPCore.StageValue
+conformance            Decimate : Swift.Equatable
+conformance            Decimate : Swift.Hashable
+conformance            Decimate : Swift.Sendable
+conformance            Decimate : Swift.SendableMetatype
+conformance            Decimate : ZTronDSPCore.SequenceStage
+conformance            Decimate : ZTronDSPCore.StageValue
+conformance            DifferenceEquation : FIRSystemElement
+conformance            DifferenceEquation : IIRSystemElement
+conformance            DifferenceEquation : Swift.Equatable
+conformance            DifferenceEquation : Swift.Hashable
+conformance            DifferenceEquation : Swift.Sendable
+conformance            DifferenceEquation : Swift.SendableMetatype
+conformance            DifferenceEquation : SystemElement
+conformance            EllipticFamily : FilterFamily
+conformance            EllipticFamily : Swift.Equatable
+conformance            EllipticFamily : Swift.Hashable
+conformance            EllipticFamily : Swift.Sendable
+conformance            EllipticFamily : Swift.SendableMetatype
+conformance            EllipticOrderStrategy : FilterOrderStrategy
+conformance            EllipticOrderStrategy : Swift.Equatable
+conformance            EllipticOrderStrategy : Swift.Hashable
+conformance            EllipticOrderStrategy : Swift.Sendable
+conformance            EllipticOrderStrategy : Swift.SendableMetatype
+conformance            EqualizerDesign : Swift.Equatable
+conformance            EqualizerDesign : Swift.Hashable
+conformance            EqualizerDesign : Swift.Sendable
+conformance            EqualizerDesign : Swift.SendableMetatype
+conformance            FIRDesign : Swift.Equatable
+conformance            FIRDesign : Swift.Hashable
+conformance            FIRDesign : Swift.Sendable
+conformance            FIRDesign : Swift.SendableMetatype
+conformance            FIRDesignMethod : Swift.Equatable
+conformance            FIRDesignMethod : Swift.Hashable
+conformance            FIRDesignMethod : Swift.Sendable
+conformance            FIRDesignMethod : Swift.SendableMetatype
+conformance            FIRSystem : FIRSystemElement
+conformance            FIRSystem : LTISystem
+conformance            FIRSystem : Swift.Equatable
+conformance            FIRSystem : Swift.Hashable
+conformance            FIRSystem : Swift.Sendable
+conformance            FIRSystem : Swift.SendableMetatype
+conformance            FIRSystem : SystemElement
+conformance            FIRSystemContent : Swift.Equatable
+conformance            FIRSystemContent : Swift.Hashable
+conformance            FIRSystemContent : Swift.Sendable
+conformance            FIRSystemContent : Swift.SendableMetatype
+conformance            FIRSystemElement : Swift.Equatable
+conformance            FIRSystemElement : Swift.Hashable
+conformance            FIRSystemElement : Swift.Sendable
+conformance            FIRSystemElement : Swift.SendableMetatype
+conformance            FIRSystemElement : SystemElement
+conformance            Filter : Swift.Equatable
+conformance            Filter : Swift.Hashable
+conformance            Filter : Swift.Sendable
+conformance            Filter : Swift.SendableMetatype
+conformance            Filter : ZTronDSPCore.SequenceStage
+conformance            Filter : ZTronDSPCore.StageValue
+conformance            FilterDesign : Swift.Equatable
+conformance            FilterDesign : Swift.Hashable
+conformance            FilterDesign : Swift.Sendable
+conformance            FilterDesign : Swift.SendableMetatype
+conformance            FilterFamily : Swift.Equatable
+conformance            FilterFamily : Swift.Hashable
+conformance            FilterFamily : Swift.Sendable
+conformance            FilterFamily : Swift.SendableMetatype
+conformance            FilterOrderEstimate : Swift.Equatable
+conformance            FilterOrderEstimate : Swift.Hashable
+conformance            FilterOrderEstimate : Swift.Sendable
+conformance            FilterOrderEstimate : Swift.SendableMetatype
+conformance            FilterOrderStrategy : Swift.Equatable
+conformance            FilterOrderStrategy : Swift.Hashable
+conformance            FilterOrderStrategy : Swift.Sendable
+conformance            FilterOrderStrategy : Swift.SendableMetatype
+conformance            FilterResponse : Swift.Equatable
+conformance            FilterResponse : Swift.Hashable
+conformance            FilterResponse : Swift.Sendable
+conformance            FilterResponse : Swift.SendableMetatype
+conformance            FrequencyTransformation : Swift.Equatable
+conformance            FrequencyTransformation : Swift.Hashable
+conformance            FrequencyTransformation : Swift.Sendable
+conformance            FrequencyTransformation : Swift.SendableMetatype
+conformance            Gain : Swift.Equatable
+conformance            Gain : Swift.Hashable
+conformance            Gain : Swift.Sendable
+conformance            Gain : Swift.SendableMetatype
+conformance            Gain : ZTronDSPCore.SequenceStage
+conformance            Gain : ZTronDSPCore.StageValue
+conformance            HighPass : FIRSystemElement
+conformance            HighPass : IIRSystemElement
+conformance            HighPass : Swift.Equatable
+conformance            HighPass : Swift.Hashable
+conformance            HighPass : Swift.Sendable
+conformance            HighPass : Swift.SendableMetatype
+conformance            HighPass : SystemElement
+conformance            HighPass : ZTronDSPCore.SequenceStage
+conformance            HighPass : ZTronDSPCore.StageValue
+conformance            HighShelf : IIRSystemElement
+conformance            HighShelf : Swift.Equatable
+conformance            HighShelf : Swift.Hashable
+conformance            HighShelf : Swift.Sendable
+conformance            HighShelf : Swift.SendableMetatype
+conformance            HighShelf : SystemElement
+conformance            HighShelf : ZTronDSPCore.SequenceStage
+conformance            HighShelf : ZTronDSPCore.StageValue
+conformance            IIRDesign : Swift.Equatable
+conformance            IIRDesign : Swift.Hashable
+conformance            IIRDesign : Swift.Sendable
+conformance            IIRDesign : Swift.SendableMetatype
+conformance            IIRDesign.Domain : Swift.Equatable
+conformance            IIRDesign.Domain : Swift.Hashable
+conformance            IIRDesign.Domain : Swift.Sendable
+conformance            IIRDesign.Domain : Swift.SendableMetatype
+conformance            IIRSystem : IIRSystemElement
+conformance            IIRSystem : LTISystem
+conformance            IIRSystem : Swift.Equatable
+conformance            IIRSystem : Swift.Hashable
+conformance            IIRSystem : Swift.Sendable
+conformance            IIRSystem : Swift.SendableMetatype
+conformance            IIRSystem : SystemElement
+conformance            IIRSystemContent : Swift.Equatable
+conformance            IIRSystemContent : Swift.Hashable
+conformance            IIRSystemContent : Swift.Sendable
+conformance            IIRSystemContent : Swift.SendableMetatype
+conformance            IIRSystemElement : Swift.Equatable
+conformance            IIRSystemElement : Swift.Hashable
+conformance            IIRSystemElement : Swift.Sendable
+conformance            IIRSystemElement : Swift.SendableMetatype
+conformance            IIRSystemElement : SystemElement
+conformance            Interpolate : Swift.Equatable
+conformance            Interpolate : Swift.Hashable
+conformance            Interpolate : Swift.Sendable
+conformance            Interpolate : Swift.SendableMetatype
+conformance            Interpolate : ZTronDSPCore.SequenceStage
+conformance            Interpolate : ZTronDSPCore.StageValue
+conformance            LTISystem : Swift.Sendable
+conformance            LTISystem : Swift.SendableMetatype
+conformance            LeastSquares : FIRSystemElement
+conformance            LeastSquares : Swift.Equatable
+conformance            LeastSquares : Swift.Hashable
+conformance            LeastSquares : Swift.Sendable
+conformance            LeastSquares : Swift.SendableMetatype
+conformance            LeastSquares : SystemElement
+conformance            LeastSquaresMethod : FIRDesignMethod
+conformance            LeastSquaresMethod : Swift.Equatable
+conformance            LeastSquaresMethod : Swift.Hashable
+conformance            LeastSquaresMethod : Swift.Sendable
+conformance            LeastSquaresMethod : Swift.SendableMetatype
+conformance            LowPass : FIRSystemElement
+conformance            LowPass : IIRSystemElement
+conformance            LowPass : Swift.Equatable
+conformance            LowPass : Swift.Hashable
+conformance            LowPass : Swift.Sendable
+conformance            LowPass : Swift.SendableMetatype
+conformance            LowPass : SystemElement
+conformance            LowPass : ZTronDSPCore.SequenceStage
+conformance            LowPass : ZTronDSPCore.StageValue
+conformance            LowShelf : IIRSystemElement
+conformance            LowShelf : Swift.Equatable
+conformance            LowShelf : Swift.Hashable
+conformance            LowShelf : Swift.Sendable
+conformance            LowShelf : Swift.SendableMetatype
+conformance            LowShelf : SystemElement
+conformance            LowShelf : ZTronDSPCore.SequenceStage
+conformance            LowShelf : ZTronDSPCore.StageValue
+conformance            MagnitudeScale : Swift.Equatable
+conformance            MagnitudeScale : Swift.Hashable
+conformance            MagnitudeScale : Swift.Sendable
+conformance            MagnitudeScale : Swift.SendableMetatype
+conformance            MatchedPeak : IIRSystemElement
+conformance            MatchedPeak : Swift.Equatable
+conformance            MatchedPeak : Swift.Hashable
+conformance            MatchedPeak : Swift.Sendable
+conformance            MatchedPeak : Swift.SendableMetatype
+conformance            MatchedPeak : SystemElement
+conformance            MatchedPeak : ZTronDSPCore.SequenceStage
+conformance            MatchedPeak : ZTronDSPCore.StageValue
+conformance            MatchedPeakDesign : Swift.Equatable
+conformance            MatchedPeakDesign : Swift.Hashable
+conformance            MatchedPeakDesign : Swift.Sendable
+conformance            MatchedPeakDesign : Swift.SendableMetatype
+conformance            Pole : FIRSystemElement
+conformance            Pole : IIRSystemElement
+conformance            Pole : Swift.Equatable
+conformance            Pole : Swift.Hashable
+conformance            Pole : Swift.Sendable
+conformance            Pole : Swift.SendableMetatype
+conformance            Pole : SystemElement
+conformance            Polynomial : Swift.CustomStringConvertible
+conformance            Polynomial : Swift.Equatable
+conformance            Polynomial : Swift.Hashable
+conformance            Polynomial : Swift.Sendable
+conformance            Polynomial : Swift.SendableMetatype
+conformance            PolynomialRootFinder : Swift.Equatable
+conformance            PolynomialRootFinder : Swift.Hashable
+conformance            PolynomialRootFinder : Swift.Sendable
+conformance            PolynomialRootFinder : Swift.SendableMetatype
+conformance            RootConditions : Swift.Equatable
+conformance            RootConditions : Swift.Hashable
+conformance            RootConditions : Swift.Sendable
+conformance            RootConditions : Swift.SendableMetatype
+conformance            SavitzkyGolay : Swift.Equatable
+conformance            SavitzkyGolay : Swift.Hashable
+conformance            SavitzkyGolay : Swift.Sendable
+conformance            SavitzkyGolay : Swift.SendableMetatype
+conformance            SavitzkyGolay : ZTronDSPCore.SequenceStage
+conformance            SavitzkyGolay : ZTronDSPCore.StageValue
+conformance            SavitzkyGolayEdge : Swift.Equatable
+conformance            SavitzkyGolayEdge : Swift.Hashable
+conformance            SavitzkyGolayEdge : Swift.Sendable
+conformance            SavitzkyGolayEdge : Swift.SendableMetatype
+conformance            SecondOrderSections : IIRSystemElement
+conformance            SecondOrderSections : LTISystem
+conformance            SecondOrderSections : Swift.Equatable
+conformance            SecondOrderSections : Swift.Hashable
+conformance            SecondOrderSections : Swift.Sendable
+conformance            SecondOrderSections : Swift.SendableMetatype
+conformance            SecondOrderSections : SystemElement
+conformance            SecondOrderSections.Section : Swift.Equatable
+conformance            SecondOrderSections.Section : Swift.Hashable
+conformance            SecondOrderSections.Section : Swift.Sendable
+conformance            SecondOrderSections.Section : Swift.SendableMetatype
+conformance            Section : FIRSystemElement
+conformance            Section : IIRSystemElement
+conformance            Section : Swift.Equatable
+conformance            Section : Swift.Hashable
+conformance            Section : Swift.Sendable
+conformance            Section : Swift.SendableMetatype
+conformance            Section : SystemElement
+conformance            ShelfSlope : Swift.Equatable
+conformance            ShelfSlope : Swift.Hashable
+conformance            ShelfSlope : Swift.Sendable
+conformance            ShelfSlope : Swift.SendableMetatype
+conformance            Subsample : Swift.Equatable
+conformance            Subsample : Swift.Hashable
+conformance            Subsample : Swift.Sendable
+conformance            Subsample : Swift.SendableMetatype
+conformance            Subsample : ZTronDSPCore.SequenceStage
+conformance            Subsample : ZTronDSPCore.StageValue
+conformance            SystemAnalysis : LTISystem
+conformance            SystemAnalysis : Swift.Equatable
+conformance            SystemAnalysis : Swift.Hashable
+conformance            SystemAnalysis : Swift.Sendable
+conformance            SystemAnalysis : Swift.SendableMetatype
+conformance            SystemAnalysis : ZTronDSPCore.MATLABExportable
+conformance            SystemDomain : Swift.CustomStringConvertible
+conformance            SystemDomain : Swift.Equatable
+conformance            SystemDomain : Swift.Hashable
+conformance            SystemDomain : Swift.Sendable
+conformance            SystemDomain : Swift.SendableMetatype
+conformance            SystemElement : Swift.Equatable
+conformance            SystemElement : Swift.Hashable
+conformance            SystemElement : Swift.Sendable
+conformance            SystemElement : Swift.SendableMetatype
+conformance            SystemKind : Swift.Equatable
+conformance            SystemKind : Swift.Hashable
+conformance            SystemKind : Swift.Sendable
+conformance            SystemKind : Swift.SendableMetatype
+conformance            Taps : FIRSystemElement
+conformance            Taps : Swift.Equatable
+conformance            Taps : Swift.Hashable
+conformance            Taps : Swift.Sendable
+conformance            Taps : Swift.SendableMetatype
+conformance            Taps : SystemElement
+conformance            TransferFunction : LTISystem
+conformance            TransferFunction : Swift.Equatable
+conformance            TransferFunction : Swift.Hashable
+conformance            TransferFunction : Swift.Sendable
+conformance            TransferFunction : Swift.SendableMetatype
+conformance            Upsample : Swift.Equatable
+conformance            Upsample : Swift.Hashable
+conformance            Upsample : Swift.Sendable
+conformance            Upsample : Swift.SendableMetatype
+conformance            Upsample : ZTronDSPCore.SequenceStage
+conformance            Upsample : ZTronDSPCore.StageValue
+conformance            WindowedSincMethod : FIRDesignMethod
+conformance            WindowedSincMethod : Swift.Equatable
+conformance            WindowedSincMethod : Swift.Hashable
+conformance            WindowedSincMethod : Swift.Sendable
+conformance            WindowedSincMethod : Swift.SendableMetatype
+conformance            Zero : FIRSystemElement
+conformance            Zero : IIRSystemElement
+conformance            Zero : Swift.Equatable
+conformance            Zero : Swift.Hashable
+conformance            Zero : Swift.Sendable
+conformance            Zero : Swift.SendableMetatype
+conformance            Zero : SystemElement
+conformance            ZeroPoleGain : IIRSystemElement
+conformance            ZeroPoleGain : LTISystem
+conformance            ZeroPoleGain : Swift.Equatable
+conformance            ZeroPoleGain : Swift.Hashable
+conformance            ZeroPoleGain : Swift.Sendable
+conformance            ZeroPoleGain : Swift.SendableMetatype
+conformance            ZeroPoleGain : SystemElement
+swift.enum             AlphaBeta.Output : enum Output
+swift.enum             AnalogPrototype : enum AnalogPrototype
+swift.enum             Bandwidth : enum Bandwidth
+swift.enum             BesselNormalization : enum BesselNormalization
+swift.enum             ConvolutionStrategy : enum ConvolutionStrategy
+swift.enum             FIRSystemBuilder : @resultBuilder enum FIRSystemBuilder
+swift.enum             FilterDesign : enum FilterDesign
+swift.enum             FilterResponse : enum FilterResponse
+swift.enum             FrequencyTransformation : enum FrequencyTransformation
+swift.enum             IIRDesign.Domain : enum Domain
+swift.enum             IIRSystemBuilder : @resultBuilder enum IIRSystemBuilder
+swift.enum             SavitzkyGolayEdge : enum SavitzkyGolayEdge
+swift.enum             ShelfSlope : enum ShelfSlope
+swift.enum             SystemDomain : enum SystemDomain
+swift.enum             SystemKind : enum SystemKind
+swift.enum.case        AlphaBeta.Output.position : case position
+swift.enum.case        AlphaBeta.Output.velocity : case velocity
+swift.enum.case        Bandwidth.hertz(_:) : case hertz(Double)
+swift.enum.case        Bandwidth.octaves(_:) : case octaves(Double)
+swift.enum.case        Bandwidth.q(_:) : case q(Double)
+swift.enum.case        BesselNormalization.delay : case delay
+swift.enum.case        BesselNormalization.magnitude : case magnitude
+swift.enum.case        BesselNormalization.phase : case phase
+swift.enum.case        ConvolutionStrategy.automatic : case automatic
+swift.enum.case        ConvolutionStrategy.direct : case direct
+swift.enum.case        ConvolutionStrategy.fft : case fft
+swift.enum.case        ConvolutionStrategy.partitioned : case partitioned
+swift.enum.case        FilterDesign.fir(_:) : case fir(FIRDesign)
+swift.enum.case        FilterDesign.iir(_:) : case iir(IIRDesign)
+swift.enum.case        FilterResponse.bandPass(from:to:) : case bandPass(from: Double, to: Double)
+swift.enum.case        FilterResponse.bandStop(from:to:) : case bandStop(from: Double, to: Double)
+swift.enum.case        FilterResponse.highPass(cutoff:) : case highPass(cutoff: Double)
+swift.enum.case        FilterResponse.lowPass(cutoff:) : case lowPass(cutoff: Double)
+swift.enum.case        FrequencyTransformation.bandPass(center:bandwidth:) : case bandPass(center: Double, bandwidth: Double)
+swift.enum.case        FrequencyTransformation.bandStop(center:bandwidth:) : case bandStop(center: Double, bandwidth: Double)
+swift.enum.case        FrequencyTransformation.highPass(cutoff:) : case highPass(cutoff: Double)
+swift.enum.case        FrequencyTransformation.lowPass(cutoff:) : case lowPass(cutoff: Double)
+swift.enum.case        IIRDesign.Domain.analog : case analog
+swift.enum.case        IIRDesign.Domain.digital(sampleRate:) : case digital(sampleRate: Double)
+swift.enum.case        SavitzkyGolayEdge.constant(_:) : case constant(Float)
+swift.enum.case        SavitzkyGolayEdge.interpolate : case interpolate
+swift.enum.case        SavitzkyGolayEdge.mirror : case mirror
+swift.enum.case        SavitzkyGolayEdge.nearest : case nearest
+swift.enum.case        SavitzkyGolayEdge.wrap : case wrap
+swift.enum.case        ShelfSlope.q(_:) : case q(Double)
+swift.enum.case        ShelfSlope.slope(_:) : case slope(Double)
+swift.enum.case        SystemDomain.analog : case analog
+swift.enum.case        SystemDomain.digital : case digital
+swift.enum.case        SystemKind.finiteImpulseResponse : case finiteImpulseResponse
+swift.enum.case        SystemKind.infiniteImpulseResponse : case infiniteImpulseResponse
+swift.func.op          Polynomial.*(_:_:) : static func * (lhs: Polynomial, rhs: Polynomial) -> Polynomial
+swift.init             AlphaBeta.init(alpha:beta:initialPosition:initialVelocity:output:isActive:) : init(alpha: Double, beta: Double, initialPosition: Double = 0, initialVelocity: Double = 0, output: AlphaBeta.Output = .position, isActive: some ActivationSource = .active)
+swift.init             BandBoost.init(center:gain:bandwidth:order:isActive:) : init(center: Frequency, gain: Amplification, bandwidth: Bandwidth, order: Int = 1, isActive: some ActivationSource = .active)
+swift.init             BandBoost.init(center:gain:bandwidth:rollOff:rounding:isActive:) : init(center: Frequency, gain: Amplification, bandwidth: Bandwidth, rollOff: RollOff, rounding: RollOffRounding = .exact(), isActive: some ActivationSource = .active)
+swift.init             BandPass.init(_:from:to:order:isActive:) : init(_ family: some FilterFamily, from: Frequency, to: Frequency, order: Int, isActive: some ActivationSource = .active)
+swift.init             BandPass.init(_:from:to:rollOff:rounding:isActive:) : init(_ family: some FilterFamily, from: Frequency, to: Frequency, rollOff: RollOff, rounding: RollOffRounding = .exact(), isActive: some ActivationSource = .active)
+swift.init             BandPass.init(_:from:to:rollOff:stopband:isActive:) : init(_ method: some FIRDesignMethod, from: Frequency, to: Frequency, rollOff: RollOff, stopband: Amplification, isActive: some ActivationSource = .active)
+swift.init             BandPass.init(_:from:to:transition:length:isActive:) : init(_ method: some FIRDesignMethod, from: Frequency, to: Frequency, transition: Frequency? = nil, length: Int, isActive: some ActivationSource = .active)
+swift.init             BandPass.init(_:passband:stopband:maximumLoss:minimumAttenuation:isActive:) : init(_ family: some FilterFamily, passband: (from: Frequency, to: Frequency), stopband: (from: Frequency, to: Frequency), maximumLoss: Amplification, minimumAttenuation: Amplification, isActive: some ActivationSource = .active)
+swift.init             BandPass.init(_:passband:stopband:maximumLoss:minimumAttenuation:isActive:) : init(_ method: some FIRDesignMethod, passband: (from: Frequency, to: Frequency), stopband: (from: Frequency, to: Frequency), maximumLoss: Amplification, minimumAttenuation: Amplification, isActive: some ActivationSource = .active)
+swift.init             BandStop.init(_:from:to:order:isActive:) : init(_ family: some FilterFamily, from: Frequency, to: Frequency, order: Int, isActive: some ActivationSource = .active)
+swift.init             BandStop.init(_:from:to:rollOff:rounding:isActive:) : init(_ family: some FilterFamily, from: Frequency, to: Frequency, rollOff: RollOff, rounding: RollOffRounding = .exact(), isActive: some ActivationSource = .active)
+swift.init             BandStop.init(_:from:to:rollOff:stopband:isActive:) : init(_ method: some FIRDesignMethod, from: Frequency, to: Frequency, rollOff: RollOff, stopband: Amplification, isActive: some ActivationSource = .active)
+swift.init             BandStop.init(_:from:to:transition:length:isActive:) : init(_ method: some FIRDesignMethod, from: Frequency, to: Frequency, transition: Frequency? = nil, length: Int, isActive: some ActivationSource = .active)
+swift.init             BandStop.init(_:passband:stopband:maximumLoss:minimumAttenuation:isActive:) : init(_ family: some FilterFamily, passband: (from: Frequency, to: Frequency), stopband: (from: Frequency, to: Frequency), maximumLoss: Amplification, minimumAttenuation: Amplification, isActive: some ActivationSource = .active)
+swift.init             BandStop.init(_:passband:stopband:maximumLoss:minimumAttenuation:isActive:) : init(_ method: some FIRDesignMethod, passband: (from: Frequency, to: Frequency), stopband: (from: Frequency, to: Frequency), maximumLoss: Amplification, minimumAttenuation: Amplification, isActive: some ActivationSource = .active)
+swift.init             BesselFamily.init(normalization:) : init(normalization: BesselNormalization = .phase)
+swift.init             ButterworthFamily.init() : init()
+swift.init             ButterworthOrderStrategy.init() : init()
+swift.init             Chebyshev1Family.init(ripple:) : init(ripple: Amplification)
+swift.init             Chebyshev1OrderStrategy.init() : init()
+swift.init             Chebyshev2Family.init(stopband:) : init(stopband: Amplification)
+swift.init             Chebyshev2OrderStrategy.init() : init()
+swift.init             CompanionQRRootFinder.init() : init()
+swift.init             Convolve.init(kernel:strategy:isActive:) : init(kernel: [Float], strategy: ConvolutionStrategy = .automatic, isActive: some ActivationSource = .active)
+swift.init             Decimate.init(by:rejection:passband:isActive:) : init(by factor: Int, rejection: Amplification = .decibels(80), passband: Double = 0.8, isActive: some ActivationSource = .active)
+swift.init             DifferenceEquation.init(b:a:rootFinder:) : init(b: [Double], a: [Double] = [1], rootFinder: some PolynomialRootFinder = .companionQR)
+swift.init             EllipticFamily.init(ripple:stopband:) : init(ripple: Amplification, stopband: Amplification)
+swift.init             EllipticOrderStrategy.init() : init()
+swift.init             FIRDesign.init(_:_:length:transition:sampleRate:) : init(_ method: some FIRDesignMethod, _ response: FilterResponse, length: Int, transition: Double? = nil, sampleRate: Double) throws(DSPError)
+swift.init             FIRDesign.init(_:_:rollOff:stopband:sampleRate:) : init(_ method: some FIRDesignMethod, _ response: FilterResponse, rollOff: RollOff, stopband: Amplification, sampleRate: Double) throws(DSPError)
+swift.init             FIRDesign.init(_:passband:stopband:maximumLoss:minimumAttenuation:sampleRate:) : init(_ method: some FIRDesignMethod, passband: FilterResponse, stopband: FilterResponse, maximumLoss: Amplification, minimumAttenuation: Amplification, sampleRate: Double) throws(DSPError)
+swift.init             FIRSystem.init(_:) : init(@FIRSystemBuilder _ content: () -> FIRSystemContent)
+swift.init             Filter.init(_:isActive:) : init(_ system: FIRSystem, isActive: some ActivationSource = .active)
+swift.init             Filter.init(_:isActive:) : init(_ system: IIRSystem, isActive: some ActivationSource = .active)
+swift.init             FilterOrderEstimate.init(order:response:) : init(order: Int, response: FilterResponse)
+swift.init             Gain.init(_:ramp:isActive:) : init(_ amount: Amplification, ramp: TimeInterval = 0.010, isActive: some ActivationSource = .active)
+swift.init             Gain.init(channels:ramp:isActive:) : init(channels amounts: [Amplification], ramp: TimeInterval = 0.010, isActive: some ActivationSource = .active)
+swift.init             HighPass.init(_:cutoff:order:isActive:) : init(_ family: some FilterFamily, cutoff: Frequency, order: Int, isActive: some ActivationSource = .active)
+swift.init             HighPass.init(_:cutoff:rollOff:rounding:isActive:) : init(_ family: some FilterFamily, cutoff: Frequency, rollOff: RollOff, rounding: RollOffRounding = .exact(), isActive: some ActivationSource = .active)
+swift.init             HighPass.init(_:cutoff:rollOff:stopband:isActive:) : init(_ method: some FIRDesignMethod, cutoff: Frequency, rollOff: RollOff, stopband: Amplification, isActive: some ActivationSource = .active)
+swift.init             HighPass.init(_:cutoff:transition:length:isActive:) : init(_ method: some FIRDesignMethod, cutoff: Frequency, transition: Frequency? = nil, length: Int, isActive: some ActivationSource = .active)
+swift.init             HighPass.init(_:passband:stopband:maximumLoss:minimumAttenuation:isActive:) : init(_ family: some FilterFamily, passband: Frequency, stopband: Frequency, maximumLoss: Amplification, minimumAttenuation: Amplification, isActive: some ActivationSource = .active)
+swift.init             HighPass.init(_:passband:stopband:maximumLoss:minimumAttenuation:isActive:) : init(_ method: some FIRDesignMethod, passband: Frequency, stopband: Frequency, maximumLoss: Amplification, minimumAttenuation: Amplification, isActive: some ActivationSource = .active)
+swift.init             HighShelf.init(midpoint:gain:slope:isActive:) : init(midpoint: Frequency, gain: Amplification, slope: ShelfSlope = .slope(1), isActive: some ActivationSource = .active)
+swift.init             IIRDesign.init(_:_:order:domain:) : init(_ family: some FilterFamily, _ response: FilterResponse, order: Int, domain: IIRDesign.Domain) throws(DSPError)
+swift.init             IIRDesign.init(_:_:rollOff:rounding:domain:) : init(_ family: some FilterFamily, _ response: FilterResponse, rollOff: RollOff, rounding: RollOffRounding = .exact(), domain: IIRDesign.Domain) throws(DSPError)
+swift.init             IIRDesign.init(_:passband:stopband:maximumLoss:minimumAttenuation:domain:) : init(_ family: some FilterFamily, passband: FilterResponse, stopband: FilterResponse, maximumLoss: Amplification, minimumAttenuation: Amplification, domain: IIRDesign.Domain) throws(DSPError)
+swift.init             IIRSystem.init(_:) : init(@IIRSystemBuilder _ content: () -> IIRSystemContent)
+swift.init             Interpolate.init(by:rejection:passband:isActive:) : init(by factor: Int, rejection: Amplification = .decibels(80), passband: Double = 0.8, isActive: some ActivationSource = .active)
+swift.init             LeastSquares.init(length:bands:desired:weights:) : init(length: Int, bands: [Frequency], desired: [Double], weights: [Double] = [])
+swift.init             LeastSquaresMethod.init(stopbandWeight:) : init(stopbandWeight: Double = 1)
+swift.init             LowPass.init(_:cutoff:order:isActive:) : init(_ family: some FilterFamily, cutoff: Frequency, order: Int, isActive: some ActivationSource = .active)
+swift.init             LowPass.init(_:cutoff:rollOff:rounding:isActive:) : init(_ family: some FilterFamily, cutoff: Frequency, rollOff: RollOff, rounding: RollOffRounding = .exact(), isActive: some ActivationSource = .active)
+swift.init             LowPass.init(_:cutoff:rollOff:stopband:isActive:) : init(_ method: some FIRDesignMethod, cutoff: Frequency, rollOff: RollOff, stopband: Amplification, isActive: some ActivationSource = .active)
+swift.init             LowPass.init(_:cutoff:transition:length:isActive:) : init(_ method: some FIRDesignMethod, cutoff: Frequency, transition: Frequency? = nil, length: Int, isActive: some ActivationSource = .active)
+swift.init             LowPass.init(_:passband:stopband:maximumLoss:minimumAttenuation:isActive:) : init(_ family: some FilterFamily, passband: Frequency, stopband: Frequency, maximumLoss: Amplification, minimumAttenuation: Amplification, isActive: some ActivationSource = .active)
+swift.init             LowPass.init(_:passband:stopband:maximumLoss:minimumAttenuation:isActive:) : init(_ method: some FIRDesignMethod, passband: Frequency, stopband: Frequency, maximumLoss: Amplification, minimumAttenuation: Amplification, isActive: some ActivationSource = .active)
+swift.init             LowShelf.init(midpoint:gain:slope:isActive:) : init(midpoint: Frequency, gain: Amplification, slope: ShelfSlope = .slope(1), isActive: some ActivationSource = .active)
+swift.init             MatchedPeak.init(center:gain:bandwidth:isActive:) : init(center: Frequency, gain: Amplification, bandwidth: Bandwidth, isActive: some ActivationSource = .active)
+swift.init             MatchedPeakDesign.init(center:gain:bandwidth:sampleRate:) : init(center: Double, gain: Amplification, bandwidth: Bandwidth, sampleRate: Double) throws(DSPError)
+swift.init             Pole.init(at:) : init(at location: Complex)
+swift.init             Pole.init(radius:frequency:) : init(radius: Double, frequency: Frequency)
+swift.init             Polynomial.init(_:) : init(_ coefficients: [Double])
+swift.init             Polynomial.init(realRoots:leadingCoefficient:) : init(realRoots: [Double], leadingCoefficient: Double = 1)
+swift.init             Polynomial.init(roots:leadingCoefficient:) : init(roots: [Complex], leadingCoefficient: Double = 1) throws(DSPError)
+swift.init             SavitzkyGolay.init(window:polynomialOrder:derivative:edge:isActive:) : init(window: Int, polynomialOrder: Int, derivative: Int = 0, edge: SavitzkyGolayEdge = .interpolate, isActive: some ActivationSource = .active)
+swift.init             SecondOrderSections.Section.init(b0:b1:b2:a1:a2:) : init(b0: Double, b1: Double, b2: Double, a1: Double, a2: Double)
+swift.init             SecondOrderSections.init(sections:domain:) : init(sections: [SecondOrderSections.Section], domain: SystemDomain = .digital)
+swift.init             Section.init(b:a:) : init(b: [Double], a: [Double] = [1])
+swift.init             Subsample.init(by:phase:isActive:) : init(by factor: Int, phase: Int = 0, isActive: some ActivationSource = .active)
+swift.init             Taps.init(_:) : init(_ values: [Double])
+swift.init             TransferFunction.init(numerator:denominator:domain:rootFinder:) : init(numerator: Polynomial, denominator: Polynomial, domain: SystemDomain, rootFinder: some PolynomialRootFinder = .companionQR)
+swift.init             TransferFunction.init(numerator:denominator:domain:rootFinder:) : init(numerator: [Double], denominator: [Double], domain: SystemDomain, rootFinder: some PolynomialRootFinder = .companionQR)
+swift.init             Upsample.init(by:isActive:) : init(by factor: Int, isActive: some ActivationSource = .active)
+swift.init             WindowedSincMethod.init(window:) : init(window: Window? = nil)
+swift.init             Zero.init(at:) : init(at location: Complex)
+swift.init             Zero.init(onUnitCircleAt:) : init(onUnitCircleAt frequency: Frequency)
+swift.init             Zero.init(radius:frequency:) : init(radius: Double, frequency: Frequency)
+swift.init             ZeroPoleGain.init(zeros:poles:gain:domain:) : init(zeros: [Complex], poles: [Complex], gain: Double, domain: SystemDomain)
+swift.method           AlphaBeta.lower(_:) : func lower(_ context: inout LoweringContext) throws(DSPError)
+swift.method           BandBoost.design(sampleRate:) : func design(sampleRate: Double) throws(DSPError) -> EqualizerDesign
+swift.method           BandBoost.lower(_:) : func lower(_ context: inout LoweringContext) throws(DSPError)
+swift.method           BandBoost.replacingParameters(_:) : func replacingParameters(_ values: ArraySlice<Double>) -> BandBoost
+swift.method           BandBoost.zeroPoleGain(sampleRate:) : func zeroPoleGain(sampleRate: Double) throws(DSPError) -> ZeroPoleGain
+swift.method           BandPass.design(sampleRate:) : func design(sampleRate: Double) throws(DSPError) -> FilterDesign
+swift.method           BandPass.lower(_:) : func lower(_ context: inout LoweringContext) throws(DSPError)
+swift.method           BandPass.replacingParameters(_:) : func replacingParameters(_ values: ArraySlice<Double>) -> BandPass
+swift.method           BandPass.taps(sampleRate:) : func taps(sampleRate: Double) throws(DSPError) -> [Double]
+swift.method           BandPass.zeroPoleGain(sampleRate:) : func zeroPoleGain(sampleRate: Double) throws(DSPError) -> ZeroPoleGain
+swift.method           BandStop.design(sampleRate:) : func design(sampleRate: Double) throws(DSPError) -> FilterDesign
+swift.method           BandStop.lower(_:) : func lower(_ context: inout LoweringContext) throws(DSPError)
+swift.method           BandStop.replacingParameters(_:) : func replacingParameters(_ values: ArraySlice<Double>) -> BandStop
+swift.method           BandStop.taps(sampleRate:) : func taps(sampleRate: Double) throws(DSPError) -> [Double]
+swift.method           BandStop.zeroPoleGain(sampleRate:) : func zeroPoleGain(sampleRate: Double) throws(DSPError) -> ZeroPoleGain
+swift.method           BesselFamily.prototype(order:) : func prototype(order: Int) throws(DSPError) -> ZeroPoleGain
+swift.method           ButterworthFamily.prototype(order:) : func prototype(order: Int) throws(DSPError) -> ZeroPoleGain
+swift.method           ButterworthOrderStrategy.fractionalOrder(selectivity:maximumLoss:minimumAttenuation:) : func fractionalOrder(selectivity: Double, maximumLoss: Amplification, minimumAttenuation: Amplification) throws(DSPError) -> Double
+swift.method           ButterworthOrderStrategy.naturalFrequency(order:maximumLoss:minimumAttenuation:) : func naturalFrequency(order: Int, maximumLoss: Amplification, minimumAttenuation: Amplification) throws(DSPError) -> Double
+swift.method           Chebyshev1Family.fitted(maximumLoss:minimumAttenuation:) : func fitted(maximumLoss: Amplification, minimumAttenuation: Amplification) -> Chebyshev1Family
+swift.method           Chebyshev1Family.prototype(order:) : func prototype(order: Int) throws(DSPError) -> ZeroPoleGain
+swift.method           Chebyshev1OrderStrategy.fractionalOrder(selectivity:maximumLoss:minimumAttenuation:) : func fractionalOrder(selectivity: Double, maximumLoss: Amplification, minimumAttenuation: Amplification) throws(DSPError) -> Double
+swift.method           Chebyshev1OrderStrategy.naturalFrequency(order:maximumLoss:minimumAttenuation:) : func naturalFrequency(order: Int, maximumLoss: Amplification, minimumAttenuation: Amplification) throws(DSPError) -> Double
+swift.method           Chebyshev2Family.fitted(maximumLoss:minimumAttenuation:) : func fitted(maximumLoss: Amplification, minimumAttenuation: Amplification) -> Chebyshev2Family
+swift.method           Chebyshev2Family.prototype(order:) : func prototype(order: Int) throws(DSPError) -> ZeroPoleGain
+swift.method           Chebyshev2OrderStrategy.fractionalOrder(selectivity:maximumLoss:minimumAttenuation:) : func fractionalOrder(selectivity: Double, maximumLoss: Amplification, minimumAttenuation: Amplification) throws(DSPError) -> Double
+swift.method           Chebyshev2OrderStrategy.naturalFrequency(order:maximumLoss:minimumAttenuation:) : func naturalFrequency(order: Int, maximumLoss: Amplification, minimumAttenuation: Amplification) throws(DSPError) -> Double
+swift.method           CompanionQRRootFinder.roots(of:) : func roots(of polynomial: Polynomial) throws(DSPError) -> [Complex]
+swift.method           Convolve.lower(_:) : func lower(_ context: inout LoweringContext) throws(DSPError)
+swift.method           Decimate.lower(_:) : func lower(_ context: inout LoweringContext) throws(DSPError)
+swift.method           DifferenceEquation.taps(sampleRate:) : func taps(sampleRate: Double) throws(DSPError) -> [Double]
+swift.method           DifferenceEquation.zeroPoleGain(sampleRate:) : func zeroPoleGain(sampleRate: Double) throws(DSPError) -> ZeroPoleGain
+swift.method           EllipticFamily.fitted(maximumLoss:minimumAttenuation:) : func fitted(maximumLoss: Amplification, minimumAttenuation: Amplification) -> EllipticFamily
+swift.method           EllipticFamily.prototype(order:) : func prototype(order: Int) throws(DSPError) -> ZeroPoleGain
+swift.method           EllipticOrderStrategy.fractionalOrder(selectivity:maximumLoss:minimumAttenuation:) : func fractionalOrder(selectivity: Double, maximumLoss: Amplification, minimumAttenuation: Amplification) throws(DSPError) -> Double
+swift.method           EllipticOrderStrategy.naturalFrequency(order:maximumLoss:minimumAttenuation:) : func naturalFrequency(order: Int, maximumLoss: Amplification, minimumAttenuation: Amplification) throws(DSPError) -> Double
+swift.method           FIRDesignMethod.estimatedLength(transition:attenuation:sampleRate:) : func estimatedLength(transition: Double, attenuation: Amplification, sampleRate: Double) throws(DSPError) -> Int
+swift.method           FIRDesignMethod.taps(_:length:transition:attenuation:sampleRate:) : func taps(_ response: FilterResponse, length: Int, transition: Double?, attenuation: Amplification?, sampleRate: Double) throws(DSPError) -> [Double]
+swift.method           FIRSystem.frequencyResponse(at:) : func frequencyResponse(at frequencies: [Double]) throws(DSPError) -> [Complex]
+swift.method           FIRSystem.groupDelay(at:) : func groupDelay(at frequencies: [Double]) throws(DSPError) -> [Double?]
+swift.method           FIRSystem.replacingParameters(_:) : func replacingParameters(_ values: ArraySlice<Double>) -> FIRSystem
+swift.method           FIRSystem.taps(sampleRate:) : func taps(sampleRate: Double) throws(DSPError) -> [Double]
+swift.method           FIRSystemElement.taps(sampleRate:) : func taps(sampleRate: Double) throws(DSPError) -> [Double]
+swift.method           Filter.lower(_:) : func lower(_ context: inout LoweringContext) throws(DSPError)
+swift.method           Filter.replacingParameters(_:) : func replacingParameters(_ values: ArraySlice<Double>) -> Filter
+swift.method           FilterFamily.fitted(maximumLoss:minimumAttenuation:) : func fitted(maximumLoss: Amplification, minimumAttenuation: Amplification) -> Self
+swift.method           FilterFamily.prototype(order:) : func prototype(order: Int) throws(DSPError) -> ZeroPoleGain
+swift.method           FilterOrderStrategy.fractionalOrder(selectivity:maximumLoss:minimumAttenuation:) : func fractionalOrder(selectivity: Double, maximumLoss: Amplification, minimumAttenuation: Amplification) throws(DSPError) -> Double
+swift.method           FilterOrderStrategy.minimumOrder(passband:stopband:maximumLoss:minimumAttenuation:domain:) : func minimumOrder(passband: FilterResponse, stopband: FilterResponse, maximumLoss: Amplification, minimumAttenuation: Amplification, domain: IIRDesign.Domain) throws(DSPError) -> FilterOrderEstimate
+swift.method           FilterOrderStrategy.naturalFrequency(order:maximumLoss:minimumAttenuation:) : func naturalFrequency(order: Int, maximumLoss: Amplification, minimumAttenuation: Amplification) throws(DSPError) -> Double
+swift.method           Gain.lower(_:) : func lower(_ context: inout LoweringContext) throws(DSPError)
+swift.method           Gain.replacingParameters(_:) : func replacingParameters(_ values: ArraySlice<Double>) -> Gain
+swift.method           HighPass.design(sampleRate:) : func design(sampleRate: Double) throws(DSPError) -> FilterDesign
+swift.method           HighPass.lower(_:) : func lower(_ context: inout LoweringContext) throws(DSPError)
+swift.method           HighPass.replacingParameters(_:) : func replacingParameters(_ values: ArraySlice<Double>) -> HighPass
+swift.method           HighPass.taps(sampleRate:) : func taps(sampleRate: Double) throws(DSPError) -> [Double]
+swift.method           HighPass.zeroPoleGain(sampleRate:) : func zeroPoleGain(sampleRate: Double) throws(DSPError) -> ZeroPoleGain
+swift.method           HighShelf.design(sampleRate:) : func design(sampleRate: Double) throws(DSPError) -> EqualizerDesign
+swift.method           HighShelf.lower(_:) : func lower(_ context: inout LoweringContext) throws(DSPError)
+swift.method           HighShelf.replacingParameters(_:) : func replacingParameters(_ values: ArraySlice<Double>) -> HighShelf
+swift.method           HighShelf.zeroPoleGain(sampleRate:) : func zeroPoleGain(sampleRate: Double) throws(DSPError) -> ZeroPoleGain
+swift.method           IIRSystem.replacingParameters(_:) : func replacingParameters(_ values: ArraySlice<Double>) -> IIRSystem
+swift.method           IIRSystem.secondOrderSections(sampleRate:) : func secondOrderSections(sampleRate: Double) throws(DSPError) -> SecondOrderSections
+swift.method           IIRSystem.zeroPoleGain(sampleRate:) : func zeroPoleGain(sampleRate: Double) throws(DSPError) -> ZeroPoleGain
+swift.method           IIRSystemElement.zeroPoleGain(sampleRate:) : func zeroPoleGain(sampleRate: Double) throws(DSPError) -> ZeroPoleGain
+swift.method           Interpolate.lower(_:) : func lower(_ context: inout LoweringContext) throws(DSPError)
+swift.method           LTISystem.analysis(sampleRate:) : func analysis(sampleRate: Double) async throws(DSPError) -> SystemAnalysis
+swift.method           LTISystem.frequencyResponse(at:) : func frequencyResponse(at frequencies: [Double]) throws(DSPError) -> [Complex]
+swift.method           LTISystem.groupDelay(at:) : func groupDelay(at frequencies: [Double]) throws(DSPError) -> [Double?]
+swift.method           LTISystem.magnitudeResponse(at:in:) : func magnitudeResponse(at frequencies: [Double], in scale: MagnitudeScale = .linear) throws(DSPError) -> [Double]
+swift.method           LTISystem.magnitudeResponse(at:in:) : func magnitudeResponse(at frequencies: [Double], in scale: MagnitudeScale) throws(DSPError) -> [Double]
+swift.method           LTISystem.phaseResponse(at:unwrapped:) : func phaseResponse(at frequencies: [Double], unwrapped: Bool = false) throws(DSPError) -> [Double]
+swift.method           LTISystem.phaseResponse(at:unwrapped:) : func phaseResponse(at frequencies: [Double], unwrapped: Bool) throws(DSPError) -> [Double]
+swift.method           LeastSquares.replacingParameters(_:) : func replacingParameters(_ values: ArraySlice<Double>) -> LeastSquares
+swift.method           LeastSquares.taps(sampleRate:) : func taps(sampleRate: Double) throws(DSPError) -> [Double]
+swift.method           LeastSquaresMethod.estimatedLength(transition:attenuation:sampleRate:) : func estimatedLength(transition: Double, attenuation: Amplification, sampleRate: Double) throws(DSPError) -> Int
+swift.method           LeastSquaresMethod.taps(_:length:transition:attenuation:sampleRate:) : func taps(_ response: FilterResponse, length: Int, transition: Double?, attenuation: Amplification?, sampleRate: Double) throws(DSPError) -> [Double]
+swift.method           LowPass.design(sampleRate:) : func design(sampleRate: Double) throws(DSPError) -> FilterDesign
+swift.method           LowPass.lower(_:) : func lower(_ context: inout LoweringContext) throws(DSPError)
+swift.method           LowPass.replacingParameters(_:) : func replacingParameters(_ values: ArraySlice<Double>) -> LowPass
+swift.method           LowPass.taps(sampleRate:) : func taps(sampleRate: Double) throws(DSPError) -> [Double]
+swift.method           LowPass.zeroPoleGain(sampleRate:) : func zeroPoleGain(sampleRate: Double) throws(DSPError) -> ZeroPoleGain
+swift.method           LowShelf.design(sampleRate:) : func design(sampleRate: Double) throws(DSPError) -> EqualizerDesign
+swift.method           LowShelf.lower(_:) : func lower(_ context: inout LoweringContext) throws(DSPError)
+swift.method           LowShelf.replacingParameters(_:) : func replacingParameters(_ values: ArraySlice<Double>) -> LowShelf
+swift.method           LowShelf.zeroPoleGain(sampleRate:) : func zeroPoleGain(sampleRate: Double) throws(DSPError) -> ZeroPoleGain
+swift.method           MatchedPeak.design(sampleRate:) : func design(sampleRate: Double) throws(DSPError) -> MatchedPeakDesign
+swift.method           MatchedPeak.lower(_:) : func lower(_ context: inout LoweringContext) throws(DSPError)
+swift.method           MatchedPeak.replacingParameters(_:) : func replacingParameters(_ values: ArraySlice<Double>) -> MatchedPeak
+swift.method           MatchedPeak.zeroPoleGain(sampleRate:) : func zeroPoleGain(sampleRate: Double) throws(DSPError) -> ZeroPoleGain
+swift.method           Pipeline.alphaBeta(alpha:beta:initialPosition:initialVelocity:output:isActive:) : func alphaBeta(alpha: Double, beta: Double, initialPosition: Double = 0, initialVelocity: Double = 0, output: AlphaBeta.Output = .position, isActive: some ActivationSource = .active) -> Pipeline<Input, Output>   [extends ZTronDSPCore]
+swift.method           Pipeline.bandBoost(center:gain:bandwidth:order:isActive:) : func bandBoost(center: Frequency, gain: Amplification, bandwidth: Bandwidth, order: Int = 1, isActive: some ActivationSource = .active) -> Pipeline<Input, Output>   [extends ZTronDSPCore]
+swift.method           Pipeline.bandBoost(center:gain:bandwidth:rollOff:rounding:isActive:) : func bandBoost(center: Frequency, gain: Amplification, bandwidth: Bandwidth, rollOff: RollOff, rounding: RollOffRounding = .exact(), isActive: some ActivationSource = .active) -> Pipeline<Input, Output>   [extends ZTronDSPCore]
+swift.method           Pipeline.bandPass(_:from:to:order:isActive:) : func bandPass(_ family: some FilterFamily, from: Frequency, to: Frequency, order: Int, isActive: some ActivationSource = .active) -> Pipeline<Input, Output>   [extends ZTronDSPCore]
+swift.method           Pipeline.bandPass(_:from:to:rollOff:rounding:isActive:) : func bandPass(_ family: some FilterFamily, from: Frequency, to: Frequency, rollOff: RollOff, rounding: RollOffRounding = .exact(), isActive: some ActivationSource = .active) -> Pipeline<Input, Output>   [extends ZTronDSPCore]
+swift.method           Pipeline.bandPass(_:from:to:rollOff:stopband:isActive:) : func bandPass(_ method: some FIRDesignMethod, from: Frequency, to: Frequency, rollOff: RollOff, stopband: Amplification, isActive: some ActivationSource = .active) -> Pipeline<Input, Output>   [extends ZTronDSPCore]
+swift.method           Pipeline.bandPass(_:from:to:transition:length:isActive:) : func bandPass(_ method: some FIRDesignMethod, from: Frequency, to: Frequency, transition: Frequency? = nil, length: Int, isActive: some ActivationSource = .active) -> Pipeline<Input, Output>   [extends ZTronDSPCore]
+swift.method           Pipeline.bandPass(_:passband:stopband:maximumLoss:minimumAttenuation:isActive:) : func bandPass(_ family: some FilterFamily, passband: (from: Frequency, to: Frequency), stopband: (from: Frequency, to: Frequency), maximumLoss: Amplification, minimumAttenuation: Amplification, isActive: some ActivationSource = .active) -> Pipeline<Input, Output>   [extends ZTronDSPCore]
+swift.method           Pipeline.bandPass(_:passband:stopband:maximumLoss:minimumAttenuation:isActive:) : func bandPass(_ method: some FIRDesignMethod, passband: (from: Frequency, to: Frequency), stopband: (from: Frequency, to: Frequency), maximumLoss: Amplification, minimumAttenuation: Amplification, isActive: some ActivationSource = .active) -> Pipeline<Input, Output>   [extends ZTronDSPCore]
+swift.method           Pipeline.bandStop(_:from:to:order:isActive:) : func bandStop(_ family: some FilterFamily, from: Frequency, to: Frequency, order: Int, isActive: some ActivationSource = .active) -> Pipeline<Input, Output>   [extends ZTronDSPCore]
+swift.method           Pipeline.bandStop(_:from:to:rollOff:rounding:isActive:) : func bandStop(_ family: some FilterFamily, from: Frequency, to: Frequency, rollOff: RollOff, rounding: RollOffRounding = .exact(), isActive: some ActivationSource = .active) -> Pipeline<Input, Output>   [extends ZTronDSPCore]
+swift.method           Pipeline.bandStop(_:from:to:rollOff:stopband:isActive:) : func bandStop(_ method: some FIRDesignMethod, from: Frequency, to: Frequency, rollOff: RollOff, stopband: Amplification, isActive: some ActivationSource = .active) -> Pipeline<Input, Output>   [extends ZTronDSPCore]
+swift.method           Pipeline.bandStop(_:from:to:transition:length:isActive:) : func bandStop(_ method: some FIRDesignMethod, from: Frequency, to: Frequency, transition: Frequency? = nil, length: Int, isActive: some ActivationSource = .active) -> Pipeline<Input, Output>   [extends ZTronDSPCore]
+swift.method           Pipeline.bandStop(_:passband:stopband:maximumLoss:minimumAttenuation:isActive:) : func bandStop(_ family: some FilterFamily, passband: (from: Frequency, to: Frequency), stopband: (from: Frequency, to: Frequency), maximumLoss: Amplification, minimumAttenuation: Amplification, isActive: some ActivationSource = .active) -> Pipeline<Input, Output>   [extends ZTronDSPCore]
+swift.method           Pipeline.bandStop(_:passband:stopband:maximumLoss:minimumAttenuation:isActive:) : func bandStop(_ method: some FIRDesignMethod, passband: (from: Frequency, to: Frequency), stopband: (from: Frequency, to: Frequency), maximumLoss: Amplification, minimumAttenuation: Amplification, isActive: some ActivationSource = .active) -> Pipeline<Input, Output>   [extends ZTronDSPCore]
+swift.method           Pipeline.convolve(kernel:strategy:isActive:) : func convolve(kernel: [Float], strategy: ConvolutionStrategy = .automatic, isActive: some ActivationSource = .active) -> Pipeline<Input, Output>   [extends ZTronDSPCore]
+swift.method           Pipeline.decimate(by:rejection:passband:isActive:) : func decimate(by factor: Int, rejection: Amplification = .decibels(80), passband: Double = 0.8, isActive: some ActivationSource = .active) -> Pipeline<Input, Output>   [extends ZTronDSPCore]
+swift.method           Pipeline.filter(_:isActive:) : func filter(_ system: FIRSystem, isActive: some ActivationSource = .active) -> Pipeline<Input, Output>   [extends ZTronDSPCore]
+swift.method           Pipeline.filter(_:isActive:) : func filter(_ system: IIRSystem, isActive: some ActivationSource = .active) -> Pipeline<Input, Output>   [extends ZTronDSPCore]
+swift.method           Pipeline.gain(_:ramp:isActive:) : func gain(_ amount: Amplification, ramp: TimeInterval = 0.010, isActive: some ActivationSource = .active) -> Pipeline<Input, Output>   [extends ZTronDSPCore]
+swift.method           Pipeline.gain(channels:ramp:isActive:) : func gain(channels amounts: [Amplification], ramp: TimeInterval = 0.010, isActive: some ActivationSource = .active) -> Pipeline<Input, Output>   [extends ZTronDSPCore]
+swift.method           Pipeline.highPass(_:cutoff:order:isActive:) : func highPass(_ family: some FilterFamily, cutoff: Frequency, order: Int, isActive: some ActivationSource = .active) -> Pipeline<Input, Output>   [extends ZTronDSPCore]
+swift.method           Pipeline.highPass(_:cutoff:rollOff:rounding:isActive:) : func highPass(_ family: some FilterFamily, cutoff: Frequency, rollOff: RollOff, rounding: RollOffRounding = .exact(), isActive: some ActivationSource = .active) -> Pipeline<Input, Output>   [extends ZTronDSPCore]
+swift.method           Pipeline.highPass(_:cutoff:rollOff:stopband:isActive:) : func highPass(_ method: some FIRDesignMethod, cutoff: Frequency, rollOff: RollOff, stopband: Amplification, isActive: some ActivationSource = .active) -> Pipeline<Input, Output>   [extends ZTronDSPCore]
+swift.method           Pipeline.highPass(_:cutoff:transition:length:isActive:) : func highPass(_ method: some FIRDesignMethod, cutoff: Frequency, transition: Frequency? = nil, length: Int, isActive: some ActivationSource = .active) -> Pipeline<Input, Output>   [extends ZTronDSPCore]
+swift.method           Pipeline.highPass(_:passband:stopband:maximumLoss:minimumAttenuation:isActive:) : func highPass(_ family: some FilterFamily, passband: Frequency, stopband: Frequency, maximumLoss: Amplification, minimumAttenuation: Amplification, isActive: some ActivationSource = .active) -> Pipeline<Input, Output>   [extends ZTronDSPCore]
+swift.method           Pipeline.highPass(_:passband:stopband:maximumLoss:minimumAttenuation:isActive:) : func highPass(_ method: some FIRDesignMethod, passband: Frequency, stopband: Frequency, maximumLoss: Amplification, minimumAttenuation: Amplification, isActive: some ActivationSource = .active) -> Pipeline<Input, Output>   [extends ZTronDSPCore]
+swift.method           Pipeline.highShelf(midpoint:gain:slope:isActive:) : func highShelf(midpoint: Frequency, gain: Amplification, slope: ShelfSlope = .slope(1), isActive: some ActivationSource = .active) -> Pipeline<Input, Output>   [extends ZTronDSPCore]
+swift.method           Pipeline.interpolate(by:rejection:passband:isActive:) : func interpolate(by factor: Int, rejection: Amplification = .decibels(80), passband: Double = 0.8, isActive: some ActivationSource = .active) -> Pipeline<Input, Output>   [extends ZTronDSPCore]
+swift.method           Pipeline.lowPass(_:cutoff:order:isActive:) : func lowPass(_ family: some FilterFamily, cutoff: Frequency, order: Int, isActive: some ActivationSource = .active) -> Pipeline<Input, Output>   [extends ZTronDSPCore]
+swift.method           Pipeline.lowPass(_:cutoff:rollOff:rounding:isActive:) : func lowPass(_ family: some FilterFamily, cutoff: Frequency, rollOff: RollOff, rounding: RollOffRounding = .exact(), isActive: some ActivationSource = .active) -> Pipeline<Input, Output>   [extends ZTronDSPCore]
+swift.method           Pipeline.lowPass(_:cutoff:rollOff:stopband:isActive:) : func lowPass(_ method: some FIRDesignMethod, cutoff: Frequency, rollOff: RollOff, stopband: Amplification, isActive: some ActivationSource = .active) -> Pipeline<Input, Output>   [extends ZTronDSPCore]
+swift.method           Pipeline.lowPass(_:cutoff:transition:length:isActive:) : func lowPass(_ method: some FIRDesignMethod, cutoff: Frequency, transition: Frequency? = nil, length: Int, isActive: some ActivationSource = .active) -> Pipeline<Input, Output>   [extends ZTronDSPCore]
+swift.method           Pipeline.lowPass(_:passband:stopband:maximumLoss:minimumAttenuation:isActive:) : func lowPass(_ family: some FilterFamily, passband: Frequency, stopband: Frequency, maximumLoss: Amplification, minimumAttenuation: Amplification, isActive: some ActivationSource = .active) -> Pipeline<Input, Output>   [extends ZTronDSPCore]
+swift.method           Pipeline.lowPass(_:passband:stopband:maximumLoss:minimumAttenuation:isActive:) : func lowPass(_ method: some FIRDesignMethod, passband: Frequency, stopband: Frequency, maximumLoss: Amplification, minimumAttenuation: Amplification, isActive: some ActivationSource = .active) -> Pipeline<Input, Output>   [extends ZTronDSPCore]
+swift.method           Pipeline.lowShelf(midpoint:gain:slope:isActive:) : func lowShelf(midpoint: Frequency, gain: Amplification, slope: ShelfSlope = .slope(1), isActive: some ActivationSource = .active) -> Pipeline<Input, Output>   [extends ZTronDSPCore]
+swift.method           Pipeline.matchedPeak(center:gain:bandwidth:isActive:) : func matchedPeak(center: Frequency, gain: Amplification, bandwidth: Bandwidth, isActive: some ActivationSource = .active) -> Pipeline<Input, Output>   [extends ZTronDSPCore]
+swift.method           Pipeline.savitzkyGolay(window:polynomialOrder:derivative:edge:isActive:) : func savitzkyGolay(window: Int, polynomialOrder: Int, derivative: Int = 0, edge: SavitzkyGolayEdge = .interpolate, isActive: some ActivationSource = .active) -> Pipeline<Input, Output>   [extends ZTronDSPCore]
+swift.method           Pipeline.subsample(by:phase:isActive:) : func subsample(by factor: Int, phase: Int = 0, isActive: some ActivationSource = .active) -> Pipeline<Input, Output>   [extends ZTronDSPCore]
+swift.method           Pipeline.upsample(by:isActive:) : func upsample(by factor: Int, isActive: some ActivationSource = .active) -> Pipeline<Input, Output>   [extends ZTronDSPCore]
+swift.method           Pole.replacingParameters(_:) : func replacingParameters(_ values: ArraySlice<Double>) -> Pole
+swift.method           Pole.taps(sampleRate:) : func taps(sampleRate: Double) throws(DSPError) -> [Double]
+swift.method           Pole.zeroPoleGain(sampleRate:) : func zeroPoleGain(sampleRate: Double) throws(DSPError) -> ZeroPoleGain
+swift.method           Polynomial.evaluate(at:) : func evaluate(at x: Double) -> Double
+swift.method           Polynomial.evaluate(at:) : func evaluate(at z: Complex) -> Complex
+swift.method           Polynomial.rootCondition(at:) : func rootCondition(at root: Complex) -> Double
+swift.method           PolynomialRootFinder.rootConditions(of:) : func rootConditions(of polynomial: Polynomial) throws(DSPError) -> [Double]
+swift.method           PolynomialRootFinder.roots(of:) : func roots(of polynomial: Polynomial) throws(DSPError) -> [Complex]
+swift.method           SavitzkyGolay.lower(_:) : func lower(_ context: inout LoweringContext) throws(DSPError)
+swift.method           SecondOrderSections.frequencyResponse(at:) : func frequencyResponse(at frequencies: [Double]) throws(DSPError) -> [Complex]
+swift.method           SecondOrderSections.groupDelay(at:) : func groupDelay(at frequencies: [Double]) throws(DSPError) -> [Double?]
+swift.method           SecondOrderSections.recommendedPrecision() : func recommendedPrecision() throws(DSPError) -> BiquadPrecision
+swift.method           SecondOrderSections.singleVersusDoubleDeviation() : func singleVersusDoubleDeviation() throws(DSPError) -> Double
+swift.method           SecondOrderSections.spreadingGain() : func spreadingGain() -> SecondOrderSections
+swift.method           SecondOrderSections.zeroPoleGain() : func zeroPoleGain() -> ZeroPoleGain
+swift.method           SecondOrderSections.zeroPoleGain(sampleRate:) : func zeroPoleGain(sampleRate: Double) throws(DSPError) -> ZeroPoleGain
+swift.method           Section.taps(sampleRate:) : func taps(sampleRate: Double) throws(DSPError) -> [Double]
+swift.method           Section.zeroPoleGain(sampleRate:) : func zeroPoleGain(sampleRate: Double) throws(DSPError) -> ZeroPoleGain
+swift.method           Subsample.lower(_:) : func lower(_ context: inout LoweringContext) throws(DSPError)
+swift.method           SystemAnalysis.frequencyResponse(at:) : func frequencyResponse(at frequencies: [Double]) throws(DSPError) -> [Complex]
+swift.method           SystemAnalysis.frequencyResponse(at:) : func frequencyResponse(at frequencies: [Frequency]) throws(DSPError) -> [Complex]
+swift.method           SystemAnalysis.groupDelay(at:) : func groupDelay(at frequencies: [Double]) throws(DSPError) -> [Double?]
+swift.method           SystemAnalysis.groupDelay(at:) : func groupDelay(at frequencies: [Frequency]) throws(DSPError) -> [Double?]
+swift.method           SystemAnalysis.impulseResponse(count:) : func impulseResponse(count: Int) throws(DSPError) -> [Float]
+swift.method           SystemAnalysis.magnitudeResponse(at:in:) : func magnitudeResponse(at frequencies: [Frequency], in scale: MagnitudeScale = .linear) throws(DSPError) -> [Double]
+swift.method           SystemAnalysis.matlabScript() : func matlabScript() async throws(DSPError) -> String
+swift.method           SystemAnalysis.phaseResponse(at:unwrapped:) : func phaseResponse(at frequencies: [Frequency], unwrapped: Bool = false) throws(DSPError) -> [Double]
+swift.method           SystemAnalysis.roundOffNoiseGain(precision:) : func roundOffNoiseGain(precision: BiquadPrecision = .automatic) -> Double?
+swift.method           SystemAnalysis.stepResponse(count:) : func stepResponse(count: Int) throws(DSPError) -> [Float]
+swift.method           SystemElement.replacingParameters(_:) : func replacingParameters(_ values: ArraySlice<Double>) -> Self
+swift.method           Taps.taps(sampleRate:) : func taps(sampleRate: Double) throws(DSPError) -> [Double]
+swift.method           TransferFunction.bilinear(sampleRate:) : func bilinear(sampleRate: Double) throws(DSPError) -> TransferFunction
+swift.method           TransferFunction.frequencyResponse(at:) : func frequencyResponse(at frequencies: [Double]) throws(DSPError) -> [Complex]
+swift.method           TransferFunction.groupDelay(at:) : func groupDelay(at frequencies: [Double]) throws(DSPError) -> [Double?]
+swift.method           TransferFunction.transformed(by:) : func transformed(by transformation: FrequencyTransformation) throws(DSPError) -> TransferFunction
+swift.method           TransferFunction.zeroPoleGain() : func zeroPoleGain() throws(DSPError) -> ZeroPoleGain
+swift.method           Upsample.lower(_:) : func lower(_ context: inout LoweringContext) throws(DSPError)
+swift.method           WindowedSincMethod.taps(_:length:transition:attenuation:sampleRate:) : func taps(_ response: FilterResponse, length: Int, transition: Double?, attenuation: Amplification?, sampleRate: Double) throws(DSPError) -> [Double]
+swift.method           Zero.replacingParameters(_:) : func replacingParameters(_ values: ArraySlice<Double>) -> Zero
+swift.method           Zero.taps(sampleRate:) : func taps(sampleRate: Double) throws(DSPError) -> [Double]
+swift.method           Zero.zeroPoleGain(sampleRate:) : func zeroPoleGain(sampleRate: Double) throws(DSPError) -> ZeroPoleGain
+swift.method           ZeroPoleGain.bilinear(sampleRate:) : func bilinear(sampleRate: Double) throws(DSPError) -> ZeroPoleGain
+swift.method           ZeroPoleGain.frequencyResponse(at:) : func frequencyResponse(at frequencies: [Double]) throws(DSPError) -> [Complex]
+swift.method           ZeroPoleGain.groupDelay(at:) : func groupDelay(at frequencies: [Double]) throws(DSPError) -> [Double?]
+swift.method           ZeroPoleGain.secondOrderSections() : func secondOrderSections() throws(DSPError) -> SecondOrderSections
+swift.method           ZeroPoleGain.transferFunction() : func transferFunction() throws(DSPError) -> TransferFunction
+swift.method           ZeroPoleGain.transformed(by:) : func transformed(by transformation: FrequencyTransformation) throws(DSPError) -> ZeroPoleGain
+swift.method           ZeroPoleGain.zeroPoleGain(sampleRate:) : func zeroPoleGain(sampleRate: Double) throws(DSPError) -> ZeroPoleGain
+swift.property         AlphaBeta.activation : let activation: StageActivation
+swift.property         AlphaBeta.alpha : let alpha: Double
+swift.property         AlphaBeta.beta : let beta: Double
+swift.property         AlphaBeta.initialPosition : let initialPosition: Double
+swift.property         AlphaBeta.initialVelocity : let initialVelocity: Double
+swift.property         AlphaBeta.output : let output: AlphaBeta.Output
+swift.property         BandBoost.activation : let activation: StageActivation
+swift.property         BandBoost.bandwidth : let bandwidth: Bandwidth
+swift.property         BandBoost.center : let center: Frequency
+swift.property         BandBoost.dependsOnSampleRate : var dependsOnSampleRate: Bool { get }
+swift.property         BandBoost.gain : let gain: Amplification
+swift.property         BandBoost.parameters : var parameters: [Double] { get }
+swift.property         BandPass.activation : let activation: StageActivation
+swift.property         BandPass.dependsOnSampleRate : var dependsOnSampleRate: Bool { get }
+swift.property         BandPass.parameters : var parameters: [Double] { get }
+swift.property         BandStop.activation : let activation: StageActivation
+swift.property         BandStop.dependsOnSampleRate : var dependsOnSampleRate: Bool { get }
+swift.property         BandStop.parameters : var parameters: [Double] { get }
+swift.property         BesselFamily.normalization : let normalization: BesselNormalization
+swift.property         ButterworthFamily.orderStrategy : var orderStrategy: (any FilterOrderStrategy)? { get }
+swift.property         Chebyshev1Family.orderStrategy : var orderStrategy: (any FilterOrderStrategy)? { get }
+swift.property         Chebyshev1Family.ripple : let ripple: Amplification
+swift.property         Chebyshev2Family.orderStrategy : var orderStrategy: (any FilterOrderStrategy)? { get }
+swift.property         Chebyshev2Family.stopband : let stopband: Amplification
+swift.property         Convolve.activation : let activation: StageActivation
+swift.property         Convolve.kernel : let kernel: [Float]
+swift.property         Convolve.strategy : let strategy: ConvolutionStrategy
+swift.property         Decimate.activation : let activation: StageActivation
+swift.property         Decimate.factor : let factor: Int
+swift.property         Decimate.passband : let passband: Double
+swift.property         Decimate.rejection : let rejection: Amplification
+swift.property         DifferenceEquation.a : let a: [Double]
+swift.property         DifferenceEquation.b : let b: [Double]
+swift.property         DifferenceEquation.dependsOnSampleRate : var dependsOnSampleRate: Bool { get }
+swift.property         DifferenceEquation.rootFinder : let rootFinder: AnyStrategy
+swift.property         EllipticFamily.orderStrategy : var orderStrategy: (any FilterOrderStrategy)? { get }
+swift.property         EllipticFamily.ripple : let ripple: Amplification
+swift.property         EllipticFamily.stopband : let stopband: Amplification
+swift.property         EqualizerDesign.secondOrderSections : let secondOrderSections: SecondOrderSections
+swift.property         EqualizerDesign.zeroPoleGain : let zeroPoleGain: ZeroPoleGain
+swift.property         FIRDesign.delay : var delay: Double { get }
+swift.property         FIRDesign.length : var length: Int { get }
+swift.property         FIRDesign.method : let method: AnyStrategy
+swift.property         FIRDesign.response : let response: FilterResponse
+swift.property         FIRDesign.sampleRate : let sampleRate: Double
+swift.property         FIRDesign.taps : let taps: [Double]
+swift.property         FIRSystem.dependsOnSampleRate : var dependsOnSampleRate: Bool { get }
+swift.property         FIRSystem.domain : var domain: SystemDomain { get }
+swift.property         FIRSystem.elementCount : var elementCount: Int { get }
+swift.property         FIRSystem.gain : var gain: Double { get throws(DSPError) }
+swift.property         FIRSystem.isLinearPhase : var isLinearPhase: Bool { get throws(DSPError) }
+swift.property         FIRSystem.parameters : var parameters: [Double] { get }
+swift.property         FIRSystem.poles : var poles: [Complex] { get throws(DSPError) }
+swift.property         FIRSystem.zeros : var zeros: [Complex] { get throws(DSPError) }
+swift.property         Filter.activation : let activation: StageActivation
+swift.property         Filter.parameters : var parameters: [Double] { get }
+swift.property         FilterDesign.fir : var fir: FIRDesign? { get }
+swift.property         FilterDesign.iir : var iir: IIRDesign? { get }
+swift.property         FilterFamily.orderStrategy : var orderStrategy: (any FilterOrderStrategy)? { get }
+swift.property         FilterOrderEstimate.order : let order: Int
+swift.property         FilterOrderEstimate.response : let response: FilterResponse
+swift.property         FilterResponse.edges : var edges: [Double] { get }
+swift.property         FilterResponse.isBand : var isBand: Bool { get }
+swift.property         Gain.activation : let activation: StageActivation
+swift.property         Gain.amounts : var amounts: [Amplification] { get }
+swift.property         Gain.parameters : var parameters: [Double] { get }
+swift.property         Gain.ramp : let ramp: TimeInterval
+swift.property         HighPass.activation : let activation: StageActivation
+swift.property         HighPass.dependsOnSampleRate : var dependsOnSampleRate: Bool { get }
+swift.property         HighPass.parameters : var parameters: [Double] { get }
+swift.property         HighShelf.activation : let activation: StageActivation
+swift.property         HighShelf.dependsOnSampleRate : var dependsOnSampleRate: Bool { get }
+swift.property         HighShelf.gain : let gain: Amplification
+swift.property         HighShelf.midpoint : let midpoint: Frequency
+swift.property         HighShelf.parameters : var parameters: [Double] { get }
+swift.property         HighShelf.slope : let slope: ShelfSlope
+swift.property         IIRDesign.Domain.system : var system: SystemDomain { get }
+swift.property         IIRDesign.domain : let domain: IIRDesign.Domain
+swift.property         IIRDesign.family : let family: AnyStrategy
+swift.property         IIRDesign.order : let order: Int
+swift.property         IIRDesign.response : let response: FilterResponse
+swift.property         IIRDesign.secondOrderSections : var secondOrderSections: SecondOrderSections { get throws(DSPError) }
+swift.property         IIRDesign.transferFunction : var transferFunction: TransferFunction { get throws(DSPError) }
+swift.property         IIRDesign.zeroPoleGain : let zeroPoleGain: ZeroPoleGain
+swift.property         IIRSystem.dependsOnSampleRate : var dependsOnSampleRate: Bool { get }
+swift.property         IIRSystem.domain : var domain: SystemDomain { get }
+swift.property         IIRSystem.elementCount : var elementCount: Int { get }
+swift.property         IIRSystem.gain : var gain: Double { get throws(DSPError) }
+swift.property         IIRSystem.parameters : var parameters: [Double] { get }
+swift.property         IIRSystem.poles : var poles: [Complex] { get throws(DSPError) }
+swift.property         IIRSystem.zeros : var zeros: [Complex] { get throws(DSPError) }
+swift.property         Interpolate.activation : let activation: StageActivation
+swift.property         Interpolate.factor : let factor: Int
+swift.property         Interpolate.passband : let passband: Double
+swift.property         Interpolate.rejection : let rejection: Amplification
+swift.property         LTISystem.domain : var domain: SystemDomain { get }
+swift.property         LTISystem.gain : var gain: Double { get throws(DSPError) }
+swift.property         LTISystem.isMinimumPhase : var isMinimumPhase: Bool { get throws(DSPError) }
+swift.property         LTISystem.isStable : var isStable: Bool { get throws(DSPError) }
+swift.property         LTISystem.poles : var poles: [Complex] { get throws(DSPError) }
+swift.property         LTISystem.stabilityMargin : var stabilityMargin: Double { get throws(DSPError) }
+swift.property         LTISystem.zeros : var zeros: [Complex] { get throws(DSPError) }
+swift.property         LeastSquares.bands : let bands: [Frequency]
+swift.property         LeastSquares.dependsOnSampleRate : var dependsOnSampleRate: Bool { get }
+swift.property         LeastSquares.desired : let desired: [Double]
+swift.property         LeastSquares.length : let length: Int
+swift.property         LeastSquares.parameters : var parameters: [Double] { get }
+swift.property         LeastSquares.weights : let weights: [Double]
+swift.property         LeastSquaresMethod.stopbandWeight : let stopbandWeight: Double
+swift.property         LowPass.activation : let activation: StageActivation
+swift.property         LowPass.dependsOnSampleRate : var dependsOnSampleRate: Bool { get }
+swift.property         LowPass.parameters : var parameters: [Double] { get }
+swift.property         LowShelf.activation : let activation: StageActivation
+swift.property         LowShelf.dependsOnSampleRate : var dependsOnSampleRate: Bool { get }
+swift.property         LowShelf.gain : let gain: Amplification
+swift.property         LowShelf.midpoint : let midpoint: Frequency
+swift.property         LowShelf.parameters : var parameters: [Double] { get }
+swift.property         LowShelf.slope : let slope: ShelfSlope
+swift.property         MagnitudeScale.floor : let floor: Double
+swift.property         MatchedPeak.activation : let activation: StageActivation
+swift.property         MatchedPeak.bandwidth : let bandwidth: Bandwidth
+swift.property         MatchedPeak.center : let center: Frequency
+swift.property         MatchedPeak.dependsOnSampleRate : var dependsOnSampleRate: Bool { get }
+swift.property         MatchedPeak.gain : let gain: Amplification
+swift.property         MatchedPeak.parameters : var parameters: [Double] { get }
+swift.property         MatchedPeakDesign.secondOrderSections : let secondOrderSections: SecondOrderSections
+swift.property         MatchedPeakDesign.zeroPoleGain : let zeroPoleGain: ZeroPoleGain
+swift.property         Pole.dependsOnSampleRate : var dependsOnSampleRate: Bool { get }
+swift.property         Pole.parameters : var parameters: [Double] { get }
+swift.property         Polynomial.coefficients : let coefficients: [Double]
+swift.property         Polynomial.degree : var degree: Int { get }
+swift.property         Polynomial.derivative : var derivative: Polynomial { get }
+swift.property         Polynomial.description : var description: String { get }
+swift.property         Polynomial.isZero : var isZero: Bool { get }
+swift.property         Polynomial.leadingCoefficient : var leadingCoefficient: Double { get }
+swift.property         RootConditions.largest : var largest: Double? { get }
+swift.property         RootConditions.poles : let poles: [Double?]
+swift.property         RootConditions.zeros : let zeros: [Double?]
+swift.property         SavitzkyGolay.activation : let activation: StageActivation
+swift.property         SavitzkyGolay.derivative : let derivative: Int
+swift.property         SavitzkyGolay.edge : let edge: SavitzkyGolayEdge
+swift.property         SavitzkyGolay.polynomialOrder : let polynomialOrder: Int
+swift.property         SavitzkyGolay.window : let window: Int
+swift.property         SecondOrderSections.Section.a1 : let a1: Double
+swift.property         SecondOrderSections.Section.a2 : let a2: Double
+swift.property         SecondOrderSections.Section.b0 : let b0: Double
+swift.property         SecondOrderSections.Section.b1 : let b1: Double
+swift.property         SecondOrderSections.Section.b2 : let b2: Double
+swift.property         SecondOrderSections.Section.coefficients : var coefficients: [Double] { get }
+swift.property         SecondOrderSections.coefficients : var coefficients: [Double] { get }
+swift.property         SecondOrderSections.dependsOnSampleRate : var dependsOnSampleRate: Bool { get }
+swift.property         SecondOrderSections.domain : let domain: SystemDomain
+swift.property         SecondOrderSections.gain : var gain: Double { get }
+swift.property         SecondOrderSections.poles : var poles: [Complex] { get }
+swift.property         SecondOrderSections.sections : let sections: [SecondOrderSections.Section]
+swift.property         SecondOrderSections.stabilityMargin : var stabilityMargin: Double { get }
+swift.property         SecondOrderSections.zeros : var zeros: [Complex] { get }
+swift.property         Section.a : let a: [Double]
+swift.property         Section.b : let b: [Double]
+swift.property         Section.dependsOnSampleRate : var dependsOnSampleRate: Bool { get }
+swift.property         Subsample.activation : let activation: StageActivation
+swift.property         Subsample.factor : let factor: Int
+swift.property         Subsample.phase : let phase: Int
+swift.property         SystemAnalysis.domain : let domain: SystemDomain
+swift.property         SystemAnalysis.gain : let gain: Double
+swift.property         SystemAnalysis.isLinearPhase : let isLinearPhase: Bool
+swift.property         SystemAnalysis.isMinimumPhase : let isMinimumPhase: Bool
+swift.property         SystemAnalysis.isStable : let isStable: Bool
+swift.property         SystemAnalysis.kind : let kind: SystemKind
+swift.property         SystemAnalysis.order : let order: Int
+swift.property         SystemAnalysis.poles : let poles: [Complex]
+swift.property         SystemAnalysis.recommendedPrecision : let recommendedPrecision: BiquadPrecision
+swift.property         SystemAnalysis.rootConditions : let rootConditions: RootConditions
+swift.property         SystemAnalysis.sampleRate : let sampleRate: Double
+swift.property         SystemAnalysis.sections : let sections: SecondOrderSections?
+swift.property         SystemAnalysis.singleVersusDoubleDeviation : let singleVersusDoubleDeviation: Double?
+swift.property         SystemAnalysis.stabilityMargin : let stabilityMargin: Double
+swift.property         SystemAnalysis.taps : let taps: [Double]?
+swift.property         SystemAnalysis.zeros : let zeros: [Complex]
+swift.property         SystemDomain.description : var description: String { get }
+swift.property         SystemElement.dependsOnSampleRate : var dependsOnSampleRate: Bool { get }
+swift.property         SystemElement.parameters : var parameters: [Double] { get }
+swift.property         Taps.dependsOnSampleRate : var dependsOnSampleRate: Bool { get }
+swift.property         Taps.values : let values: [Double]
+swift.property         TransferFunction.denominator : let denominator: Polynomial
+swift.property         TransferFunction.domain : let domain: SystemDomain
+swift.property         TransferFunction.gain : var gain: Double { get throws(DSPError) }
+swift.property         TransferFunction.numerator : let numerator: Polynomial
+swift.property         TransferFunction.poleConditions : var poleConditions: [Double] { get throws(DSPError) }
+swift.property         TransferFunction.poles : var poles: [Complex] { get throws(DSPError) }
+swift.property         TransferFunction.rootFinder : let rootFinder: AnyStrategy
+swift.property         TransferFunction.zeroConditions : var zeroConditions: [Double] { get throws(DSPError) }
+swift.property         TransferFunction.zeros : var zeros: [Complex] { get throws(DSPError) }
+swift.property         Upsample.activation : let activation: StageActivation
+swift.property         Upsample.factor : let factor: Int
+swift.property         WindowedSincMethod.window : let window: Window?
+swift.property         Zero.dependsOnSampleRate : var dependsOnSampleRate: Bool { get }
+swift.property         Zero.parameters : var parameters: [Double] { get }
+swift.property         ZeroPoleGain.dependsOnSampleRate : var dependsOnSampleRate: Bool { get }
+swift.property         ZeroPoleGain.domain : let domain: SystemDomain
+swift.property         ZeroPoleGain.gain : let gain: Double
+swift.property         ZeroPoleGain.isFinite : var isFinite: Bool { get }
+swift.property         ZeroPoleGain.poles : let poles: [Complex]
+swift.property         ZeroPoleGain.relativeDegree : var relativeDegree: Int { get }
+swift.property         ZeroPoleGain.zeros : let zeros: [Complex]
+swift.protocol         FIRDesignMethod : protocol FIRDesignMethod : Hashable, Sendable
+swift.protocol         FIRSystemElement : protocol FIRSystemElement : SystemElement
+swift.protocol         FilterFamily : protocol FilterFamily : Hashable, Sendable
+swift.protocol         FilterOrderStrategy : protocol FilterOrderStrategy : Hashable, Sendable
+swift.protocol         IIRSystemElement : protocol IIRSystemElement : SystemElement
+swift.protocol         LTISystem : protocol LTISystem : Sendable
+swift.protocol         PolynomialRootFinder : protocol PolynomialRootFinder : Hashable, Sendable
+swift.protocol         SystemElement : protocol SystemElement : Hashable, Sendable
+swift.struct           AlphaBeta : struct AlphaBeta
+swift.struct           BandBoost : struct BandBoost
+swift.struct           BandPass : struct BandPass
+swift.struct           BandStop : struct BandStop
+swift.struct           BesselFamily : struct BesselFamily
+swift.struct           ButterworthFamily : struct ButterworthFamily
+swift.struct           ButterworthOrderStrategy : struct ButterworthOrderStrategy
+swift.struct           Chebyshev1Family : struct Chebyshev1Family
+swift.struct           Chebyshev1OrderStrategy : struct Chebyshev1OrderStrategy
+swift.struct           Chebyshev2Family : struct Chebyshev2Family
+swift.struct           Chebyshev2OrderStrategy : struct Chebyshev2OrderStrategy
+swift.struct           CompanionQRRootFinder : struct CompanionQRRootFinder
+swift.struct           Convolve : struct Convolve
+swift.struct           Decimate : struct Decimate
+swift.struct           DifferenceEquation : struct DifferenceEquation
+swift.struct           EllipticFamily : struct EllipticFamily
+swift.struct           EllipticOrderStrategy : struct EllipticOrderStrategy
+swift.struct           EqualizerDesign : struct EqualizerDesign
+swift.struct           FIRDesign : struct FIRDesign
+swift.struct           FIRSystem : struct FIRSystem
+swift.struct           FIRSystemContent : struct FIRSystemContent
+swift.struct           Filter : struct Filter
+swift.struct           FilterOrderEstimate : struct FilterOrderEstimate
+swift.struct           Gain : struct Gain
+swift.struct           HighPass : struct HighPass
+swift.struct           HighShelf : struct HighShelf
+swift.struct           IIRDesign : struct IIRDesign
+swift.struct           IIRSystem : struct IIRSystem
+swift.struct           IIRSystemContent : struct IIRSystemContent
+swift.struct           Interpolate : struct Interpolate
+swift.struct           LeastSquares : struct LeastSquares
+swift.struct           LeastSquaresMethod : struct LeastSquaresMethod
+swift.struct           LowPass : struct LowPass
+swift.struct           LowShelf : struct LowShelf
+swift.struct           MagnitudeScale : struct MagnitudeScale
+swift.struct           MatchedPeak : struct MatchedPeak
+swift.struct           MatchedPeakDesign : struct MatchedPeakDesign
+swift.struct           Pole : struct Pole
+swift.struct           Polynomial : struct Polynomial
+swift.struct           RootConditions : struct RootConditions
+swift.struct           SavitzkyGolay : struct SavitzkyGolay
+swift.struct           SecondOrderSections : struct SecondOrderSections
+swift.struct           SecondOrderSections.Section : struct Section
+swift.struct           Section : struct Section
+swift.struct           Subsample : struct Subsample
+swift.struct           SystemAnalysis : struct SystemAnalysis
+swift.struct           Taps : struct Taps
+swift.struct           TransferFunction : struct TransferFunction
+swift.struct           Upsample : struct Upsample
+swift.struct           WindowedSincMethod : struct WindowedSincMethod
+swift.struct           Zero : struct Zero
+swift.struct           ZeroPoleGain : struct ZeroPoleGain
+swift.type.method      AnalogPrototype.bessel(order:normalization:) : static func bessel(order: Int, normalization: BesselNormalization = .phase) throws(DSPError) -> ZeroPoleGain
+swift.type.method      AnalogPrototype.butterworth(order:) : static func butterworth(order: Int) throws(DSPError) -> ZeroPoleGain
+swift.type.method      AnalogPrototype.chebyshev1(order:ripple:) : static func chebyshev1(order: Int, ripple: Amplification) throws(DSPError) -> ZeroPoleGain
+swift.type.method      AnalogPrototype.chebyshev2(order:stopband:) : static func chebyshev2(order: Int, stopband: Amplification) throws(DSPError) -> ZeroPoleGain
+swift.type.method      AnalogPrototype.elliptic(order:ripple:stopband:) : static func elliptic(order: Int, ripple: Amplification, stopband: Amplification) throws(DSPError) -> ZeroPoleGain
+swift.type.method      DSP.alphaBeta(_:alpha:beta:timeStep:initialPosition:initialVelocity:output:) : static func alphaBeta(_ samples: [Float], alpha: Double, beta: Double, timeStep: Double, initialPosition: Double = 0, initialVelocity: Double = 0, output: AlphaBeta.Output = .position) throws(DSPError) -> [Float]   [extends ZTronDSPCore]
+swift.type.method      DSP.decimate(_:by:rejection:passband:) : static func decimate(_ samples: [Float], by factor: Int, rejection: Amplification = .decibels(80), passband: Double = 0.8) throws(DSPError) -> [Float]   [extends ZTronDSPCore]
+swift.type.method      DSP.interpolate(_:by:rejection:passband:) : static func interpolate(_ samples: [Float], by factor: Int, rejection: Amplification = .decibels(80), passband: Double = 0.8) throws(DSPError) -> [Float]   [extends ZTronDSPCore]
+swift.type.method      DSP.prewarpedAngularFrequency(hertz:sampleRate:) : static func prewarpedAngularFrequency(hertz: Double, sampleRate: Double) throws(DSPError) -> Double   [extends ZTronDSPCore]
+swift.type.method      DSP.rateChangeTaps(by:rejection:passband:) : static func rateChangeTaps(by factor: Int, rejection: Amplification = .decibels(80), passband: Double = 0.8) throws(DSPError) -> [Double]   [extends ZTronDSPCore]
+swift.type.method      DSP.savitzkyGolay(_:window:polynomialOrder:derivative:edge:) : static func savitzkyGolay(_ samples: [Float], window: Int, polynomialOrder: Int, derivative: Int = 0, edge: SavitzkyGolayEdge = .interpolate) throws(DSPError) -> [Float]   [extends ZTronDSPCore]
+swift.type.method      DSP.savitzkyGolayCoefficients(window:polynomialOrder:derivative:) : static func savitzkyGolayCoefficients(window: Int, polynomialOrder: Int, derivative: Int = 0) throws(DSPError) -> [Double]   [extends ZTronDSPCore]
+swift.type.method      EqualizerDesign.bandBoost(center:gain:bandwidth:order:sampleRate:) : static func bandBoost(center: Double, gain: Amplification, bandwidth: Bandwidth, order: Int = 1, sampleRate: Double) throws(DSPError) -> EqualizerDesign
+swift.type.method      EqualizerDesign.bandBoost(center:gain:bandwidth:rollOff:rounding:sampleRate:) : static func bandBoost(center: Double, gain: Amplification, bandwidth: Bandwidth, rollOff: RollOff, rounding: RollOffRounding = .exact(), sampleRate: Double) throws(DSPError) -> EqualizerDesign
+swift.type.method      EqualizerDesign.highShelf(midpoint:gain:slope:sampleRate:) : static func highShelf(midpoint: Double, gain: Amplification, slope: ShelfSlope = .slope(1), sampleRate: Double) throws(DSPError) -> EqualizerDesign
+swift.type.method      EqualizerDesign.lowShelf(midpoint:gain:slope:sampleRate:) : static func lowShelf(midpoint: Double, gain: Amplification, slope: ShelfSlope = .slope(1), sampleRate: Double) throws(DSPError) -> EqualizerDesign
+swift.type.method      FIRDesignMethod.leastSquares(stopbandWeight:) : static func leastSquares(stopbandWeight: Double) -> LeastSquaresMethod
+swift.type.method      FIRDesignMethod.windowedSinc(window:) : static func windowedSinc(window: Window? = nil) -> WindowedSincMethod
+swift.type.method      FIRSystemBuilder.buildArray(_:) : static func buildArray(_ parts: [FIRSystemContent]) -> FIRSystemContent
+swift.type.method      FIRSystemBuilder.buildBlock(_:) : static func buildBlock(_ parts: FIRSystemContent...) -> FIRSystemContent
+swift.type.method      FIRSystemBuilder.buildEither(first:) : static func buildEither(first part: FIRSystemContent) -> FIRSystemContent
+swift.type.method      FIRSystemBuilder.buildEither(second:) : static func buildEither(second part: FIRSystemContent) -> FIRSystemContent
+swift.type.method      FIRSystemBuilder.buildExpression(_:) : static func buildExpression(_ element: some FIRSystemElement) -> FIRSystemContent
+swift.type.method      FIRSystemBuilder.buildLimitedAvailability(_:) : static func buildLimitedAvailability(_ part: FIRSystemContent) -> FIRSystemContent
+swift.type.method      FIRSystemBuilder.buildOptional(_:) : static func buildOptional(_ part: FIRSystemContent?) -> FIRSystemContent
+swift.type.method      FilterFamily.bessel(normalization:) : static func bessel(normalization: BesselNormalization = .phase) -> BesselFamily
+swift.type.method      FilterFamily.chebyshev1(ripple:) : static func chebyshev1(ripple: Amplification) -> Chebyshev1Family
+swift.type.method      FilterFamily.chebyshev2(stopband:) : static func chebyshev2(stopband: Amplification) -> Chebyshev2Family
+swift.type.method      FilterFamily.elliptic(ripple:stopband:) : static func elliptic(ripple: Amplification, stopband: Amplification) -> EllipticFamily
+swift.type.method      IIRSystemBuilder.buildArray(_:) : static func buildArray(_ parts: [IIRSystemContent]) -> IIRSystemContent
+swift.type.method      IIRSystemBuilder.buildBlock(_:) : static func buildBlock(_ parts: IIRSystemContent...) -> IIRSystemContent
+swift.type.method      IIRSystemBuilder.buildEither(first:) : static func buildEither(first part: IIRSystemContent) -> IIRSystemContent
+swift.type.method      IIRSystemBuilder.buildEither(second:) : static func buildEither(second part: IIRSystemContent) -> IIRSystemContent
+swift.type.method      IIRSystemBuilder.buildExpression(_:) : static func buildExpression(_ element: some IIRSystemElement) -> IIRSystemContent
+swift.type.method      IIRSystemBuilder.buildLimitedAvailability(_:) : static func buildLimitedAvailability(_ part: IIRSystemContent) -> IIRSystemContent
+swift.type.method      IIRSystemBuilder.buildOptional(_:) : static func buildOptional(_ part: IIRSystemContent?) -> IIRSystemContent
+swift.type.method      MagnitudeScale.decibels(floor:) : static func decibels(floor: Double) -> MagnitudeScale
+swift.type.method      TransferFunction.differenceEquation(b:a:rootFinder:) : static func differenceEquation(b: [Double], a: [Double], rootFinder: some PolynomialRootFinder = .companionQR) -> TransferFunction
+swift.type.method      WindowedSincMethod.kaiserEstimate(attenuation:transition:sampleRate:) : static func kaiserEstimate(attenuation: Amplification, transition: Double, sampleRate: Double) throws(DSPError) -> (length: Int, beta: Double)
+swift.type.property    AnalogPrototype.maximumOrder : static let maximumOrder: Int
+swift.type.property    CompanionQRRootFinder.maximumDegree : static let maximumDegree: Int
+swift.type.property    DSP.maximumRateChangeFactor : static let maximumRateChangeFactor: Int   [extends ZTronDSPCore]
+swift.type.property    DSP.savitzkyGolayMaximumWindow : static let savitzkyGolayMaximumWindow: Int   [extends ZTronDSPCore]
+swift.type.property    EqualizerDesign.maximumOrder : static let maximumOrder: Int
+swift.type.property    FIRDesignMethod.leastSquares : static var leastSquares: LeastSquaresMethod { get }
+swift.type.property    FIRSystem.maximumLength : static let maximumLength: Int
+swift.type.property    FilterFamily.butterworth : static var butterworth: ButterworthFamily { get }
+swift.type.property    FilterOrderStrategy.butterworth : static var butterworth: ButterworthOrderStrategy { get }
+swift.type.property    FilterOrderStrategy.chebyshev1 : static var chebyshev1: Chebyshev1OrderStrategy { get }
+swift.type.property    FilterOrderStrategy.chebyshev2 : static var chebyshev2: Chebyshev2OrderStrategy { get }
+swift.type.property    FilterOrderStrategy.elliptic : static var elliptic: EllipticOrderStrategy { get }
+swift.type.property    MagnitudeScale.decibels : static let decibels: MagnitudeScale
+swift.type.property    MagnitudeScale.linear : static let linear: MagnitudeScale
+swift.type.property    Polynomial.one : static let one: Polynomial
+swift.type.property    Polynomial.zero : static let zero: Polynomial
+swift.type.property    PolynomialRootFinder.companionQR : static var companionQR: CompanionQRRootFinder { get }
+swift.type.property    SecondOrderSections.Section.identity : static let identity: SecondOrderSections.Section
+swift.type.property    SystemAnalysis.exportedFrequencyCount : static let exportedFrequencyCount: Int
+swift.type.property    SystemAnalysis.exportedSampleCount : static let exportedSampleCount: Int
+swift.type.property    WindowedSincMethod.defaultAttenuation : static let defaultAttenuation: Double
+swift.type.property    WindowedSincMethod.maximumLength : static let maximumLength: Int

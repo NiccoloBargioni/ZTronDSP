@@ -1,0 +1,188 @@
+# CZTronDSP — public API digest (VIS-3).
+# Generated from the built module by Scripts/api-digest.sh --update. Do not edit: a difference
+# from the build fails CI gate 4, and changing the public API is a change request.
+
+conformance            ztd_crossfade : Swift.Sendable
+conformance            ztd_implementation : Swift.Equatable
+conformance            ztd_implementation : Swift.Hashable
+conformance            ztd_implementation : Swift.RawRepresentable
+conformance            ztd_implementation : Swift.Sendable
+conformance            ztd_ring_storage : Swift.Equatable
+conformance            ztd_ring_storage : Swift.Hashable
+conformance            ztd_ring_storage : Swift.RawRepresentable
+conformance            ztd_ring_storage : Swift.Sendable
+conformance            ztd_switch_state : Swift.Equatable
+conformance            ztd_switch_state : Swift.Hashable
+conformance            ztd_switch_state : Swift.RawRepresentable
+conformance            ztd_switch_state : Swift.Sendable
+swift.func             ztd_abi_version() : func ztd_abi_version() -> UInt32
+swift.func             ztd_alpha_beta_create(_:_:_:_:_:_:_:) : func ztd_alpha_beta_create(_ channels: UInt32, _ alpha: Float, _ beta: Float, _ time_step: Float, _ initial_position: Float, _ initial_velocity: Float, _ output_velocity: Bool) -> ztd_kernel_t
+swift.func             ztd_atomic_add(_:_:) : func ztd_atomic_add(_ cell: OpaquePointer!, _ amount: UInt64) -> UInt64
+swift.func             ztd_atomic_barrier() : func ztd_atomic_barrier()
+swift.func             ztd_atomic_compare_exchange(_:_:_:) : func ztd_atomic_compare_exchange(_ cell: OpaquePointer!, _ expected: UInt64, _ desired: UInt64) -> Bool
+swift.func             ztd_atomic_create(_:) : func ztd_atomic_create(_ initial: UInt64) -> OpaquePointer!
+swift.func             ztd_atomic_destroy(_:) : func ztd_atomic_destroy(_ cell: OpaquePointer!)
+swift.func             ztd_atomic_exchange(_:_:) : func ztd_atomic_exchange(_ cell: OpaquePointer!, _ value: UInt64) -> UInt64
+swift.func             ztd_atomic_load(_:) : func ztd_atomic_load(_ cell: OpaquePointer!) -> UInt64
+swift.func             ztd_atomic_store(_:_:) : func ztd_atomic_store(_ cell: OpaquePointer!, _ value: UInt64)
+swift.func             ztd_biquad_create(_:_:_:_:) : func ztd_biquad_create(_ channels: UInt32, _ sections: UInt32, _ coefficients: UnsafePointer<Double>!, _ implementation: ztd_implementation_t) -> ztd_kernel_t
+swift.func             ztd_biquad_double_create(_:_:_:) : func ztd_biquad_double_create(_ channels: UInt32, _ sections: UInt32, _ coefficients: UnsafePointer<Double>!) -> ztd_kernel_t
+swift.func             ztd_biquadm_create(_:_:_:) : func ztd_biquadm_create(_ channels: UInt32, _ sections: UInt32, _ coefficients: UnsafePointer<Double>!) -> ztd_kernel_t
+swift.func             ztd_buffer_color() : func ztd_buffer_color() -> Int
+swift.func             ztd_command_queue_acknowledge(_:_:) : func ztd_command_queue_acknowledge(_ queue: OpaquePointer!, _ sequence: UInt64)
+swift.func             ztd_command_queue_applied(_:) : func ztd_command_queue_applied(_ queue: OpaquePointer!) -> UInt64
+swift.func             ztd_command_queue_create(_:) : func ztd_command_queue_create(_ capacity: UInt32) -> OpaquePointer!
+swift.func             ztd_command_queue_destroy(_:) : func ztd_command_queue_destroy(_ queue: OpaquePointer!)
+swift.func             ztd_command_queue_overflows(_:) : func ztd_command_queue_overflows(_ queue: OpaquePointer!) -> UInt64
+swift.func             ztd_command_queue_pop(_:_:) : func ztd_command_queue_pop(_ queue: OpaquePointer!, _ command: UnsafeMutablePointer<ztd_command_t>!) -> Bool
+swift.func             ztd_command_queue_push(_:_:) : func ztd_command_queue_push(_ queue: OpaquePointer!, _ command: UnsafePointer<ztd_command_t>!) -> UInt64
+swift.func             ztd_copy_finite(_:_:_:) : func ztd_copy_finite(_ in: UnsafePointer<Float>!, _ out: UnsafeMutablePointer<Float>!, _ frames: UInt32) -> UInt32
+swift.func             ztd_crossfade_begin(_:_:) : func ztd_crossfade_begin(_ fade: UnsafeMutablePointer<ztd_crossfade_t>!, _ frames: UInt32)
+swift.func             ztd_crossfade_is_done(_:) : func ztd_crossfade_is_done(_ fade: UnsafePointer<ztd_crossfade_t>!) -> Bool
+swift.func             ztd_crossfade_mix(_:_:_:_:_:) : func ztd_crossfade_mix(_ fade: UnsafeMutablePointer<ztd_crossfade_t>!, _ from: UnsafePointer<Float>!, _ to: UnsafePointer<Float>!, _ out: UnsafeMutablePointer<Float>!, _ frames: UInt32)
+swift.func             ztd_decimator_create(_:_:_:_:_:) : func ztd_decimator_create(_ channels: UInt32, _ factor: UInt32, _ taps: UnsafePointer<Float>!, _ count: UInt32, _ latency_frames: UInt32) -> ztd_kernel_t
+swift.func             ztd_fir_create(_:_:_:_:_:) : func ztd_fir_create(_ channels: UInt32, _ taps: UnsafePointer<Float>!, _ count: UInt32, _ latency_frames: UInt32, _ fade_frames: UInt32) -> ztd_kernel_t
+swift.func             ztd_flush_state(_:_:) : func ztd_flush_state(_ state: UnsafeMutablePointer<Float>!, _ count: UInt32)
+swift.func             ztd_flush_state_double(_:_:) : func ztd_flush_state_double(_ state: UnsafeMutablePointer<Double>!, _ count: UInt32)
+swift.func             ztd_gain_cascade_create(_:_:_:_:_:) : func ztd_gain_cascade_create(_ channels: UInt32, _ factors: UnsafePointer<Float>!, _ count: UInt32, _ ramp_frames: UInt32, _ implementation: ztd_implementation_t) -> ztd_kernel_t
+swift.func             ztd_gain_create(_:_:_:_:) : func ztd_gain_create(_ channels: UInt32, _ gains: UnsafePointer<Float>!, _ ramp_frames: UInt32, _ implementation: ztd_implementation_t) -> ztd_kernel_t
+swift.func             ztd_interpolator_create(_:_:_:_:_:) : func ztd_interpolator_create(_ channels: UInt32, _ factor: UInt32, _ taps: UnsafePointer<Float>!, _ count: UInt32, _ latency_frames: UInt32) -> ztd_kernel_t
+swift.func             ztd_kernel_destroy(_:) : func ztd_kernel_destroy(_ kernel: UnsafeMutablePointer<ztd_kernel_t>!)
+swift.func             ztd_kernel_identity() : func ztd_kernel_identity() -> ztd_kernel_t
+swift.func             ztd_kernel_is_null(_:) : func ztd_kernel_is_null(_ kernel: UnsafePointer<ztd_kernel_t>!) -> Bool
+swift.func             ztd_lane_exchange_accelerate(_:_:_:) : func ztd_lane_exchange_accelerate(_ a: UnsafeMutablePointer<Float>!, _ b: UnsafeMutablePointer<Float>!, _ count: UInt32)
+swift.func             ztd_lane_exchange_function(_:) : func ztd_lane_exchange_function(_ implementation: ztd_implementation_t) -> ztd_lane_exchange_fn!
+swift.func             ztd_lane_exchange_native(_:_:_:) : func ztd_lane_exchange_native(_ a: UnsafeMutablePointer<Float>!, _ b: UnsafeMutablePointer<Float>!, _ count: UInt32)
+swift.func             ztd_parker_create() : func ztd_parker_create() -> OpaquePointer!
+swift.func             ztd_parker_destroy(_:) : func ztd_parker_destroy(_ parker: OpaquePointer!)
+swift.func             ztd_parker_park(_:) : func ztd_parker_park(_ parker: OpaquePointer!)
+swift.func             ztd_parker_park_count(_:) : func ztd_parker_park_count(_ parker: OpaquePointer!) -> UInt64
+swift.func             ztd_parker_unpark(_:) : func ztd_parker_unpark(_ parker: OpaquePointer!)
+swift.func             ztd_partitioned_create(_:_:_:_:_:) : func ztd_partitioned_create(_ channels: UInt32, _ taps: UnsafePointer<Float>!, _ count: UInt32, _ partition: UInt32, _ latency_frames: UInt32) -> ztd_kernel_t
+swift.func             ztd_partitioned_spectrum(_:_:_:_:) : func ztd_partitioned_spectrum(_ kernel: UnsafePointer<ztd_kernel_t>!, _ index: UInt32, _ real: UnsafeMutablePointer<Float>!, _ imaginary: UnsafeMutablePointer<Float>!) -> UInt32
+swift.func             ztd_plan_append(_:_:_:) : func ztd_plan_append(_ plan: OpaquePointer!, _ kernel: ztd_kernel_t, _ owned: Bool) -> UInt32
+swift.func             ztd_plan_as_kernel(_:) : func ztd_plan_as_kernel(_ plan: OpaquePointer!) -> ztd_kernel_t
+swift.func             ztd_plan_channels(_:) : func ztd_plan_channels(_ plan: OpaquePointer!) -> UInt32
+swift.func             ztd_plan_command(_:_:) : func ztd_plan_command(_ plan: OpaquePointer!, _ command: UnsafePointer<ztd_command_t>!)
+swift.func             ztd_plan_count(_:) : func ztd_plan_count(_ plan: OpaquePointer!) -> UInt32
+swift.func             ztd_plan_create(_:_:_:) : func ztd_plan_create(_ kernel_capacity: UInt32, _ channels: UInt32, _ maximum_frames: UInt32) -> OpaquePointer!
+swift.func             ztd_plan_destroy(_:) : func ztd_plan_destroy(_ plan: OpaquePointer!)
+swift.func             ztd_plan_kernel(_:_:) : func ztd_plan_kernel(_ plan: OpaquePointer!, _ index: UInt32) -> ztd_kernel_t
+swift.func             ztd_plan_latency(_:) : func ztd_plan_latency(_ plan: OpaquePointer!) -> UInt32
+swift.func             ztd_plan_make_switchable(_:_:_:_:) : func ztd_plan_make_switchable(_ plan: OpaquePointer!, _ index: UInt32, _ fade_frames: UInt32, _ active: Bool) -> Bool
+swift.func             ztd_plan_maximum_frames(_:) : func ztd_plan_maximum_frames(_ plan: OpaquePointer!) -> UInt32
+swift.func             ztd_plan_preroll(_:_:_:_:_:) : func ztd_plan_preroll(_ plan: OpaquePointer!, _ first: UInt32, _ in: UnsafePointer<UnsafePointer<Float>?>!, _ channels: UInt32, _ frames: UInt32)
+swift.func             ztd_plan_reset(_:) : func ztd_plan_reset(_ plan: OpaquePointer!)
+swift.func             ztd_plan_run(_:_:_:_:_:) : func ztd_plan_run(_ plan: OpaquePointer!, _ in: UnsafePointer<UnsafePointer<Float>?>!, _ out: UnsafePointer<UnsafeMutablePointer<Float>?>!, _ channels: UInt32, _ frames: UInt32) -> UInt32
+swift.func             ztd_plan_run_range(_:_:_:_:_:_:_:) : func ztd_plan_run_range(_ plan: OpaquePointer!, _ first: UInt32, _ last: UInt32, _ in: UnsafePointer<UnsafePointer<Float>?>!, _ out: UnsafePointer<UnsafeMutablePointer<Float>?>!, _ channels: UInt32, _ frames: UInt32) -> UInt32
+swift.func             ztd_plan_slot_create(_:) : func ztd_plan_slot_create(_ retire_capacity: UInt32) -> OpaquePointer!
+swift.func             ztd_plan_slot_current(_:) : func ztd_plan_slot_current(_ slot: OpaquePointer!) -> UnsafeMutableRawPointer!
+swift.func             ztd_plan_slot_destroy(_:) : func ztd_plan_slot_destroy(_ slot: OpaquePointer!)
+swift.func             ztd_plan_slot_exchanges(_:) : func ztd_plan_slot_exchanges(_ slot: OpaquePointer!) -> UInt64
+swift.func             ztd_plan_slot_has_pending(_:) : func ztd_plan_slot_has_pending(_ slot: OpaquePointer!) -> Bool
+swift.func             ztd_plan_slot_install(_:_:) : func ztd_plan_slot_install(_ slot: OpaquePointer!, _ plan: UnsafeMutableRawPointer!) -> UnsafeMutableRawPointer!
+swift.func             ztd_plan_slot_next_retired(_:) : func ztd_plan_slot_next_retired(_ slot: OpaquePointer!) -> UnsafeMutableRawPointer!
+swift.func             ztd_plan_slot_publish(_:_:) : func ztd_plan_slot_publish(_ slot: OpaquePointer!, _ plan: UnsafeMutableRawPointer!) -> UnsafeMutableRawPointer!
+swift.func             ztd_plan_slot_retire(_:_:) : func ztd_plan_slot_retire(_ slot: OpaquePointer!, _ plan: UnsafeMutableRawPointer!) -> Bool
+swift.func             ztd_plan_slot_take(_:) : func ztd_plan_slot_take(_ slot: OpaquePointer!) -> UnsafeMutableRawPointer!
+swift.func             ztd_plan_slot_withdraw(_:) : func ztd_plan_slot_withdraw(_ slot: OpaquePointer!) -> UnsafeMutableRawPointer!
+swift.func             ztd_plan_switch_state(_:_:) : func ztd_plan_switch_state(_ plan: OpaquePointer!, _ index: UInt32) -> ztd_switch_state_t
+swift.func             ztd_plan_transfer(_:_:_:_:) : func ztd_plan_transfer(_ from: OpaquePointer!, _ from_index: UInt32, _ to: OpaquePointer!, _ to_index: UInt32) -> Bool
+swift.func             ztd_pointer_queue_create(_:) : func ztd_pointer_queue_create(_ capacity: UInt32) -> OpaquePointer!
+swift.func             ztd_pointer_queue_destroy(_:) : func ztd_pointer_queue_destroy(_ queue: OpaquePointer!)
+swift.func             ztd_pointer_queue_pop(_:) : func ztd_pointer_queue_pop(_ queue: OpaquePointer!) -> UnsafeMutableRawPointer!
+swift.func             ztd_pointer_queue_push(_:_:) : func ztd_pointer_queue_push(_ queue: OpaquePointer!, _ pointer: UnsafeMutableRawPointer!) -> Bool
+swift.func             ztd_ring_available(_:) : func ztd_ring_available(_ ring: OpaquePointer!) -> UInt32
+swift.func             ztd_ring_capacity(_:) : func ztd_ring_capacity(_ ring: OpaquePointer!) -> UInt32
+swift.func             ztd_ring_channels(_:) : func ztd_ring_channels(_ ring: OpaquePointer!) -> UInt32
+swift.func             ztd_ring_close(_:) : func ztd_ring_close(_ ring: OpaquePointer!)
+swift.func             ztd_ring_consume(_:_:) : func ztd_ring_consume(_ ring: OpaquePointer!, _ frames: UInt32) -> UInt32
+swift.func             ztd_ring_create(_:_:_:) : func ztd_ring_create(_ channels: UInt32, _ capacity_frames: UInt32, _ storage: ztd_ring_storage_t) -> OpaquePointer!
+swift.func             ztd_ring_destroy(_:) : func ztd_ring_destroy(_ ring: OpaquePointer!)
+swift.func             ztd_ring_is_mirrored(_:) : func ztd_ring_is_mirrored(_ ring: OpaquePointer!) -> Bool
+swift.func             ztd_ring_overrun_frames(_:) : func ztd_ring_overrun_frames(_ ring: OpaquePointer!) -> UInt64
+swift.func             ztd_ring_peek(_:_:_:) : func ztd_ring_peek(_ ring: OpaquePointer!, _ channel: UInt32, _ frames: UInt32) -> UnsafePointer<Float>!
+swift.func             ztd_ring_read(_:_:_:) : func ztd_ring_read(_ ring: OpaquePointer!, _ channels: UnsafePointer<UnsafeMutablePointer<Float>?>!, _ frames: UInt32) -> UInt32
+swift.func             ztd_ring_reset(_:) : func ztd_ring_reset(_ ring: OpaquePointer!)
+swift.func             ztd_ring_space(_:) : func ztd_ring_space(_ ring: OpaquePointer!) -> UInt32
+swift.func             ztd_ring_write(_:_:_:) : func ztd_ring_write(_ ring: OpaquePointer!, _ channels: UnsafePointer<UnsafePointer<Float>?>!, _ frames: UInt32) -> UInt32
+swift.func             ztd_ring_write_interleaved(_:_:_:) : func ztd_ring_write_interleaved(_ ring: OpaquePointer!, _ samples: UnsafePointer<Float>!, _ frames: UInt32) -> UInt32
+swift.func             ztd_ring_write_waiting(_:_:_:) : func ztd_ring_write_waiting(_ ring: OpaquePointer!, _ channels: UnsafePointer<UnsafePointer<Float>?>!, _ frames: UInt32) -> UInt32
+swift.func             ztd_sink_node_create(_:_:) : func ztd_sink_node_create(_ tap: OpaquePointer!, _ realtime_safe: Bool) -> AVAudioSinkNode!
+swift.func             ztd_sink_node_has_realtime_safe_initialiser() : func ztd_sink_node_has_realtime_safe_initialiser() -> Bool
+swift.func             ztd_sink_node_receiver(_:_:) : func ztd_sink_node_receiver(_ tap: OpaquePointer!, _ realtime_safe: Bool) -> ztd_sink_receiver_t!
+swift.func             ztd_sink_tap_create() : func ztd_sink_tap_create() -> OpaquePointer!
+swift.func             ztd_sink_tap_discarded_frames(_:) : func ztd_sink_tap_discarded_frames(_ tap: OpaquePointer!) -> UInt64
+swift.func             ztd_sink_tap_receive(_:_:_:) : func ztd_sink_tap_receive(_ tap: OpaquePointer!, _ buffers: OpaquePointer!, _ frames: UInt32) -> Int32
+swift.func             ztd_sink_tap_release(_:) : func ztd_sink_tap_release(_ tap: OpaquePointer!)
+swift.func             ztd_sink_tap_retain(_:) : func ztd_sink_tap_retain(_ tap: OpaquePointer!)
+swift.func             ztd_sink_tap_set_ring(_:_:) : func ztd_sink_tap_set_ring(_ tap: OpaquePointer!, _ ring: OpaquePointer!) -> Bool
+swift.func             ztd_sink_tap_written_frames(_:) : func ztd_sink_tap_written_frames(_ tap: OpaquePointer!) -> UInt64
+swift.func             ztd_subsample_create(_:_:_:) : func ztd_subsample_create(_ channels: UInt32, _ factor: UInt32, _ phase: UInt32) -> ztd_kernel_t
+swift.func             ztd_thread_clear_time_constraint() : func ztd_thread_clear_time_constraint()
+swift.func             ztd_thread_get_time_constraint(_:) : func ztd_thread_get_time_constraint(_ period: UnsafeMutablePointer<Double>!) -> Bool
+swift.func             ztd_thread_now() : func ztd_thread_now() -> Double
+swift.func             ztd_thread_set_time_constraint(_:_:_:) : func ztd_thread_set_time_constraint(_ period: Double, _ computation: Double, _ constraint: Double) -> Bool
+swift.func             ztd_thread_sleep_until(_:) : func ztd_thread_sleep_until(_ deadline: Double)
+swift.func             ztd_zero_stuff_create(_:_:) : func ztd_zero_stuff_create(_ channels: UInt32, _ factor: UInt32) -> ztd_kernel_t
+swift.init             ztd_command.init() : init()
+swift.init             ztd_command.init(target:kind:count:flags:values:scalar:sequence:) : init(target: UInt32, kind: UInt32, count: UInt32, flags: UInt32, values: UnsafeRawPointer!, scalar: (Double, Double), sequence: UInt64)
+swift.init             ztd_crossfade.init() : init()
+swift.init             ztd_crossfade.init(total:position:) : init(total: UInt32, position: UInt32)
+swift.init             ztd_implementation.init(_:) : init(_ rawValue: UInt32)
+swift.init             ztd_implementation.init(rawValue:) : init(rawValue: UInt32)
+swift.init             ztd_kernel.init() : init()
+swift.init             ztd_kernel.init(process:command:reset:destroy:state:latency_frames:settling_frames:) : init(process: ((UnsafeMutableRawPointer?, UnsafePointer<UnsafePointer<Float>?>?, UnsafePointer<UnsafeMutablePointer<Float>?>?, UInt32, UInt32) -> UInt32)!, command: ((UnsafeMutableRawPointer?, UnsafePointer<ztd_command_t>?) -> Void)!, reset: ((UnsafeMutableRawPointer?) -> Void)!, destroy: ((UnsafeMutableRawPointer?) -> Void)!, state: UnsafeMutableRawPointer!, latency_frames: UInt32, settling_frames: UInt32)
+swift.init             ztd_ring_storage.init(_:) : init(_ rawValue: UInt32)
+swift.init             ztd_ring_storage.init(rawValue:) : init(rawValue: UInt32)
+swift.init             ztd_switch_state.init(_:) : init(_ rawValue: UInt32)
+swift.init             ztd_switch_state.init(rawValue:) : init(rawValue: UInt32)
+swift.property         ztd_command.count : var count: UInt32
+swift.property         ztd_command.flags : var flags: UInt32
+swift.property         ztd_command.kind : var kind: UInt32
+swift.property         ztd_command.scalar : var scalar: (Double, Double)
+swift.property         ztd_command.sequence : var sequence: UInt64
+swift.property         ztd_command.target : var target: UInt32
+swift.property         ztd_command.values : var values: UnsafeRawPointer!
+swift.property         ztd_crossfade.position : var position: UInt32
+swift.property         ztd_crossfade.total : var total: UInt32
+swift.property         ztd_implementation.rawValue : var rawValue: UInt32
+swift.property         ztd_kernel.command : var command: ((UnsafeMutableRawPointer?, UnsafePointer<ztd_command_t>?) -> Void)!
+swift.property         ztd_kernel.destroy : var destroy: ((UnsafeMutableRawPointer?) -> Void)!
+swift.property         ztd_kernel.latency_frames : var latency_frames: UInt32
+swift.property         ztd_kernel.process : var process: ((UnsafeMutableRawPointer?, UnsafePointer<UnsafePointer<Float>?>?, UnsafePointer<UnsafeMutablePointer<Float>?>?, UInt32, UInt32) -> UInt32)!
+swift.property         ztd_kernel.reset : var reset: ((UnsafeMutableRawPointer?) -> Void)!
+swift.property         ztd_kernel.settling_frames : var settling_frames: UInt32
+swift.property         ztd_kernel.state : var state: UnsafeMutableRawPointer!
+swift.property         ztd_ring_storage.rawValue : var rawValue: UInt32
+swift.property         ztd_switch_state.rawValue : var rawValue: UInt32
+swift.struct           ztd_command : struct ztd_command
+swift.struct           ztd_crossfade : struct ztd_crossfade
+swift.struct           ztd_implementation : struct ztd_implementation
+swift.struct           ztd_kernel : struct ztd_kernel
+swift.struct           ztd_ring_storage : struct ztd_ring_storage
+swift.struct           ztd_switch_state : struct ztd_switch_state
+swift.typealias        ztd_command_t : typealias ztd_command_t = ztd_command
+swift.typealias        ztd_crossfade_t : typealias ztd_crossfade_t = ztd_crossfade
+swift.typealias        ztd_implementation_t : typealias ztd_implementation_t = ztd_implementation
+swift.typealias        ztd_kernel_t : typealias ztd_kernel_t = ztd_kernel
+swift.typealias        ztd_lane_exchange_fn : typealias ztd_lane_exchange_fn = (UnsafeMutablePointer<Float>?, UnsafeMutablePointer<Float>?, UInt32) -> Void
+swift.typealias        ztd_ring_storage_t : typealias ztd_ring_storage_t = ztd_ring_storage
+swift.typealias        ztd_sink_receiver_t : typealias ztd_sink_receiver_t = (OpaquePointer?, UInt32, OpaquePointer?) -> Int32
+swift.typealias        ztd_switch_state_t : typealias ztd_switch_state_t = ztd_switch_state
+swift.var              ZTD_ABI_VERSION : var ZTD_ABI_VERSION: UInt32 { get }
+swift.var              ZTD_COMMAND_CUSTOM : var ZTD_COMMAND_CUSTOM: Int { get }
+swift.var              ZTD_COMMAND_SET_ACTIVE : var ZTD_COMMAND_SET_ACTIVE: Int { get }
+swift.var              ZTD_COMMAND_SET_VALUES : var ZTD_COMMAND_SET_VALUES: Int { get }
+swift.var              ZTD_IMPLEMENTATION_ACCELERATE : var ZTD_IMPLEMENTATION_ACCELERATE: ztd_implementation { get }
+swift.var              ZTD_IMPLEMENTATION_NATIVE : var ZTD_IMPLEMENTATION_NATIVE: ztd_implementation { get }
+swift.var              ZTD_RING_STORAGE_AUTOMATIC : var ZTD_RING_STORAGE_AUTOMATIC: ztd_ring_storage { get }
+swift.var              ZTD_RING_STORAGE_MIRRORED : var ZTD_RING_STORAGE_MIRRORED: ztd_ring_storage { get }
+swift.var              ZTD_RING_STORAGE_PLAIN : var ZTD_RING_STORAGE_PLAIN: ztd_ring_storage { get }
+swift.var              ZTD_SINK_TAP_MAX_CHANNELS : var ZTD_SINK_TAP_MAX_CHANNELS: UInt32 { get }
+swift.var              ZTD_STATE_FLOOR : var ZTD_STATE_FLOOR: Double { get }
+swift.var              ZTD_SWITCH_ACTIVE : var ZTD_SWITCH_ACTIVE: ztd_switch_state { get }
+swift.var              ZTD_SWITCH_BYPASSED : var ZTD_SWITCH_BYPASSED: ztd_switch_state { get }
+swift.var              ZTD_SWITCH_FADING_IN : var ZTD_SWITCH_FADING_IN: ztd_switch_state { get }
+swift.var              ZTD_SWITCH_FADING_OUT : var ZTD_SWITCH_FADING_OUT: ztd_switch_state { get }
+swift.var              ZTD_SWITCH_PREROLLING : var ZTD_SWITCH_PREROLLING: ztd_switch_state { get }

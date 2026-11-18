@@ -1,0 +1,19 @@
+# CZTronDSPTesting — public API digest (VIS-3).
+# Generated from the built module by Scripts/api-digest.sh --update. Do not edit: a difference
+# from the build fails CI gate 4, and changing the public API is a change request.
+
+conformance            ztdt_alloc_counts : Swift.Sendable
+swift.func             ztdt_alloc_audit_begin() : func ztdt_alloc_audit_begin() -> Int32
+swift.func             ztdt_alloc_audit_end(_:) : func ztdt_alloc_audit_end(_ token: Int32) -> ztdt_alloc_counts_t
+swift.func             ztdt_alloc_hook_is_live() : func ztdt_alloc_hook_is_live() -> Bool
+swift.func             ztdt_floating_point_environment() : func ztdt_floating_point_environment() -> UInt64
+swift.func             ztdt_force_allocation(_:) : func ztdt_force_allocation(_ size: Int)
+swift.func             ztdt_force_reallocation(_:_:) : func ztdt_force_reallocation(_ first: Int, _ second: Int)
+swift.init             ztdt_alloc_counts.init() : init()
+swift.init             ztdt_alloc_counts.init(allocations:deallocations:bytes:) : init(allocations: UInt64, deallocations: UInt64, bytes: UInt64)
+swift.property         ztdt_alloc_counts.allocations : var allocations: UInt64
+swift.property         ztdt_alloc_counts.bytes : var bytes: UInt64
+swift.property         ztdt_alloc_counts.deallocations : var deallocations: UInt64
+swift.struct           ztdt_alloc_counts : struct ztdt_alloc_counts
+swift.typealias        ztdt_alloc_counts_t : typealias ztdt_alloc_counts_t = ztdt_alloc_counts
+swift.var              ZTDT_ALLOC_MAX_AUDITS : var ZTDT_ALLOC_MAX_AUDITS: Int32 { get }

@@ -1,0 +1,1072 @@
+# ZTronDSPAnalysis — public API digest (VIS-3).
+# Generated from the built module by Scripts/api-digest.sh --update. Do not edit: a difference
+# from the build fails CI gate 4, and changing the public API is a change request.
+
+conformance            AnalysisCalibrationReport : Swift.Decodable
+conformance            AnalysisCalibrationReport : Swift.Encodable
+conformance            AnalysisCalibrationReport : Swift.Equatable
+conformance            AnalysisCalibrationReport : Swift.Hashable
+conformance            AnalysisCalibrationReport : Swift.Sendable
+conformance            AnalysisCalibrationReport : Swift.SendableMetatype
+conformance            Autocorrelation : ContextDependentStep
+conformance            Autocorrelation : Swift.Equatable
+conformance            Autocorrelation : Swift.Hashable
+conformance            Autocorrelation : Swift.Sendable
+conformance            Autocorrelation : Swift.SendableMetatype
+conformance            Autocorrelation : ZTronDSPCore.StageValue
+conformance            AutocorrelationTempogram : Swift.Equatable
+conformance            AutocorrelationTempogram : Swift.Hashable
+conformance            AutocorrelationTempogram : Swift.Sendable
+conformance            AutocorrelationTempogram : Swift.SendableMetatype
+conformance            AutocorrelationTempogram : TempogramMethod
+conformance            AutomaticMedian : MedianStrategy
+conformance            AutomaticMedian : Swift.Equatable
+conformance            AutomaticMedian : Swift.Hashable
+conformance            AutomaticMedian : Swift.Sendable
+conformance            AutomaticMedian : Swift.SendableMetatype
+conformance            CepstralCoefficients : InvertibleStage
+conformance            CepstralCoefficients : Swift.Equatable
+conformance            CepstralCoefficients : Swift.Hashable
+conformance            CepstralCoefficients : Swift.Sendable
+conformance            CepstralCoefficients : Swift.SendableMetatype
+conformance            CepstralCoefficients : ZTronDSPCore.PipelineStage
+conformance            CepstralCoefficients : ZTronDSPCore.StageValue
+conformance            CepstralPitch : Swift.Equatable
+conformance            CepstralPitch : Swift.Hashable
+conformance            CepstralPitch : Swift.Sendable
+conformance            CepstralPitch : Swift.SendableMetatype
+conformance            CepstralPitch : ZTronDSPCore.PipelineStage
+conformance            CepstralPitch : ZTronDSPCore.StageValue
+conformance            Cepstrum : InvertibleStage
+conformance            Cepstrum : Swift.Equatable
+conformance            Cepstrum : Swift.Hashable
+conformance            Cepstrum : Swift.Sendable
+conformance            Cepstrum : Swift.SendableMetatype
+conformance            Cepstrum : ZTronDSPCore.PipelineStage
+conformance            Cepstrum : ZTronDSPCore.StageValue
+conformance            CepstrumKind : Swift.Equatable
+conformance            CepstrumKind : Swift.Hashable
+conformance            CepstrumKind : Swift.Sendable
+conformance            CepstrumKind : Swift.SendableMetatype
+conformance            ChromaCQT : Swift.Equatable
+conformance            ChromaCQT : Swift.Hashable
+conformance            ChromaCQT : Swift.Sendable
+conformance            ChromaCQT : Swift.SendableMetatype
+conformance            ChromaCQT : ZTronDSPCore.PipelineStage
+conformance            ChromaCQT : ZTronDSPCore.Recipe
+conformance            ChromaCQT : ZTronDSPCore.StageValue
+conformance            ChromaFold : Swift.Equatable
+conformance            ChromaFold : Swift.Hashable
+conformance            ChromaFold : Swift.Sendable
+conformance            ChromaFold : Swift.SendableMetatype
+conformance            ChromaFold : ZTronDSPCore.PipelineStage
+conformance            ChromaFold : ZTronDSPCore.StageValue
+conformance            ChromaNormalization : Swift.Equatable
+conformance            ChromaNormalization : Swift.Hashable
+conformance            ChromaNormalization : Swift.Sendable
+conformance            ChromaNormalization : Swift.SendableMetatype
+conformance            ConstantQ : Swift.Equatable
+conformance            ConstantQ : Swift.Hashable
+conformance            ConstantQ : Swift.Sendable
+conformance            ConstantQ : Swift.SendableMetatype
+conformance            ConstantQ : ZTronDSPCore.PipelineStage
+conformance            ConstantQ : ZTronDSPCore.StageValue
+conformance            ConstantQGeometry : Swift.Equatable
+conformance            ConstantQGeometry : Swift.Hashable
+conformance            ConstantQGeometry : Swift.Sendable
+conformance            ConstantQGeometry : Swift.SendableMetatype
+conformance            ConstantQKernel : Swift.Equatable
+conformance            ConstantQKernel : Swift.Hashable
+conformance            ConstantQKernel : Swift.Sendable
+conformance            ConstantQKernel : Swift.SendableMetatype
+conformance            ConstantQScale : ContextDependentStep
+conformance            ConstantQScale : Swift.Equatable
+conformance            ConstantQScale : Swift.Hashable
+conformance            ConstantQScale : Swift.Sendable
+conformance            ConstantQScale : Swift.SendableMetatype
+conformance            ConstantQScale : ZTronDSPCore.StageValue
+conformance            ConstantQStrategy : Swift.Equatable
+conformance            ConstantQStrategy : Swift.Hashable
+conformance            ConstantQStrategy : Swift.Sendable
+conformance            ConstantQStrategy : Swift.SendableMetatype
+conformance            ContextDependentStep : Swift.Equatable
+conformance            ContextDependentStep : Swift.Hashable
+conformance            ContextDependentStep : Swift.Sendable
+conformance            ContextDependentStep : Swift.SendableMetatype
+conformance            ContextDependentStep : ZTronDSPCore.StageValue
+conformance            ConvolutionCrossover : Swift.Decodable
+conformance            ConvolutionCrossover : Swift.Encodable
+conformance            ConvolutionCrossover : Swift.Equatable
+conformance            ConvolutionCrossover : Swift.Hashable
+conformance            ConvolutionCrossover : Swift.Sendable
+conformance            ConvolutionCrossover : Swift.SendableMetatype
+conformance            ConvolutionMode : Swift.CaseIterable
+conformance            ConvolutionMode : Swift.Equatable
+conformance            ConvolutionMode : Swift.Hashable
+conformance            ConvolutionMode : Swift.Sendable
+conformance            ConvolutionMode : Swift.SendableMetatype
+conformance            CorrelationNormalization : Swift.CaseIterable
+conformance            CorrelationNormalization : Swift.Equatable
+conformance            CorrelationNormalization : Swift.Hashable
+conformance            CorrelationNormalization : Swift.Sendable
+conformance            CorrelationNormalization : Swift.SendableMetatype
+conformance            Decibels : ContextDependentStep
+conformance            Decibels : Swift.Equatable
+conformance            Decibels : Swift.Hashable
+conformance            Decibels : Swift.Sendable
+conformance            Decibels : Swift.SendableMetatype
+conformance            Decibels : ZTronDSPCore.StageValue
+conformance            FFTBackend : Swift.Equatable
+conformance            FFTBackend : Swift.Hashable
+conformance            FFTBackend : Swift.Sendable
+conformance            FFTBackend : Swift.SendableMetatype
+conformance            FourierTempogram : Swift.Equatable
+conformance            FourierTempogram : Swift.Hashable
+conformance            FourierTempogram : Swift.Sendable
+conformance            FourierTempogram : Swift.SendableMetatype
+conformance            FourierTempogram : TempogramMethod
+conformance            FrameAlignment : Swift.Equatable
+conformance            FrameAlignment : Swift.Hashable
+conformance            FrameAlignment : Swift.Sendable
+conformance            FrameAlignment : Swift.SendableMetatype
+conformance            FrequencyRange : Swift.CustomStringConvertible
+conformance            FrequencyRange : Swift.Equatable
+conformance            FrequencyRange : Swift.Hashable
+conformance            FrequencyRange : Swift.Sendable
+conformance            FrequencyRange : Swift.SendableMetatype
+conformance            HPSS : Swift.Equatable
+conformance            HPSS : Swift.Hashable
+conformance            HPSS : Swift.Sendable
+conformance            HPSS : Swift.SendableMetatype
+conformance            HPSS : ZTronDSPCore.PipelineStage
+conformance            HPSS : ZTronDSPCore.Recipe
+conformance            HPSS : ZTronDSPCore.StageValue
+conformance            HardMask : MaskStrategy
+conformance            HardMask : Swift.Equatable
+conformance            HardMask : Swift.Hashable
+conformance            HardMask : Swift.Sendable
+conformance            HardMask : Swift.SendableMetatype
+conformance            HarmonicPercussive : ContextDependentStep
+conformance            HarmonicPercussive : Swift.Equatable
+conformance            HarmonicPercussive : Swift.Hashable
+conformance            HarmonicPercussive : Swift.Sendable
+conformance            HarmonicPercussive : Swift.SendableMetatype
+conformance            HarmonicPercussive : ZTronDSPCore.StageValue
+conformance            HarmonicPercussiveComponent : Swift.CaseIterable
+conformance            HarmonicPercussiveComponent : Swift.Equatable
+conformance            HarmonicPercussiveComponent : Swift.Hashable
+conformance            HarmonicPercussiveComponent : Swift.Sendable
+conformance            HarmonicPercussiveComponent : Swift.SendableMetatype
+conformance            InverseCepstralCoefficients : Swift.Equatable
+conformance            InverseCepstralCoefficients : Swift.Hashable
+conformance            InverseCepstralCoefficients : Swift.Sendable
+conformance            InverseCepstralCoefficients : Swift.SendableMetatype
+conformance            InverseCepstralCoefficients : ZTronDSPCore.PipelineStage
+conformance            InverseCepstralCoefficients : ZTronDSPCore.StageValue
+conformance            InverseCepstrum : Swift.Equatable
+conformance            InverseCepstrum : Swift.Hashable
+conformance            InverseCepstrum : Swift.Sendable
+conformance            InverseCepstrum : Swift.SendableMetatype
+conformance            InverseCepstrum : ZTronDSPCore.PipelineStage
+conformance            InverseCepstrum : ZTronDSPCore.StageValue
+conformance            InverseDecibels : ContextDependentStep
+conformance            InverseDecibels : Swift.Equatable
+conformance            InverseDecibels : Swift.Hashable
+conformance            InverseDecibels : Swift.Sendable
+conformance            InverseDecibels : Swift.SendableMetatype
+conformance            InverseDecibels : ZTronDSPCore.StageValue
+conformance            InverseSTFT : Swift.Equatable
+conformance            InverseSTFT : Swift.Hashable
+conformance            InverseSTFT : Swift.Sendable
+conformance            InverseSTFT : Swift.SendableMetatype
+conformance            InverseSTFT : ZTronDSPCore.PipelineStage
+conformance            InverseSTFT : ZTronDSPCore.StageValue
+conformance            InversionCondition : Swift.Equatable
+conformance            InversionCondition : Swift.Hashable
+conformance            InversionCondition : Swift.Sendable
+conformance            InversionCondition : Swift.SendableMetatype
+conformance            InversionContext : Swift.Sendable
+conformance            InversionContext : Swift.SendableMetatype
+conformance            InversionMeasurement : Swift.Equatable
+conformance            InversionMeasurement : Swift.Hashable
+conformance            InversionMeasurement : Swift.Sendable
+conformance            InversionMeasurement : Swift.SendableMetatype
+conformance            InversionReport : Swift.Equatable
+conformance            InversionReport : Swift.Hashable
+conformance            InversionReport : Swift.Sendable
+conformance            InversionReport : Swift.SendableMetatype
+conformance            InversionReport : ZTronDSPCore.MATLABExportable
+conformance            InversionRoundTrip : Swift.Equatable
+conformance            InversionRoundTrip : Swift.Hashable
+conformance            InversionRoundTrip : Swift.Sendable
+conformance            InversionRoundTrip : Swift.SendableMetatype
+conformance            InvertibleStage : Swift.Equatable
+conformance            InvertibleStage : Swift.Hashable
+conformance            InvertibleStage : Swift.Sendable
+conformance            InvertibleStage : Swift.SendableMetatype
+conformance            InvertibleStage : ZTronDSPCore.StageValue
+conformance            L1ChromaNormalization : ChromaNormalization
+conformance            L1ChromaNormalization : Swift.Equatable
+conformance            L1ChromaNormalization : Swift.Hashable
+conformance            L1ChromaNormalization : Swift.Sendable
+conformance            L1ChromaNormalization : Swift.SendableMetatype
+conformance            L2ChromaNormalization : ChromaNormalization
+conformance            L2ChromaNormalization : Swift.Equatable
+conformance            L2ChromaNormalization : Swift.Hashable
+conformance            L2ChromaNormalization : Swift.Sendable
+conformance            L2ChromaNormalization : Swift.SendableMetatype
+conformance            Level : Swift.Equatable
+conformance            Level : Swift.Hashable
+conformance            Level : Swift.Sendable
+conformance            Level : Swift.SendableMetatype
+conformance            Level : ZTronDSPCore.PipelineStage
+conformance            Level : ZTronDSPCore.StageValue
+conformance            LevelKind : Swift.Equatable
+conformance            LevelKind : Swift.Hashable
+conformance            LevelKind : Swift.Sendable
+conformance            LevelKind : Swift.SendableMetatype
+conformance            Lifter : Swift.Equatable
+conformance            Lifter : Swift.Hashable
+conformance            Lifter : Swift.Sendable
+conformance            Lifter : Swift.SendableMetatype
+conformance            Lifter : ZTronDSPCore.PipelineStage
+conformance            Lifter : ZTronDSPCore.StageValue
+conformance            Lifter.Shape : Swift.Equatable
+conformance            Lifter.Shape : Swift.Hashable
+conformance            Lifter.Shape : Swift.Sendable
+conformance            Lifter.Shape : Swift.SendableMetatype
+conformance            LinearValueKind : Swift.Equatable
+conformance            LinearValueKind : Swift.Hashable
+conformance            LinearValueKind : Swift.Sendable
+conformance            LinearValueKind : Swift.SendableMetatype
+conformance            MFCC : Swift.Equatable
+conformance            MFCC : Swift.Hashable
+conformance            MFCC : Swift.Sendable
+conformance            MFCC : Swift.SendableMetatype
+conformance            MFCC : ZTronDSPCore.PipelineStage
+conformance            MFCC : ZTronDSPCore.Recipe
+conformance            MFCC : ZTronDSPCore.StageValue
+conformance            Magnitude : ContextDependentStep
+conformance            Magnitude : Swift.Equatable
+conformance            Magnitude : Swift.Hashable
+conformance            Magnitude : Swift.Sendable
+conformance            Magnitude : Swift.SendableMetatype
+conformance            Magnitude : ZTronDSPCore.StageValue
+conformance            MaskStrategy : Swift.Equatable
+conformance            MaskStrategy : Swift.Hashable
+conformance            MaskStrategy : Swift.Sendable
+conformance            MaskStrategy : Swift.SendableMetatype
+conformance            MaximumChromaNormalization : ChromaNormalization
+conformance            MaximumChromaNormalization : Swift.Equatable
+conformance            MaximumChromaNormalization : Swift.Hashable
+conformance            MaximumChromaNormalization : Swift.Sendable
+conformance            MaximumChromaNormalization : Swift.SendableMetatype
+conformance            MedianAxis : Swift.Equatable
+conformance            MedianAxis : Swift.Hashable
+conformance            MedianAxis : Swift.Sendable
+conformance            MedianAxis : Swift.SendableMetatype
+conformance            MedianStrategy : Swift.Equatable
+conformance            MedianStrategy : Swift.Hashable
+conformance            MedianStrategy : Swift.Sendable
+conformance            MedianStrategy : Swift.SendableMetatype
+conformance            MelFilterBank : Swift.Equatable
+conformance            MelFilterBank : Swift.Hashable
+conformance            MelFilterBank : Swift.Sendable
+conformance            MelFilterBank : Swift.SendableMetatype
+conformance            MelFilterBank.Band : Swift.Equatable
+conformance            MelFilterBank.Band : Swift.Hashable
+conformance            MelFilterBank.Band : Swift.Sendable
+conformance            MelFilterBank.Band : Swift.SendableMetatype
+conformance            MelNormalization : Swift.Equatable
+conformance            MelNormalization : Swift.Hashable
+conformance            MelNormalization : Swift.Sendable
+conformance            MelNormalization : Swift.SendableMetatype
+conformance            MelScale : ContextDependentStep
+conformance            MelScale : Swift.Equatable
+conformance            MelScale : Swift.Hashable
+conformance            MelScale : Swift.Sendable
+conformance            MelScale : Swift.SendableMetatype
+conformance            MelScale : ZTronDSPCore.StageValue
+conformance            MelSpectrogram : Swift.Equatable
+conformance            MelSpectrogram : Swift.Hashable
+conformance            MelSpectrogram : Swift.Sendable
+conformance            MelSpectrogram : Swift.SendableMetatype
+conformance            MelSpectrogram : ZTronDSPCore.PipelineStage
+conformance            MelSpectrogram : ZTronDSPCore.Recipe
+conformance            MelSpectrogram : ZTronDSPCore.StageValue
+conformance            MetalMedian : MedianStrategy
+conformance            MetalMedian : Swift.Equatable
+conformance            MetalMedian : Swift.Hashable
+conformance            MetalMedian : Swift.Sendable
+conformance            MetalMedian : Swift.SendableMetatype
+conformance            MultirateSparseKernelStrategy : ConstantQStrategy
+conformance            MultirateSparseKernelStrategy : Swift.Equatable
+conformance            MultirateSparseKernelStrategy : Swift.Hashable
+conformance            MultirateSparseKernelStrategy : Swift.Sendable
+conformance            MultirateSparseKernelStrategy : Swift.SendableMetatype
+conformance            OnsetStrength : ContextDependentStep
+conformance            OnsetStrength : Swift.Equatable
+conformance            OnsetStrength : Swift.Hashable
+conformance            OnsetStrength : Swift.Sendable
+conformance            OnsetStrength : Swift.SendableMetatype
+conformance            OnsetStrength : ZTronDSPCore.StageValue
+conformance            Power : ContextDependentStep
+conformance            Power : Swift.Equatable
+conformance            Power : Swift.Hashable
+conformance            Power : Swift.Sendable
+conformance            Power : Swift.SendableMetatype
+conformance            Power : ZTronDSPCore.StageValue
+conformance            STFT : InvertibleStage
+conformance            STFT : Swift.Equatable
+conformance            STFT : Swift.Hashable
+conformance            STFT : Swift.Sendable
+conformance            STFT : Swift.SendableMetatype
+conformance            STFT : ZTronDSPCore.PipelineStage
+conformance            STFT : ZTronDSPCore.StageValue
+conformance            ScalarTrack : Swift.Equatable
+conformance            ScalarTrack : Swift.Hashable
+conformance            ScalarTrack : Swift.Sendable
+conformance            ScalarTrack : Swift.SendableMetatype
+conformance            ScalarTrack : ZTronDSPCore.MATLABExportable
+conformance            SelectionNetworkMedian : MedianStrategy
+conformance            SelectionNetworkMedian : Swift.Equatable
+conformance            SelectionNetworkMedian : Swift.Hashable
+conformance            SelectionNetworkMedian : Swift.Sendable
+conformance            SelectionNetworkMedian : Swift.SendableMetatype
+conformance            SlaneyMelNormalization : MelNormalization
+conformance            SlaneyMelNormalization : Swift.Equatable
+conformance            SlaneyMelNormalization : Swift.Hashable
+conformance            SlaneyMelNormalization : Swift.Sendable
+conformance            SlaneyMelNormalization : Swift.SendableMetatype
+conformance            SoftMask : MaskStrategy
+conformance            SoftMask : Swift.Equatable
+conformance            SoftMask : Swift.Hashable
+conformance            SoftMask : Swift.Sendable
+conformance            SoftMask : Swift.SendableMetatype
+conformance            SpectralCentroid : ContextDependentStep
+conformance            SpectralCentroid : Swift.Equatable
+conformance            SpectralCentroid : Swift.Hashable
+conformance            SpectralCentroid : Swift.Sendable
+conformance            SpectralCentroid : Swift.SendableMetatype
+conformance            SpectralCentroid : ZTronDSPCore.StageValue
+conformance            Spectrogram : Swift.Equatable
+conformance            Spectrogram : Swift.Hashable
+conformance            Spectrogram : Swift.Sendable
+conformance            Spectrogram : Swift.SendableMetatype
+conformance            Spectrogram : ZTronDSPCore.PipelineStage
+conformance            Spectrogram : ZTronDSPCore.Recipe
+conformance            Spectrogram : ZTronDSPCore.StageValue
+conformance            Tempogram : Swift.Equatable
+conformance            Tempogram : Swift.Hashable
+conformance            Tempogram : Swift.Sendable
+conformance            Tempogram : Swift.SendableMetatype
+conformance            Tempogram : ZTronDSPCore.PipelineStage
+conformance            Tempogram : ZTronDSPCore.StageValue
+conformance            TempogramMethod : Swift.Equatable
+conformance            TempogramMethod : Swift.Hashable
+conformance            TempogramMethod : Swift.Sendable
+conformance            TempogramMethod : Swift.SendableMetatype
+conformance            UnitPeakMelNormalization : MelNormalization
+conformance            UnitPeakMelNormalization : Swift.Equatable
+conformance            UnitPeakMelNormalization : Swift.Hashable
+conformance            UnitPeakMelNormalization : Swift.Sendable
+conformance            UnitPeakMelNormalization : Swift.SendableMetatype
+conformance            UnscaledChromaNormalization : ChromaNormalization
+conformance            UnscaledChromaNormalization : Swift.Equatable
+conformance            UnscaledChromaNormalization : Swift.Hashable
+conformance            UnscaledChromaNormalization : Swift.Sendable
+conformance            UnscaledChromaNormalization : Swift.SendableMetatype
+conformance            VDSPFFTBackend : FFTBackend
+conformance            VDSPFFTBackend : Swift.Equatable
+conformance            VDSPFFTBackend : Swift.Hashable
+conformance            VDSPFFTBackend : Swift.Sendable
+conformance            VDSPFFTBackend : Swift.SendableMetatype
+conformance            Waveform : Swift.Equatable
+conformance            Waveform : Swift.Hashable
+conformance            Waveform : Swift.Sendable
+conformance            Waveform : Swift.SendableMetatype
+conformance            Waveform : ZTronDSPCore.PipelineStage
+conformance            Waveform : ZTronDSPCore.StageValue
+conformance            WindowAnalysis : Swift.CustomStringConvertible
+conformance            WindowAnalysis : Swift.Equatable
+conformance            WindowAnalysis : Swift.Hashable
+conformance            WindowAnalysis : Swift.Sendable
+conformance            WindowAnalysis : Swift.SendableMetatype
+conformance            WindowAnalysis : ZTronDSPCore.MATLABExportable
+conformance            WindowAnalysis.Discontinuity : Swift.Equatable
+conformance            WindowAnalysis.Discontinuity : Swift.Hashable
+conformance            WindowAnalysis.Discontinuity : Swift.Sendable
+conformance            WindowAnalysis.Discontinuity : Swift.SendableMetatype
+conformance            WindowAnalysis.TailLimit : Swift.Equatable
+conformance            WindowAnalysis.TailLimit : Swift.Hashable
+conformance            WindowAnalysis.TailLimit : Swift.Sendable
+conformance            WindowAnalysis.TailLimit : Swift.SendableMetatype
+conformance            WindowNormalization : Swift.Equatable
+conformance            WindowNormalization : Swift.Hashable
+conformance            WindowNormalization : Swift.Sendable
+conformance            WindowNormalization : Swift.SendableMetatype
+conformance            ZTronDSPCore.FeedSnapshot : Swift.Sendable
+conformance            ZTronDSPCore.FeedSnapshot : Swift.SendableMetatype
+conformance            ZTronDSPCore.FeedSnapshot : ZTronDSPCore.MATLABExportable
+conformance            ZTronDSPDesign.Decimate : InvertibleStage
+conformance            ZTronDSPDesign.Decimate : Swift.Equatable
+conformance            ZTronDSPDesign.Decimate : Swift.Hashable
+conformance            ZTronDSPDesign.Decimate : Swift.Sendable
+conformance            ZTronDSPDesign.Decimate : Swift.SendableMetatype
+conformance            ZTronDSPDesign.Decimate : ZTronDSPCore.StageValue
+swift.associatedtype   InvertibleStage.Inverse : associatedtype Inverse : StageValue
+swift.class            Framer : final class Framer
+swift.enum             CepstrumKind : enum CepstrumKind
+swift.enum             ConvolutionMode : enum ConvolutionMode
+swift.enum             CorrelationNormalization : enum CorrelationNormalization
+swift.enum             FrameAlignment : enum FrameAlignment
+swift.enum             HarmonicPercussiveComponent : enum HarmonicPercussiveComponent
+swift.enum             LevelKind : enum LevelKind
+swift.enum             Lifter.Shape : enum Shape
+swift.enum             MeasuredSpectrum : enum MeasuredSpectrum
+swift.enum             MedianAxis : enum MedianAxis
+swift.enum             WindowAnalysis.TailLimit : enum TailLimit
+swift.enum             WindowNormalization : enum WindowNormalization
+swift.enum.case        CepstrumKind.complex : case complex
+swift.enum.case        CepstrumKind.power : case power
+swift.enum.case        CepstrumKind.real : case real
+swift.enum.case        ConvolutionMode.full : case full
+swift.enum.case        ConvolutionMode.same : case same
+swift.enum.case        ConvolutionMode.valid : case valid
+swift.enum.case        CorrelationNormalization.biased : case biased
+swift.enum.case        CorrelationNormalization.coefficient : case coefficient
+swift.enum.case        CorrelationNormalization.none : case none
+swift.enum.case        CorrelationNormalization.unbiased : case unbiased
+swift.enum.case        FrameAlignment.causal : case causal
+swift.enum.case        FrameAlignment.centered : case centered
+swift.enum.case        HarmonicPercussiveComponent.harmonic : case harmonic
+swift.enum.case        HarmonicPercussiveComponent.percussive : case percussive
+swift.enum.case        HarmonicPercussiveComponent.residual : case residual
+swift.enum.case        LevelKind.peak : case peak
+swift.enum.case        LevelKind.rms : case rms
+swift.enum.case        Lifter.Shape.highTime(_:) : case highTime(TimeInterval)
+swift.enum.case        Lifter.Shape.lowTime(_:) : case lowTime(TimeInterval)
+swift.enum.case        Lifter.Shape.sinusoidal(_:) : case sinusoidal(Int)
+swift.enum.case        MedianAxis.frequency : case frequency
+swift.enum.case        MedianAxis.time : case time
+swift.enum.case        WindowAnalysis.TailLimit.unbounded : case unbounded
+swift.enum.case        WindowAnalysis.TailLimit.undefined : case undefined
+swift.enum.case        WindowAnalysis.TailLimit.value(_:) : case value(Double)
+swift.enum.case        WindowAnalysis.TailLimit.zero : case zero
+swift.enum.case        WindowNormalization.amplitude : case amplitude
+swift.enum.case        WindowNormalization.none : case none
+swift.enum.case        WindowNormalization.power : case power
+swift.init             AnalysisCalibrationReport.init(from:) : init(from decoder: any Decoder) throws
+swift.init             AnalysisCalibrationReport.init(measurements:convolution:startingFrom:) : init(measurements: [CrossoverMeasurement], convolution: ConvolutionCrossover, startingFrom base: CrossoverTable = .shipped)
+swift.init             Autocorrelation.init(window:hop:maxLag:normalization:floor:channels:backend:isActive:) : init(window: Int = 2_048, hop: Int = 512, maxLag: Int? = nil, normalization: CorrelationNormalization = .none, floor: Double = DSP.correlationFloor, channels: ChannelPolicy = .mixdown, backend: some FFTBackend = .vDSP, isActive: some ActivationSource = .active)
+swift.init             AutocorrelationTempogram.init(floor:) : init(floor: Double = 1e-10)
+swift.init             AutomaticMedian.init() : init()
+swift.init             CepstralCoefficients.init(count:isActive:) : init(count: Int = 13, isActive: some ActivationSource = .active)
+swift.init             CepstralPitch.init(range:isActive:) : init(range: FrequencyRange = .hertz(50 ... 500), isActive: some ActivationSource = .active)
+swift.init             CepstralPitch.init(range:to:isActive:) : init(range: FrequencyRange = .hertz(50 ... 500), to binding: some ScalarResultTarget, isActive: some ActivationSource = .active)
+swift.init             Cepstrum.init(_:floor:isActive:) : init(_ kind: CepstrumKind = .real, floor: Double = 1e-10, isActive: some ActivationSource = .active)
+swift.init             ChromaCQT.init(fmin:octaves:binsPerOctave:tuning:gamma:hop:normalization:threshold:to:isActive:) : init(fmin: Frequency = .midiNote(24), octaves: Int = 7, binsPerOctave: Int = 36, tuning: Double = 0, gamma: Double = 0, hop: Int = 512, normalization: some ChromaNormalization = .max, threshold: Double = 0, to binding: some VectorResultTarget, isActive: some ActivationSource = .active)
+swift.init             ChromaCQT.init(fmin:octaves:binsPerOctave:tuning:gamma:hop:normalization:threshold:to:isActive:) : init(fmin: Frequency = .midiNote(24), octaves: Int = 7, binsPerOctave: Int = 36, tuning: Double = 0, gamma: Double = 0, hop: Int = 512, normalization: some ChromaNormalization = .max, threshold: Double = 0, to feed: HeatmapFeed, isActive: some ActivationSource = .active)
+swift.init             ChromaFold.init(normalization:threshold:floor:isActive:) : init(normalization: some ChromaNormalization = .max, threshold: Double = 0, floor: Double = 1e-10, isActive: some ActivationSource = .active)
+swift.init             ConstantQ.init(fmin:octaves:binsPerOctave:tuning:filterScale:gamma:hop:window:sparsity:strategy:channels:isActive:) : init(fmin: Frequency = .midiNote(24), octaves: Int = 7, binsPerOctave: Int = 36, tuning: Double = 0, filterScale: Double = 1, gamma: Double = 0, hop: Int = 512, window: Window = .hann, sparsity: Double = 0.01, strategy: some ConstantQStrategy = .multirateSparseKernel, channels: ChannelPolicy = .mixdown, isActive: some ActivationSource = .active)
+swift.init             ConstantQGeometry.init(minimumFrequency:octaves:binsPerOctave:tuning:filterScale:gamma:sampleRate:) : init(minimumFrequency: Double, octaves: Int = 7, binsPerOctave: Int = 36, tuning: Double = 0, filterScale: Double = 1, gamma: Double = 0, sampleRate: Double) throws(DSPError)
+swift.init             ConstantQKernel.init(geometry:octave:window:sparsity:transformLength:) : init(geometry: ConstantQGeometry, octave: Int, window: Window = .hann, sparsity: Double = 0.01, transformLength: Int? = nil) throws(DSPError)
+swift.init             ConstantQScale.init(fmin:octaves:binsPerOctave:tuning:filterScale:gamma:window:sparsity:isActive:) : init(fmin: Frequency = .midiNote(24), octaves: Int = 7, binsPerOctave: Int = 36, tuning: Double = 0, filterScale: Double = 1, gamma: Double = 0, window: Window = .hann, sparsity: Double = 0.01, isActive: some ActivationSource = .active)
+swift.init             ConvolutionCrossover.init(from:) : init(from decoder: any Decoder) throws
+swift.init             ConvolutionCrossover.init(signalLength:kernelLengths:curves:) : init(signalLength: Int, kernelLengths: [Int], curves: [CalibrationCurve])
+swift.init             Decibels.init(reference:floor:isActive:) : init(reference: Double = 1, floor: Double = DSP.decibelFloor, isActive: some ActivationSource = .active)
+swift.init             FourierTempogram.init(resolution:) : init(resolution: Int = 4)
+swift.init             Framer.init(frameSize:hopSize:alignment:) : convenience init(frameSize: Int, hopSize: Int, alignment: FrameAlignment = .causal) throws(DSPError)
+swift.init             FrequencyRange.init(from:to:) : init(from lowerBound: Frequency, to upperBound: Frequency)
+swift.init             HPSS.init(select:frame:hop:window:timeKernel:frequencyKernel:mask:harmonicMargin:percussiveMargin:alignment:median:channels:isActive:) : init(select component: HarmonicPercussiveComponent, frame: Int = 2_048, hop: Int = 512, window: Window = .hann, timeKernel: Int = 31, frequencyKernel: Int = 31, mask: some MaskStrategy = .soft(power: 2), harmonicMargin: Double = 1, percussiveMargin: Double = 1, alignment: FrameAlignment = .causal, median: some MedianStrategy = .selectionNetwork, channels: ChannelPolicy = .mixdown, isActive: some ActivationSource = .active)
+swift.init             HardMask.init() : init()
+swift.init             HarmonicPercussive.init(select:timeKernel:frequencyKernel:mask:harmonicMargin:percussiveMargin:alignment:median:floor:isActive:) : init(select component: HarmonicPercussiveComponent, timeKernel: Int = 31, frequencyKernel: Int = 31, mask: some MaskStrategy = .soft(power: 2), harmonicMargin: Double = 1, percussiveMargin: Double = 1, alignment: FrameAlignment = .causal, median: some MedianStrategy = .selectionNetwork, floor: Double = 1e-10, isActive: some ActivationSource = .active)
+swift.init             InverseCepstralCoefficients.init(bands:isActive:) : init(bands: Int, isActive: some ActivationSource = .active)
+swift.init             InverseCepstrum.init(isActive:) : init(isActive: some ActivationSource = .active)
+swift.init             InverseDecibels.init(_:reference:isActive:) : init(_ values: LinearValueKind<Values>, reference: Double = 1, isActive: some ActivationSource = .active)
+swift.init             InverseSTFT.init(window:normalization:alignment:backend:isActive:) : init(window: Window = .hann, normalization: WindowNormalization = .none, alignment: FrameAlignment = .causal, backend: some FFTBackend = .vDSP, isActive: some ActivationSource = .active)
+swift.init             InversionCondition.init(name:theorem:quantity:observed:holds:margin:isNecessary:predictedError:) : init(name: String, theorem: String, quantity: String, observed: Double, holds: Bool, margin: Double, isNecessary: Bool = true, predictedError: Double = 0)
+swift.init             InversionContext.init(samples:sampleRate:upstream:) : init(samples: [Float]?, sampleRate: Double, upstream: [StageDescription] = [])
+swift.init             InversionMeasurement.init(_:) : init(_ roundTrip: InversionRoundTrip)
+swift.init             InversionMeasurement.init(signalToNoiseRatio:largestError:relativeError:count:) : init(signalToNoiseRatio: Double, largestError: Double, relativeError: Double, count: Int)
+swift.init             InversionReport.init(stage:inverse:conditions:roundTrip:sampleRate:) : init(stage: String, inverse: String, conditions: [InversionCondition], roundTrip: InversionRoundTrip? = nil, sampleRate: Double = 48_000)
+swift.init             InversionRoundTrip.init(original:reconstruction:frameLength:) : init(original: [Float], reconstruction: [Float], frameLength: Int = 1)
+swift.init             L1ChromaNormalization.init() : init()
+swift.init             L2ChromaNormalization.init() : init()
+swift.init             Level.init(_:window:hop:channels:isActive:) : init(_ kind: LevelKind, window: TimeInterval = 0.050, hop: TimeInterval = 0.010, channels: ChannelPolicy = .mixdown, isActive: some ActivationSource = .active)
+swift.init             Level.init(_:window:hop:channels:to:isActive:) : init(_ kind: LevelKind, window: TimeInterval = 0.050, hop: TimeInterval = 0.010, channels: ChannelPolicy = .mixdown, to binding: some ScalarResultTarget, isActive: some ActivationSource = .active)
+swift.init             Lifter.init(_:isActive:) : init(_ shape: Lifter.Shape, isActive: some ActivationSource = .active)
+swift.init             MFCC.init(frame:hop:count:melBands:window:to:isActive:) : init(frame: Int = 2_048, hop: Int = 512, count: Int = 13, melBands: Int = 40, window: Window = .hann, to binding: some VectorResultTarget, isActive: some ActivationSource = .active)
+swift.init             MFCC.init(frame:hop:count:melBands:window:to:isActive:) : init(frame: Int = 2_048, hop: Int = 512, count: Int = 13, melBands: Int = 40, window: Window = .hann, to feed: HeatmapFeed, isActive: some ActivationSource = .active)
+swift.init             Magnitude.init(isActive:) : init(isActive: some ActivationSource = .active)
+swift.init             MaximumChromaNormalization.init() : init()
+swift.init             MelFilterBank.init(bands:binCount:nyquist:range:formula:normalization:) : init(bands: Int, binCount: Int, nyquist: Double, range: ClosedRange<Double>? = nil, formula: some MelFormula = .slaney, normalization: some MelNormalization = .slaney) throws(DSPError)
+swift.init             MelScale.init(bands:range:formula:normalization:isActive:) : init(bands: Int, range: FrequencyRange? = nil, formula: some MelFormula = .slaney, normalization: some MelNormalization = .slaney, isActive: some ActivationSource = .active)
+swift.init             MelSpectrogram.init(frame:hop:bands:window:range:to:isActive:) : init(frame: Int = 2_048, hop: Int = 512, bands: Int = 128, window: Window = .hann, range: FrequencyRange? = nil, to feed: HeatmapFeed, isActive: some ActivationSource = .active)
+swift.init             MetalMedian.init() : init()
+swift.init             MultirateSparseKernelStrategy.init(backend:) : init(backend: some FFTBackend = .vDSP)
+swift.init             OnsetStrength.init(lag:maxSize:floor:isActive:) : init(lag: Int = 1, maxSize: Int = 1, floor: Double = -80, isActive: some ActivationSource = .active)
+swift.init             Power.init(isActive:) : init(isActive: some ActivationSource = .active)
+swift.init             STFT.init(frame:hop:window:paddedTo:normalization:alignment:channels:backend:isActive:) : init(frame: Int, hop: Int, window: Window = .hann, paddedTo: Int? = nil, normalization: WindowNormalization = .none, alignment: FrameAlignment = .causal, channels: ChannelPolicy = .mixdown, backend: some FFTBackend = .vDSP, isActive: some ActivationSource = .active)
+swift.init             ScalarTrack.init(_:rate:start:) : init(_ frames: [ScalarFrame], rate: Double, start: Double = 0)
+swift.init             ScalarTrack.init(_:times:) : init(_ frames: [ScalarFrame], times: [Double])
+swift.init             SelectionNetworkMedian.init() : init()
+swift.init             SlaneyMelNormalization.init() : init()
+swift.init             SoftMask.init(power:) : init(power: Double = 2)
+swift.init             SpectralCentroid.init(range:floor:isActive:) : init(range: FrequencyRange? = nil, floor: Double = 1e-10, isActive: some ActivationSource = .active)
+swift.init             SpectralCentroid.init(range:floor:to:isActive:) : init(range: FrequencyRange? = nil, floor: Double = 1e-10, to binding: some ScalarResultTarget, isActive: some ActivationSource = .active)
+swift.init             Spectrogram.init(frame:hop:window:normalization:to:isActive:) : init(frame: Int = 2_048, hop: Int = 512, window: Window = .hann, normalization: WindowNormalization = .amplitude, to feed: HeatmapFeed, isActive: some ActivationSource = .active)
+swift.init             Tempogram.init(_:window:taper:range:alignment:isActive:) : init(_ method: some TempogramMethod = .autocorrelation, window: Int = 384, taper: Window = .hann, range: ClosedRange<Double> = 30 ... 300, alignment: FrameAlignment = .causal, isActive: some ActivationSource = .active)
+swift.init             UnitPeakMelNormalization.init() : init()
+swift.init             UnscaledChromaNormalization.init() : init()
+swift.init             VDSPFFTBackend.init() : init()
+swift.init             Waveform.init(resolution:channels:isActive:) : init(resolution: TimeInterval = 0.005, channels: ChannelPolicy = .mixdown, isActive: some ActivationSource = .active)
+swift.method           Autocorrelation.lower(_:) : func lower(_ context: inout LoweringContext) throws(DSPError)
+swift.method           AutocorrelationTempogram.makeTransform(window:featureRate:range:) : func makeTransform(window: Int, featureRate: Double, range: ClosedRange<Double>) throws(DSPError) -> any TempogramTransform
+swift.method           AutomaticMedian.filter(_:rowCount:kernel:along:crossovers:checkpoint:) : func filter(_ values: [Float], rowCount: Int, kernel: Int, along axis: MedianAxis, crossovers: CrossoverTable = .shipped, checkpoint: BackgroundWork.Checkpoint? = nil) throws(DSPError) -> [Float]
+swift.method           AutomaticMedian.makeFilter(kernel:binCount:along:implementation:crossovers:) : func makeFilter(kernel: Int, binCount: Int, along axis: MedianAxis, implementation: Implementation, crossovers: CrossoverTable) throws(DSPError) -> any MedianFilter
+swift.method           CepstralCoefficients.inversionConditions(in:) : func inversionConditions(in context: InversionContext) throws(DSPError) -> [InversionCondition]
+swift.method           CepstralCoefficients.inversionRoundTrip(in:) : func inversionRoundTrip(in context: InversionContext) throws(DSPError) -> InversionRoundTrip?
+swift.method           CepstralCoefficients.lower(_:) : func lower(_ context: inout LoweringContext) throws(DSPError)
+swift.method           CepstralPitch.lower(_:) : func lower(_ context: inout LoweringContext) throws(DSPError)
+swift.method           Cepstrum.inversionConditions(in:) : func inversionConditions(in context: InversionContext) throws(DSPError) -> [InversionCondition]
+swift.method           Cepstrum.inversionRoundTrip(in:) : func inversionRoundTrip(in context: InversionContext) throws(DSPError) -> InversionRoundTrip?
+swift.method           Cepstrum.lower(_:) : func lower(_ context: inout LoweringContext) throws(DSPError)
+swift.method           ChromaFold.lower(_:) : func lower(_ context: inout LoweringContext) throws(DSPError)
+swift.method           ChromaNormalization.norm(of:) : func norm(of chroma: UnsafeBufferPointer<Float>) -> Float
+swift.method           ConstantQ.lower(_:) : func lower(_ context: inout LoweringContext) throws(DSPError)
+swift.method           ConstantQGeometry.atomLength(ofBin:) : func atomLength(ofBin bin: Int) -> Int
+swift.method           ConstantQGeometry.frequency(ofBin:) : func frequency(ofBin bin: Int) -> Double
+swift.method           ConstantQKernel.applied(toReal:imaginary:) : func applied(toReal spectrumReal: [Float], imaginary spectrumImaginary: [Float]) -> (real: [Float], imaginary: [Float])
+swift.method           ConstantQKernel.dense() : func dense() -> (real: [Float], imaginary: [Float])
+swift.method           ConstantQScale.lower(_:) : func lower(_ context: inout LoweringContext) throws(DSPError)
+swift.method           ConstantQStrategy.latency(of:hop:window:sparsity:) : func latency(of geometry: ConstantQGeometry, hop: Int, window: Window, sparsity: Double) throws(DSPError) -> Int
+swift.method           ConstantQStrategy.makeNode(of:hop:window:sparsity:channel:channelCount:maximumBlockFrames:) : func makeNode(of geometry: ConstantQGeometry, hop: Int, window: Window, sparsity: Double, channel: Int?, channelCount: Int, maximumBlockFrames: Int) throws(DSPError) -> any AnalysisNode
+swift.method           Decibels.inverse(of:) : func inverse<Values>(of values: LinearValueKind<Values>) -> InverseDecibels<Values> where Values : LinearValued
+swift.method           Decibels.inversionReport(for:sampleRate:after:) : func inversionReport<Axis, Values>(for samples: [Float]? = nil, sampleRate: Double = 48_000, after upstream: Pipeline<Samples, Spectrum<Axis, Values>>) async throws(DSPError) -> InversionReport where Axis : SpectralAxis, Values : LinearValued
+swift.method           Decibels.lower(_:) : func lower(_ context: inout LoweringContext) throws(DSPError)
+swift.method           Decimate.inversionConditions(in:) : func inversionConditions(in context: InversionContext) throws(DSPError) -> [InversionCondition]   [extends ZTronDSPDesign]
+swift.method           Decimate.inversionRoundTrip(in:) : func inversionRoundTrip(in context: InversionContext) throws(DSPError) -> InversionRoundTrip?   [extends ZTronDSPDesign]
+swift.method           FFTBackend.makePlan(length:) : func makePlan(length: Int) throws(DSPError) -> any FFTPlan
+swift.method           FFTBackend.supports(length:) : func supports(length: Int) -> Bool
+swift.method           FFTPlan.forward(_:real:imaginary:) : func forward(_ signal: UnsafePointer<Float>, real: UnsafeMutablePointer<Float>, imaginary: UnsafeMutablePointer<Float>)
+swift.method           FFTPlan.inverse(real:imaginary:into:) : func inverse(real: UnsafePointer<Float>, imaginary: UnsafePointer<Float>, into signal: UnsafeMutablePointer<Float>)
+swift.method           FeedSnapshot.matlabScript() : func matlabScript() async throws(DSPError) -> String   [extends ZTronDSPCore]
+swift.method           FourierTempogram.makeTransform(window:featureRate:range:) : func makeTransform(window: Int, featureRate: Double, range: ClosedRange<Double>) throws(DSPError) -> any TempogramTransform
+swift.method           Framer.advance() : func advance()
+swift.method           Framer.append(_:count:) : func append(_ samples: UnsafePointer<Float>, count: Int) -> Int
+swift.method           Framer.reset() : func reset()
+swift.method           FrequencyRange.hertz(sampleRate:) : func hertz(sampleRate: Double) throws(DSPError) -> ClosedRange<Double>
+swift.method           HardMask.mask(_:against:floor:into:count:) : func mask(_ component: UnsafePointer<Float>, against competitor: UnsafePointer<Float>, floor: Float, into mask: UnsafeMutablePointer<Float>, count: Int)
+swift.method           HarmonicPercussive.lower(_:) : func lower(_ context: inout LoweringContext) throws(DSPError)
+swift.method           InverseCepstralCoefficients.lower(_:) : func lower(_ context: inout LoweringContext) throws(DSPError)
+swift.method           InverseCepstrum.lower(_:) : func lower(_ context: inout LoweringContext) throws(DSPError)
+swift.method           InverseDecibels.lower(_:) : func lower(_ context: inout LoweringContext) throws(DSPError)
+swift.method           InverseSTFT.lower(_:) : func lower(_ context: inout LoweringContext) throws(DSPError)
+swift.method           InversionContext.check() : func check() throws(DSPError)
+swift.method           InversionContext.complexFrames(after:) : func complexFrames(after stages: [StageDescription] = []) throws(DSPError) -> [[Float]]
+swift.method           InversionContext.frames(after:) : func frames(after stages: [StageDescription] = []) throws(DSPError) -> [[Float]]
+swift.method           InversionContext.samples(after:) : func samples(after stages: [StageDescription] = []) throws(DSPError) -> [Float]
+swift.method           InversionReport.matlabScript() : func matlabScript() async throws(DSPError) -> String
+swift.method           InvertibleStage.inversionConditions(in:) : func inversionConditions(in context: InversionContext) throws(DSPError) -> [InversionCondition]
+swift.method           InvertibleStage.inversionReport(for:sampleRate:) : func inversionReport(for samples: [Float]? = nil, sampleRate: Double = 48_000) async throws(DSPError) -> InversionReport
+swift.method           InvertibleStage.inversionReport(for:sampleRate:after:) : func inversionReport<Domain>(for samples: [Float]? = nil, sampleRate: Double = 48_000, after upstream: Pipeline<Samples, Domain>) async throws(DSPError) -> InversionReport where Domain : SignalDomain
+swift.method           InvertibleStage.inversionRoundTrip(in:) : func inversionRoundTrip(in context: InversionContext) throws(DSPError) -> InversionRoundTrip?
+swift.method           L1ChromaNormalization.norm(of:) : func norm(of chroma: UnsafeBufferPointer<Float>) -> Float
+swift.method           L2ChromaNormalization.norm(of:) : func norm(of chroma: UnsafeBufferPointer<Float>) -> Float
+swift.method           Level.lower(_:) : func lower(_ context: inout LoweringContext) throws(DSPError)
+swift.method           Lifter.lower(_:) : func lower(_ context: inout LoweringContext) throws(DSPError)
+swift.method           Magnitude.lower(_:) : func lower(_ context: inout LoweringContext) throws(DSPError)
+swift.method           MaskStrategy.mask(_:against:floor:into:count:) : func mask(_ component: UnsafePointer<Float>, against competitor: UnsafePointer<Float>, floor: Float, into mask: UnsafeMutablePointer<Float>, count: Int)
+swift.method           MaskStrategy.validate() : func validate() throws(DSPError)
+swift.method           MaximumChromaNormalization.norm(of:) : func norm(of chroma: UnsafeBufferPointer<Float>) -> Float
+swift.method           MedianFilter.process(_:into:) : func process(_ frame: UnsafePointer<Float>, into medians: UnsafeMutablePointer<Float>)
+swift.method           MedianFilter.reset() : func reset()
+swift.method           MedianStrategy.filter(_:rowCount:kernel:along:crossovers:checkpoint:) : func filter(_ values: [Float], rowCount: Int, kernel: Int, along axis: MedianAxis, crossovers: CrossoverTable = .shipped, checkpoint: BackgroundWork.Checkpoint? = nil) throws(DSPError) -> [Float]
+swift.method           MedianStrategy.filter(_:rowCount:kernel:along:crossovers:checkpoint:) : func filter(_ values: [Float], rowCount: Int, kernel: Int, along axis: MedianAxis, crossovers: CrossoverTable, checkpoint: BackgroundWork.Checkpoint?) throws(DSPError) -> [Float]
+swift.method           MedianStrategy.makeFilter(kernel:binCount:along:implementation:crossovers:) : func makeFilter(kernel: Int, binCount: Int, along axis: MedianAxis, implementation: Implementation, crossovers: CrossoverTable) throws(DSPError) -> any MedianFilter
+swift.method           MelFilterBank.applied(to:) : func applied(to spectrum: [Float]) -> [Float]
+swift.method           MelFilterBank.denseWeights() : func denseWeights() -> [Float]
+swift.method           MelNormalization.gain(lowerEdge:center:upperEdge:) : func gain(lowerEdge: Double, center: Double, upperEdge: Double) -> Double
+swift.method           MelScale.lower(_:) : func lower(_ context: inout LoweringContext) throws(DSPError)
+swift.method           MetalMedian.filter(_:rowCount:kernel:along:crossovers:checkpoint:) : func filter(_ values: [Float], rowCount: Int, kernel: Int, along axis: MedianAxis, crossovers: CrossoverTable = .shipped, checkpoint: BackgroundWork.Checkpoint? = nil) throws(DSPError) -> [Float]
+swift.method           MetalMedian.makeFilter(kernel:binCount:along:implementation:crossovers:) : func makeFilter(kernel: Int, binCount: Int, along axis: MedianAxis, implementation: Implementation, crossovers: CrossoverTable) throws(DSPError) -> any MedianFilter
+swift.method           MultirateSparseKernelStrategy.latency(of:hop:window:sparsity:) : func latency(of geometry: ConstantQGeometry, hop: Int, window: Window, sparsity: Double) throws(DSPError) -> Int
+swift.method           MultirateSparseKernelStrategy.makeNode(of:hop:window:sparsity:channel:channelCount:maximumBlockFrames:) : func makeNode(of geometry: ConstantQGeometry, hop: Int, window: Window, sparsity: Double, channel: Int?, channelCount: Int, maximumBlockFrames: Int) throws(DSPError) -> any AnalysisNode
+swift.method           OnsetStrength.lower(_:) : func lower(_ context: inout LoweringContext) throws(DSPError)
+swift.method           Pipeline.autocorrelation(window:hop:maxLag:normalization:floor:channels:backend:isActive:) : func autocorrelation(window: Int = 2_048, hop: Int = 512, maxLag: Int? = nil, normalization: CorrelationNormalization = .none, floor: Double = DSP.correlationFloor, channels: ChannelPolicy = .mixdown, backend: some FFTBackend = .vDSP, isActive: some ActivationSource = .active) -> Pipeline<Input, Lags>   [extends ZTronDSPCore]
+swift.method           Pipeline.cepstralCoefficients(count:isActive:) : func cepstralCoefficients(count: Int = 13, isActive: some ActivationSource = .active) -> Pipeline<Input, MelCepstrum>   [extends ZTronDSPCore]
+swift.method           Pipeline.cepstralPitch(range:isActive:) : func cepstralPitch(range: FrequencyRange = .hertz(50 ... 500), isActive: some ActivationSource = .active) -> Pipeline<Input, Scalar>   [extends ZTronDSPCore]
+swift.method           Pipeline.cepstralPitch(range:to:isActive:) : func cepstralPitch(range: FrequencyRange = .hertz(50 ... 500), to binding: some ScalarResultTarget, isActive: some ActivationSource = .active) -> Pipeline<Input, Quefrency>   [extends ZTronDSPCore]
+swift.method           Pipeline.cepstrum(_:floor:isActive:) : func cepstrum(_ kind: CepstrumKind = .real, floor: Double = 1e-10, isActive: some ActivationSource = .active) -> Pipeline<Input, Quefrency>   [extends ZTronDSPCore]
+swift.method           Pipeline.chromaCQT(fmin:octaves:binsPerOctave:tuning:gamma:hop:normalization:threshold:to:isActive:) : func chromaCQT(fmin: Frequency = .midiNote(24), octaves: Int = 7, binsPerOctave: Int = 36, tuning: Double = 0, gamma: Double = 0, hop: Int = 512, normalization: some ChromaNormalization = .max, threshold: Double = 0, to binding: some VectorResultTarget, isActive: some ActivationSource = .active) -> Pipeline<Input, Samples>   [extends ZTronDSPCore]
+swift.method           Pipeline.chromaCQT(fmin:octaves:binsPerOctave:tuning:gamma:hop:normalization:threshold:to:isActive:) : func chromaCQT(fmin: Frequency = .midiNote(24), octaves: Int = 7, binsPerOctave: Int = 36, tuning: Double = 0, gamma: Double = 0, hop: Int = 512, normalization: some ChromaNormalization = .max, threshold: Double = 0, to feed: HeatmapFeed, isActive: some ActivationSource = .active) -> Pipeline<Input, Samples>   [extends ZTronDSPCore]
+swift.method           Pipeline.chromaFold(normalization:threshold:floor:isActive:) : func chromaFold(normalization: some ChromaNormalization = .max, threshold: Double = 0, floor: Double = 1e-10, isActive: some ActivationSource = .active) -> Pipeline<Input, Chroma>   [extends ZTronDSPCore]
+swift.method           Pipeline.constantQ(fmin:octaves:binsPerOctave:tuning:filterScale:gamma:hop:window:sparsity:strategy:channels:isActive:) : func constantQ(fmin: Frequency = .midiNote(24), octaves: Int = 7, binsPerOctave: Int = 36, tuning: Double = 0, filterScale: Double = 1, gamma: Double = 0, hop: Int = 512, window: Window = .hann, sparsity: Double = 0.01, strategy: some ConstantQStrategy = .multirateSparseKernel, channels: ChannelPolicy = .mixdown, isActive: some ActivationSource = .active) -> Pipeline<Input, Spectrum<ConstantQFrequency, ComplexValues>>   [extends ZTronDSPCore]
+swift.method           Pipeline.constantQScale(fmin:octaves:binsPerOctave:tuning:filterScale:gamma:window:sparsity:isActive:) : func constantQScale<Values>(fmin: Frequency = .midiNote(24), octaves: Int = 7, binsPerOctave: Int = 36, tuning: Double = 0, filterScale: Double = 1, gamma: Double = 0, window: Window = .hann, sparsity: Double = 0.01, isActive: some ActivationSource = .active) -> Pipeline<Input, Spectrum<ConstantQFrequency, Values>> where Output == Spectrum<LinearFrequency, Values>, Values : LinearValued   [extends ZTronDSPCore]
+swift.method           Pipeline.decibels(reference:floor:isActive:) : func decibels<Axis, Values>(reference: Double = 1, floor: Double = DSP.decibelFloor, isActive: some ActivationSource = .active) -> Pipeline<Input, Spectrum<Axis, DecibelValues>> where Output == Spectrum<Axis, Values>, Axis : SpectralAxis, Values : LinearValued   [extends ZTronDSPCore]
+swift.method           Pipeline.harmonicPercussive(select:timeKernel:frequencyKernel:mask:harmonicMargin:percussiveMargin:alignment:median:floor:isActive:) : func harmonicPercussive(select component: HarmonicPercussiveComponent, timeKernel: Int = 31, frequencyKernel: Int = 31, mask: some MaskStrategy = .soft(power: 2), harmonicMargin: Double = 1, percussiveMargin: Double = 1, alignment: FrameAlignment = .causal, median: some MedianStrategy = .selectionNetwork, floor: Double = 1e-10, isActive: some ActivationSource = .active) -> Pipeline<Input, Output> where Output == Spectrum<LinearFrequency, ComplexValues>   [extends ZTronDSPCore]
+swift.method           Pipeline.harmonicPercussive(select:timeKernel:frequencyKernel:mask:harmonicMargin:percussiveMargin:alignment:median:floor:isActive:) : func harmonicPercussive<Axis>(select component: HarmonicPercussiveComponent, timeKernel: Int = 31, frequencyKernel: Int = 31, mask: some MaskStrategy = .soft(power: 2), harmonicMargin: Double = 1, percussiveMargin: Double = 1, alignment: FrameAlignment = .causal, median: some MedianStrategy = .selectionNetwork, floor: Double = 1e-10, isActive: some ActivationSource = .active) -> Pipeline<Input, Output> where Output == Spectrum<Axis, MagnitudeValues>, Axis : SpectralAxis   [extends ZTronDSPCore]
+swift.method           Pipeline.hpss(select:frame:hop:window:timeKernel:frequencyKernel:mask:harmonicMargin:percussiveMargin:alignment:median:channels:isActive:) : func hpss(select component: HarmonicPercussiveComponent, frame: Int = 2_048, hop: Int = 512, window: Window = .hann, timeKernel: Int = 31, frequencyKernel: Int = 31, mask: some MaskStrategy = .soft(power: 2), harmonicMargin: Double = 1, percussiveMargin: Double = 1, alignment: FrameAlignment = .causal, median: some MedianStrategy = .selectionNetwork, channels: ChannelPolicy = .mixdown, isActive: some ActivationSource = .active) -> Pipeline<Input, Samples>   [extends ZTronDSPCore]
+swift.method           Pipeline.inverseCepstralCoefficients(bands:isActive:) : func inverseCepstralCoefficients(bands: Int, isActive: some ActivationSource = .active) -> Pipeline<Input, Spectrum<MelFrequency, DecibelValues>>   [extends ZTronDSPCore]
+swift.method           Pipeline.inverseCepstrum(isActive:) : func inverseCepstrum(isActive: some ActivationSource = .active) -> Pipeline<Input, Spectrum<LinearFrequency, ComplexValues>>   [extends ZTronDSPCore]
+swift.method           Pipeline.inverseDecibels(_:reference:isActive:) : func inverseDecibels<Axis, Values>(_ values: LinearValueKind<Values>, reference: Double = 1, isActive: some ActivationSource = .active) -> Pipeline<Input, Spectrum<Axis, Values>> where Output == Spectrum<Axis, DecibelValues>, Axis : SpectralAxis, Values : LinearValued   [extends ZTronDSPCore]
+swift.method           Pipeline.inverseSTFT(window:normalization:alignment:backend:isActive:) : func inverseSTFT(window: Window = .hann, normalization: WindowNormalization = .none, alignment: FrameAlignment = .causal, backend: some FFTBackend = .vDSP, isActive: some ActivationSource = .active) -> Pipeline<Input, Samples>   [extends ZTronDSPCore]
+swift.method           Pipeline.level(_:window:hop:channels:isActive:) : func level(_ kind: LevelKind, window: TimeInterval = 0.050, hop: TimeInterval = 0.010, channels: ChannelPolicy = .mixdown, isActive: some ActivationSource = .active) -> Pipeline<Input, Scalar>   [extends ZTronDSPCore]
+swift.method           Pipeline.level(_:window:hop:channels:to:isActive:) : func level(_ kind: LevelKind, window: TimeInterval = 0.050, hop: TimeInterval = 0.010, channels: ChannelPolicy = .mixdown, to binding: some ScalarResultTarget, isActive: some ActivationSource = .active) -> Pipeline<Input, Samples>   [extends ZTronDSPCore]
+swift.method           Pipeline.lifter(_:isActive:) : func lifter(_ shape: Lifter.Shape, isActive: some ActivationSource = .active) -> Pipeline<Input, Quefrency>   [extends ZTronDSPCore]
+swift.method           Pipeline.magnitude(isActive:) : func magnitude<Axis>(isActive: some ActivationSource = .active) -> Pipeline<Input, Spectrum<Axis, MagnitudeValues>> where Output == Spectrum<Axis, ComplexValues>, Axis : SpectralAxis   [extends ZTronDSPCore]
+swift.method           Pipeline.melScale(bands:range:formula:normalization:isActive:) : func melScale<Values>(bands: Int, range: FrequencyRange? = nil, formula: some MelFormula = .slaney, normalization: some MelNormalization = .slaney, isActive: some ActivationSource = .active) -> Pipeline<Input, Spectrum<MelFrequency, Values>> where Output == Spectrum<LinearFrequency, Values>, Values : LinearValued   [extends ZTronDSPCore]
+swift.method           Pipeline.melSpectrogram(frame:hop:bands:window:range:to:isActive:) : func melSpectrogram(frame: Int = 2_048, hop: Int = 512, bands: Int = 128, window: Window = .hann, range: FrequencyRange? = nil, to feed: HeatmapFeed, isActive: some ActivationSource = .active) -> Pipeline<Input, Samples>   [extends ZTronDSPCore]
+swift.method           Pipeline.mfcc(frame:hop:count:melBands:window:to:isActive:) : func mfcc(frame: Int = 2_048, hop: Int = 512, count: Int = 13, melBands: Int = 40, window: Window = .hann, to binding: some VectorResultTarget, isActive: some ActivationSource = .active) -> Pipeline<Input, Samples>   [extends ZTronDSPCore]
+swift.method           Pipeline.mfcc(frame:hop:count:melBands:window:to:isActive:) : func mfcc(frame: Int = 2_048, hop: Int = 512, count: Int = 13, melBands: Int = 40, window: Window = .hann, to feed: HeatmapFeed, isActive: some ActivationSource = .active) -> Pipeline<Input, Samples>   [extends ZTronDSPCore]
+swift.method           Pipeline.onsetStrength(lag:maxSize:floor:isActive:) : func onsetStrength<Axis>(lag: Int = 1, maxSize: Int = 1, floor: Double = -80, isActive: some ActivationSource = .active) -> Pipeline<Input, Novelty> where Output == Spectrum<Axis, DecibelValues>, Axis : SpectralAxis   [extends ZTronDSPCore]
+swift.method           Pipeline.power(isActive:) : func power<Axis>(isActive: some ActivationSource = .active) -> Pipeline<Input, Spectrum<Axis, PowerValues>> where Output == Spectrum<Axis, ComplexValues>, Axis : SpectralAxis   [extends ZTronDSPCore]
+swift.method           Pipeline.spectralCentroid(range:floor:isActive:) : func spectralCentroid<Values>(range: FrequencyRange? = nil, floor: Double = 1e-10, isActive: some ActivationSource = .active) -> Pipeline<Input, Scalar> where Output == Spectrum<LinearFrequency, Values>, Values : LinearValued   [extends ZTronDSPCore]
+swift.method           Pipeline.spectralCentroid(range:floor:to:isActive:) : func spectralCentroid<Values>(range: FrequencyRange? = nil, floor: Double = 1e-10, to binding: some ScalarResultTarget, isActive: some ActivationSource = .active) -> Pipeline<Input, Output> where Output == Spectrum<LinearFrequency, Values>, Values : LinearValued   [extends ZTronDSPCore]
+swift.method           Pipeline.spectrogram(frame:hop:window:normalization:to:isActive:) : func spectrogram(frame: Int = 2_048, hop: Int = 512, window: Window = .hann, normalization: WindowNormalization = .amplitude, to feed: HeatmapFeed, isActive: some ActivationSource = .active) -> Pipeline<Input, Samples>   [extends ZTronDSPCore]
+swift.method           Pipeline.stft(frame:hop:window:paddedTo:normalization:alignment:channels:backend:isActive:) : func stft(frame: Int, hop: Int, window: Window = .hann, paddedTo: Int? = nil, normalization: WindowNormalization = .none, alignment: FrameAlignment = .causal, channels: ChannelPolicy = .mixdown, backend: some FFTBackend = .vDSP, isActive: some ActivationSource = .active) -> Pipeline<Input, Spectrum<LinearFrequency, ComplexValues>>   [extends ZTronDSPCore]
+swift.method           Pipeline.tempogram(_:window:taper:range:alignment:isActive:) : func tempogram(_ method: some TempogramMethod = .autocorrelation, window: Int = 384, taper: Window = .hann, range: ClosedRange<Double> = 30 ... 300, alignment: FrameAlignment = .causal, isActive: some ActivationSource = .active) -> Pipeline<Input, TempoSpectrum>   [extends ZTronDSPCore]
+swift.method           Pipeline.waveform(resolution:channels:isActive:) : func waveform(resolution: TimeInterval = 0.005, channels: ChannelPolicy = .mixdown, isActive: some ActivationSource = .active) -> Pipeline<Input, Envelope>   [extends ZTronDSPCore]
+swift.method           Power.lower(_:) : func lower(_ context: inout LoweringContext) throws(DSPError)
+swift.method           STFT.inversionConditions(in:) : func inversionConditions(in context: InversionContext) throws(DSPError) -> [InversionCondition]
+swift.method           STFT.inversionRoundTrip(in:) : func inversionRoundTrip(in context: InversionContext) throws(DSPError) -> InversionRoundTrip?
+swift.method           STFT.lower(_:) : func lower(_ context: inout LoweringContext) throws(DSPError)
+swift.method           ScalarTrack.matlabScript() : func matlabScript() async throws(DSPError) -> String
+swift.method           SelectionNetworkMedian.makeFilter(kernel:binCount:along:implementation:crossovers:) : func makeFilter(kernel: Int, binCount: Int, along axis: MedianAxis, implementation: Implementation, crossovers: CrossoverTable) throws(DSPError) -> any MedianFilter
+swift.method           SlaneyMelNormalization.gain(lowerEdge:center:upperEdge:) : func gain(lowerEdge: Double, center: Double, upperEdge: Double) -> Double
+swift.method           SoftMask.mask(_:against:floor:into:count:) : func mask(_ component: UnsafePointer<Float>, against competitor: UnsafePointer<Float>, floor: Float, into mask: UnsafeMutablePointer<Float>, count: Int)
+swift.method           SoftMask.validate() : func validate() throws(DSPError)
+swift.method           SpectralCentroid.lower(_:) : func lower(_ context: inout LoweringContext) throws(DSPError)
+swift.method           Tempogram.lower(_:) : func lower(_ context: inout LoweringContext) throws(DSPError)
+swift.method           TempogramMethod.makeTransform(window:featureRate:range:) : func makeTransform(window: Int, featureRate: Double, range: ClosedRange<Double>) throws(DSPError) -> any TempogramTransform
+swift.method           TempogramTransform.transform(_:into:) : func transform(_ segment: UnsafePointer<Float>, into column: UnsafeMutablePointer<Float>)
+swift.method           UnitPeakMelNormalization.gain(lowerEdge:center:upperEdge:) : func gain(lowerEdge: Double, center: Double, upperEdge: Double) -> Double
+swift.method           UnscaledChromaNormalization.norm(of:) : func norm(of chroma: UnsafeBufferPointer<Float>) -> Float
+swift.method           VDSPFFTBackend.makePlan(length:) : func makePlan(length: Int) throws(DSPError) -> any FFTPlan
+swift.method           VDSPFFTBackend.supports(length:) : func supports(length: Int) -> Bool
+swift.method           Waveform.lower(_:) : func lower(_ context: inout LoweringContext) throws(DSPError)
+swift.method           Window.analysis(frame:hop:tail:) : func analysis(frame: Int, hop: Int? = nil, tail: (@Sendable (Double) -> Double)? = nil) async throws(DSPError) -> WindowAnalysis   [extends ZTronDSPCore]
+swift.method           WindowAnalysis.matlabScript() : func matlabScript() async throws(DSPError) -> String
+swift.method           WindowNormalization.factor(window:transformLength:) : func factor(window: [Double], transformLength: Int) throws(DSPError) -> Double
+swift.property         AnalysisCalibrationReport.convolution : let convolution: ConvolutionCrossover
+swift.property         AnalysisCalibrationReport.measurements : let measurements: [CrossoverMeasurement]
+swift.property         AnalysisCalibrationReport.table : let table: CrossoverTable
+swift.property         Autocorrelation.activation : let activation: StageActivation
+swift.property         Autocorrelation.backend : var backend: any FFTBackend { get }
+swift.property         Autocorrelation.channels : let channels: ChannelPolicy
+swift.property         Autocorrelation.floor : let floor: Double
+swift.property         Autocorrelation.hop : let hop: Int
+swift.property         Autocorrelation.maxLag : let maxLag: Int?
+swift.property         Autocorrelation.normalization : let normalization: CorrelationNormalization
+swift.property         Autocorrelation.stageDescription : var stageDescription: StageDescription { get }
+swift.property         Autocorrelation.window : let window: Int
+swift.property         AutocorrelationTempogram.floor : let floor: Double
+swift.property         CepstralCoefficients.activation : let activation: StageActivation
+swift.property         CepstralCoefficients.count : let count: Int
+swift.property         CepstralCoefficients.inverse : var inverse: InverseCepstralCoefficients { get }
+swift.property         CepstralPitch.activation : let activation: StageActivation
+swift.property         CepstralPitch.range : let range: FrequencyRange
+swift.property         CepstralPitch.stageDescriptions : var stageDescriptions: [StageDescription] { get }
+swift.property         Cepstrum.activation : let activation: StageActivation
+swift.property         Cepstrum.floor : let floor: Double
+swift.property         Cepstrum.inverse : var inverse: InverseCepstrum { get }
+swift.property         Cepstrum.kind : let kind: CepstrumKind
+swift.property         ChromaCQT.activation : let activation: StageActivation
+swift.property         ChromaCQT.expansion : let expansion: Pipeline<Samples, Samples>
+swift.property         ChromaFold.activation : let activation: StageActivation
+swift.property         ChromaFold.floor : let floor: Double
+swift.property         ChromaFold.normalization : var normalization: any ChromaNormalization { get }
+swift.property         ChromaFold.threshold : let threshold: Double
+swift.property         ConstantQ.activation : let activation: StageActivation
+swift.property         ConstantQ.binsPerOctave : let binsPerOctave: Int
+swift.property         ConstantQ.channels : let channels: ChannelPolicy
+swift.property         ConstantQ.filterScale : let filterScale: Double
+swift.property         ConstantQ.fmin : let fmin: Frequency
+swift.property         ConstantQ.gamma : let gamma: Double
+swift.property         ConstantQ.hop : let hop: Int
+swift.property         ConstantQ.octaves : let octaves: Int
+swift.property         ConstantQ.sparsity : let sparsity: Double
+swift.property         ConstantQ.strategy : var strategy: any ConstantQStrategy { get }
+swift.property         ConstantQ.tuning : let tuning: Double
+swift.property         ConstantQ.window : let window: Window
+swift.property         ConstantQGeometry.alpha : var alpha: Double { get }
+swift.property         ConstantQGeometry.atomLengths : var atomLengths: [Int] { get }
+swift.property         ConstantQGeometry.axis : var axis: FeedAxis { get }
+swift.property         ConstantQGeometry.binCount : var binCount: Int { get }
+swift.property         ConstantQGeometry.binsPerOctave : let binsPerOctave: Int
+swift.property         ConstantQGeometry.filterScale : let filterScale: Double
+swift.property         ConstantQGeometry.frequencies : var frequencies: [Double] { get }
+swift.property         ConstantQGeometry.gamma : let gamma: Double
+swift.property         ConstantQGeometry.minimumFrequency : let minimumFrequency: Double
+swift.property         ConstantQGeometry.octaves : let octaves: Int
+swift.property         ConstantQGeometry.q : var q: Double { get }
+swift.property         ConstantQGeometry.sampleRate : let sampleRate: Double
+swift.property         ConstantQGeometry.tuning : let tuning: Double
+swift.property         ConstantQKernel.atomLengths : let atomLengths: [Int]
+swift.property         ConstantQKernel.center : let center: Int
+swift.property         ConstantQKernel.columnCount : var columnCount: Int { get }
+swift.property         ConstantQKernel.columnRange : var columnRange: ClosedRange<Int> { get }
+swift.property         ConstantQKernel.columns : let columns: [Int]
+swift.property         ConstantQKernel.imaginary : let imaginary: [Float]
+swift.property         ConstantQKernel.keptEnergy : let keptEnergy: [Double]
+swift.property         ConstantQKernel.nonZeroCount : var nonZeroCount: Int { get }
+swift.property         ConstantQKernel.real : let real: [Float]
+swift.property         ConstantQKernel.rowCount : let rowCount: Int
+swift.property         ConstantQKernel.rowStarts : let rowStarts: [Int]
+swift.property         ConstantQKernel.span : let span: Int
+swift.property         ConstantQKernel.transformLength : let transformLength: Int
+swift.property         ConstantQScale.activation : let activation: StageActivation
+swift.property         ConstantQScale.binsPerOctave : let binsPerOctave: Int
+swift.property         ConstantQScale.filterScale : let filterScale: Double
+swift.property         ConstantQScale.fmin : let fmin: Frequency
+swift.property         ConstantQScale.gamma : let gamma: Double
+swift.property         ConstantQScale.octaves : let octaves: Int
+swift.property         ConstantQScale.sparsity : let sparsity: Double
+swift.property         ConstantQScale.stageDescription : var stageDescription: StageDescription { get }
+swift.property         ConstantQScale.tuning : let tuning: Double
+swift.property         ConstantQScale.window : let window: Window
+swift.property         ContextDependentStep.stageDescription : var stageDescription: StageDescription { get }
+swift.property         ConvolutionCrossover.crossover : let crossover: Int?
+swift.property         ConvolutionCrossover.curves : let curves: [CalibrationCurve]
+swift.property         ConvolutionCrossover.factor : let factor: Double?
+swift.property         ConvolutionCrossover.kernelLengths : let kernelLengths: [Int]
+swift.property         ConvolutionCrossover.signalLength : let signalLength: Int
+swift.property         Decibels.activation : let activation: StageActivation
+swift.property         Decibels.floor : let floor: Double
+swift.property         Decibels.reference : let reference: Double
+swift.property         Decibels.stageDescription : var stageDescription: StageDescription { get }
+swift.property         Decimate.inverse : var inverse: Interpolate { get }   [extends ZTronDSPDesign]
+swift.property         FFTPlan.binCount : var binCount: Int { get }
+swift.property         FFTPlan.length : var length: Int { get }
+swift.property         FourierTempogram.resolution : let resolution: Int
+swift.property         Framer.alignment : let alignment: FrameAlignment
+swift.property         Framer.capacity : let capacity: Int
+swift.property         Framer.frame : var frame: UnsafePointer<Float>? { get }
+swift.property         Framer.frameIndex : var frameIndex: Int { get }
+swift.property         Framer.framePosition : var framePosition: Int { get }
+swift.property         Framer.frameSize : let frameSize: Int
+swift.property         Framer.hopSize : let hopSize: Int
+swift.property         Framer.isMirrored : let isMirrored: Bool
+swift.property         FrequencyRange.description : var description: String { get }
+swift.property         FrequencyRange.lowerBound : let lowerBound: Frequency
+swift.property         FrequencyRange.upperBound : let upperBound: Frequency
+swift.property         HPSS.activation : let activation: StageActivation
+swift.property         HPSS.expansion : let expansion: Pipeline<Samples, Samples>
+swift.property         HarmonicPercussive.activation : let activation: StageActivation
+swift.property         HarmonicPercussive.alignment : let alignment: FrameAlignment
+swift.property         HarmonicPercussive.component : let component: HarmonicPercussiveComponent
+swift.property         HarmonicPercussive.floor : let floor: Double
+swift.property         HarmonicPercussive.frequencyKernel : let frequencyKernel: Int
+swift.property         HarmonicPercussive.harmonicMargin : let harmonicMargin: Double
+swift.property         HarmonicPercussive.mask : var mask: any MaskStrategy { get }
+swift.property         HarmonicPercussive.median : var median: any MedianStrategy { get }
+swift.property         HarmonicPercussive.percussiveMargin : let percussiveMargin: Double
+swift.property         HarmonicPercussive.stageDescription : var stageDescription: StageDescription { get }
+swift.property         HarmonicPercussive.timeKernel : let timeKernel: Int
+swift.property         InverseCepstralCoefficients.activation : let activation: StageActivation
+swift.property         InverseCepstralCoefficients.bands : let bands: Int
+swift.property         InverseCepstrum.activation : let activation: StageActivation
+swift.property         InverseDecibels.activation : let activation: StageActivation
+swift.property         InverseDecibels.reference : let reference: Double
+swift.property         InverseDecibels.stageDescription : var stageDescription: StageDescription { get }
+swift.property         InverseSTFT.activation : let activation: StageActivation
+swift.property         InverseSTFT.alignment : let alignment: FrameAlignment
+swift.property         InverseSTFT.backend : var backend: any FFTBackend { get }
+swift.property         InverseSTFT.normalization : let normalization: WindowNormalization
+swift.property         InverseSTFT.window : let window: Window
+swift.property         InversionCondition.holds : let holds: Bool
+swift.property         InversionCondition.isNecessary : let isNecessary: Bool
+swift.property         InversionCondition.margin : let margin: Double
+swift.property         InversionCondition.name : let name: String
+swift.property         InversionCondition.observed : let observed: Double
+swift.property         InversionCondition.predictedError : let predictedError: Double
+swift.property         InversionCondition.quantity : let quantity: String
+swift.property         InversionCondition.theorem : let theorem: String
+swift.property         InversionContext.sampleRate : let sampleRate: Double
+swift.property         InversionContext.samples : let samples: [Float]?
+swift.property         InversionContext.upstream : let upstream: [StageDescription]
+swift.property         InversionMeasurement.count : let count: Int
+swift.property         InversionMeasurement.largestError : let largestError: Double
+swift.property         InversionMeasurement.relativeError : let relativeError: Double
+swift.property         InversionMeasurement.signalToNoiseRatio : let signalToNoiseRatio: Double
+swift.property         InversionReport.conditions : let conditions: [InversionCondition]
+swift.property         InversionReport.inverse : let inverse: String
+swift.property         InversionReport.isExactlyInvertible : var isExactlyInvertible: Bool { get }
+swift.property         InversionReport.measuredError : let measuredError: InversionMeasurement?
+swift.property         InversionReport.predictedError : let predictedError: Double
+swift.property         InversionReport.roundTrip : let roundTrip: InversionRoundTrip?
+swift.property         InversionReport.sampleRate : let sampleRate: Double
+swift.property         InversionReport.stage : let stage: String
+swift.property         InversionRoundTrip.frameLength : let frameLength: Int
+swift.property         InversionRoundTrip.original : let original: [Float]
+swift.property         InversionRoundTrip.reconstruction : let reconstruction: [Float]
+swift.property         InvertibleStage.inverse : var inverse: Self.Inverse { get }
+swift.property         Level.activation : let activation: StageActivation
+swift.property         Level.channels : let channels: ChannelPolicy
+swift.property         Level.hop : let hop: TimeInterval
+swift.property         Level.kind : let kind: LevelKind
+swift.property         Level.stageDescriptions : var stageDescriptions: [StageDescription] { get }
+swift.property         Level.window : let window: TimeInterval
+swift.property         Lifter.activation : let activation: StageActivation
+swift.property         Lifter.shape : let shape: Lifter.Shape
+swift.property         MFCC.activation : let activation: StageActivation
+swift.property         MFCC.expansion : let expansion: Pipeline<Samples, Samples>
+swift.property         Magnitude.activation : let activation: StageActivation
+swift.property         Magnitude.stageDescription : var stageDescription: StageDescription { get }
+swift.property         MelFilterBank.Band.firstBin : let firstBin: Int
+swift.property         MelFilterBank.Band.weights : let weights: [Float]
+swift.property         MelFilterBank.bandCount : var bandCount: Int { get }
+swift.property         MelFilterBank.bands : let bands: [MelFilterBank.Band]
+swift.property         MelFilterBank.binCount : let binCount: Int
+swift.property         MelFilterBank.binWidth : let binWidth: Double
+swift.property         MelFilterBank.centers : var centers: [Double] { get }
+swift.property         MelFilterBank.edges : let edges: [Double]
+swift.property         MelFilterBank.firstEmptyBand : var firstEmptyBand: Int? { get }
+swift.property         MelScale.activation : let activation: StageActivation
+swift.property         MelScale.bands : let bands: Int
+swift.property         MelScale.formula : var formula: any MelFormula { get }
+swift.property         MelScale.normalization : var normalization: any MelNormalization { get }
+swift.property         MelScale.range : let range: FrequencyRange?
+swift.property         MelScale.stageDescription : var stageDescription: StageDescription { get }
+swift.property         MelSpectrogram.activation : let activation: StageActivation
+swift.property         MelSpectrogram.expansion : let expansion: Pipeline<Samples, Samples>
+swift.property         MultirateSparseKernelStrategy.backend : var backend: any FFTBackend { get }
+swift.property         OnsetStrength.activation : let activation: StageActivation
+swift.property         OnsetStrength.floor : let floor: Double
+swift.property         OnsetStrength.lag : let lag: Int
+swift.property         OnsetStrength.maxSize : let maxSize: Int
+swift.property         OnsetStrength.stageDescription : var stageDescription: StageDescription { get }
+swift.property         Power.activation : let activation: StageActivation
+swift.property         Power.stageDescription : var stageDescription: StageDescription { get }
+swift.property         STFT.activation : let activation: StageActivation
+swift.property         STFT.alignment : let alignment: FrameAlignment
+swift.property         STFT.backend : var backend: any FFTBackend { get }
+swift.property         STFT.channels : let channels: ChannelPolicy
+swift.property         STFT.frame : let frame: Int
+swift.property         STFT.hop : let hop: Int
+swift.property         STFT.inverse : var inverse: InverseSTFT { get }
+swift.property         STFT.normalization : let normalization: WindowNormalization
+swift.property         STFT.paddedTo : let paddedTo: Int?
+swift.property         STFT.transformLength : var transformLength: Int { get }
+swift.property         STFT.window : let window: Window
+swift.property         ScalarTrack.frames : let frames: [ScalarFrame]
+swift.property         ScalarTrack.times : let times: [Double]
+swift.property         SoftMask.power : let power: Double
+swift.property         SpectralCentroid.activation : let activation: StageActivation
+swift.property         SpectralCentroid.floor : let floor: Double
+swift.property         SpectralCentroid.range : let range: FrequencyRange?
+swift.property         SpectralCentroid.stageDescription : var stageDescription: StageDescription { get }
+swift.property         Spectrogram.activation : let activation: StageActivation
+swift.property         Spectrogram.expansion : let expansion: Pipeline<Samples, Samples>
+swift.property         Tempogram.activation : let activation: StageActivation
+swift.property         Tempogram.alignment : let alignment: FrameAlignment
+swift.property         Tempogram.method : var method: any TempogramMethod { get }
+swift.property         Tempogram.range : let range: ClosedRange<Double>
+swift.property         Tempogram.taper : let taper: Window
+swift.property         Tempogram.window : let window: Int
+swift.property         TempogramTransform.beatsPerMinute : var beatsPerMinute: [Double] { get }
+swift.property         Waveform.activation : let activation: StageActivation
+swift.property         Waveform.channels : let channels: ChannelPolicy
+swift.property         Waveform.resolution : let resolution: TimeInterval
+swift.property         WindowAnalysis.Discontinuity.position : let position: Double
+swift.property         WindowAnalysis.Discontinuity.size : let size: Double
+swift.property         WindowAnalysis.amplitudeNormalization : let amplitudeNormalization: Double?
+swift.property         WindowAnalysis.coherentGain : let coherentGain: Double
+swift.property         WindowAnalysis.description : var description: String { get }
+swift.property         WindowAnalysis.discontinuities : let discontinuities: [WindowAnalysis.Discontinuity]
+swift.property         WindowAnalysis.equivalentNoiseBandwidth : let equivalentNoiseBandwidth: Double?
+swift.property         WindowAnalysis.frame : let frame: Int
+swift.property         WindowAnalysis.frameBoundRatio : let frameBoundRatio: Double?
+swift.property         WindowAnalysis.hop : let hop: Int?
+swift.property         WindowAnalysis.isAbsolutelyIntegrableOnFrame : let isAbsolutelyIntegrableOnFrame: Bool
+swift.property         WindowAnalysis.isAbsolutelyIntegrableOnLine : let isAbsolutelyIntegrableOnLine: Bool?
+swift.property         WindowAnalysis.isConstantOverlapAdd : let isConstantOverlapAdd: Bool?
+swift.property         WindowAnalysis.isFinite : let isFinite: Bool
+swift.property         WindowAnalysis.isNonNegative : let isNonNegative: Bool
+swift.property         WindowAnalysis.isNonZeroOverlapAdd : let isNonZeroOverlapAdd: Bool?
+swift.property         WindowAnalysis.isSquareIntegrableOnFrame : let isSquareIntegrableOnFrame: Bool
+swift.property         WindowAnalysis.isSquareIntegrableOnLine : let isSquareIntegrableOnLine: Bool?
+swift.property         WindowAnalysis.isSymmetric : let isSymmetric: Bool
+swift.property         WindowAnalysis.leadingEdgeValue : let leadingEdgeValue: Double
+swift.property         WindowAnalysis.lines : var lines: [String] { get }
+swift.property         WindowAnalysis.mainLobeWidthAtHalfPower : let mainLobeWidthAtHalfPower: Double
+swift.property         WindowAnalysis.mainLobeWidthNullToNull : let mainLobeWidthNullToNull: Double?
+swift.property         WindowAnalysis.noiseGain : let noiseGain: Double
+swift.property         WindowAnalysis.overlapRipple : let overlapRipple: Double?
+swift.property         WindowAnalysis.peak : let peak: Double
+swift.property         WindowAnalysis.peakSideLobe : let peakSideLobe: Double?
+swift.property         WindowAnalysis.powerNormalization : let powerNormalization: Double
+swift.property         WindowAnalysis.predictedSideLobeFallOff : var predictedSideLobeFallOff: Double { get }
+swift.property         WindowAnalysis.samples : let samples: [Double]
+swift.property         WindowAnalysis.scallopingLoss : let scallopingLoss: Double
+swift.property         WindowAnalysis.sideLobeFallOff : let sideLobeFallOff: Double?
+swift.property         WindowAnalysis.smoothness : let smoothness: Int
+swift.property         WindowAnalysis.spectrum : let spectrum: [Double]
+swift.property         WindowAnalysis.spectrumBinStep : let spectrumBinStep: Double
+swift.property         WindowAnalysis.tailLimit : let tailLimit: WindowAnalysis.TailLimit?
+swift.property         WindowAnalysis.trailingEdgeValue : let trailingEdgeValue: Double
+swift.property         WindowAnalysis.window : let window: String
+swift.protocol         ChromaNormalization : protocol ChromaNormalization : Hashable, Sendable
+swift.protocol         ConstantQStrategy : protocol ConstantQStrategy : Hashable, Sendable
+swift.protocol         ContextDependentStep : protocol ContextDependentStep : StageValue
+swift.protocol         FFTBackend : protocol FFTBackend : Hashable, Sendable
+swift.protocol         FFTPlan : protocol FFTPlan : AnyObject
+swift.protocol         InvertibleStage : protocol InvertibleStage : StageValue
+swift.protocol         MaskStrategy : protocol MaskStrategy : Hashable, Sendable
+swift.protocol         MedianFilter : protocol MedianFilter : AnyObject
+swift.protocol         MedianStrategy : protocol MedianStrategy : Hashable, Sendable
+swift.protocol         MelNormalization : protocol MelNormalization : Hashable, Sendable
+swift.protocol         TempogramMethod : protocol TempogramMethod : Hashable, Sendable
+swift.protocol         TempogramTransform : protocol TempogramTransform : AnyObject
+swift.struct           AnalysisCalibrationReport : struct AnalysisCalibrationReport
+swift.struct           Autocorrelation : struct Autocorrelation
+swift.struct           AutocorrelationTempogram : struct AutocorrelationTempogram
+swift.struct           AutomaticMedian : struct AutomaticMedian
+swift.struct           CepstralCoefficients : struct CepstralCoefficients
+swift.struct           CepstralPitch : struct CepstralPitch<Output> where Output : SignalDomain
+swift.struct           Cepstrum : struct Cepstrum
+swift.struct           ChromaCQT : struct ChromaCQT
+swift.struct           ChromaFold : struct ChromaFold
+swift.struct           ConstantQ : struct ConstantQ
+swift.struct           ConstantQGeometry : struct ConstantQGeometry
+swift.struct           ConstantQKernel : struct ConstantQKernel
+swift.struct           ConstantQScale : struct ConstantQScale
+swift.struct           ConvolutionCrossover : struct ConvolutionCrossover
+swift.struct           Decibels : struct Decibels
+swift.struct           FourierTempogram : struct FourierTempogram
+swift.struct           FrequencyRange : struct FrequencyRange
+swift.struct           HPSS : struct HPSS
+swift.struct           HardMask : struct HardMask
+swift.struct           HarmonicPercussive : struct HarmonicPercussive
+swift.struct           InverseCepstralCoefficients : struct InverseCepstralCoefficients
+swift.struct           InverseCepstrum : struct InverseCepstrum
+swift.struct           InverseDecibels : struct InverseDecibels<Values> where Values : LinearValued
+swift.struct           InverseSTFT : struct InverseSTFT
+swift.struct           InversionCondition : struct InversionCondition
+swift.struct           InversionContext : struct InversionContext
+swift.struct           InversionMeasurement : struct InversionMeasurement
+swift.struct           InversionReport : struct InversionReport
+swift.struct           InversionRoundTrip : struct InversionRoundTrip
+swift.struct           L1ChromaNormalization : struct L1ChromaNormalization
+swift.struct           L2ChromaNormalization : struct L2ChromaNormalization
+swift.struct           Level : struct Level<Output> where Output : SignalDomain
+swift.struct           Lifter : struct Lifter
+swift.struct           LinearValueKind : struct LinearValueKind<Values> where Values : LinearValued
+swift.struct           MFCC : struct MFCC
+swift.struct           Magnitude : struct Magnitude
+swift.struct           MaximumChromaNormalization : struct MaximumChromaNormalization
+swift.struct           MelFilterBank : struct MelFilterBank
+swift.struct           MelFilterBank.Band : struct Band
+swift.struct           MelScale : struct MelScale
+swift.struct           MelSpectrogram : struct MelSpectrogram
+swift.struct           MetalMedian : struct MetalMedian
+swift.struct           MultirateSparseKernelStrategy : struct MultirateSparseKernelStrategy
+swift.struct           OnsetStrength : struct OnsetStrength
+swift.struct           Power : struct Power
+swift.struct           STFT : struct STFT
+swift.struct           ScalarTrack : struct ScalarTrack
+swift.struct           SelectionNetworkMedian : struct SelectionNetworkMedian
+swift.struct           SlaneyMelNormalization : struct SlaneyMelNormalization
+swift.struct           SoftMask : struct SoftMask
+swift.struct           SpectralCentroid : struct SpectralCentroid<Continuation>
+swift.struct           Spectrogram : struct Spectrogram
+swift.struct           Tempogram : struct Tempogram
+swift.struct           UnitPeakMelNormalization : struct UnitPeakMelNormalization
+swift.struct           UnscaledChromaNormalization : struct UnscaledChromaNormalization
+swift.struct           VDSPFFTBackend : struct VDSPFFTBackend
+swift.struct           Waveform : struct Waveform
+swift.struct           WindowAnalysis : struct WindowAnalysis
+swift.struct           WindowAnalysis.Discontinuity : struct Discontinuity
+swift.type.method      Calibration.analysisReport(startingFrom:) : static func analysisReport(startingFrom base: CrossoverTable = .shipped) async throws(DSPError) -> AnalysisCalibrationReport   [extends ZTronDSPMetal]
+swift.type.method      Calibration.measureAnalysis(startingFrom:) : static func measureAnalysis(startingFrom base: CrossoverTable = .shipped) async throws(DSPError) -> CrossoverTable   [extends ZTronDSPMetal]
+swift.type.method      ConstantQStrategy.multirateSparseKernel(backend:) : static func multirateSparseKernel(backend: some FFTBackend) -> MultirateSparseKernelStrategy
+swift.type.method      ConvolutionCrossover.modelSize(signalLength:kernelLength:) : static func modelSize(signalLength: Int, kernelLength: Int) -> Double
+swift.type.method      DSP.autocorrelate(_:maxLag:normalization:strategy:floor:crossovers:) : static func autocorrelate(_ x: [Float], maxLag: Int? = nil, normalization: CorrelationNormalization = .none, strategy: ConvolutionStrategy = .automatic, floor: Double = DSP.correlationFloor, crossovers: CrossoverTable = .shipped) throws(DSPError) -> [Float]   [extends ZTronDSPCore]
+swift.type.method      DSP.convolve(_:_:mode:strategy:crossovers:) : static func convolve(_ x: [Float], _ h: [Float], mode: ConvolutionMode = .full, strategy: ConvolutionStrategy = .automatic, crossovers: CrossoverTable = .shipped) throws(DSPError) -> [Float]   [extends ZTronDSPCore]
+swift.type.method      DSP.correlate(_:_:mode:normalization:strategy:floor:crossovers:) : static func correlate(_ x: [Float], _ y: [Float], mode: ConvolutionMode = .full, normalization: CorrelationNormalization = .none, strategy: ConvolutionStrategy = .automatic, floor: Double = DSP.correlationFloor, crossovers: CrossoverTable = .shipped) throws(DSPError) -> [Float]   [extends ZTronDSPCore]
+swift.type.method      DSP.harmonicPercussive(_:binCount:select:timeKernel:frequencyKernel:mask:harmonicMargin:percussiveMargin:floor:median:crossovers:) : static func harmonicPercussive(_ magnitudes: [Float], binCount: Int, select component: HarmonicPercussiveComponent, timeKernel: Int = 31, frequencyKernel: Int = 31, mask: some MaskStrategy = .soft(power: 2), harmonicMargin: Double = 1, percussiveMargin: Double = 1, floor: Double = 1e-10, median: some MedianStrategy = .automatic, crossovers: CrossoverTable = .shipped) async throws(DSPError) -> [Float]   [extends ZTronDSPCore]
+swift.type.method      DSP.harmonicPercussiveMasks(of:binCount:timeKernel:frequencyKernel:mask:harmonicMargin:percussiveMargin:floor:median:crossovers:) : static func harmonicPercussiveMasks(of magnitudes: [Float], binCount: Int, timeKernel: Int = 31, frequencyKernel: Int = 31, mask: some MaskStrategy = .soft(power: 2), harmonicMargin: Double = 1, percussiveMargin: Double = 1, floor: Double = 1e-10, median: some MedianStrategy = .automatic, crossovers: CrossoverTable = .shipped) async throws(DSPError) -> (harmonic: [Float], percussive: [Float])   [extends ZTronDSPCore]
+swift.type.method      DSP.inverseRealDFT(real:imaginary:) : static func inverseRealDFT(real: [Double], imaginary: [Double]) throws(DSPError) -> [Double]   [extends ZTronDSPCore]
+swift.type.method      DSP.inversionReport(ofSubsampling:by:phase:sampleRate:) : static func inversionReport(ofSubsampling signal: [Float], by factor: Int, phase: Int = 0, sampleRate: Double = 48_000) async throws(DSPError) -> InversionReport   [extends ZTronDSPCore]
+swift.type.method      DSP.inversionReport(ofUpsampling:by:sampleRate:) : static func inversionReport(ofUpsampling signal: [Float], by factor: Int, sampleRate: Double = 48_000) async throws(DSPError) -> InversionReport   [extends ZTronDSPCore]
+swift.type.method      DSP.realDFT(_:) : static func realDFT(_ signal: [Double]) throws(DSPError) -> (real: [Double], imaginary: [Double])   [extends ZTronDSPCore]
+swift.type.method      FrequencyRange.hertz(_:) : static func hertz(_ range: ClosedRange<Double>) -> FrequencyRange
+swift.type.method      MaskStrategy.soft(power:) : static func soft(power: Double) -> SoftMask
+swift.type.method      PipelineBuilder.buildPartialBlock(accumulated:next:) : static func buildPartialBlock(accumulated: SequenceChain, next: Autocorrelation) -> Pipeline<Samples, Lags>   [extends ZTronDSPCore]
+swift.type.method      PipelineBuilder.buildPartialBlock(accumulated:next:) : static func buildPartialBlock<I, Axis, Values>(accumulated: Pipeline<I, Spectrum<Axis, DecibelValues>>, next: InverseDecibels<Values>) -> Pipeline<I, Spectrum<Axis, Values>> where I : SignalDomain, Axis : SpectralAxis, Values : LinearValued   [extends ZTronDSPCore]
+swift.type.method      PipelineBuilder.buildPartialBlock(accumulated:next:) : static func buildPartialBlock<I, Axis, Values>(accumulated: Pipeline<I, Spectrum<Axis, Values>>, next: Decibels) -> Pipeline<I, Spectrum<Axis, DecibelValues>> where I : SignalDomain, Axis : SpectralAxis, Values : LinearValued   [extends ZTronDSPCore]
+swift.type.method      PipelineBuilder.buildPartialBlock(accumulated:next:) : static func buildPartialBlock<I, Axis>(accumulated: Pipeline<I, Spectrum<Axis, ComplexValues>>, next: Magnitude) -> Pipeline<I, Spectrum<Axis, MagnitudeValues>> where I : SignalDomain, Axis : SpectralAxis   [extends ZTronDSPCore]
+swift.type.method      PipelineBuilder.buildPartialBlock(accumulated:next:) : static func buildPartialBlock<I, Axis>(accumulated: Pipeline<I, Spectrum<Axis, ComplexValues>>, next: Power) -> Pipeline<I, Spectrum<Axis, PowerValues>> where I : SignalDomain, Axis : SpectralAxis   [extends ZTronDSPCore]
+swift.type.method      PipelineBuilder.buildPartialBlock(accumulated:next:) : static func buildPartialBlock<I, Axis>(accumulated: Pipeline<I, Spectrum<Axis, DecibelValues>>, next: OnsetStrength) -> Pipeline<I, Novelty> where I : SignalDomain, Axis : SpectralAxis   [extends ZTronDSPCore]
+swift.type.method      PipelineBuilder.buildPartialBlock(accumulated:next:) : static func buildPartialBlock<I, Axis>(accumulated: Pipeline<I, Spectrum<Axis, MagnitudeValues>>, next: HarmonicPercussive) -> Pipeline<I, Spectrum<Axis, MagnitudeValues>> where I : SignalDomain, Axis : SpectralAxis   [extends ZTronDSPCore]
+swift.type.method      PipelineBuilder.buildPartialBlock(accumulated:next:) : static func buildPartialBlock<I, M>(accumulated: Pipeline<I, M>, next: Autocorrelation) -> Pipeline<I, Lags> where I : SignalDomain, M : SampledSequence   [extends ZTronDSPCore]
+swift.type.method      PipelineBuilder.buildPartialBlock(accumulated:next:) : static func buildPartialBlock<I, Values>(accumulated: Pipeline<I, Spectrum<LinearFrequency, Values>>, next: ConstantQScale) -> Pipeline<I, Spectrum<ConstantQFrequency, Values>> where I : SignalDomain, Values : LinearValued   [extends ZTronDSPCore]
+swift.type.method      PipelineBuilder.buildPartialBlock(accumulated:next:) : static func buildPartialBlock<I, Values>(accumulated: Pipeline<I, Spectrum<LinearFrequency, Values>>, next: MelScale) -> Pipeline<I, Spectrum<MelFrequency, Values>> where I : SignalDomain, Values : LinearValued   [extends ZTronDSPCore]
+swift.type.method      PipelineBuilder.buildPartialBlock(accumulated:next:) : static func buildPartialBlock<I, Values>(accumulated: Pipeline<I, Spectrum<LinearFrequency, Values>>, next: SpectralCentroid<MeasuredSpectrum>) -> Pipeline<I, Spectrum<LinearFrequency, Values>> where I : SignalDomain, Values : LinearValued   [extends ZTronDSPCore]
+swift.type.method      PipelineBuilder.buildPartialBlock(accumulated:next:) : static func buildPartialBlock<I, Values>(accumulated: Pipeline<I, Spectrum<LinearFrequency, Values>>, next: SpectralCentroid<Scalar>) -> Pipeline<I, Scalar> where I : SignalDomain, Values : LinearValued   [extends ZTronDSPCore]
+swift.type.method      PipelineBuilder.buildPartialBlock(accumulated:next:) : static func buildPartialBlock<I>(accumulated: Pipeline<I, Spectrum<LinearFrequency, ComplexValues>>, next: HarmonicPercussive) -> Pipeline<I, Spectrum<LinearFrequency, ComplexValues>> where I : SignalDomain   [extends ZTronDSPCore]
+swift.type.method      PipelineBuilder.buildPartialBlock(first:) : static func buildPartialBlock(first: Autocorrelation) -> Pipeline<Samples, Lags>   [extends ZTronDSPCore]
+swift.type.method      TempogramMethod.fourier(resolution:) : static func fourier(resolution: Int) -> FourierTempogram
+swift.type.property    Autocorrelation.rule : static let rule: DomainRule
+swift.type.property    ChromaNormalization.l1 : static var l1: L1ChromaNormalization { get }
+swift.type.property    ChromaNormalization.l2 : static var l2: L2ChromaNormalization { get }
+swift.type.property    ChromaNormalization.max : static var max: MaximumChromaNormalization { get }
+swift.type.property    ChromaNormalization.none : static var none: UnscaledChromaNormalization { get }
+swift.type.property    ConstantQKernel.keptEnergyFloor : static let keptEnergyFloor: Double
+swift.type.property    ConstantQScale.rule : static let rule: DomainRule
+swift.type.property    ConstantQStrategy.multirateSparseKernel : static var multirateSparseKernel: MultirateSparseKernelStrategy { get }
+swift.type.property    DSP.correlationFloor : static let correlationFloor: Double   [extends ZTronDSPCore]
+swift.type.property    Decibels.rule : static let rule: DomainRule
+swift.type.property    FFTBackend.vDSP : static var vDSP: VDSPFFTBackend { get }
+swift.type.property    HarmonicPercussive.rule : static let rule: DomainRule
+swift.type.property    InverseDecibels.rule : static var rule: DomainRule { get }
+swift.type.property    LinearValueKind.magnitude : static var magnitude: LinearValueKind<MagnitudeValues> { get }
+swift.type.property    LinearValueKind.power : static var power: LinearValueKind<PowerValues> { get }
+swift.type.property    Magnitude.rule : static let rule: DomainRule
+swift.type.property    MaskStrategy.hard : static var hard: HardMask { get }
+swift.type.property    MedianStrategy.automatic : static var automatic: AutomaticMedian { get }
+swift.type.property    MedianStrategy.metal : static var metal: MetalMedian { get }
+swift.type.property    MedianStrategy.selectionNetwork : static var selectionNetwork: SelectionNetworkMedian { get }
+swift.type.property    MelNormalization.none : static var none: UnitPeakMelNormalization { get }
+swift.type.property    MelNormalization.slaney : static var slaney: SlaneyMelNormalization { get }
+swift.type.property    MelScale.rule : static let rule: DomainRule
+swift.type.property    OnsetStrength.rule : static let rule: DomainRule
+swift.type.property    Power.rule : static let rule: DomainRule
+swift.type.property    SpectralCentroid.rule : static var rule: DomainRule { get }
+swift.type.property    TempogramMethod.autocorrelation : static var autocorrelation: AutocorrelationTempogram { get }
+swift.type.property    TempogramMethod.fourier : static var fourier: FourierTempogram { get }
+swift.typealias        CepstralCoefficients.Input : typealias Input = Spectrum<MelFrequency, DecibelValues>
+swift.typealias        CepstralCoefficients.Output : typealias Output = MelCepstrum
+swift.typealias        CepstralPitch.Input : typealias Input = Quefrency
+swift.typealias        Cepstrum.Input : typealias Input = Spectrum<LinearFrequency, ComplexValues>
+swift.typealias        Cepstrum.Output : typealias Output = Quefrency
+swift.typealias        ChromaCQT.Input : typealias Input = Samples
+swift.typealias        ChromaCQT.Output : typealias Output = Samples
+swift.typealias        ChromaFold.Input : typealias Input = Spectrum<ConstantQFrequency, MagnitudeValues>
+swift.typealias        ChromaFold.Output : typealias Output = Chroma
+swift.typealias        ConstantQ.Input : typealias Input = Samples
+swift.typealias        ConstantQ.Output : typealias Output = Spectrum<ConstantQFrequency, ComplexValues>
+swift.typealias        HPSS.Input : typealias Input = Samples
+swift.typealias        HPSS.Output : typealias Output = Samples
+swift.typealias        InverseCepstralCoefficients.Input : typealias Input = MelCepstrum
+swift.typealias        InverseCepstralCoefficients.Output : typealias Output = Spectrum<MelFrequency, DecibelValues>
+swift.typealias        InverseCepstrum.Input : typealias Input = Quefrency
+swift.typealias        InverseCepstrum.Output : typealias Output = Spectrum<LinearFrequency, ComplexValues>
+swift.typealias        InverseSTFT.Input : typealias Input = Spectrum<LinearFrequency, ComplexValues>
+swift.typealias        InverseSTFT.Output : typealias Output = Samples
+swift.typealias        Level.Input : typealias Input = Samples
+swift.typealias        Lifter.Input : typealias Input = Quefrency
+swift.typealias        Lifter.Output : typealias Output = Quefrency
+swift.typealias        MFCC.Input : typealias Input = Samples
+swift.typealias        MFCC.Output : typealias Output = Samples
+swift.typealias        MelSpectrogram.Input : typealias Input = Samples
+swift.typealias        MelSpectrogram.Output : typealias Output = Samples
+swift.typealias        STFT.Input : typealias Input = Samples
+swift.typealias        STFT.Output : typealias Output = Spectrum<LinearFrequency, ComplexValues>
+swift.typealias        Spectrogram.Input : typealias Input = Samples
+swift.typealias        Spectrogram.Output : typealias Output = Samples
+swift.typealias        Tempogram.Input : typealias Input = Novelty
+swift.typealias        Tempogram.Output : typealias Output = TempoSpectrum
+swift.typealias        Waveform.Input : typealias Input = Samples
+swift.typealias        Waveform.Output : typealias Output = Envelope

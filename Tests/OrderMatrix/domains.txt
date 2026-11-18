@@ -1,0 +1,22 @@
+# The signal domains, one per line: `name | Swift type` (§5.2).
+samples | Samples
+novelty | Novelty
+scalar | Scalar
+linear complex | Spectrum<LinearFrequency, ComplexValues>
+linear magnitude | Spectrum<LinearFrequency, MagnitudeValues>
+linear power | Spectrum<LinearFrequency, PowerValues>
+linear decibels | Spectrum<LinearFrequency, DecibelValues>
+mel complex | Spectrum<MelFrequency, ComplexValues>
+mel magnitude | Spectrum<MelFrequency, MagnitudeValues>
+mel power | Spectrum<MelFrequency, PowerValues>
+mel decibels | Spectrum<MelFrequency, DecibelValues>
+constant-Q complex | Spectrum<ConstantQFrequency, ComplexValues>
+constant-Q magnitude | Spectrum<ConstantQFrequency, MagnitudeValues>
+constant-Q power | Spectrum<ConstantQFrequency, PowerValues>
+constant-Q decibels | Spectrum<ConstantQFrequency, DecibelValues>
+quefrency | Quefrency
+mel cepstrum | MelCepstrum
+chroma | Chroma
+lags | Lags
+tempo | TempoSpectrum
+envelope | Envelope

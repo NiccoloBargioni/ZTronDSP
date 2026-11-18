@@ -1,0 +1,41 @@
+{
+ "/build/ZTronDSP/Sources/ZTronDSPCore/Marks.swift": [
+  {
+   "executionCount": 3,
+   "isExecutable": true,
+   "line": 1
+  },
+  {
+   "executionCount": 0,
+   "isExecutable": true,
+   "line": 2
+  },
+  {
+   "executionCount": 3,
+   "isExecutable": true,
+   "line": 3
+  },
+  {
+   "isExecutable": false,
+   "line": 4
+  },
+  {
+   "isExecutable": false,
+   "line": 5
+  },
+  {
+   "isExecutable": false,
+   "line": 6
+  },
+  {
+   "executionCount": 3,
+   "isExecutable": true,
+   "line": 7
+  },
+  {
+   "executionCount": 3,
+   "isExecutable": true,
+   "line": 8
+  }
+ ]
+}

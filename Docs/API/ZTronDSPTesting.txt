@@ -1,0 +1,268 @@
+# ZTronDSPTesting — public API digest (VIS-3).
+# Generated from the built module by Scripts/api-digest.sh --update. Do not edit: a difference
+# from the build fails CI gate 4, and changing the public API is a change request.
+
+conformance            AllocationAuditError : Swift.Equatable
+conformance            AllocationAuditError : Swift.Error
+conformance            AllocationAuditError : Swift.Hashable
+conformance            AllocationAuditError : Swift.Sendable
+conformance            AllocationAuditError : Swift.SendableMetatype
+conformance            AllocationCounts : Swift.CustomStringConvertible
+conformance            AllocationCounts : Swift.Equatable
+conformance            AllocationCounts : Swift.Sendable
+conformance            AllocationCounts : Swift.SendableMetatype
+conformance            BenchmarkRegression : Swift.CustomStringConvertible
+conformance            BenchmarkRegression : Swift.Equatable
+conformance            BenchmarkRegression : Swift.Sendable
+conformance            BenchmarkRegression : Swift.SendableMetatype
+conformance            BenchmarkReport : Swift.Decodable
+conformance            BenchmarkReport : Swift.Encodable
+conformance            BenchmarkReport : Swift.Equatable
+conformance            BenchmarkReport : Swift.Sendable
+conformance            BenchmarkReport : Swift.SendableMetatype
+conformance            BenchmarkResult : Swift.Decodable
+conformance            BenchmarkResult : Swift.Encodable
+conformance            BenchmarkResult : Swift.Equatable
+conformance            BenchmarkResult : Swift.Sendable
+conformance            BenchmarkResult : Swift.SendableMetatype
+conformance            Click.Measurement : Swift.CustomStringConvertible
+conformance            Click.Measurement : Swift.Equatable
+conformance            Click.Measurement : Swift.Sendable
+conformance            Click.Measurement : Swift.SendableMetatype
+conformance            ClosenessFailure : Swift.CustomStringConvertible
+conformance            ClosenessFailure : Swift.Equatable
+conformance            ClosenessFailure : Swift.Sendable
+conformance            ClosenessFailure : Swift.SendableMetatype
+conformance            ClosenessFailure.Reason : Swift.Equatable
+conformance            ClosenessFailure.Reason : Swift.Sendable
+conformance            ClosenessFailure.Reason : Swift.SendableMetatype
+conformance            GoldenCase : Swift.Sendable
+conformance            GoldenCase : Swift.SendableMetatype
+conformance            GoldenError : Swift.CustomStringConvertible
+conformance            GoldenError : Swift.Equatable
+conformance            GoldenError : Swift.Error
+conformance            GoldenError : Swift.Sendable
+conformance            GoldenError : Swift.SendableMetatype
+conformance            GoldenFile : Swift.Sendable
+conformance            GoldenFile : Swift.SendableMetatype
+conformance            GoldenParameter : Swift.Equatable
+conformance            GoldenParameter : Swift.Sendable
+conformance            GoldenParameter : Swift.SendableMetatype
+conformance            GoldenValue : Swift.Equatable
+conformance            GoldenValue : Swift.Sendable
+conformance            GoldenValue : Swift.SendableMetatype
+conformance            MedianOracle.Axis : Swift.Equatable
+conformance            MedianOracle.Axis : Swift.Hashable
+conformance            MedianOracle.Axis : Swift.Sendable
+conformance            MedianOracle.Axis : Swift.SendableMetatype
+conformance            SeededGenerator : Swift.RandomNumberGenerator
+conformance            SeededGenerator : Swift.Sendable
+conformance            SeededGenerator : Swift.SendableMetatype
+conformance            StressFixture.FilterCase : Swift.Sendable
+conformance            StressFixture.FilterCase : Swift.SendableMetatype
+conformance            StressFixture.FilterCase.Response : Swift.Equatable
+conformance            StressFixture.FilterCase.Response : Swift.Hashable
+conformance            StressFixture.FilterCase.Response : Swift.Sendable
+conformance            StressFixture.FilterCase.Response : Swift.SendableMetatype
+conformance            StressFixture.PolynomialCase : Swift.Sendable
+conformance            StressFixture.PolynomialCase : Swift.SendableMetatype
+conformance            StressFixture.SignalCase : Swift.Sendable
+conformance            StressFixture.SignalCase : Swift.SendableMetatype
+conformance            ThreadAllocationAudit : Swift.Sendable
+conformance            ThreadAllocationAudit : Swift.SendableMetatype
+conformance            Tolerance : Swift.CustomStringConvertible
+conformance            Tolerance : Swift.Equatable
+conformance            Tolerance : Swift.Sendable
+conformance            Tolerance : Swift.SendableMetatype
+swift.class            ThreadAllocationAudit : final class ThreadAllocationAudit
+swift.enum             AllocationAudit : enum AllocationAudit
+swift.enum             AllocationAuditError : enum AllocationAuditError
+swift.enum             Benchmark : enum Benchmark
+swift.enum             Click : enum Click
+swift.enum             Closeness : enum Closeness
+swift.enum             ClosenessFailure.Reason : enum Reason
+swift.enum             GoldenError : enum GoldenError
+swift.enum             GoldenParameter : enum GoldenParameter
+swift.enum             GoldenValue : enum GoldenValue
+swift.enum             MedianOracle : enum MedianOracle
+swift.enum             MedianOracle.Axis : enum Axis
+swift.enum             StressFixture : enum StressFixture
+swift.enum             StressFixture.FilterCase.Response : enum Response
+swift.enum             TestSignal : enum TestSignal
+swift.enum             Tolerance : enum Tolerance
+swift.enum.case        AllocationAuditError.hookNotLive : case hookNotLive
+swift.enum.case        AllocationAuditError.nested : case nested
+swift.enum.case        AllocationAuditError.noFreeSlot : case noFreeSlot
+swift.enum.case        ClosenessFailure.Reason.countMismatch(actual:expected:) : case countMismatch(actual: Int, expected: Int)
+swift.enum.case        ClosenessFailure.Reason.nonFinite : case nonFinite
+swift.enum.case        ClosenessFailure.Reason.outOfTolerance : case outOfTolerance
+swift.enum.case        GoldenError.malformed(file:reason:) : case malformed(file: String, reason: String)
+swift.enum.case        GoldenError.missingCase(file:name:) : case missingCase(file: String, name: String)
+swift.enum.case        GoldenError.missingValue(case:key:) : case missingValue(case: String, key: String)
+swift.enum.case        GoldenError.notFound(name:) : case notFound(name: String)
+swift.enum.case        GoldenError.unreadable(file:) : case unreadable(file: String)
+swift.enum.case        GoldenError.wrongKind(case:key:expected:) : case wrongKind(case: String, key: String, expected: String)
+swift.enum.case        GoldenParameter.bool(_:) : case bool(Bool)
+swift.enum.case        GoldenParameter.number(_:) : case number(Double)
+swift.enum.case        GoldenParameter.numbers(_:) : case numbers([Double])
+swift.enum.case        GoldenParameter.string(_:) : case string(String)
+swift.enum.case        GoldenValue.complex(real:imaginary:) : case complex(real: [Double], imaginary: [Double])
+swift.enum.case        GoldenValue.doubles(_:shape:) : case doubles([Double], shape: [Int])
+swift.enum.case        GoldenValue.floats(_:shape:) : case floats([Float], shape: [Int])
+swift.enum.case        GoldenValue.real(_:) : case real([Double])
+swift.enum.case        MedianOracle.Axis.frequency : case frequency
+swift.enum.case        MedianOracle.Axis.time : case time
+swift.enum.case        StressFixture.FilterCase.Response.highPass : case highPass
+swift.enum.case        StressFixture.FilterCase.Response.lowPass : case lowPass
+swift.enum.case        Tolerance.absolute(_:) : case absolute(Double)
+swift.enum.case        Tolerance.decibels(_:) : case decibels(Double)
+swift.enum.case        Tolerance.deviationBelow(decibels:) : case deviationBelow(decibels: Double)
+swift.enum.case        Tolerance.relative(_:) : case relative(Double)
+swift.enum.case        Tolerance.relativeToMaximum(_:) : case relativeToMaximum(Double)
+swift.func             countAllocations(_:) : func countAllocations(_ body: () -> Void) throws(AllocationAuditError) -> AllocationCounts
+swift.func             expectClose(_:_:_:_:sourceLocation:) : @discardableResult func expectClose<A, E>(_ actual: A, _ expected: E, _ tolerance: Tolerance, _ comment: @autoclosure () -> String = "", sourceLocation: SourceLocation = #_sourceLocation) -> Bool where A : Collection, E : Collection, A.Element : BinaryFloatingPoint, E.Element : BinaryFloatingPoint
+swift.func             expectClose(_:_:_:_:sourceLocation:) : @discardableResult func expectClose<T, U>(_ actual: T, _ expected: U, _ tolerance: Tolerance, _ comment: @autoclosure () -> String = "", sourceLocation: SourceLocation = #_sourceLocation) -> Bool where T : BinaryFloatingPoint, U : BinaryFloatingPoint
+swift.func             expectNoAllocations(_:sourceLocation:_:) : @discardableResult func expectNoAllocations(_ comment: @autoclosure () -> String = "", sourceLocation: SourceLocation = #_sourceLocation, _ body: () -> Void) -> AllocationCounts
+swift.func             floatingPointEnvironmentDigest() : func floatingPointEnvironmentDigest() -> UInt64
+swift.func             forceAllocation(byteCount:) : func forceAllocation(byteCount: Int = 64)
+swift.func             forceReallocation(from:to:) : func forceReallocation(from first: Int, to second: Int)
+swift.init             AllocationCounts.init(allocations:deallocations:bytes:) : init(allocations: Int, deallocations: Int, bytes: Int)
+swift.init             BenchmarkReport.init(data:) : init(data: Data) throws
+swift.init             BenchmarkReport.init(from:) : init(from decoder: any Decoder) throws
+swift.init             BenchmarkReport.init(results:) : init(results: [BenchmarkResult])
+swift.init             BenchmarkResult.init(from:) : init(from decoder: any Decoder) throws
+swift.init             BenchmarkResult.init(name:iterations:samples:minimum:median:mean:) : init(name: String, iterations: Int, samples: Int, minimum: Double, median: Double, mean: Double)
+swift.init             GoldenFile.init(contentsOf:) : init(contentsOf url: URL) throws(GoldenError)
+swift.init             GoldenFile.init(named:in:subdirectory:) : init(named name: String, in bundle: Bundle, subdirectory: String? = "Golden") throws(GoldenError)
+swift.init             SeededGenerator.init(seed:) : init(seed: UInt64)
+swift.init             ThreadAllocationAudit.init() : init()
+swift.method           BenchmarkReport.encoded() : func encoded() throws -> Data
+swift.method           BenchmarkReport.missing(from:) : func missing(from baseline: BenchmarkReport) -> [String]
+swift.method           BenchmarkReport.regressions(against:allowing:) : func regressions(against baseline: BenchmarkReport, allowing fraction: Double = 0.10) -> [BenchmarkRegression]
+swift.method           GoldenCase.complex(_:) : func complex(_ key: String) throws(GoldenError) -> (real: [Double], imaginary: [Double])
+swift.method           GoldenCase.floats(_:) : func floats(_ key: String) throws(GoldenError) -> [Float]
+swift.method           GoldenCase.integer(_:) : func integer(_ parameter: String) throws(GoldenError) -> Int
+swift.method           GoldenCase.number(_:) : func number(_ parameter: String) throws(GoldenError) -> Double
+swift.method           GoldenCase.numbers(_:) : func numbers(_ parameter: String) throws(GoldenError) -> [Double]
+swift.method           GoldenCase.real(_:) : func real(_ key: String) throws(GoldenError) -> [Double]
+swift.method           GoldenCase.shape(_:) : func shape(_ key: String) throws(GoldenError) -> [Int]
+swift.method           GoldenCase.string(_:) : func string(_ parameter: String) throws(GoldenError) -> String
+swift.method           GoldenFile.require(_:) : func require(_ name: String) throws(GoldenError) -> GoldenCase
+swift.method           SeededGenerator.next() : mutating func next() -> UInt64
+swift.method           SeededGenerator.nextGaussian() : mutating func nextGaussian() -> Double
+swift.method           SeededGenerator.nextUnit() : mutating func nextUnit() -> Double
+swift.method           ThreadAllocationAudit.begin() : func begin()
+swift.method           ThreadAllocationAudit.end() : func end()
+swift.property         AllocationCounts.allocations : let allocations: Int
+swift.property         AllocationCounts.bytes : let bytes: Int
+swift.property         AllocationCounts.deallocations : let deallocations: Int
+swift.property         AllocationCounts.description : var description: String { get }
+swift.property         BenchmarkRegression.baseline : let baseline: Double
+swift.property         BenchmarkRegression.description : var description: String { get }
+swift.property         BenchmarkRegression.measured : let measured: Double
+swift.property         BenchmarkRegression.name : let name: String
+swift.property         BenchmarkRegression.ratio : var ratio: Double { get }
+swift.property         BenchmarkReport.results : let results: [BenchmarkResult]
+swift.property         BenchmarkResult.iterations : let iterations: Int
+swift.property         BenchmarkResult.mean : let mean: Double
+swift.property         BenchmarkResult.median : let median: Double
+swift.property         BenchmarkResult.minimum : let minimum: Double
+swift.property         BenchmarkResult.name : let name: String
+swift.property         BenchmarkResult.samples : let samples: Int
+swift.property         Click.Measurement.after : let after: Float
+swift.property         Click.Measurement.before : let before: Float
+swift.property         Click.Measurement.description : var description: String { get }
+swift.property         Click.Measurement.during : let during: Float
+swift.property         Click.Measurement.passes : var passes: Bool { get }
+swift.property         Click.Measurement.ratio : var ratio: Float { get }
+swift.property         ClosenessFailure.actual : let actual: Double
+swift.property         ClosenessFailure.bound : let bound: Double
+swift.property         ClosenessFailure.count : let count: Int
+swift.property         ClosenessFailure.description : var description: String { get }
+swift.property         ClosenessFailure.deviation : let deviation: Double
+swift.property         ClosenessFailure.expected : let expected: Double
+swift.property         ClosenessFailure.failingCount : let failingCount: Int
+swift.property         ClosenessFailure.index : let index: Int
+swift.property         ClosenessFailure.reason : let reason: ClosenessFailure.Reason
+swift.property         ClosenessFailure.tolerance : let tolerance: Tolerance
+swift.property         GoldenCase.name : let name: String
+swift.property         GoldenCase.parameters : let parameters: [String : GoldenParameter]
+swift.property         GoldenCase.values : let values: [String : GoldenValue]
+swift.property         GoldenError.description : var description: String { get }
+swift.property         GoldenFile.cases : let cases: [GoldenCase]
+swift.property         GoldenFile.generator : let generator: String
+swift.property         GoldenFile.oracle : let oracle: [String : String]
+swift.property         StressFixture.FilterCase.cutoff : let cutoff: Double
+swift.property         StressFixture.FilterCase.hazard : let hazard: String
+swift.property         StressFixture.FilterCase.name : let name: String
+swift.property         StressFixture.FilterCase.normalizedAngle : var normalizedAngle: Double { get }
+swift.property         StressFixture.FilterCase.order : let order: Int
+swift.property         StressFixture.FilterCase.response : let response: StressFixture.FilterCase.Response
+swift.property         StressFixture.FilterCase.sampleRate : let sampleRate: Double
+swift.property         StressFixture.PolynomialCase.achievableAccuracy : let achievableAccuracy: Double
+swift.property         StressFixture.PolynomialCase.coefficients : let coefficients: [Double]
+swift.property         StressFixture.PolynomialCase.degree : var degree: Int { get }
+swift.property         StressFixture.PolynomialCase.hazard : let hazard: String
+swift.property         StressFixture.PolynomialCase.largestConditionNumber : let largestConditionNumber: Double
+swift.property         StressFixture.PolynomialCase.multiplicity : let multiplicity: Int
+swift.property         StressFixture.PolynomialCase.name : let name: String
+swift.property         StressFixture.PolynomialCase.rootsImaginary : let rootsImaginary: [Double]
+swift.property         StressFixture.PolynomialCase.rootsReal : let rootsReal: [Double]
+swift.property         StressFixture.SignalCase.hazard : let hazard: String
+swift.property         StressFixture.SignalCase.name : let name: String
+swift.property         StressFixture.SignalCase.samples : let samples: [Float]
+swift.property         ThreadAllocationAudit.counts : var counts: AllocationCounts? { get }
+swift.property         ThreadAllocationAudit.failedToOpen : var failedToOpen: Bool { get }
+swift.property         ThreadAllocationAudit.isClosed : var isClosed: Bool { get }
+swift.property         ThreadAllocationAudit.isOpen : var isOpen: Bool { get }
+swift.property         Tolerance.description : var description: String { get }
+swift.struct           AllocationCounts : struct AllocationCounts
+swift.struct           BenchmarkRegression : struct BenchmarkRegression
+swift.struct           BenchmarkReport : struct BenchmarkReport
+swift.struct           BenchmarkResult : struct BenchmarkResult
+swift.struct           Click.Measurement : struct Measurement
+swift.struct           ClosenessFailure : struct ClosenessFailure
+swift.struct           GoldenCase : struct GoldenCase
+swift.struct           GoldenFile : struct GoldenFile
+swift.struct           SeededGenerator : struct SeededGenerator
+swift.struct           StressFixture.FilterCase : struct FilterCase
+swift.struct           StressFixture.PolynomialCase : struct PolynomialCase
+swift.struct           StressFixture.SignalCase : struct SignalCase
+swift.type.method      Benchmark.blackHole(_:) : static func blackHole<T>(_ value: T)
+swift.type.method      Benchmark.measure(_:warmUp:samples:iterations:_:) : static func measure(_ name: String, warmUp: Int = 3, samples: Int = 21, iterations: Int = 1_000, _ body: () -> Void) -> BenchmarkResult
+swift.type.method      Benchmark.nanoseconds(_:) : static func nanoseconds(_ ticks: UInt64) -> Double
+swift.type.method      Benchmark.record(_:) : @discardableResult static func record(_ results: [BenchmarkResult]) -> Bool
+swift.type.method      Benchmark.ticks() : static func ticks() -> UInt64
+swift.type.method      Click.largestStep(_:in:) : static func largestStep(_ samples: [Float], in range: Range<Int>) -> Float
+swift.type.method      Click.measure(_:change:settle:) : static func measure(_ output: [Float], change: Range<Int>, settle: Int = 0) -> Click.Measurement
+swift.type.method      Click.probeSignal(count:) : static func probeSignal(count: Int) -> [Float]
+swift.type.method      Closeness.compare(_:_:_:) : static func compare<A, E>(_ actual: A, _ expected: E, _ tolerance: Tolerance) -> ClosenessFailure? where A : Collection, E : Collection, A.Element : BinaryFloatingPoint, E.Element : BinaryFloatingPoint
+swift.type.method      Closeness.compare(_:_:_:) : static func compare<T, U>(_ actual: T, _ expected: U, _ tolerance: Tolerance) -> ClosenessFailure? where T : BinaryFloatingPoint, U : BinaryFloatingPoint
+swift.type.method      MedianOracle.filter(_:rowCount:kernel:along:) : static func filter(_ values: [Float], rowCount: Int, kernel: Int, along axis: MedianOracle.Axis) -> [Float]
+swift.type.method      MedianOracle.median(_:) : static func median(_ values: [Float]) -> Float
+swift.type.method      MedianOracle.reflected(_:count:) : static func reflected(_ index: Int, count: Int) -> Int
+swift.type.method      MedianOracle.running(_:kernel:) : static func running(_ frames: [[Float]], kernel: Int) -> [[Float]]
+swift.type.method      StressFixture.nonFiniteSignal(count:) : static func nonFiniteSignal(count: Int) -> (samples: [Float], nonFiniteCount: Int)
+swift.type.method      StressFixture.signals(count:sampleRate:) : static func signals(count: Int, sampleRate: Double = 48_000) -> [StressFixture.SignalCase]
+swift.type.method      TestSignal.chirp(from:to:sampleRate:count:amplitude:) : static func chirp(from start: Double, to end: Double, sampleRate: Double, count: Int, amplitude: Double = 1) -> [Float]
+swift.type.method      TestSignal.clickTrack(beatsPerMinute:sampleRate:count:clickLength:amplitude:) : static func clickTrack(beatsPerMinute: Double, sampleRate: Double, count: Int, clickLength: Int = 256, amplitude: Double = 1) -> [Float]
+swift.type.method      TestSignal.constant(_:count:) : static func constant(_ value: Float, count: Int) -> [Float]
+swift.type.method      TestSignal.decayingTail(count:ratio:amplitude:) : static func decayingTail(count: Int, ratio: Float, amplitude: Float = 1) -> [Float]
+swift.type.method      TestSignal.gaussianNoise(count:seed:standardDeviation:) : static func gaussianNoise(count: Int, seed: UInt64, standardDeviation: Double = 1) -> [Float]
+swift.type.method      TestSignal.harmonic(fundamental:amplitudes:sampleRate:count:) : static func harmonic(fundamental: Double, amplitudes: [Double], sampleRate: Double, count: Int) -> [Float]
+swift.type.method      TestSignal.impulse(count:at:amplitude:) : static func impulse(count: Int, at position: Int = 0, amplitude: Float = 1) -> [Float]
+swift.type.method      TestSignal.nyquist(count:amplitude:) : static func nyquist(count: Int, amplitude: Float = 1) -> [Float]
+swift.type.method      TestSignal.silence(count:) : static func silence(count: Int) -> [Float]
+swift.type.method      TestSignal.sine(frequency:sampleRate:count:amplitude:phase:) : static func sine(frequency: Double, sampleRate: Double, count: Int, amplitude: Double = 1, phase: Double = 0) -> [Float]
+swift.type.method      TestSignal.step(count:at:amplitude:) : static func step(count: Int, at position: Int = 0, amplitude: Float = 1) -> [Float]
+swift.type.method      TestSignal.sum(_:) : static func sum(_ signals: [Float]...) -> [Float]
+swift.type.method      TestSignal.whiteNoise(count:seed:amplitude:) : static func whiteNoise(count: Int, seed: UInt64, amplitude: Double = 1) -> [Float]
+swift.type.property    AllocationAudit.isUnderThreadSanitizer : static let isUnderThreadSanitizer: Bool
+swift.type.property    Benchmark.isRecording : static var isRecording: Bool { get }
+swift.type.property    StressFixture.butterworth16Expanded : static let butterworth16Expanded: StressFixture.PolynomialCase
+swift.type.property    StressFixture.filtersNearNyquist : static let filtersNearNyquist: [StressFixture.FilterCase]
+swift.type.property    StressFixture.filtersNearZero : static let filtersNearZero: [StressFixture.FilterCase]
+swift.type.property    StressFixture.illConditionedPolynomials : static let illConditionedPolynomials: [StressFixture.PolynomialCase]
+swift.type.property    StressFixture.tripleRoot : static let tripleRoot: StressFixture.PolynomialCase
+swift.type.property    StressFixture.wellConditionedPolynomials : static let wellConditionedPolynomials: [StressFixture.PolynomialCase]
+swift.type.property    StressFixture.wilkinson20 : static let wilkinson20: StressFixture.PolynomialCase

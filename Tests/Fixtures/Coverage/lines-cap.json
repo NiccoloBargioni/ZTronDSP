@@ -1,0 +1,80 @@
+{
+ "/build/ZTronDSP/Sources/ZTronDSPCore/Units.swift": [
+  {
+   "isExecutable": false,
+   "line": 1
+  },
+  {
+   "isExecutable": false,
+   "line": 2
+  },
+  {
+   "executionCount": 3,
+   "isExecutable": true,
+   "line": 3
+  },
+  {
+   "executionCount": 3,
+   "isExecutable": true,
+   "line": 4
+  },
+  {
+   "executionCount": 0,
+   "isExecutable": true,
+   "line": 5
+  },
+  {
+   "executionCount": 0,
+   "isExecutable": true,
+   "line": 6
+  },
+  {
+   "executionCount": 3,
+   "isExecutable": true,
+   "line": 7
+  },
+  {
+   "executionCount": 3,
+   "isExecutable": true,
+   "line": 8
+  },
+  {
+   "executionCount": 3,
+   "isExecutable": true,
+   "line": 9
+  },
+  {
+   "isExecutable": false,
+   "line": 10
+  },
+  {
+   "executionCount": 3,
+   "isExecutable": true,
+   "line": 11
+  },
+  {
+   "executionCount": 0,
+   "isExecutable": true,
+   "line": 12
+  },
+  {
+   "executionCount": 3,
+   "isExecutable": true,
+   "line": 13
+  },
+  {
+   "executionCount": 3,
+   "isExecutable": true,
+   "line": 14
+  },
+  {
+   "executionCount": 3,
+   "isExecutable": true,
+   "line": 15
+  },
+  {
+   "isExecutable": false,
+   "line": 16
+  }
+ ]
+}

@@ -1,0 +1,115 @@
+# ZTronDSPUI — public API digest (VIS-3).
+# Generated from the built module by Scripts/api-digest.sh --update. Do not edit: a difference
+# from the build fails CI gate 4, and changing the public API is a change request.
+
+conformance            ChromagramView : Swift.Equatable
+conformance            ChromagramView : Swift.Sendable
+conformance            ChromagramView : Swift.SendableMetatype
+conformance            ChromagramView : SwiftUICore.View
+conformance            DSPAxis : Swift.Equatable
+conformance            DSPAxis : Swift.Hashable
+conformance            DSPAxis : Swift.Sendable
+conformance            DSPAxis : Swift.SendableMetatype
+conformance            FrequencyAxisView : Swift.Equatable
+conformance            FrequencyAxisView : Swift.Sendable
+conformance            FrequencyAxisView : Swift.SendableMetatype
+conformance            FrequencyAxisView : SwiftUICore.View
+conformance            HeatmapView : Swift.Equatable
+conformance            HeatmapView : Swift.Sendable
+conformance            HeatmapView : Swift.SendableMetatype
+conformance            HeatmapView : SwiftUICore.View
+conformance            PitchClassAxisView : Swift.Equatable
+conformance            PitchClassAxisView : Swift.Sendable
+conformance            PitchClassAxisView : Swift.SendableMetatype
+conformance            PitchClassAxisView : SwiftUICore.View
+conformance            SpectrogramView : Swift.Equatable
+conformance            SpectrogramView : Swift.Sendable
+conformance            SpectrogramView : Swift.SendableMetatype
+conformance            SpectrogramView : SwiftUICore.View
+conformance            TempoAxisView : Swift.Equatable
+conformance            TempoAxisView : Swift.Sendable
+conformance            TempoAxisView : Swift.SendableMetatype
+conformance            TempoAxisView : SwiftUICore.View
+conformance            TempogramView : Swift.Equatable
+conformance            TempogramView : Swift.Sendable
+conformance            TempogramView : Swift.SendableMetatype
+conformance            TempogramView : SwiftUICore.View
+conformance            TimeAxisView : Swift.Equatable
+conformance            TimeAxisView : Swift.Sendable
+conformance            TimeAxisView : Swift.SendableMetatype
+conformance            TimeAxisView : SwiftUICore.View
+conformance            WaveformView : Swift.Equatable
+conformance            WaveformView : Swift.Sendable
+conformance            WaveformView : Swift.SendableMetatype
+conformance            WaveformView : SwiftUICore.View
+swift.enum             DSPAxis : enum DSPAxis
+swift.enum.case        DSPAxis.frequency : case frequency
+swift.enum.case        DSPAxis.pitchClass : case pitchClass
+swift.enum.case        DSPAxis.tempo : case tempo
+swift.enum.case        DSPAxis.time : case time
+swift.func.op          ChromagramView.==(_:_:) : nonisolated static func == (lhs: ChromagramView, rhs: ChromagramView) -> Bool
+swift.func.op          FrequencyAxisView.==(_:_:) : nonisolated static func == (lhs: FrequencyAxisView, rhs: FrequencyAxisView) -> Bool
+swift.func.op          HeatmapView.==(_:_:) : nonisolated static func == (lhs: HeatmapView, rhs: HeatmapView) -> Bool
+swift.func.op          PitchClassAxisView.==(_:_:) : nonisolated static func == (lhs: PitchClassAxisView, rhs: PitchClassAxisView) -> Bool
+swift.func.op          SpectrogramView.==(_:_:) : nonisolated static func == (lhs: SpectrogramView, rhs: SpectrogramView) -> Bool
+swift.func.op          TempoAxisView.==(_:_:) : nonisolated static func == (lhs: TempoAxisView, rhs: TempoAxisView) -> Bool
+swift.func.op          TempogramView.==(_:_:) : nonisolated static func == (lhs: TempogramView, rhs: TempogramView) -> Bool
+swift.func.op          TimeAxisView.==(_:_:) : nonisolated static func == (lhs: TimeAxisView, rhs: TimeAxisView) -> Bool
+swift.func.op          WaveformView.==(_:_:) : nonisolated static func == (lhs: WaveformView, rhs: WaveformView) -> Bool
+swift.init             ChromagramView.init(feed:) : @MainActor init(feed: HeatmapFeed)
+swift.init             ChromagramView.init(source:) : @MainActor init(source: any SampleSource)
+swift.init             FrequencyAxisView.init(feed:) : @MainActor init(feed: HeatmapFeed)
+swift.init             HeatmapView.init(feed:) : @MainActor init(feed: HeatmapFeed)
+swift.init             PitchClassAxisView.init(feed:) : @MainActor init(feed: HeatmapFeed)
+swift.init             SpectrogramView.init(feed:) : @MainActor init(feed: HeatmapFeed)
+swift.init             SpectrogramView.init(source:) : @MainActor init(source: any SampleSource)
+swift.init             TempoAxisView.init(feed:) : @MainActor init(feed: HeatmapFeed)
+swift.init             TempogramView.init(feed:) : @MainActor init(feed: HeatmapFeed)
+swift.init             TempogramView.init(source:) : @MainActor init(source: any SampleSource)
+swift.init             TimeAxisView.init(feed:) : @MainActor init(feed: HeatmapFeed)
+swift.init             TimeAxisView.init(feed:) : @MainActor init(feed: WaveformFeed)
+swift.init             WaveformView.init(feed:) : @MainActor init(feed: WaveformFeed)
+swift.init             WaveformView.init(source:) : @MainActor init(source: any SampleSource)
+swift.method           View.amplitudeRange(_:) : @MainActor func amplitudeRange(_ range: Binding<ClosedRange<Float>>) -> some View   [extends SwiftUICore]
+swift.method           View.amplitudeRange(_:) : @MainActor func amplitudeRange(_ range: ClosedRange<Float>) -> some View   [extends SwiftUICore]
+swift.method           View.analysisFrame(_:hop:window:) : @MainActor func analysisFrame(_ frame: Int, hop: Int, window: Window = .hann) -> some View   [extends SwiftUICore]
+swift.method           View.axis(_:) : @MainActor func axis(_ axis: DSPAxis) -> some View   [extends SwiftUICore]
+swift.method           View.colorMap(_:) : @MainActor func colorMap(_ map: some ColorMap) -> some View   [extends SwiftUICore]
+swift.method           View.dspEngine(_:) : @MainActor func dspEngine(_ engine: DSPEngine) -> some View   [extends SwiftUICore]
+swift.method           View.dspEnvironment(_:) : @MainActor func dspEnvironment(_ session: PipelineSession?) -> some View   [extends SwiftUICore]
+swift.method           View.frequencyRange(_:) : @MainActor func frequencyRange(_ range: Binding<ClosedRange<Double>>) -> some View   [extends SwiftUICore]
+swift.method           View.frequencyRange(_:) : @MainActor func frequencyRange(_ range: ClosedRange<Double>) -> some View   [extends SwiftUICore]
+swift.method           View.frequencyScale(_:) : @MainActor func frequencyScale(_ scale: some FrequencyScale) -> some View   [extends SwiftUICore]
+swift.method           View.maximumFrameRate(_:) : @MainActor func maximumFrameRate(_ framesPerSecond: Int) -> some View   [extends SwiftUICore]
+swift.method           View.melBands(_:) : @MainActor func melBands(_ bands: Int) -> some View   [extends SwiftUICore]
+swift.method           View.pinchScaling(_:) : @MainActor func pinchScaling(_ axes: Axis.Set) -> some View   [extends SwiftUICore]
+swift.method           View.pipeline(_:on:) : @MainActor func pipeline<Output>(_ pipeline: Pipeline<Samples, Output>, on source: any SampleSource) -> some View where Output : SignalDomain   [extends SwiftUICore]
+swift.method           View.processing(_:) : @MainActor func processing(@PipelineBuilder _ content: () -> Pipeline<Samples, Samples>) -> some View   [extends SwiftUICore]
+swift.method           View.processing(_:) : @MainActor func processing(@PipelineBuilder _ content: () -> SequenceChain) -> some View   [extends SwiftUICore]
+swift.method           View.processing(_:) : @MainActor func processing(_ pipeline: Pipeline<Samples, Samples>) -> some View   [extends SwiftUICore]
+swift.method           View.timeSpan(_:) : @MainActor func timeSpan(_ seconds: Binding<Double>) -> some View   [extends SwiftUICore]
+swift.method           View.timeSpan(_:) : @MainActor func timeSpan(_ seconds: Double) -> some View   [extends SwiftUICore]
+swift.method           View.valueRange(_:) : @MainActor func valueRange(_ range: Binding<ClosedRange<Float>>) -> some View   [extends SwiftUICore]
+swift.method           View.valueRange(_:) : @MainActor func valueRange(_ range: ClosedRange<Float>) -> some View   [extends SwiftUICore]
+swift.property         ChromagramView.body : @MainActor var body: some View { get }
+swift.property         EnvironmentValues.dspChannelCount : var dspChannelCount: Int { get }   [extends SwiftUICore]
+swift.property         EnvironmentValues.dspLatency : var dspLatency: TimeInterval { get }   [extends SwiftUICore]
+swift.property         EnvironmentValues.dspNyquistFrequency : var dspNyquistFrequency: Double { get }   [extends SwiftUICore]
+swift.property         EnvironmentValues.dspSampleRate : var dspSampleRate: Double { get }   [extends SwiftUICore]
+swift.property         FrequencyAxisView.body : @MainActor var body: some View { get }
+swift.property         HeatmapView.body : @MainActor var body: some View { get }
+swift.property         PitchClassAxisView.body : @MainActor var body: some View { get }
+swift.property         SpectrogramView.body : @MainActor var body: some View { get }
+swift.property         TempoAxisView.body : @MainActor var body: some View { get }
+swift.property         TempogramView.body : @MainActor var body: some View { get }
+swift.property         TimeAxisView.body : @MainActor var body: some View { get }
+swift.property         WaveformView.body : @MainActor var body: some View { get }
+swift.struct           ChromagramView : @MainActor struct ChromagramView
+swift.struct           FrequencyAxisView : @MainActor struct FrequencyAxisView
+swift.struct           HeatmapView : @MainActor struct HeatmapView
+swift.struct           PitchClassAxisView : @MainActor struct PitchClassAxisView
+swift.struct           SpectrogramView : @MainActor struct SpectrogramView
+swift.struct           TempoAxisView : @MainActor struct TempoAxisView
+swift.struct           TempogramView : @MainActor struct TempogramView
+swift.struct           TimeAxisView : @MainActor struct TimeAxisView
+swift.struct           WaveformView : @MainActor struct WaveformView

@@ -1,0 +1,33 @@
+# The allow-list of the UIKit boundary (§8.6, UB-2 and UB-3).
+#
+# The one bridge file is Sources/ZTronDSPUI/Bridge/MetalViewRepresentable.swift. This file says
+# what that bridge may do that no other file under Sources/ may. Changing it is a change request.
+
+# UB-2: the UIKit-style names the bridge may write. They are the ones SwiftUI's representable
+# protocol requires; UIView itself is not among them.
+[identifiers]
+UIViewRepresentable
+UIViewType
+UIViewRepresentableContext
+
+# UB-2: "That file imports SwiftUI and MetalKit only."
+[imports]
+SwiftUI
+MetalKit
+
+# UB-3: the members declared by MetalKit that may be used on `metalView`. Members inherited
+# from UIView are not on the list.
+[members]
+device
+delegate
+isPaused
+enableSetNeedsDisplay
+preferredFramesPerSecond
+colorPixelFormat
+framebufferOnly
+clearColor
+drawableSize
+autoResizeDrawable
+currentDrawable
+currentRenderPassDescriptor
+draw
