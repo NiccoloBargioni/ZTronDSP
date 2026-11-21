@@ -1,8 +1,9 @@
 import os
 
 /// The lock behind control state (PLAT-1): `os_unfair_lock` on stable heap storage. It is
-/// taken on the control context and in background work only, never on the analysis or I/O
-/// thread (RT-2).
+/// taken on the control context, on the main thread, in background work and on the task that
+/// listens to a source's events; never on the I/O thread, and on the thread that runs a hub
+/// only in `ScriptedSource.render`, the test double's stated exception to RT-2.
 final class UnfairLock: @unchecked Sendable {
     // Threading contract: the lock word is only touched through os_unfair_lock_lock / unlock.
     private let storage: os_unfair_lock_t

@@ -15,6 +15,7 @@ conformance            ztd_switch_state : Swift.Equatable
 conformance            ztd_switch_state : Swift.Hashable
 conformance            ztd_switch_state : Swift.RawRepresentable
 conformance            ztd_switch_state : Swift.Sendable
+swift.func             mach_absolute_time() : func mach_absolute_time() -> UInt64
 swift.func             ztd_abi_version() : func ztd_abi_version() -> UInt32
 swift.func             ztd_alpha_beta_create(_:_:_:_:_:_:_:) : func ztd_alpha_beta_create(_ channels: UInt32, _ alpha: Float, _ beta: Float, _ time_step: Float, _ initial_position: Float, _ initial_velocity: Float, _ output_velocity: Bool) -> ztd_kernel_t
 swift.func             ztd_atomic_add(_:_:) : func ztd_atomic_add(_ cell: OpaquePointer!, _ amount: UInt64) -> UInt64
@@ -75,6 +76,7 @@ swift.func             ztd_plan_preroll(_:_:_:_:_:) : func ztd_plan_preroll(_ pl
 swift.func             ztd_plan_reset(_:) : func ztd_plan_reset(_ plan: OpaquePointer!)
 swift.func             ztd_plan_run(_:_:_:_:_:) : func ztd_plan_run(_ plan: OpaquePointer!, _ in: UnsafePointer<UnsafePointer<Float>?>!, _ out: UnsafePointer<UnsafeMutablePointer<Float>?>!, _ channels: UInt32, _ frames: UInt32) -> UInt32
 swift.func             ztd_plan_run_range(_:_:_:_:_:_:_:) : func ztd_plan_run_range(_ plan: OpaquePointer!, _ first: UInt32, _ last: UInt32, _ in: UnsafePointer<UnsafePointer<Float>?>!, _ out: UnsafePointer<UnsafeMutablePointer<Float>?>!, _ channels: UInt32, _ frames: UInt32) -> UInt32
+swift.func             ztd_plan_set_switch_preroll(_:_:_:) : func ztd_plan_set_switch_preroll(_ plan: OpaquePointer!, _ index: UInt32, _ frames: UInt32) -> Bool
 swift.func             ztd_plan_slot_create(_:) : func ztd_plan_slot_create(_ retire_capacity: UInt32) -> OpaquePointer!
 swift.func             ztd_plan_slot_current(_:) : func ztd_plan_slot_current(_ slot: OpaquePointer!) -> UnsafeMutableRawPointer!
 swift.func             ztd_plan_slot_destroy(_:) : func ztd_plan_slot_destroy(_ slot: OpaquePointer!)

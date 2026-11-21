@@ -7,8 +7,10 @@
 #   Scripts/ci.sh --list                what each gate runs
 #   Scripts/ci.sh --keep-going          run the remaining gates after a failure
 #   Scripts/ci.sh --strict              a gate, or a part of one, that was skipped fails the run
+#   Scripts/ci.sh --nightly             no gate: the nightly job, the gallery's UI tests (with
+#                                       --runtime or --matrix, on each of those simulators)
 #
-# Gate 5 (tests):
+# Gate 5 (tests), and the nightly job:
 #   --runtime ID      run on this simulator runtime, e.g. com.apple.CoreSimulator.SimRuntime.iOS-17-5
 #                     (repeatable); without it the tests run on the device of Scripts/xc.sh
 #   --matrix          run on every runtime of PLAT-3 that is installed: iOS 17.5, the newest
@@ -17,16 +19,23 @@
 #   --tsan-only       run only the Thread Sanitizer part of gate 5
 #
 # The gates:
-#   1  Build for simulator and device, warnings as errors in the production targets
+#   1  Build for simulator and device, warnings as errors in the production targets; the gallery
+#      application in Release (Examples/ZTronDSPGallery/gallery.sh app, derived data of its own)
 #   2  Scripts/lint-bans.sh, all four parts; Scripts/check-dependency-graph.sh (DEP-1…DEP-3)
 #   3  Scripts/compile-fixtures.sh and the order matrix (Scripts/order-matrix.sh --check, WP-328)
 #   4  Scripts/api-digest.sh --check
-#   5  Tests in Debug on the simulator matrix; the allocation-audit tests once more in Release
-#      (CR-002); the Thread Sanitizer run
+#   5  Tests in Debug on the simulator matrix, and on each of its simulators the gallery's hosted
+#      suites (gallery.sh hosted), which fail on the words "recorded a known issue"; the
+#      allocation-audit tests once more in Release (CR-002); the Thread Sanitizer run
 #   6  Scripts/coverage-gate.sh on the result of gate 5
 #   7  Scripts/golden.sh --check
 #   8  The benchmark regression check (Scripts/benchmarks.sh --check, WP-006), on a pinned runner
-#   9  The external parity suite (Scripts/external-parity.sh, WP-907)
+#   9  The external parity suite (Scripts/external-parity.sh, WP-907): the promises of EXT-1…EXT-4
+#      held as plain expectations (values that update without a plan, a node audited on the
+#      test's thread, the guide made from its template); two known issues may stand: the probe's
+#      control case, and in the speed check the out-of-place gain, which is at 5 % of its twin
+#      and over it in about half the launches (CR-025 item 1)
+#   Nightly, not a gate (--nightly): the gallery's UI tests (gallery.sh ui, 6 to 14 minutes)
 #
 # A gate whose input does not exist yet is reported as SKIPPED, loudly, with what is missing;
 # it never passes silently. Under --strict a skip is a failure.
@@ -34,13 +43,15 @@
 # Environment:
 #   ZTD_DERIVED              derived data of the CI builds (default <package>/.build/ci), kept apart
 #                            from the one Scripts/xc.sh uses by default, because the CI builds carry
-#                            coverage instrumentation
+#                            coverage instrumentation; the gallery builds into <ZTD_DERIVED>-gallery
+#                            (its tests) and <ZTD_DERIVED>-gallery-release (the application)
 #   ZTD_DEVICE               the simulator of gate 5 when no runtime is named (see Scripts/xc.sh)
 #   ZTD_CI_CHANGED_FILES     a file listing changed files, one per line: gate 6 then also checks COV-3
 #   ZTD_CI_BASE_REF          a git ref: the changed files are those that differ from it
 #   ZTD_CI_COVERAGE_REPORT   xccov JSON report(s) for gate 6, instead of the result bundle of gate 5
-#   ZTD_CI_XC, ZTD_CI_XCODEBUILD, ZTD_CI_SIMCTL
-#                            stand-ins for Scripts/xc.sh, xcodebuild and `xcrun simctl` (the self-test)
+#   ZTD_CI_XC, ZTD_CI_XCODEBUILD, ZTD_CI_SIMCTL, ZTD_CI_GALLERY
+#                            stand-ins for Scripts/xc.sh, xcodebuild, `xcrun simctl` and
+#                            Examples/ZTronDSPGallery/gallery.sh (the self-test)
 #
 # Exit status: 0 no gate failed, 1 a gate failed (or was skipped under --strict), 2 usage error.
 
@@ -50,15 +61,17 @@ ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 XC="${ZTD_CI_XC:-$ROOT/Scripts/xc.sh}"
 XCODEBUILD="${ZTD_CI_XCODEBUILD:-xcodebuild}"
 SIMCTL="${ZTD_CI_SIMCTL:-xcrun simctl}"
+GALLERY="${ZTD_CI_GALLERY:-$ROOT/Examples/ZTronDSPGallery/gallery.sh}"
 DERIVED="${ZTD_DERIVED:-$ROOT/.build/ci}"
 export ZTD_DERIVED="$DERIVED"
 RESULTS=".build/ci-results"                 # relative to the package: Scripts/xc.sh splits ZTD_XCARGS on spaces
 AUDIT_FILTERS="$ROOT/Scripts/ci/allocation-audit-filters.txt"
 PRODUCTION_SCHEMES="ZTronDSP ZTronDSPUI"
 
-GATE_NAMES=("" "build" "lint and dependency graph" "compile fixtures and order matrix" "API digest" "tests" "coverage" "golden vectors" "benchmarks" "external parity")
+# Number 0 is not a gate: the nightly job, which the loop below runs as it runs a gate.
+GATE_NAMES=("the gallery's UI tests (not a gate)" "build" "lint and dependency graph" "compile fixtures and order matrix" "API digest" "tests" "coverage" "golden vectors" "benchmarks" "external parity")
 
-gates=(); keep_going=0; strict=0; runtimes=(); matrix=0; tsan=0; tsan_only=0
+gates=(); keep_going=0; strict=0; runtimes=(); matrix=0; tsan=0; tsan_only=0; nightly=0
 while [ $# -gt 0 ]; do
     case "$1" in
         --gate)
@@ -71,6 +84,7 @@ while [ $# -gt 0 ]; do
         --matrix) matrix=1 ;;
         --tsan) tsan=1 ;;
         --tsan-only) tsan_only=1 ;;
+        --nightly) nightly=1 ;;
         --keep-going) keep_going=1 ;;
         --strict) strict=1 ;;
         --list) awk '/^# The gates:/ { on = 1 } on && /^#$/ { exit } on { sub(/^# ?/, ""); print }' "${BASH_SOURCE[0]}"; exit 0 ;;
@@ -79,6 +93,9 @@ while [ $# -gt 0 ]; do
     esac
     shift
 done
+if [ "$nightly" -eq 1 ] && [ "${#gates[@]}" -gt 0 ]; then
+    echo "ci: --nightly runs the job that is not a gate, alone; it takes no --gate" >&2; exit 2
+fi
 if [ "${#gates[@]}" -eq 0 ]; then gates=(1 2 3 4 5 6 7 8 9); fi
 # In order, each once.
 ordered=()
@@ -87,6 +104,7 @@ for number in 1 2 3 4 5 6 7 8 9; do
         if [ "$wanted" = "$number" ]; then ordered+=("$number"); break; fi
     done
 done
+[ "$nightly" -eq 1 ] && ordered=(0)
 
 # ---------------------------------------------------------------------------------------------
 # Reporting
@@ -94,7 +112,10 @@ done
 RESULT=(); NOTE=()
 part_pass=0; part_fail=0; part_skip=0; gate_notes=""; current=0
 
-say() { printf 'ci: [gate %s] %s\n' "$current" "$*"; }
+label() { if [ "$1" = 0 ]; then printf 'nightly'; else printf 'gate %s' "$1"; fi; }
+title() { if [ "$current" = 0 ]; then printf 'CI nightly job (%s)' "${GATE_NAMES[0]}"; else printf 'CI gate %s (%s)' "$current" "${GATE_NAMES[$current]}"; fi; }
+
+say() { printf 'ci: [%s] %s\n' "$(label "$current")" "$*"; }
 
 ok() { part_pass=$((part_pass + 1)); say "ok: $*"; }
 
@@ -102,7 +123,7 @@ failed() {
     part_fail=$((part_fail + 1))
     say "FAILED: $*"
     gate_notes="${gate_notes:+$gate_notes; }$*"
-    [ "${GITHUB_ACTIONS:-}" = "true" ] && printf '::error title=CI gate %s (%s)::%s\n' "$current" "${GATE_NAMES[$current]}" "$*"
+    [ "${GITHUB_ACTIONS:-}" = "true" ] && printf '::error title=%s::%s\n' "$(title)" "$*"
     return 0
 }
 
@@ -110,7 +131,7 @@ skipped() {
     part_skip=$((part_skip + 1))
     say "SKIPPED: $*"
     gate_notes="${gate_notes:+$gate_notes; }skipped: $*"
-    [ "${GITHUB_ACTIONS:-}" = "true" ] && printf '::warning title=CI gate %s (%s) skipped::%s\n' "$current" "${GATE_NAMES[$current]}" "$*"
+    [ "${GITHUB_ACTIONS:-}" = "true" ] && printf '::warning title=%s skipped::%s\n' "$(title)" "$*"
     return 0
 }
 
@@ -157,6 +178,47 @@ print(installed.get((27, 0), "missing:iOS 27.0"))
 '
 }
 
+# simulators: sets `devices` (the caller's) to the simulators that tests run on: one per runtime
+# that --runtime names or --matrix finds, made when need be; without either, one empty name, which
+# is the device of Scripts/xc.sh and of gallery.sh.
+simulators() {
+    local wanted=(${runtimes[@]+"${runtimes[@]}"}) runtime name
+    devices=()
+    if [ "$matrix" -eq 1 ]; then
+        while IFS= read -r runtime; do
+            case "$runtime" in
+                missing:*) skipped "the ${runtime#missing:} simulator runtime of PLAT-3 is not installed" ;;
+                ?*) wanted+=("$runtime") ;;
+            esac
+        done <<EOF_RUNTIMES
+$(matrix_runtimes)
+EOF_RUNTIMES
+    fi
+    if [ "${#wanted[@]}" -eq 0 ]; then
+        devices=("${ZTD_DEVICE:-}")
+    else
+        for runtime in "${wanted[@]}"; do
+            if name="$(ensure_simulator "$runtime")"; then devices+=("$name"); else failed "no simulator could be made for the runtime $runtime"; fi
+        done
+    fi
+}
+
+# gallery_hosted <simulator, or empty for the default one>: the gallery's hosted suites
+# (GalleryTests) on it, in Debug, in derived data of their own. They have no expectation that
+# may fail: a run that "recorded a known issue" fails as one that recorded an issue does.
+gallery_hosted() {
+    local log status
+    log="$(mktemp "${TMPDIR:-/tmp}/ztd-ci-gallery.XXXXXX")" || return 1
+    env ZTD_DEVICE="$1" ZTD_CONFIG=Debug ZTD_DERIVED="$DERIVED-gallery" "$GALLERY" hosted 2>&1 | tee "$log"
+    status="${PIPESTATUS[0]}"
+    if [ "$status" -eq 0 ] && grep -q "recorded a known issue" "$log"; then
+        say "the gallery's hosted suites recorded a known issue: there, none may stand"
+        status=1
+    fi
+    rm -f "$log"
+    return "$status"
+}
+
 ensure_simulator() {  # <runtime identifier>: prints the name of a simulator on that runtime, creating it if needed
     local runtime="$1" name type
     name="ztdsp-ci-${runtime##*iOS-}"
@@ -189,6 +251,8 @@ gate_1() {
             in_package "$XCODEBUILD" build -scheme "$scheme" -destination "generic/platform=iOS" -derivedDataPath "$DERIVED-strict" \
             -quiet SWIFT_TREAT_WARNINGS_AS_ERRORS=YES GCC_TREAT_WARNINGS_AS_ERRORS=YES CODE_SIGNING_ALLOWED=NO || return
     done
+    run "build the gallery application in Release, in derived data of its own" \
+        env ZTD_CONFIG=Release ZTD_DERIVED="$DERIVED-gallery-release" "$GALLERY" app || return
     run "build everything for testing (Debug, coverage on)" env ZTD_XCARGS="-enableCodeCoverage YES" "$XC" build
 }
 
@@ -219,28 +283,11 @@ gate_4() {
 }
 
 gate_5() {
-    local bundle="$RESULTS/Debug.xcresult" devices=() runtime name first=1 arguments filters=() line
+    local bundle="$RESULTS/Debug.xcresult" devices=() name first=1 arguments filters=() line
     if [ "$tsan_only" -eq 0 ]; then
         run "build everything for testing (Debug, coverage on)" env ZTD_XCARGS="-enableCodeCoverage YES" "$XC" build || return
 
-        if [ "$matrix" -eq 1 ]; then
-            while IFS= read -r runtime; do
-                case "$runtime" in
-                    missing:*) skipped "the ${runtime#missing:} simulator runtime of PLAT-3 is not installed" ;;
-                    ?*) runtimes+=("$runtime") ;;
-                esac
-            done <<EOF_RUNTIMES
-$(matrix_runtimes)
-EOF_RUNTIMES
-        fi
-        if [ "${#runtimes[@]}" -eq 0 ]; then
-            devices=("${ZTD_DEVICE:-}")
-        else
-            for runtime in "${runtimes[@]}"; do
-                if name="$(ensure_simulator "$runtime")"; then devices+=("$name"); else failed "no simulator could be made for the runtime $runtime"; fi
-            done
-        fi
-
+        simulators
         mkdir -p "$ROOT/$RESULTS"
         for name in ${devices[@]+"${devices[@]}"}; do
             arguments="-enableCodeCoverage YES"
@@ -254,6 +301,7 @@ EOF_RUNTIMES
             else
                 run "tests in Debug" env ZTD_CONFIG=Debug ZTD_XCARGS="$arguments" "$XC" test-only
             fi
+            run "the gallery's hosted suites${name:+ on $name}, with no known issue" gallery_hosted "$name"
         done
 
         # CR-002: a Debug run shows that the hot path does not allocate at -Onone; the same tests
@@ -343,6 +391,16 @@ gate_8() {
     fi
 }
 
+# Not a gate: the gallery's UI tests take 6 to 14 minutes, so they run nightly
+# (.github/workflows/ci.yml), on each simulator gate 5 would use.
+nightly_job() {
+    local devices=() name
+    simulators
+    for name in ${devices[@]+"${devices[@]}"}; do
+        run "the gallery's UI tests${name:+ on $name}" env ZTD_DEVICE="$name" ZTD_CONFIG=Debug ZTD_DERIVED="$DERIVED-gallery" "$GALLERY" ui
+    done
+}
+
 gate_9() {
     if [ -x "$ROOT/Scripts/external-parity.sh" ]; then
         run "the external parity suite (EXT-4)" "$ROOT/Scripts/external-parity.sh"
@@ -356,8 +414,8 @@ gate_9() {
 overall=0
 for current in "${ordered[@]}"; do
     part_pass=0; part_fail=0; part_skip=0; gate_notes=""
-    printf '\nci: ===== gate %s: %s =====\n' "$current" "${GATE_NAMES[$current]}"
-    "gate_$current"
+    printf '\nci: ===== %s: %s =====\n' "$(label "$current")" "${GATE_NAMES[$current]}"
+    if [ "$current" = 0 ]; then nightly_job; else "gate_$current"; fi
     if [ "$part_fail" -gt 0 ]; then
         RESULT[$current]="FAILED"
     elif [ "$part_skip" -gt 0 ] && [ "$part_pass" -eq 0 ]; then
@@ -380,9 +438,9 @@ done
 printf '\nci: ===== summary =====\n'
 for number in "${ordered[@]}"; do
     if [ -z "${RESULT[$number]:-}" ]; then
-        printf 'ci: gate %s  %-36s not run\n' "$number" "${GATE_NAMES[$number]}"
+        printf 'ci: %s  %-36s not run\n' "$(label "$number")" "${GATE_NAMES[$number]}"
     else
-        printf 'ci: gate %s  %-36s %s%s\n' "$number" "${GATE_NAMES[$number]}" "${RESULT[$number]}" "${NOTE[$number]:+ — ${NOTE[$number]}}"
+        printf 'ci: %s  %-36s %s%s\n' "$(label "$number")" "${GATE_NAMES[$number]}" "${RESULT[$number]}" "${NOTE[$number]:+ — ${NOTE[$number]}}"
     fi
 done
 if [ "$overall" -ne 0 ]; then

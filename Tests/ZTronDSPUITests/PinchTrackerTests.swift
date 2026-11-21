@@ -7,9 +7,11 @@ import Testing
 /// The pinch tracker (WP-819): scripted touch sequences, fed through the one seam every OS
 /// path uses, give the axis, the scale and the centroid that PINCH-3 and PINCH-4 specify.
 ///
-/// What the gestures of iOS 15 to 17 really report together is the subject of the spike
-/// WP-818, which has not run: the sequences for those two paths follow the table of PINCH-8
-/// as it stands.
+/// What the gestures of iOS 15 to 17 really report together was looked at by the spike
+/// WP-818 (`Examples/ZTronDSPGallery/Spikes/WP-818-findings.md`): when both fingers land
+/// together the drag reports nothing for the whole pinch, and the finger line is not known.
+/// The sequences below hold both cases: a first finger that lands first, as the table of
+/// PINCH-8 has it, and a drag that stays silent.
 @MainActor
 @Suite("Pinch tracker")
 struct PinchTrackerTests {
@@ -130,19 +132,38 @@ struct PinchTrackerTests {
         #expect(diagonal.update(.magnification(scale: 1.1, start: centroid, firstFingerStart: CGPoint(x: 150, y: 100)))?.axes == Self.both)
     }
 
-    @Test func withoutTheFirstFingerNothingScalesOnIOS17UnlessOneAxisIsEnabled() {
+    /// Both fingers land together: the drag half of the gesture reports nothing, from the
+    /// first callback to the last (WP-818). The finger line is not known, and the pinch
+    /// scales every enabled axis (PINCH-8).
+    @Test func aPinchWhoseFingersLandTogetherScalesEveryEnabledAxisOnIOS17() {
         let centroid = CGPoint(x: 200, y: 150)
         var tracker = PinchTracker(enabled: Self.both)
-        #expect(tracker.update(.magnification(scale: 1.3, start: centroid, firstFingerStart: nil)) == nil, "the drag has not spoken yet")
-        #expect(tracker.update(.magnification(scale: 1.3, start: centroid, firstFingerStart: centroid)) == nil, "a finger on the centroid gives no line")
-        #expect(tracker.update(.magnification(scale: 1.4, start: centroid, firstFingerStart: CGPoint(x: 260, y: 150)))?.axes == .horizontal)
+        let first = tracker.update(.magnification(scale: 1.0, start: centroid, firstFingerStart: nil))
+        #expect(first == PinchState(axes: Self.both, scale: 1, centroid: centroid, startCentroid: centroid), "from the first report")
+        let later = tracker.update(.magnification(scale: 1.3, start: centroid, firstFingerStart: nil))
+        #expect(later?.axes == Self.both && later?.scale == 1.3 && later?.centroid == centroid)
+        // Decided once: a finger that is heard of later changes nothing.
+        #expect(tracker.update(.magnification(scale: 1.4, start: centroid, firstFingerStart: CGPoint(x: 260, y: 150)))?.axes == Self.both)
+        tracker.end()
+        #expect(!tracker.isDecided)
 
         var single = PinchTracker(enabled: .vertical)
         let state = single.update(.magnification(scale: 1.3, start: centroid, firstFingerStart: nil))
-        #expect(state?.axes == .vertical && state?.scale == 1.3, "one axis enabled: no line is needed")
+        #expect(state?.axes == .vertical && state?.scale == 1.3, "one axis enabled: every enabled axis is that one")
         // With the finger known, a pinch along the other axis does nothing.
         var across = PinchTracker(enabled: .vertical)
         #expect(across.update(.magnification(scale: 1.3, start: centroid, firstFingerStart: CGPoint(x: 260, y: 150)))?.axes == [])
+    }
+
+    /// A first finger that is known but lies on the centroid names no line: the pinch waits,
+    /// unless one axis is enabled.
+    @Test func aFirstFingerOnTheCentroidGivesNoLineOnIOS17() {
+        let centroid = CGPoint(x: 200, y: 150)
+        var tracker = PinchTracker(enabled: Self.both)
+        #expect(tracker.update(.magnification(scale: 1.3, start: centroid, firstFingerStart: centroid)) == nil, "a finger on the centroid gives no line")
+        #expect(tracker.update(.magnification(scale: 1.4, start: centroid, firstFingerStart: CGPoint(x: 260, y: 150)))?.axes == .horizontal)
+        var single = PinchTracker(enabled: .horizontal)
+        #expect(single.update(.magnification(scale: 1.3, start: centroid, firstFingerStart: centroid))?.axes == .horizontal)
     }
 
     // MARK: iOS 15 and 16: the direction the first finger travels in its first 8 points
@@ -165,6 +186,26 @@ struct PinchTrackerTests {
     func theDirectionOfTravelDecidesOnTheLegacyPath(travel: CGSize, expected: Axis.Set) {
         var tracker = PinchTracker(enabled: Self.both)
         #expect(tracker.update(.legacy(scale: 1.2, firstFingerStart: .zero, firstFingerTravel: travel))?.axes == expected)
+    }
+
+    /// Both fingers land together: the drag reports nothing, so there is no travel to read
+    /// (WP-818). The pinch scales every enabled axis at once, by the whole magnification
+    /// (PINCH-8).
+    @Test func aPinchWhoseFingersLandTogetherScalesEveryEnabledAxisOnTheLegacyPath() {
+        var tracker = PinchTracker(enabled: Self.both)
+        let first = tracker.update(.legacy(scale: 1.07, firstFingerStart: nil, firstFingerTravel: nil))
+        #expect(first == PinchState(axes: Self.both, scale: 1.07, centroid: nil, startCentroid: nil), "from the first report, counted from 1")
+        #expect(tracker.update(.legacy(scale: 2, firstFingerStart: nil, firstFingerTravel: nil))?.scale == 2)
+        // Decided once: a finger that is heard of later changes nothing.
+        #expect(tracker.update(.legacy(scale: 2.2, firstFingerStart: .zero, firstFingerTravel: CGSize(width: 0, height: 40)))?.axes == Self.both)
+        // The next pinch begins with a first finger that landed first: it waits for the travel again.
+        tracker.end()
+        #expect(tracker.update(.legacy(scale: 1, firstFingerStart: .zero, firstFingerTravel: .zero)) == nil)
+        #expect(tracker.update(.legacy(scale: 1.02, firstFingerStart: nil, firstFingerTravel: nil)) == nil, "a drag that spoke and fell silent decides nothing")
+        #expect(tracker.update(.legacy(scale: 1.1, firstFingerStart: .zero, firstFingerTravel: CGSize(width: 9, height: 0)))?.axes == .horizontal)
+        // And the pinch after that one is judged afresh.
+        tracker.end()
+        #expect(tracker.update(.legacy(scale: 1.5, firstFingerStart: nil, firstFingerTravel: nil))?.axes == Self.both)
     }
 
     /// With one axis enabled, that axis is used at once (PINCH-8).

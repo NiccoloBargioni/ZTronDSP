@@ -30,6 +30,15 @@ struct SurfaceInput {
     /// Told what the surface shows, when a test wants to see it; read once, when the surface
     /// is made.
     var inspector: SurfaceInspector?
+    /// Pixels per point of the display the view is on, as SwiftUI reports them
+    /// (`\.displayScale`). A size in points times this scale is the size the drawable is
+    /// given during a size transition (SZ-2). It is never read off the layer: the Metal view
+    /// rewrites the layer's `contentsScale` whenever its drawable is given a size by hand.
+    var displayScale: CGFloat = 1
+    /// True while the scene phase the view reads is `.background`. In a host that is not a
+    /// SwiftUI scene a view reads that phase for as long as the host does not hand the phase
+    /// of its scene down, and a surface there never draws: it says so once (§8.3).
+    var isSceneInBackground = false
 }
 
 /// Sees what a surface is asked to show: every content that reached its renderer, in order.
@@ -61,8 +70,8 @@ final class SurfaceInspector {
     }
 }
 
-/// What a surface's layer says about its size on a display tick: the layer's half of the
-/// rule that detects a size transition (SZ-4).
+/// What a surface's layer says about its size when a frame of a size transition is made: the
+/// layer's half of the rule that detects a size transition (SZ-4).
 ///
 /// An immutable value.
 struct LayerGeometry: Equatable, Sendable {
@@ -73,7 +82,7 @@ struct LayerGeometry: Equatable, Sendable {
     var presentationSize: CGSize
     /// True while the layer carries an animation.
     var isAnimating: Bool
-    /// Pixels per point.
+    /// Pixels per point of the display, as the surface was told them (SZ-2).
     var scale: CGFloat
 
     /// The drawable size for a size in points: whole pixels, at least one each way.
@@ -99,8 +108,9 @@ struct LayerGeometry: Equatable, Sendable {
 /// Threading: main actor.
 @MainActor
 protocol SurfaceLayer: AnyObject {
-    /// The layer's size now; `nil` once the layer is gone.
-    var geometry: LayerGeometry? { get }
+    /// The layer's size now, for a display of `scale` pixels per point; `nil` once the layer
+    /// is gone. The scale is handed in and never read off the layer (SZ-2).
+    func geometry(scale: CGFloat) -> LayerGeometry?
     /// Says whether a drawable is presented with the layer's transaction, so that content and
     /// bounds change in the same frame (SZ-3), or as soon as it is ready.
     func setPresentsWithTransaction(_ presents: Bool)
@@ -142,11 +152,11 @@ final class MetalLayerAdapter: SurfaceLayer {
         layer.isOpaque = false
     }
 
-    var geometry: LayerGeometry? {
+    func geometry(scale: CGFloat) -> LayerGeometry? {
         guard let layer else { return nil }
         let model = layer.bounds.size
         return LayerGeometry(modelSize: model, presentationSize: layer.presentation()?.bounds.size ?? model,
-                             isAnimating: !(layer.animationKeys() ?? []).isEmpty, scale: layer.contentsScale)
+                             isAnimating: !(layer.animationKeys() ?? []).isEmpty, scale: scale)
     }
 
     func setPresentsWithTransaction(_ presents: Bool) {

@@ -53,9 +53,19 @@ uint32_t ztd_plan_append(ztd_plan_t *plan, ztd_kernel_t kernel, bool owned);
      active       the switch's position when the plan starts; an inactive stage starts bypassed
    A kernel with latency gets an unprocessed path that is a delay line of that many frames, fed
    in both states, so switching never changes the alignment downstream (ACT-8).
+   A stage that is switched on is reset and runs unheard, before it is faded in, for its
+   pre-roll: the kernel's latency plus its settling time, or UINT32_MAX frames when the two add
+   up to more (ACT-7). `ztd_plan_set_switch_preroll` states another figure.
    Returns false when memory cannot be had (a delay line of more than 2^28 samples is not asked
    for) or the index is out of range. */
 bool ztd_plan_make_switchable(ztd_plan_t *plan, uint32_t index, uint32_t fade_frames, bool active);
+
+/* States the pre-roll of the switch at `index`, in frames: how long the kernel runs unheard
+   when it is switched on. For a caller that knows the rate, which a plan does not: the engine
+   runs a stage for its latency and for its settling time up to one second (ACT-7, SWAP-2).
+   Before the plan runs, or between two blocks. Returns false when there is no switch at
+   `index`. */
+bool ztd_plan_set_switch_preroll(ztd_plan_t *plan, uint32_t index, uint32_t frames);
 
 /* Moves the kernel at `from_index` of `from`, with its state and its ownership, to `to_index` of
    `to`, whose own kernel at that index (a placeholder) is destroyed if it was owned. `from`
@@ -68,7 +78,8 @@ uint32_t ztd_plan_channels(const ztd_plan_t *plan) ZTD_NONBLOCKING;
 uint32_t ztd_plan_maximum_frames(const ztd_plan_t *plan) ZTD_NONBLOCKING;
 /* The kernel at `index` (a copy of its table entry), or an entry with a NULL `process`. */
 ztd_kernel_t ztd_plan_kernel(const ztd_plan_t *plan, uint32_t index) ZTD_NONBLOCKING;
-/* The sum of the kernels' latencies, in frames of the plan's input (rate changes not applied). */
+/* The sum of the kernels' latencies, in frames of the plan's input (rate changes not applied);
+   UINT32_MAX when they add up to more than 32 bits count. */
 uint32_t ztd_plan_latency(const ztd_plan_t *plan) ZTD_NONBLOCKING;
 
 /* --- Analysis thread ------------------------------------------------------------------------ */

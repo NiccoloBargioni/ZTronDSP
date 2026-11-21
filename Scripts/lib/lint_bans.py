@@ -1,11 +1,15 @@
 """The engine of Scripts/lint-bans.sh: the textual bans of the specification, in four parts.
 
-    Part 1 (WP-002)  UB-1, UB-2, UB-3            the UIKit boundary, as UB-5 mechanises it
+    Part 1 (WP-002)  UB-1, UB-2, UB-3, SZ-2      the UIKit boundary, as UB-5 mechanises it, under
+                                                 Sources/ and in the gallery's application; no
+                                                 scale read off the layer in ZTronDSPUI
     Part 2 (WP-010)  RT-7(4), ATT-2              hot-path bans, `for … in` among them (CR-002); no
                                                  branching on a source's type
-    Part 3 (WP-011)  APR-1, APR-2, BIND-7, EXT-1 approval-gated API; the SwiftUI boundary; hidden channels
-    Part 4 (WP-012)  API-6, IMM-2, VIS-1, §9.2, COV-4(a)
-                                                 configuration-object names; the registers
+    Part 3 (WP-011)  APR-1, APR-2, BIND-7, EXT-1 approval-gated API; the SwiftUI boundary; hidden channels,
+                                                 the gallery's application included
+    Part 4 (WP-012)  API-6, IMM-1, IMM-2, VIS-1, §9.2, COV-4(a)
+                                                 configuration-object names; the registers; the stored
+                                                 `var`s of public structs (WP-909)
 
     lint_bans.py [--part N]… [--data DIR] [ROOT]
 
@@ -32,6 +36,10 @@ SKIPPED_PREFIXES = ("Tests/Fixtures/", "Tests/CompileFixtures/")
 
 BRIDGE_FILE = "Sources/ZTronDSPUI/Bridge/MetalViewRepresentable.swift"
 UI_TARGET = "Sources/ZTronDSPUI/"
+# The gallery's application target is written as an app on the package is: SwiftUI alone, so the
+# UIKit boundary holds in it with no bridge exception (UB-1, UB-2), and it reaches the package
+# through public declarations only (EXT-1: no `@testable import`; its hosted tests may).
+GALLERY_APP = "Examples/ZTronDSPGallery/Gallery/"
 BINDINGS_GROUP = "Sources/ZTronDSPCore/Bindings/"
 ENGINE_GROUP = "Sources/ZTronDSPCore/Engine/"
 # Targets whose production code never uses `package` access (EXT-1, VIS-1).
@@ -168,17 +176,19 @@ def part_1(files, data, findings):
     bridge_members = set(bridge.get("members", []))
 
     for source in files:
-        if not source.relative.startswith("Sources/"):
+        in_sources = source.relative.startswith("Sources/")
+        if not (in_sources or source.relative.startswith(GALLERY_APP)):
             continue
         masked = source.masked
         is_bridge = source.relative == BRIDGE_FILE
+        where = "under Sources/" if in_sources else "in the gallery's application"
 
         # UB-1: the two imports.
         if source.is_swift:
             for match in SWIFT_IMPORT.finditer(masked):
                 if match.group(2) in ("UIKit", "AppKit"):
                     findings.append(Finding(source.relative, source.line(match.start(2)), "UB-1",
-                                            "import %s: no file under Sources/ imports UIKit or AppKit" % match.group(2)))
+                                            "import %s: no file %s imports UIKit or AppKit" % (match.group(2), where)))
                 elif is_bridge and match.group(2) not in bridge_imports:
                     findings.append(Finding(source.relative, source.line(match.start(2)), "UB-2",
                                             "import %s: the bridge file imports %s only" % (match.group(2), " and ".join(sorted(bridge_imports)))))
@@ -187,7 +197,7 @@ def part_1(files, data, findings):
                 module = match.group(1) or match.group(2)
                 if module in ("UIKit", "AppKit"):
                     findings.append(Finding(source.relative, source.line(match.start()), "UB-1",
-                                            "%s is imported: no file under Sources/ imports UIKit or AppKit" % module))
+                                            "%s is imported: no file %s imports UIKit or AppKit" % (module, where)))
 
         # UB-2: identifiers.
         import_spans = [(m.start(), m.end()) for m in (SWIFT_IMPORT if source.is_swift else C_IMPORT).finditer(masked)]
@@ -204,14 +214,23 @@ def part_1(files, data, findings):
                 if is_bridge and name in bridge_identifiers:
                     continue
                 findings.append(Finding(source.relative, source.line(match.start()), "UB-2",
-                                        "%s: a UIKit-style name (UI + capital) is not named under Sources/%s" % (
-                                            name, ", and the bridge file may name only " + ", ".join(sorted(bridge_identifiers)) if is_bridge else "")))
+                                        "%s: a UIKit-style name (UI + capital) is not named %s%s" % (
+                                            name, where, ", and the bridge file may name only " + ", ".join(sorted(bridge_identifiers)) if is_bridge else "")))
             elif name in ns_names:
                 findings.append(Finding(source.relative, source.line(match.start()), "UB-2",
-                                        "%s is declared by UIKit and is not named under Sources/" % name))
+                                        "%s is declared by UIKit and is not named %s" % (name, where)))
             elif name == "MTKView" and not is_bridge:
                 findings.append(Finding(source.relative, source.line(match.start()), "UB-2",
                                         "MTKView is a UIView; it is named only in %s" % BRIDGE_FILE))
+
+        # SZ-2 (CR-027): the drawable is sized by the display scale SwiftUI reports. The layer's
+        # `contentsScale` is rewritten by the system whenever a drawable is sized by hand, so the
+        # name does not occur in ZTronDSPUI's code (comments may explain why).
+        if source.relative.startswith(UI_TARGET):
+            for match in re.finditer(r"\bcontentsScale\b", masked):
+                findings.append(Finding(source.relative, source.line(match.start()), "SZ-2",
+                                        "`contentsScale` is not named in the code of ZTronDSPUI: the drawable is sized by the "
+                                        "display scale SwiftUI reports, never by a scale read off the layer"))
 
         # UB-3: in the bridge file the view is `metalView`, and only MetalKit's members are used on it.
         if is_bridge:
@@ -426,6 +445,13 @@ def part_3(files, data, findings, root):
                 findings.append(Finding(relative, source.line(offset), "APR-1",
                                         "`%s` needs a change request approved by the owner and an entry in Docs/Process/approvals.md" % api))
 
+        # EXT-1 in the gallery's application, as in any app on the package: public declarations only.
+        if relative.startswith(GALLERY_APP):
+            for match in re.finditer(r"@testable\b", masked):
+                findings.append(Finding(relative, source.line(match.start()), "EXT-1",
+                                        "`@testable import` is not used in the gallery's application: it reaches the package "
+                                        "through its public API, as an app does (its hosted tests may)"))
+
         if not relative.startswith("Sources/"):
             continue
 
@@ -472,7 +498,7 @@ def part_3(files, data, findings, root):
 
 
 # ---------------------------------------------------------------------------------------------
-# Part 4 — configuration-object names (API-6) and the registers (IMM-2, VIS-1, §9.2, COV-4 a)
+# Part 4 — configuration-object names (API-6) and the registers (IMM-1, IMM-2, VIS-1, §9.2, COV-4 a)
 # ---------------------------------------------------------------------------------------------
 
 BANNED_SUFFIXES = ("Configuration", "Options", "Settings", "Style", "Descriptor", "Specification", "Specs", "Params")
@@ -499,6 +525,7 @@ class Declarations:
         self.tokens = scan.tokens(masked)
         self.types = []       # (name, kind, effective access, offset)
         self.setters = []     # (symbol, offset)
+        self.stored = []      # (symbol, offset, "public" | "internal"): stored `var`s of public structs
         self.opens = []       # (symbol, offset)
         self._walk()
 
@@ -569,6 +596,7 @@ class Declarations:
                     cursor = self._previous(before)
                     continue
                 if IDENTIFIER.fullmatch(self._text(before)) and self._text(self._previous(before)) == "@":
+                    found.add("@" + self._text(before))      # an attribute with arguments, `@available(…)`
                     cursor = self._previous(self._previous(before))
                     continue
                 break
@@ -579,6 +607,7 @@ class Declarations:
                 cursor = self._previous(cursor)
                 continue
             if IDENTIFIER.fullmatch(text) and self._text(self._previous(cursor)) == "@":
+                found.add("@" + text)                         # an attribute, `@usableFromInline`
                 cursor = self._previous(self._previous(cursor))
                 continue
             break
@@ -603,7 +632,9 @@ class Declarations:
             return "internal"
 
         def qualified(name):
-            chain = [scope["name"] for scope in scopes if scope["type"]]
+            # The innermost type's name is already qualified (`Outer.Inner`), and an extension's
+            # is the name of the type it extends: the member hangs off that alone.
+            chain = [scope["name"] for scope in scopes if scope["type"]][-1:]
             return ".".join(chain + [name]) if name else ".".join(chain)
 
         while index < count:
@@ -649,6 +680,20 @@ class Declarations:
                         self.opens.append((qualified(name), offset))
                     if effective in ("public", "open") and setter_access is None and self._variable_can_be_set(name_index + 1):
                         self.setters.append((qualified(name), offset))
+                    # A stored `var` of a public struct (IMM-1, IMM-2): public whatever its setter, or
+                    # with a setter the module can reach (internal or package). A private setter is the
+                    # type's own business; a public setter is already one of `setters`. A
+                    # `@usableFromInline` one is how VIS-1 writes the internals of a toolkit primitive or
+                    # a frame accessor, which its `@inlinable` code sets: state (IMM-3), not a value.
+                    scope = scopes[-1] if scopes and scopes[-1]["type"] else None
+                    if (scope is not None and scope["kind"] == "struct" and scope["access"] in ("public", "open")
+                            and not ({"static", "class"} & modifiers) and self._variable_is_stored(name_index + 1)):
+                        if effective in ("public", "open"):
+                            if setter_access is not None:
+                                self.stored.append((qualified(name), offset, "public"))
+                        elif (effective in ("internal", "package") and setter_access in (None, "internal", "package")
+                                and "@usableFromInline" not in modifiers):
+                            self.stored.append((qualified(name), offset, "internal"))
             elif text == "subscript" and member_level() and self._text(self._next(index)) in ("(", "<"):
                 modifiers, access, setter_access = self._modifiers(index)
                 effective = access or default_access()
@@ -694,6 +739,66 @@ class Declarations:
                         return True
                     return True                       # stored, no initial value
             cursor += 1
+        return True
+
+    def _variable_is_stored(self, index):
+        """`index` is the token after the property's name. A stored property has no accessor
+        block, or a block of observers only (`willSet`, `didSet`)."""
+        count = len(self.tokens)
+        depth = 0
+        cursor = index
+        while cursor < count:
+            text = self.tokens[cursor][0]
+            if text in ("(", "[", "<"):
+                depth += 1
+            elif text in (")", "]", ">"):
+                if text == ">" and self._text(cursor - 1) == "-":
+                    cursor += 1                       # the arrow of a function type
+                    continue
+                depth -= 1
+                if depth < 0:
+                    return True
+            elif depth == 0:
+                if text == "=":
+                    return True                       # an initial value: stored
+                if text == "{":
+                    return self._block_is_observers(cursor)
+                if text in (",", ";", "}"):
+                    return True
+                if text == "\n":
+                    following = self._next(cursor)
+                    if self._text(following) == "{":
+                        return self._block_is_observers(following)
+                    return True
+            cursor += 1
+        return True
+
+    def _block_is_observers(self, open_index):
+        close = self._matching_close(open_index, "{", "}")
+        outline, cursor = [], open_index + 1
+        while cursor < close:
+            text = self.tokens[cursor][0]
+            if text == "{":
+                cursor = self._matching_close(cursor, "{", "}")
+                outline.append("BLOCK")
+            elif text == "(":
+                cursor = self._matching_close(cursor, "(", ")")
+                outline.append("PAREN")
+            elif text != "\n":
+                outline.append(text)
+            cursor += 1
+        if not outline:
+            return False
+        position = 0
+        while position < len(outline):
+            if outline[position] not in ("willSet", "didSet"):
+                return False
+            position += 1
+            if position < len(outline) and outline[position] == "PAREN":
+                position += 1
+            if position >= len(outline) or outline[position] != "BLOCK":
+                return False
+            position += 1
         return True
 
     def _subscript_can_be_set(self, index):
@@ -789,10 +894,11 @@ def metal_functions(masked):
     return functions
 
 
-def match_register(findings, uses, rows, register, exists, key_columns, required, rule, describe):
+def match_register(findings, uses, rows, register, exists, key_columns, required, rule, describe, rule_of=None):
     """Compares what the code holds with what a register lists, in both directions.
 
     `uses` is [(key tuple, path, line)]. A row needs every column of `required` filled in.
+    `rule_of(key)`, when given, names the rule of a use without a row; `rule` names the rest.
     """
     listed = {}
     for row in rows:
@@ -806,7 +912,8 @@ def match_register(findings, uses, rows, register, exists, key_columns, required
         if key in listed:
             listed[key][1] = True
         else:
-            findings.append(Finding(path, line, rule, describe(key) + ("" if exists else " (and the register %s does not exist)" % register)))
+            findings.append(Finding(path, line, rule_of(key) if rule_of else rule,
+                                    describe(key) + ("" if exists else " (and the register %s does not exist)" % register)))
     for key, (row, used) in listed.items():
         if not used:
             findings.append(Finding(register, row["_line"], rule, "this register row (%s) matches nothing in the code" % ", ".join(key)))
@@ -814,6 +921,7 @@ def match_register(findings, uses, rows, register, exists, key_columns, required
 
 def part_4(files, data, findings, root):
     setters, opens, sendables, shaders = [], [], [], []
+    stored_kinds = {}   # (symbol, path) -> "public" | "internal", for the stored `var`s of public structs
     for source in files:
         if not source.relative.startswith("Sources/"):
             continue
@@ -828,6 +936,9 @@ def part_4(files, data, findings, root):
                                             "public %s `%s`: no public type is named like a configuration object (…%s)" % (kind, name, suffix)))
             for symbol, offset in declarations.setters:
                 setters.append(((symbol, source.relative), source.relative, source.line(offset)))
+            for symbol, offset, kind in declarations.stored:
+                stored_kinds[(symbol, source.relative)] = kind
+                setters.append(((symbol, source.relative), source.relative, source.line(offset)))
             for symbol, offset in declarations.opens:
                 opens.append(((symbol, source.relative), source.relative, source.line(offset)))
             for match in re.finditer(r"@unchecked\s+Sendable\b", masked):
@@ -841,9 +952,20 @@ def part_4(files, data, findings, root):
             for name, offset in metal_functions(masked):
                 shaders.append(((name, source.relative), source.relative, source.line(offset)))
 
+    def describe_mutable(key):
+        kind = stored_kinds.get(key)
+        if kind == "public":
+            return ("`%s` is a public stored `var` of a value type: it is `let`, or it has an entry in "
+                    "Docs/Process/mutable-by-design.md" % key[0])
+        if kind == "internal":
+            return ("`%s` is a stored `var` of a public value type that the module can set: it is `let`, "
+                    "`private(set)` or `fileprivate(set)`, `@usableFromInline` when `@inlinable` code sets it (VIS-1), "
+                    "or it has an entry in Docs/Process/mutable-by-design.md" % key[0])
+        return "`%s` has a public setter and no entry in Docs/Process/mutable-by-design.md" % key[0]
+
     rows, register, exists = read_register(root, "mutable-by-design.md", "Symbol")
     match_register(findings, setters, rows, register, exists, ("Symbol", "File"), ("Symbol", "File", "Reason"), "IMM-2",
-                   lambda key: "`%s` has a public setter and no entry in Docs/Process/mutable-by-design.md" % key[0])
+                   describe_mutable, rule_of=lambda key: "IMM-1" if stored_kinds.get(key) == "internal" else "IMM-2")
 
     rows, register, exists = read_register(root, "open-declarations.md", "Symbol")
     match_register(findings, opens, rows, register, exists, ("Symbol", "File"), ("Symbol", "File", "Reason"), "VIS-1",

@@ -21,6 +21,7 @@ conformance            Activation : Swift.Sendable
 conformance            Activation : Swift.SendableMetatype
 conformance            ActivationSource : Swift.Sendable
 conformance            ActivationSource : Swift.SendableMetatype
+conformance            AdjustableSampleProcessor : SampleProcessor
 conformance            Amplification : Swift.CustomStringConvertible
 conformance            Amplification : Swift.Equatable
 conformance            Amplification : Swift.Hashable
@@ -54,7 +55,6 @@ conformance            BiquadSection : Swift.Equatable
 conformance            BiquadSection : Swift.Hashable
 conformance            BiquadSection : Swift.Sendable
 conformance            BiquadSection : Swift.SendableMetatype
-conformance            BlockSizeKey : DSPEnvironmentKey
 conformance            BoundResult : Swift.Equatable
 conformance            BoundResult : Swift.Hashable
 conformance            BoundResult : Swift.Sendable
@@ -71,7 +71,6 @@ conformance            BufferSource : PullSampleSource
 conformance            BufferSource : SampleSource
 conformance            BufferSource : Swift.Sendable
 conformance            BufferSource : Swift.SendableMetatype
-conformance            ChannelCountKey : DSPEnvironmentKey
 conformance            ChannelPolicy : Swift.Equatable
 conformance            ChannelPolicy : Swift.Hashable
 conformance            ChannelPolicy : Swift.Sendable
@@ -178,7 +177,6 @@ conformance            FeatureFrame : Swift.Equatable
 conformance            FeatureFrame : Swift.Hashable
 conformance            FeatureFrame : Swift.Sendable
 conformance            FeatureFrame : Swift.SendableMetatype
-conformance            FeatureRateKey : DSPEnvironmentKey
 conformance            FeatureSink : Swift.Sendable
 conformance            FeatureSink : Swift.SendableMetatype
 conformance            FeatureStream : FeatureSink
@@ -216,14 +214,11 @@ conformance            FrameFormat : Swift.Equatable
 conformance            FrameFormat : Swift.Hashable
 conformance            FrameFormat : Swift.Sendable
 conformance            FrameFormat : Swift.SendableMetatype
-conformance            FrameSizeKey : DSPEnvironmentKey
 conformance            Frequency : Swift.CustomStringConvertible
 conformance            Frequency : Swift.Equatable
 conformance            Frequency : Swift.Hashable
 conformance            Frequency : Swift.Sendable
 conformance            Frequency : Swift.SendableMetatype
-conformance            FrequencyAxisKey : DSPEnvironmentKey
-conformance            FrequencyResolutionKey : DSPEnvironmentKey
 conformance            GeneratorSource : PullSampleSource
 conformance            GeneratorSource : SampleSource
 conformance            GeneratorSource : Swift.Sendable
@@ -244,7 +239,6 @@ conformance            HTKMelFormula : Swift.Sendable
 conformance            HTKMelFormula : Swift.SendableMetatype
 conformance            HeatmapFeed : Swift.Sendable
 conformance            HeatmapFeed : Swift.SendableMetatype
-conformance            HopSizeKey : DSPEnvironmentKey
 conformance            Implementation : Swift.CaseIterable
 conformance            Implementation : Swift.Decodable
 conformance            Implementation : Swift.Encodable
@@ -255,7 +249,6 @@ conformance            Implementation : Swift.Sendable
 conformance            Implementation : Swift.SendableMetatype
 conformance            ImplementationKey : DSPEnvironmentKey
 conformance            ImplementationKey : SettableDSPEnvironmentKey
-conformance            IsRealTimeKey : DSPEnvironmentKey
 conformance            KernelSpec : Swift.Equatable
 conformance            KernelSpec : Swift.Hashable
 conformance            KernelSpec : Swift.Sendable
@@ -264,7 +257,6 @@ conformance            Lags : RealVectorDomain
 conformance            Lags : SignalDomain
 conformance            Lags : Swift.Sendable
 conformance            Lags : Swift.SendableMetatype
-conformance            LatencyKey : DSPEnvironmentKey
 conformance            LinearFrequency : SpectralAxis
 conformance            LinearFrequency : Swift.Sendable
 conformance            LinearFrequency : Swift.SendableMetatype
@@ -317,7 +309,7 @@ conformance            Novelty : ScalarValuedDomain
 conformance            Novelty : SignalDomain
 conformance            Novelty : Swift.Sendable
 conformance            Novelty : Swift.SendableMetatype
-conformance            NyquistFrequencyKey : DSPEnvironmentKey
+conformance            OutOfPlaceSampleProcessor : SampleProcessor
 conformance            Pacing : Swift.Equatable
 conformance            Pacing : Swift.Hashable
 conformance            Pacing : Swift.Sendable
@@ -406,7 +398,6 @@ conformance            RouteChange : Swift.Equatable
 conformance            RouteChange : Swift.Hashable
 conformance            RouteChange : Swift.Sendable
 conformance            RouteChange : Swift.SendableMetatype
-conformance            SampleRateKey : DSPEnvironmentKey
 conformance            SampleSource : Swift.Sendable
 conformance            SampleSource : Swift.SendableMetatype
 conformance            SampledSequence : SignalDomain
@@ -471,10 +462,6 @@ conformance            SignalFormat : Swift.Equatable
 conformance            SignalFormat : Swift.Hashable
 conformance            SignalFormat : Swift.Sendable
 conformance            SignalFormat : Swift.SendableMetatype
-conformance            SinkDescription : Swift.Equatable
-conformance            SinkDescription : Swift.Hashable
-conformance            SinkDescription : Swift.Sendable
-conformance            SinkDescription : Swift.SendableMetatype
 conformance            SlaneyMelFormula : MelFormula
 conformance            SlaneyMelFormula : Swift.Equatable
 conformance            SlaneyMelFormula : Swift.Hashable
@@ -490,7 +477,6 @@ conformance            SourceKind : Swift.Equatable
 conformance            SourceKind : Swift.Hashable
 conformance            SourceKind : Swift.Sendable
 conformance            SourceKind : Swift.SendableMetatype
-conformance            SourceKindKey : DSPEnvironmentKey
 conformance            SpectralAxis : Swift.Sendable
 conformance            SpectralAxis : Swift.SendableMetatype
 conformance            SpectralValues : Swift.Sendable
@@ -589,9 +575,7 @@ swift.enum             AnalysisScheduling : enum AnalysisScheduling
 swift.enum             BackgroundWork : enum BackgroundWork
 swift.enum             BiquadPrecision : enum BiquadPrecision
 swift.enum             BiquadPrecisionKey : enum BiquadPrecisionKey
-swift.enum             BlockSizeKey : enum BlockSizeKey
 swift.enum             BoundResult.Kind : enum Kind
-swift.enum             ChannelCountKey : enum ChannelCountKey
 swift.enum             ChannelPolicy : enum ChannelPolicy
 swift.enum             Chroma : enum Chroma
 swift.enum             ComplexValues : enum ComplexValues
@@ -604,28 +588,20 @@ swift.enum             DomainTag.Axis : enum Axis
 swift.enum             DomainTag.FrameKind : enum FrameKind
 swift.enum             DomainTag.Values : enum Values
 swift.enum             Envelope : enum Envelope
-swift.enum             FeatureRateKey : enum FeatureRateKey
 swift.enum             FeedAxis : enum FeedAxis
 swift.enum             FeedAxis.Unit : enum Unit
 swift.enum             FeedSnapshot.Content : enum Content
 swift.enum             FrameFormat : enum FrameFormat
-swift.enum             FrameSizeKey : enum FrameSizeKey
-swift.enum             FrequencyAxisKey : enum FrequencyAxisKey
-swift.enum             FrequencyResolutionKey : enum FrequencyResolutionKey
-swift.enum             HopSizeKey : enum HopSizeKey
 swift.enum             Implementation : enum Implementation
 swift.enum             ImplementationKey : enum ImplementationKey
-swift.enum             IsRealTimeKey : enum IsRealTimeKey
 swift.enum             KernelSpec : enum KernelSpec
 swift.enum             Lags : enum Lags
-swift.enum             LatencyKey : enum LatencyKey
 swift.enum             LinearFrequency : enum LinearFrequency
 swift.enum             MagnitudeValues : enum MagnitudeValues
 swift.enum             MelCepstrum : enum MelCepstrum
 swift.enum             MelFrequency : enum MelFrequency
 swift.enum             MemoryPressureLevel : enum MemoryPressureLevel
 swift.enum             Novelty : enum Novelty
-swift.enum             NyquistFrequencyKey : enum NyquistFrequencyKey
 swift.enum             Pacing : enum Pacing
 swift.enum             PipelineBuilder : @resultBuilder enum PipelineBuilder
 swift.enum             PowerValues : enum PowerValues
@@ -635,7 +611,6 @@ swift.enum             ReplanReason : enum ReplanReason
 swift.enum             ResultRateKey : enum ResultRateKey
 swift.enum             RollOffRounding : enum RollOffRounding
 swift.enum             RouteChange : enum RouteChange
-swift.enum             SampleRateKey : enum SampleRateKey
 swift.enum             Samples : enum Samples
 swift.enum             Scalar : enum Scalar
 swift.enum             ScalarBindingTarget : enum ScalarBindingTarget
@@ -645,7 +620,6 @@ swift.enum             SessionEvent : enum SessionEvent
 swift.enum             SessionState : enum SessionState
 swift.enum             SourceEvent : enum SourceEvent
 swift.enum             SourceKind : enum SourceKind
-swift.enum             SourceKindKey : enum SourceKindKey
 swift.enum             Spectrum : enum Spectrum<Axis, Values> where Axis : SpectralAxis, Values : SpectralValues
 swift.enum             StageActivation : enum StageActivation
 swift.enum             StageDescription.Kind : enum Kind
@@ -840,7 +814,6 @@ swift.func.op          CustomProcessor.==(_:_:) : static func == (lhs: CustomPro
 swift.func.op          DomainRule.==(_:_:) : static func == (lhs: DomainRule, rhs: DomainRule) -> Bool
 swift.func.op          ParameterVector.+(_:_:) : static func + (lhs: ParameterVector, rhs: ParameterVector) -> ParameterVector
 swift.func.op          ParameterVector.-(_:_:) : static func - (lhs: ParameterVector, rhs: ParameterVector) -> ParameterVector
-swift.func.op          SinkDescription.==(_:_:) : static func == (lhs: SinkDescription, rhs: SinkDescription) -> Bool
 swift.init             AlignedBuffer.init(copying:alignment:) : convenience init(copying elements: some Collection<Element>, alignment: Int = 64) throws(DSPError)
 swift.init             AlignedBuffer.init(count:alignment:) : init(count: Int, alignment: Int = 64) throws(DSPError)
 swift.init             AnalysisStep.init(name:key:output:scope:latency:make:) : init(name: String, key: some Hashable & Sendable, output: FrameFormat, scope: ScopeChange = .none, latency: TimeInterval = 0, make: @escaping @Sendable () throws(DSPError) -> any AnalysisNode)
@@ -858,7 +831,9 @@ swift.init             ComplexFrame.init(real:imaginary:index:time:) : init(real
 swift.init             CrossoverTable.init(elementwise:reductionSIMD:reductionAccelerate:laneExchange:gainKernel:biquadKernel:firPartitioned:convolutionFFTFactor:melDense:medianGPU:polynomialClosedForm:) : init(elementwise: Int = Vector.Crossover.elementwise, reductionSIMD: Int = Vector.Crossover.reductionSIMD, reductionAccelerate: Int = Vector.Crossover.reductionAccelerate, laneExchange: Int = 1_024, gainKernel: Int = 512, biquadKernel: Int = 4, firPartitioned: Int = 256, convolutionFFTFactor: Double = 4, melDense: Int = 1 << 20, medianGPU: Int = 1 << 24, polynomialClosedForm: Int = 2)
 swift.init             CrossoverTable.init(from:) : init(from decoder: any Decoder) throws
 swift.init             CustomKernel.init(name:key:interpolation:decimation:latencyFrames:make:) : init(name: String, key: some Hashable & Sendable, interpolation: Int = 1, decimation: Int = 1, latencyFrames: Int = 0, make: @escaping @Sendable (Int, Double, Int) -> ztd_kernel_t)
+swift.init             CustomKernel.init(name:key:values:interpolation:decimation:latencyFrames:make:) : init(name: String, key: some Hashable & Sendable, values: [Double], interpolation: Int = 1, decimation: Int = 1, latencyFrames: Int = 0, make: @escaping @Sendable (Int, Double, Int, [Double]) -> ztd_kernel_t)
 swift.init             CustomProcessor.init(name:key:latencyFrames:make:) : init(name: String, key: some Hashable & Sendable, latencyFrames: Int = 0, make: @escaping @Sendable (DSPEnvironment) throws(DSPError) -> any SampleProcessor)
+swift.init             CustomProcessor.init(name:key:values:latencyFrames:make:) : init(name: String, key: some Hashable & Sendable, values: [Double], latencyFrames: Int = 0, make: @escaping @Sendable (DSPEnvironment, [Double]) throws(DSPError) -> any AdjustableSampleProcessor)
 swift.init             DSPEngine.init(blockSize:crossovers:) : init(blockSize: Int = 512, crossovers: CrossoverTable = .shipped)
 swift.init             DSPEnvironment.init(sampleRate:channelCount:blockSize:isRealTime:) : init(sampleRate: Double = 48_000, channelCount: Int = 1, blockSize: Int = 512, isRealTime: Bool = false)
 swift.init             DomainRule.init(_:_:) : init(_ name: String, _ transform: @escaping @Sendable (DomainTag) -> DomainTag?)
@@ -920,6 +895,7 @@ swift.method           ActivatedSequenceStage.lower(_:) : func lower(_ context: 
 swift.method           ActivatedSequenceStage.replacingParameters(_:) : func replacingParameters(_ values: ArraySlice<Double>) -> ActivatedSequenceStage<Base>
 swift.method           ActivatedStage.lower(_:) : func lower(_ context: inout LoweringContext) throws(DSPError)
 swift.method           ActivatedStage.replacingParameters(_:) : func replacingParameters(_ values: ArraySlice<Double>) -> ActivatedStage<Base>
+swift.method           AdjustableSampleProcessor.setValues(_:) : func setValues(_ values: UnsafeBufferPointer<Double>)
 swift.method           AlignedBuffer.clear() : func clear()
 swift.method           AlignedBuffer.copy(from:count:) : func copy(from source: UnsafePointer<Element>, count elements: Int)
 swift.method           AlignedBuffer.fill(with:) : func fill(with value: Element)
@@ -1044,6 +1020,7 @@ swift.method           Measuring.lower(_:) : func lower(_ context: inout Lowerin
 swift.method           MedianNetwork.median(of:) : func median(of values: inout [Float]) -> Float
 swift.method           MelFormula.hertz(fromMel:) : func hertz(fromMel mel: Double) -> Double
 swift.method           MelFormula.mel(fromHertz:) : func mel(fromHertz hertz: Double) -> Double
+swift.method           OutOfPlaceSampleProcessor.process(_:into:) : func process(_ input: AudioBlock, into output: inout AudioBlock)
 swift.method           OverlapAdder.add(_:into:) : func add(_ frame: UnsafePointer<Float>, into output: UnsafeMutablePointer<Float>)
 swift.method           OverlapAdder.flush(into:) : func flush(into output: UnsafeMutablePointer<Float>)
 swift.method           OverlapAdder.reset() : func reset()
@@ -1103,7 +1080,6 @@ swift.method           SequenceChain.lower(_:) : func lower(_ context: inout Low
 swift.method           SequenceStage.active(_:) : func active(_ isActive: some ActivationSource) -> ActivatedSequenceStage<Self>
 swift.method           SignalFormat.withChannelCount(_:) : func withChannelCount(_ count: Int) -> SignalFormat
 swift.method           SignalFormat.withSampleRate(_:) : func withSampleRate(_ rate: Double) -> SignalFormat
-swift.method           SinkDescription.hash(into:) : func hash(into hasher: inout Hasher)
 swift.method           SlaneyMelFormula.hertz(fromMel:) : func hertz(fromMel mel: Double) -> Double
 swift.method           SlaneyMelFormula.mel(fromHertz:) : func mel(fromHertz hertz: Double) -> Double
 swift.method           SourceEventChannel.send(_:) : func send(_ event: SourceEvent)
@@ -1201,9 +1177,11 @@ swift.property         CustomKernel.interpolation : let interpolation: Int
 swift.property         CustomKernel.key : let key: AnyStrategy
 swift.property         CustomKernel.latencyFrames : let latencyFrames: Int
 swift.property         CustomKernel.name : let name: String
+swift.property         CustomKernel.values : let values: [Double]
 swift.property         CustomProcessor.key : let key: AnyStrategy
 swift.property         CustomProcessor.latencyFrames : let latencyFrames: Int
 swift.property         CustomProcessor.name : let name: String
+swift.property         CustomProcessor.values : let values: [Double]
 swift.property         DSPEngine.analysisScheduling : var analysisScheduling: AnalysisScheduling { get }
 swift.property         DSPEngine.blockSize : var blockSize: Int { get }
 swift.property         DSPEngine.crossovers : var crossovers: CrossoverTable { get }
@@ -1448,12 +1426,14 @@ swift.property         Window.isSymmetric : let isSymmetric: Bool
 swift.property         Window.periodic : var periodic: Window { get }
 swift.property         Window.symmetric : var symmetric: Window { get }
 swift.protocol         ActivationSource : protocol ActivationSource : Sendable
+swift.protocol         AdjustableSampleProcessor : protocol AdjustableSampleProcessor : SampleProcessor
 swift.protocol         AnalysisNode : protocol AnalysisNode : AnyObject
 swift.protocol         DSPEnvironmentKey : protocol DSPEnvironmentKey
 swift.protocol         FeatureSink : protocol FeatureSink : AnyObject, Sendable
 swift.protocol         LinearValued : protocol LinearValued : RealValued
 swift.protocol         MATLABExportable : protocol MATLABExportable : Sendable
 swift.protocol         MelFormula : protocol MelFormula : Hashable, Sendable
+swift.protocol         OutOfPlaceSampleProcessor : protocol OutOfPlaceSampleProcessor : SampleProcessor
 swift.protocol         PipelineContent : protocol PipelineContent : Hashable, Sendable
 swift.protocol         PipelineStage : protocol PipelineStage : StageValue
 swift.protocol         PullSampleSource : protocol PullSampleSource : SampleSource
@@ -1524,7 +1504,6 @@ swift.struct           RollOff : struct RollOff
 swift.struct           ScalarFrame : struct ScalarFrame
 swift.struct           SequenceChain : struct SequenceChain
 swift.struct           SignalFormat : struct SignalFormat
-swift.struct           SinkDescription : struct SinkDescription
 swift.struct           SlaneyMelFormula : struct SlaneyMelFormula
 swift.struct           StageDescription : struct StageDescription
 swift.struct           StagePath : struct StagePath
@@ -1663,8 +1642,6 @@ swift.type.property    Amplification.unity : static let unity: Amplification
 swift.type.property    BackgroundWork.isCurrent : static var isCurrent: Bool { get }
 swift.type.property    BiquadPrecisionKey.defaultValue : static var defaultValue: BiquadPrecision { get }
 swift.type.property    BiquadSection.identity : static let identity: BiquadSection
-swift.type.property    BlockSizeKey.defaultValue : static var defaultValue: Int { get }
-swift.type.property    ChannelCountKey.defaultValue : static var defaultValue: Int { get }
 swift.type.property    Chroma.tag : static var tag: DomainTag { get }
 swift.type.property    Complex.i : static let i: Complex
 swift.type.property    Complex.one : static let one: Complex
@@ -1680,18 +1657,11 @@ swift.type.property    DecibelValues.valuesTag : static var valuesTag: DomainTag
 swift.type.property    DomainRule.any : static let any: DomainRule
 swift.type.property    DomainRule.sequence : static let sequence: DomainRule
 swift.type.property    Envelope.tag : static var tag: DomainTag { get }
-swift.type.property    FeatureRateKey.defaultValue : static var defaultValue: Double? { get }
 swift.type.property    FeedAxis.pitchClassNames : static let pitchClassNames: [String]
-swift.type.property    FrameSizeKey.defaultValue : static var defaultValue: Int? { get }
-swift.type.property    FrequencyAxisKey.defaultValue : static var defaultValue: FeedAxis? { get }
-swift.type.property    FrequencyResolutionKey.defaultValue : static var defaultValue: Double? { get }
 swift.type.property    GeneratorSource.Signal.silence : static var silence: GeneratorSource.Signal { get }
 swift.type.property    GeneratorSource.maximumChannelCount : static let maximumChannelCount: Int
-swift.type.property    HopSizeKey.defaultValue : static var defaultValue: Int? { get }
 swift.type.property    ImplementationKey.defaultValue : static var defaultValue: Implementation { get }
-swift.type.property    IsRealTimeKey.defaultValue : static var defaultValue: Bool { get }
 swift.type.property    Lags.tag : static var tag: DomainTag { get }
-swift.type.property    LatencyKey.defaultValue : static var defaultValue: TimeInterval { get }
 swift.type.property    LinearFrequency.axisTag : static var axisTag: DomainTag.Axis { get }
 swift.type.property    MATLABScript.elementLimit : static let elementLimit: Int
 swift.type.property    MagnitudeValues.valuesTag : static var valuesTag: DomainTag.Values { get }
@@ -1701,19 +1671,16 @@ swift.type.property    MelFormula.htk : static var htk: HTKMelFormula { get }
 swift.type.property    MelFormula.slaney : static var slaney: SlaneyMelFormula { get }
 swift.type.property    MelFrequency.axisTag : static var axisTag: DomainTag.Axis { get }
 swift.type.property    Novelty.tag : static var tag: DomainTag { get }
-swift.type.property    NyquistFrequencyKey.defaultValue : static var defaultValue: Double { get }
 swift.type.property    ParameterVector.zero : static let zero: ParameterVector
 swift.type.property    PowerValues.valuesTag : static var valuesTag: DomainTag.Values { get }
 swift.type.property    Quefrency.tag : static var tag: DomainTag { get }
 swift.type.property    ResultRateKey.defaultValue : static var defaultValue: Double { get }
 swift.type.property    RollOff.decibelsPerDecadePerOrder : static let decibelsPerDecadePerOrder: Double
 swift.type.property    RollOff.decibelsPerOctavePerOrder : static let decibelsPerOctavePerOrder: Double
-swift.type.property    SampleRateKey.defaultValue : static var defaultValue: Double { get }
 swift.type.property    Samples.tag : static var tag: DomainTag { get }
 swift.type.property    Scalar.tag : static var tag: DomainTag { get }
 swift.type.property    ScalarFrame.none : static let none: ScalarFrame
 swift.type.property    SignalDomain.tag : static var tag: DomainTag { get }
-swift.type.property    SourceKindKey.defaultValue : static var defaultValue: SourceKind { get }
 swift.type.property    SpectralAxis.axisTag : static var axisTag: DomainTag.Axis { get }
 swift.type.property    SpectralValues.valuesTag : static var valuesTag: DomainTag.Values { get }
 swift.type.property    Spectrum.tag : static var tag: DomainTag { get }

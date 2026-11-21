@@ -7,6 +7,12 @@
 #include "ztd_internal.h"
 #include "ztd_vdsp.h"
 
+/* Every product and every sum here is rounded on its own, in the order written: the ramp of the
+   cascade is then the gain kernel's closed form to the float (ztd_gain.c), and a gain stage and a
+   gain per channel ramp alike. Fused, `target - increment * left` rounds once and gives other
+   floats on part of a ramp. */
+#pragma STDC FP_CONTRACT OFF
+
 /* --- Gain cascade --------------------------------------------------------------------------- */
 
 typedef struct ztd_gain_stage {
@@ -166,15 +172,23 @@ static void ztd_nested_destroy(void *state) {
 ztd_kernel_t ztd_plan_as_kernel(ztd_plan_t *plan) {
     ztd_kernel_t kernel = ztd_kernel_null();
     if (!plan) return kernel;
-    uint32_t settling = 0;
-    for (uint32_t index = 0; index < ztd_plan_count(plan); index++) settling += ztd_plan_kernel(plan, index).settling_frames;
+    /* Both sums are made in a type that holds them. A latency is what everything downstream is
+       timed by: a sum the kernel cannot state is no kernel. A settling time is only run for:
+       it stays at the largest count. */
+    uint64_t latency = 0, settling = 0;
+    for (uint32_t index = 0; index < ztd_plan_count(plan); index++) {
+        const ztd_kernel_t inner = ztd_plan_kernel(plan, index);
+        latency += inner.latency_frames;
+        settling += inner.settling_frames;
+    }
+    if (latency > UINT32_MAX) return kernel;
     kernel.process = ztd_nested_process;
     kernel.command = ztd_nested_command;
     kernel.reset = ztd_nested_reset;
     kernel.destroy = ztd_nested_destroy;
     kernel.state = plan;
-    kernel.latency_frames = ztd_plan_latency(plan);
-    kernel.settling_frames = settling;
+    kernel.latency_frames = (uint32_t)latency;
+    kernel.settling_frames = settling > UINT32_MAX ? UINT32_MAX : (uint32_t)settling;
     return kernel;
 }
 

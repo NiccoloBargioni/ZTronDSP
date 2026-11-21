@@ -227,6 +227,40 @@ struct HostedPinchTests {
         #expect(PinchPath.current == .touches, "this run is on iOS 18 or later")
     }
 
+    /// Before iOS 18 a pinch whose fingers land together gives the tracker no finger line:
+    /// the drag half of the gestures reports nothing (WP-818). With both axes enabled such
+    /// a pinch scales both: the time span and the frequency range (PINCH-8).
+    @Test(arguments: [PinchPath.magnify, .legacy])
+    func aPinchWhoseFingerLineIsNotKnownScalesEveryEnabledAxis(path: PinchPath) async throws {
+        let feed = try spectrum()
+        let watch = Watch(), handle = StateHandle<Knobs>()
+        let hosted = await host(handle, watch) { knobs in
+            SpectrogramView(feed: feed)
+                .timeSpan(knobs.span)
+                .frequencyRange(0 ... knobs.wrappedValue.top)
+                .pinchScaling([.horizontal, .vertical])
+                .environment(\.dspPinchPath, path)
+        }
+        defer { hosted.close() }
+        #expect(await eventually { watch.script.isHeard })
+        // What the gestures of this path report of two fingers that land together and move
+        // apart to twice their distance, around the middle of the view.
+        let middle = CGPoint(x: 100, y: 100)
+        switch path {
+        case .magnify:
+            watch.script.feed(.magnification(scale: 1, start: middle, firstFingerStart: nil))
+            watch.script.feed(.magnification(scale: 2, start: middle, firstFingerStart: nil))
+        default:
+            watch.script.feed(.legacy(scale: 1, firstFingerStart: nil, firstFingerTravel: nil))
+            watch.script.feed(.legacy(scale: 2, firstFingerStart: nil, firstFingerTravel: nil))
+        }
+        #expect(await eventually { handle.value?.span == 1.5 }, "twice the distance: half the time span, \(String(describing: handle.value?.span))")
+        watch.script.end()
+        #expect(await eventually { watch.inspector.heatmap?.timeSpan == 1.5 })
+        #expect(await eventually { watch.inspector.heatmap?.rowRange == 6_000 ... 18_000 },
+                "and half the frequency range, around the middle: \(String(describing: watch.inspector.heatmap?.rowRange))")
+    }
+
     // MARK: A tempogram and a chromagram
 
     @Test func aTempogramScalesItsTempoRange() async throws {

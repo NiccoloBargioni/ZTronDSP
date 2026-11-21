@@ -10,7 +10,7 @@ typedef struct ztd_switch {
     ztd_switch_state_t state;
     ztd_crossfade_t fade;
     uint32_t fade_frames;
-    uint32_t preroll_frames;    /* the kernel's latency plus its settling time (ACT-7) */
+    uint32_t preroll_frames;    /* how long the kernel runs unheard before it is faded in (ACT-7) */
     uint32_t preroll_position;
     uint32_t latency;           /* frames of the delay line on the unprocessed path (ACT-8); 0: none */
     uint32_t delay_position;    /* where the oldest sample of each delay line sits */
@@ -121,7 +121,10 @@ bool ztd_plan_make_switchable(ztd_plan_t *plan, uint32_t index, uint32_t fade_fr
     if (!sw) return false;
     sw->state = active ? ZTD_SWITCH_ACTIVE : ZTD_SWITCH_BYPASSED;
     sw->fade_frames = fade_frames > 0 ? fade_frames : 1;
-    sw->preroll_frames = entry->kernel.latency_frames + entry->kernel.settling_frames;
+    /* The kernel's latency plus its settling time (ACT-7), added in a type that holds the sum:
+       a kernel that states more than a switch can count is run for the largest count. */
+    const uint64_t preroll = (uint64_t)entry->kernel.latency_frames + entry->kernel.settling_frames;
+    sw->preroll_frames = preroll > UINT32_MAX ? UINT32_MAX : (uint32_t)preroll;
     sw->latency = entry->kernel.latency_frames;
     if (sw->latency > 0) {
         sw->delay = ztd_channel_table(plan->channels, sw->latency);
@@ -132,6 +135,12 @@ bool ztd_plan_make_switchable(ztd_plan_t *plan, uint32_t index, uint32_t fade_fr
         }
     }
     entry->sw = sw;
+    return true;
+}
+
+bool ztd_plan_set_switch_preroll(ztd_plan_t *plan, uint32_t index, uint32_t frames) {
+    if (!plan || index >= plan->count || !plan->entries[index].sw) return false;
+    plan->entries[index].sw->preroll_frames = frames;
     return true;
 }
 
@@ -167,9 +176,10 @@ ztd_kernel_t ztd_plan_kernel(const ztd_plan_t *plan, uint32_t index) ZTD_NONBLOC
 }
 
 uint32_t ztd_plan_latency(const ztd_plan_t *plan) ZTD_NONBLOCKING {
-    uint32_t total = 0;
+    /* Added in a type that holds the sum of any plan's kernels (at most 2^24 of them). */
+    uint64_t total = 0;
     for (uint32_t index = 0; index < plan->count; index++) total += plan->entries[index].kernel.latency_frames;
-    return total;
+    return total > UINT32_MAX ? UINT32_MAX : (uint32_t)total;
 }
 
 /* --- The unprocessed path of a switched stage ----------------------------------------------- */
@@ -262,7 +272,8 @@ static uint32_t ztd_entry_run(ztd_entry_t *entry, const float *const *in, float 
         /* The kernel runs so that its state settles; what it writes is discarded. */
         entry->kernel.process(entry->kernel.state, in, out, channels, frames);
         ztd_copy_block(dry, out, channels, frames);
-        sw->preroll_position += frames;
+        /* Counted without wrapping, so a pre-roll of the largest count ends too. */
+        sw->preroll_position = frames > UINT32_MAX - sw->preroll_position ? UINT32_MAX : sw->preroll_position + frames;
         if (sw->preroll_position >= sw->preroll_frames) {
             sw->state = ZTD_SWITCH_FADING_IN;
             ztd_crossfade_begin(&sw->fade, sw->fade_frames);

@@ -26,16 +26,18 @@ protocol BuiltInDSPEnvironmentKey: DSPEnvironmentKey {
 ///
 /// Usable on any thread.
 public struct DSPEnvironment: Hashable, Sendable {
-    var storedSampleRate: Double
-    var storedChannelCount: Int
-    var storedBlockSize: Int
-    var storedFrameSize: Int?
-    var storedHopSize: Int?
-    var storedAxis: FeedAxis?
-    var storedLatency: TimeInterval
-    var storedIsRealTime: Bool
-    var storedSourceKind: SourceKind
-    var overrides: [ObjectIdentifier: AnyStrategy]
+    // Set only on a fresh copy, by the positional changes below, each of which returns it as a
+    // new environment (IMM-5): no setter reaches outside the type (IMM-1).
+    private(set) var storedSampleRate: Double
+    private(set) var storedChannelCount: Int
+    private(set) var storedBlockSize: Int
+    private(set) var storedFrameSize: Int?
+    private(set) var storedHopSize: Int?
+    private(set) var storedAxis: FeedAxis?
+    private(set) var storedLatency: TimeInterval
+    private(set) var storedIsRealTime: Bool
+    private(set) var storedSourceKind: SourceKind
+    private(set) var overrides: [ObjectIdentifier: AnyStrategy]
 
     /// An environment at the start of a signal: no spectral scope, no latency.
     ///
@@ -239,74 +241,74 @@ public struct DSPEnvironment: Hashable, Sendable {
 // MARK: Built-in keys
 
 /// Samples per second of the sequence at this point. Derived.
-public enum SampleRateKey: BuiltInDSPEnvironmentKey {
-    public static var defaultValue: Double { 48_000 }
+enum SampleRateKey: BuiltInDSPEnvironmentKey {
+    static var defaultValue: Double { 48_000 }
     static func read(_ environment: DSPEnvironment) -> Double { environment.sampleRate }
 }
 
 /// Half the sample rate. Derived.
-public enum NyquistFrequencyKey: BuiltInDSPEnvironmentKey {
-    public static var defaultValue: Double { 24_000 }
+enum NyquistFrequencyKey: BuiltInDSPEnvironmentKey {
+    static var defaultValue: Double { 24_000 }
     static func read(_ environment: DSPEnvironment) -> Double { environment.nyquistFrequency }
 }
 
 /// Channels in the signal. Derived.
-public enum ChannelCountKey: BuiltInDSPEnvironmentKey {
-    public static var defaultValue: Int { 1 }
+enum ChannelCountKey: BuiltInDSPEnvironmentKey {
+    static var defaultValue: Int { 1 }
     static func read(_ environment: DSPEnvironment) -> Int { environment.channelCount }
 }
 
 /// Frames per processing block. Derived.
-public enum BlockSizeKey: BuiltInDSPEnvironmentKey {
-    public static var defaultValue: Int { 512 }
+enum BlockSizeKey: BuiltInDSPEnvironmentKey {
+    static var defaultValue: Int { 512 }
     static func read(_ environment: DSPEnvironment) -> Int { environment.blockSize }
 }
 
 /// The frame size inside a spectral scope. Derived.
-public enum FrameSizeKey: BuiltInDSPEnvironmentKey {
-    public static var defaultValue: Int? { nil }
+enum FrameSizeKey: BuiltInDSPEnvironmentKey {
+    static var defaultValue: Int? { nil }
     static func read(_ environment: DSPEnvironment) -> Int? { environment.frameSize }
 }
 
 /// The hop inside a spectral scope. Derived.
-public enum HopSizeKey: BuiltInDSPEnvironmentKey {
-    public static var defaultValue: Int? { nil }
+enum HopSizeKey: BuiltInDSPEnvironmentKey {
+    static var defaultValue: Int? { nil }
     static func read(_ environment: DSPEnvironment) -> Int? { environment.hopSize }
 }
 
 /// `sampleRate / frameSize` inside a spectral scope. Derived.
-public enum FrequencyResolutionKey: BuiltInDSPEnvironmentKey {
-    public static var defaultValue: Double? { nil }
+enum FrequencyResolutionKey: BuiltInDSPEnvironmentKey {
+    static var defaultValue: Double? { nil }
     static func read(_ environment: DSPEnvironment) -> Double? { environment.frequencyResolution }
 }
 
 /// `sampleRate / hopSize` inside a spectral scope. Derived.
-public enum FeatureRateKey: BuiltInDSPEnvironmentKey {
-    public static var defaultValue: Double? { nil }
+enum FeatureRateKey: BuiltInDSPEnvironmentKey {
+    static var defaultValue: Double? { nil }
     static func read(_ environment: DSPEnvironment) -> Double? { environment.featureRate }
 }
 
 /// What the bins are inside a spectral scope. Derived.
-public enum FrequencyAxisKey: BuiltInDSPEnvironmentKey {
-    public static var defaultValue: FeedAxis? { nil }
+enum FrequencyAxisKey: BuiltInDSPEnvironmentKey {
+    static var defaultValue: FeedAxis? { nil }
     static func read(_ environment: DSPEnvironment) -> FeedAxis? { environment.frequencyAxis }
 }
 
 /// The delay accumulated upstream, in seconds. Derived.
-public enum LatencyKey: BuiltInDSPEnvironmentKey {
-    public static var defaultValue: TimeInterval { 0 }
+enum LatencyKey: BuiltInDSPEnvironmentKey {
+    static var defaultValue: TimeInterval { 0 }
     static func read(_ environment: DSPEnvironment) -> TimeInterval { environment.latency }
 }
 
 /// Whether the signal arrives in real time. Derived.
-public enum IsRealTimeKey: BuiltInDSPEnvironmentKey {
-    public static var defaultValue: Bool { false }
+enum IsRealTimeKey: BuiltInDSPEnvironmentKey {
+    static var defaultValue: Bool { false }
     static func read(_ environment: DSPEnvironment) -> Bool { environment.isRealTime }
 }
 
 /// The kind of source. Derived; informational only.
-public enum SourceKindKey: BuiltInDSPEnvironmentKey {
-    public static var defaultValue: SourceKind { .offline }
+enum SourceKindKey: BuiltInDSPEnvironmentKey {
+    static var defaultValue: SourceKind { .offline }
     static func read(_ environment: DSPEnvironment) -> SourceKind { environment.sourceKind }
 }
 

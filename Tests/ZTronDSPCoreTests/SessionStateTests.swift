@@ -55,10 +55,15 @@ struct SessionStateTests {
     @Test func interruptionAndResumption() async throws {
         let source = ManualPushSource(format: format)
         let sink = CollectingSink<Samples>()
-        let session = try await attached(source, sink: sink)
+        let engine = DSPEngine(blockSize: 64)
+        let session = try await attached(source, to: engine, sink: sink)
         source.send(.interrupted)
         source.send(.resumed)
-        try? await Task.sleep(nanoseconds: 20_000_000)
+        // The engine is through with both events before the session starts: they are taken off
+        // the source (its listener waits for a third), and the control context has done what it
+        // was asked. Handled after the start they would interrupt and resume the running session.
+        #expect(await eventually(timeout: 30) { source.eventsAreTaken }, "the engine listens to the source")
+        engine.core.flush()
         #expect(session.state == .idle, "an idle session is not interrupted")
 
         try session.start()
@@ -84,7 +89,8 @@ struct SessionStateTests {
     @Test func endOfTheStream() async throws {
         let source = ManualPushSource(format: format)
         let sink = CollectingSink<Samples>()
-        let session = try await attached(source, sink: sink)
+        let engine = DSPEngine(blockSize: 64)
+        let session = try await attached(source, to: engine, sink: sink)
         try session.start()
         source.write(block + [0.25, 0.25, 0.25])
         source.send(.ended)
@@ -93,7 +99,9 @@ struct SessionStateTests {
         #expect(source.stops == 1)
         source.send(.interrupted)
         source.send(.failed(.sourceUnavailable(reason: "late")))
-        try? await Task.sleep(nanoseconds: 20_000_000)
+        // The engine is through with both events (see `interruptionAndResumption`).
+        #expect(await eventually(timeout: 30) { source.eventsAreTaken })
+        engine.core.flush()
         #expect(session.state == .finished, "a finished session takes no source event")
         session.stop()
         #expect(session.state == .idle, "stop from finished")

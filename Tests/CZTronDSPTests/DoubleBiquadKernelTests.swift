@@ -243,4 +243,60 @@ struct DoubleBiquadKernelTests {
         note(result.name, result.minimum, "ns")
         #expect(result.minimum > 0)
     }
+
+    /// RT-6 and the block size (ztd_kernels.h, "What that means for block sizes"). RT-6 fixes
+    /// the flush "at the end of each block", so the kernel is its recurrence with every state
+    /// value below the floor set to zero where its blocks end: bit for bit that, for any cut.
+    /// The header said "block-size invariant bit for bit" without the condition. The case that
+    /// shows it is the lowest corner of the precision grid with its gain spread: its later
+    /// sections start from silence through values far below the floor, and blocks of 1 clear
+    /// what blocks of 512 keep. Two cuts agree, bit for bit, as long as neither has cleared a
+    /// value the other kept: a cut that shares the blocks of another until every section has
+    /// left the floor behind gives the other's output.
+    @Test func theKernelIsItsRecurrenceWithTheFlushWhereItsBlocksEnd() {
+        let spread = withUnityGainSections(stressCascade("lp-10Hz-192k-order8").coefficients)
+        let noise = TestSignal.whiteNoise(count: 8_192, seed: 0x10F)
+        /// The recurrence of the header, in double precision, with RT-6 at the end of each block.
+        func recurrence(_ sizes: [Int]) -> [Float] {
+            var state = [Double](repeating: 0, count: 8)
+            var result: [Float] = []
+            var position = 0
+            for size in sizes {
+                for frame in position ..< position + size {
+                    var value = Double(noise[frame])
+                    for section in 0 ..< 4 {
+                        let output = spread[5 * section] * value + state[2 * section]
+                        state[2 * section] = spread[5 * section + 1] * value - spread[5 * section + 3] * output + state[2 * section + 1]
+                        state[2 * section + 1] = spread[5 * section + 2] * value - spread[5 * section + 4] * output
+                        value = output
+                    }
+                    result.append(Float(value))
+                }
+                position += size
+                for index in state.indices where state[index] < 1e-20 && state[index] > -1e-20 { state[index] = 0 }
+            }
+            return result
+        }
+        let single = Blocks.fixed(1), large = Blocks.fixed(512)
+        // Blocks of one frame for the first 2 048 frames, of 512 from there on.
+        let settled = 2_048
+        let shared = Blocks { total in [Int](repeating: 1, count: min(settled, total)) + Blocks.fixed(512).cut(max(total - settled, 0)) }
+        for blocks in [single, large, shared, .fixed(7), .irregular(seed: 6, upTo: 300)] {
+            let kernel = KernelRig(ztd_biquad_double_create(1, 4, spread), channels: 1).run(noise, blocks)
+            #expect(bits(kernel) == bits(recurrence(blocks.cut(noise.count))), "the kernel is the recurrence with the flush where its blocks end")
+        }
+
+        // The cuts differ while a section starts below the floor …
+        let framewise = recurrence(single.cut(noise.count)), blockwise = recurrence(large.cut(noise.count))
+        let first = framewise.indices.first { (index: Int) -> Bool in framewise[index] != blockwise[index] }
+        let peak = Double(framewise.map { abs($0) }.max() ?? 0)
+        let difference = zip(framewise, blockwise).map { (pair: (Float, Float)) -> Double in abs(Double(pair.0) - Double(pair.1)) }.max() ?? 0
+        note("lp-10Hz-192k-order8, gain spread: blocks of 1 against 512, first frame that differs", Double(first ?? -1))
+        note("lp-10Hz-192k-order8, gain spread: blocks of 1 against 512, largest difference", difference)
+        note("lp-10Hz-192k-order8, gain spread: blocks of 1 against 512, peak of the output", peak)
+        #expect(first != nil && (first ?? 512) < 512, "blocks of 1 clear what blocks of 512 keep: \(String(describing: first))")
+        #expect(difference > 0 && difference < 1e-6 * peak, "by little: \(difference) at a peak of \(peak)")
+        // … and not once every section has left the floor behind: the cut that shares the first 2 048 blocks.
+        #expect(bits(recurrence(shared.cut(noise.count))) == bits(framewise), "the same blocks while a state value is below the floor: the same output")
+    }
 }

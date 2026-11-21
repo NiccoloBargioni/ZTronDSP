@@ -10,9 +10,10 @@ import ZTronDSPTesting
 /// one request to the heap. The suite runs in Debug and in Release (CR-002).
 ///
 /// A processor and a kernel are objects of the suite's own, so the test runs them on its own
-/// thread inside `expectNoAllocations`. A node only runs inside a plan, and nothing public
-/// runs a plan block by block on the caller's thread, so every stage is also audited where it
-/// runs in an app: on an engine's thread, with `ThreadAllocationAudit`.
+/// thread inside `expectNoAllocations`. A node only runs inside a plan: `expectNoAllocationsRunning`
+/// runs one block by block on the test's own thread, so the node is held to RT-2 there as the
+/// stock stages are (EXT-3). Every stage is also audited where it runs in an app: on an
+/// engine's thread, with `ThreadAllocationAudit`.
 @Suite("Allocation audit", .disabled(if: AllocationAudit.isUnderThreadSanitizer, "the sanitizer's allocator hides the heap from the probe"))
 struct AllocationAuditTests {
     let noise = TestSignal.whiteNoise(count: 512, seed: 17, amplitude: 0.5)
@@ -67,6 +68,60 @@ struct AllocationAuditTests {
             }
         }
         #expect(buffer.array(ofChannel: 0).allSatisfy { $0.isFinite })
+    }
+
+    @Test func theGainProcessorRampsOutOfPlaceAThousandBlocksWithoutAllocating() throws {
+        // What a plan calls: one block read, another written, and new factors between two blocks,
+        // each a ramp of 480 frames that spans blocks, for every channel or one per channel.
+        let processor = try ExternalGainProcessor(factors: [0.5, -2], rampFrames: 480)
+        let input = try AudioBuffer(channels: [noise, noise])
+        let output = try AudioBuffer(channelCount: 3, capacity: 512)
+        let every: [Double] = [0.25], each: [Double] = [1, -0.5]
+        var warm = output.block()
+        processor.process(input.block(), into: &warm)
+        every.withUnsafeBufferPointer { every in
+            each.withUnsafeBufferPointer { each in
+                expectNoAllocations("ExternalGainProcessor out of place, 1 000 blocks of 512 frames with value updates") {
+                    var block = output.block()
+                    var index = 0
+                    while index < 1_000 {
+                        if index % 10 == 3 { processor.setValues(index % 20 == 3 ? every : each) }
+                        processor.process(input.block(), into: &block)
+                        if index == 700 { processor.reset() }
+                        index += 1
+                    }
+                }
+            }
+        }
+        #expect(output.array(ofChannel: 1).allSatisfy { $0.isFinite })
+    }
+
+    @Test func theMelNodeRunsOnTheTestsThreadWithoutAllocating() throws {
+        // The node in a plan that the test's own thread runs block by block (EXT-3): no engine,
+        // no thread of its own. Banded products of every length, then the dense product of 128
+        // bands of 8 193 bins, in blocks large enough that the transform is full before the
+        // audit opens.
+        typealias Mel = Spectrum<MelFrequency, PowerValues>
+        let banded = CollectingCount<Mel>()
+        let counts = try expectNoAllocationsRunning(
+            Pipeline { STFT(frame: 2_048, hop: 512); Power(); ExternalMelScale(bands: 128); Emit(to: banded) }, "ExternalMelScale, banded, on the test's thread")
+        #expect(counts.allocations == 0 && counts.deallocations == 0, "\(counts)")
+        #expect(banded.frames >= 1_000, "the node did run: \(banded.frames) frames")
+        let dense = CollectingCount<Mel>()
+        try expectNoAllocationsRunning(
+            Pipeline { STFT(frame: 16_384, hop: 512); Power(); ExternalMelScale(bands: 128); Emit(to: dense) }, blockSize: 4_096, blocks: 100,
+            "ExternalMelScale, dense, on the test's thread")
+        #expect(dense.frames >= 800, "the node did run: \(dense.frames) frames")
+        // The three stages of the suite in one plan, on this thread.
+        try expectNoAllocationsRunning(
+            Pipeline {
+                ExternalGain(.decibels(-3))
+                ExternalLowPass(.butterworth, cutoff: .hertz(8_000), order: 4)
+                Tap { STFT(frame: 1_024, hop: 256); Power(); ExternalMelScale(bands: 40); Emit(to: CollectingCount<Mel>()) }
+            }, "gain, low-pass and mel projection on the test's thread")
+        try expectNoAllocationsRunning(
+            Pipeline { ExternalGain(channels: [.decibels(-3), .linear(-1)]); ExternalLowPass(.butterworth, cutoff: .hertz(2_000), order: 6) },
+            format: SignalFormat(sampleRate: 44_100, channelCount: 2), blockSize: 333, "gain and low-pass, two channels in blocks of 333, on the test's thread")
     }
 
     @Test(arguments: [false, true])

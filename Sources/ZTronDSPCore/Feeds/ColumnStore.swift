@@ -5,9 +5,10 @@ import Foundation
 ///
 /// A plain value. Each reader has its own.
 public struct FeedCursor: Sendable, Hashable {
-    var layout: UInt64 = 0
-    var epoch: UInt64 = 0
-    var column: UInt64 = 0
+    // Moved only by the column store of this file, as a `read` takes columns (IMM-1).
+    fileprivate(set) var layout: UInt64 = 0
+    fileprivate(set) var epoch: UInt64 = 0
+    fileprivate(set) var column: UInt64 = 0
 
     public init() {}
 }

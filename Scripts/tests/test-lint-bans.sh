@@ -69,6 +69,32 @@ expect_contains "… or is approved without a date" "CR-010 carries no date unde
 expect_contains "… or is approved by nobody" "CR-011 names nobody under 'Approved by'"
 expect_contains "a stale allow-list entry is reported" "matches no code"
 
+# The gallery's application (brief 61, B3): the UIKit boundary holds there with no bridge, and it
+# does not `@testable import`; its hosted tests may do both (the trees hold unmarked cases of that).
+# In ZTronDSPUI's code the layer's `contentsScale` is not named (SZ-2, CR-027); a comment may.
+expect_status 1 "UIKit in the gallery's application fails part 1" "$LINT" --part 1 "$FIXTURES/part1"
+expect_contains "… the import, and where it may not be" "[UB-1] import UIKit: no file in the gallery's application imports UIKit or AppKit"
+expect_contains "… a UIKit name" "[UB-2] UIImpactFeedbackGenerator: a UIKit-style name (UI + capital) is not named in the gallery's application"
+expect_contains "… a name UIKit declares" "[UB-2] NSTextAlignment is declared by UIKit and is not named in the gallery's application"
+expect_lacks "… but not in its hosted tests" "GalleryTests/HostingSupport.swift"
+expect_contains "the layer's scale read in ZTronDSPUI fails part 1" "DrawableScale.swift:6: [SZ-2] \`contentsScale\` is not named in the code of ZTronDSPUI"
+expect_lacks "… a comment or a string that names it does not" "DrawableScale.swift:4:"
+expect_status 1 "\`@testable import\` in the gallery's application fails part 3" "$LINT" --part 3 "$FIXTURES/part3"
+expect_contains "… and says why" "Gallery/GalleryApp.swift:2: [EXT-1] \`@testable import\` is not used in the gallery's application"
+expect_lacks "… but its hosted tests may" "GalleryTests/HostedScreenTests.swift"
+
+# The stored `var`s of a public value type (IMM-1, IMM-2; WP-909): a public one whatever its
+# setter, and one the module can set, each without a row in the register.
+expect_status 1 "a stored \`var\` of a public value type fails part 4" "$LINT" --part 4 "$FIXTURES/part4"
+expect_contains "… a public one, whatever its setter (IMM-2)" "Values/Frequency.swift:5: [IMM-2] \`Frequency.resolved\` is a public stored \`var\` of a value type: it is \`let\`, or it has an entry in Docs/Process/mutable-by-design.md"
+expect_contains "… one the module can set (IMM-1)" "Values/Frequency.swift:8: [IMM-1] \`Frequency.scratch\` is a stored \`var\` of a public value type that the module can set: it is \`let\`, \`private(set)\` or \`fileprivate(set)\`, \`@usableFromInline\` when \`@inlinable\` code sets it (VIS-1), or it has an entry in Docs/Process/mutable-by-design.md"
+expect_contains "… one of a type declared in a public extension" "[IMM-1] \`Frequency.Inside.value\` is a stored \`var\`"
+expect_lacks "… but not one with a private setter" "\`Frequency.counted\`"
+expect_lacks "… nor one that \`@inlinable\` code sets (VIS-1)" "\`Frequency.inlined\`"
+expect_lacks "… nor a computed property with a setter" "\`Frequency.both\`"
+expect_lacks "… nor one of a reference type" "\`Store.history\`"
+expect_lacks "… nor one of an internal type" "\`Internal.value\`"
+
 expect_status 2 "an unknown part is a usage error" "$LINT" --part 5
 expect_status 2 "a missing tree is a usage error" "$LINT" "$FIXTURES/absent"
 expect_status 0 "the package itself is clean" "$LINT"

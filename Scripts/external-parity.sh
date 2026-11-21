@@ -26,9 +26,10 @@
 #             that shows a view.
 #   guide     No simulator. Docs/ExtensionGuide.md has a section for every row of §5.11.1 that
 #             says what to conform to, where it runs, what the author supplies, its latency and
-#             settling time and its threading contract; and every Swift or C block the guide
-#             shows is, character for character, a marked region of a file the external
-#             package compiles.
+#             settling time and its threading contract; every Swift or C block the guide shows
+#             is, character for character, a marked region of a file the external package
+#             compiles; and the guide is what Scripts/lib/extension_guide.py makes of its
+#             template, Docs/ExtensionGuide.template.md (edit the template, then run it).
 #   build     Builds the external package for testing, in Debug, for the simulator.
 #   test      Runs its tests in Debug: the three stages against their stock twins, bound
 #             switches, latency, settling and updates, the allocation audits, the examples of
@@ -37,14 +38,21 @@
 #             must compile does, and what must not fails with a sentence that names the step
 #             the user wrote (ORD-4).
 #   release   Builds it for testing in Release.
-#   audits    The allocation audits once more, in Release (CR-002).
+#   audits    The allocation audits once more, in Release (CR-002); then the guide's audit that
+#             opens before the first block, by itself, in a process of its own.
 #   speed     The speed check, in Release, by itself and one test at a time: every stage within
-#             5 % of its stock twin on blocks of 512 frames (§5.7).
+#             5 % of its stock twin on blocks of 512 frames (§5.7). The gain written as a
+#             SampleProcessor is at that bound and may miss it: a known issue that may stand
+#             here (CR-025 item 1).
 #
-# An expectation that is known to fail is shown with its test, never hidden: the control case
-# of the audits (a stage that allocates must be counted), and the findings about this package
-# that the suite states as tests. Such a test turns into a failure once what it reports is
-# fixed, so the list shrinks only on purpose.
+# An expectation that is known to fail is shown with its test, never hidden, and two may stand.
+# One is the control case of the audits, theProbeCountsWhatAnAllocatingStageDoes(): a stage that
+# allocates must be counted. The other is the bound of the gain written as a SampleProcessor,
+# in the speed check only (theGainAgainstTheStockGain()): out of place it is at 5 % of its stock
+# twin and over it in about half the launches, which CR-025 item 1 records; the bound is not
+# loosened. The other promises of EXT-1…EXT-4 are plain expectations: a known issue of any other
+# test, or of that one outside the speed check, is a promise stated as broken instead of kept,
+# and fails its step.
 #
 # Environment:
 #   ZTD_DEVICE                 the simulator, as Scripts/xc.sh takes it (created and booted if
@@ -55,6 +63,8 @@
 #                              with it would not be the product's.
 #   ZTD_EXTERNAL_TREE          the external package (default <package>/ExternalParity)
 #   ZTD_EXTERNAL_GUIDE         the guide (default <package>/Docs/ExtensionGuide.md)
+#   ZTD_EXTERNAL_TEMPLATE      the template the guide is made from (default: beside the guide,
+#                              <guide>.template.md)
 #   ZTD_EXTERNAL_SPECIFICATION the specification, for the rows of §5.11.1
 #   ZTD_EXTERNAL_SEEDED_VIOLATION
 #                              handed to the tests of the `test` step: `gain` makes the stock
@@ -73,6 +83,7 @@ ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 
 TREE="${ZTD_EXTERNAL_TREE:-$ROOT/ExternalParity}"
 GUIDE="${ZTD_EXTERNAL_GUIDE:-$ROOT/Docs/ExtensionGuide.md}"
+TEMPLATE="${ZTD_EXTERNAL_TEMPLATE:-${GUIDE%.md}.template.md}"
 SPECIFICATION="${ZTD_EXTERNAL_SPECIFICATION:-$ROOT/Docs/Specification/ZTronDSP-SPEC.md}"
 DERIVED="${ZTD_EXTERNAL_DERIVED:-$ROOT/.build/external-parity}"
 XC="${ZTD_EXTERNAL_XC:-$ROOT/Scripts/xc.sh}"
@@ -81,7 +92,10 @@ FIXTURES="${ZTD_EXTERNAL_FIXTURES:-$ROOT/Scripts/compile-fixtures.sh}"
 SCHEME="ExternalParity-Package"
 STEPS="rules guide build test fixtures release audits speed"
 AUDIT_SUITES="ExternalStagesTests/AllocationAuditTests ExtensionGuideTests/GuideAllocationAuditTests"
+FIRST_BLOCK_AUDIT="ExtensionGuideTests/GuideAllocationAuditTests/theProcessorOfRowTwoAllocatesNothingFromItsFirstBlock()"
 SPEED_SUITE="ExternalStagesTests/SpeedTests"
+CONTROL_CASE="theProbeCountsWhatAnAllocatingStageDoes()"
+GAIN_SPEED_CASE="theGainAgainstTheStockGain()"
 
 wanted=""; keep_going=0; launches=3
 while [ $# -gt 0 ]; do
@@ -154,10 +168,11 @@ known_issues() {
     grep -a "recorded a known issue" "$1" | sed -E 's/^[^A-Za-z]*//' | awk '!seen[$0]++' | cut -c1-400
 }
 
-# verdict <log> <status of xcodebuild>: true when xcodebuild succeeded, at least one test ran
-# and no run failed. Says what ran, and lists the known issues.
+# verdict <log> <status of xcodebuild> [test]: true when xcodebuild succeeded, at least one test
+# ran, no run failed and no test recorded a known issue but the control case and, when it is
+# named, [test]. Says what ran, and lists the known issues.
 verdict() {
-    local log="$1" status="$2" runs tests failed known
+    local log="$1" status="$2" allowed="${3:-}" runs tests failed known others
     runs="$(grep -a -E "Test run with [0-9]+ tests? in [0-9]+ suites? (passed|failed)" "$log")"
     tests="$(printf '%s\n' "$runs" | sed -n -E 's/.*Test run with ([0-9]+) tests? in.*/\1/p' | awk '{ sum += $1 } END { print sum + 0 }')"
     failed="$(printf '%s\n' "$runs" | grep -c " failed ")"
@@ -170,6 +185,15 @@ verdict() {
     if [ "$tests" -eq 0 ]; then
         say "no test ran: a run that tests nothing proves nothing; the log is $log"
         problems "$log" | indent
+        return 1
+    fi
+    others="$(known_issues "$log" | grep -v -F "Test $CONTROL_CASE recorded a known issue")"
+    if [ -n "$allowed" ]; then
+        others="$(printf '%s\n' "$others" | grep -v -F "Test $allowed recorded a known issue")"
+    fi
+    if [ -n "$others" ]; then
+        say "a test other than the control case recorded a known issue: a promise of EXT-1…EXT-4 is stated as broken instead of kept; the log is $log"
+        printf '%s\n' "$others" | indent
         return 1
     fi
     say "$tests tests passed$([ "$known" -gt 0 ] && echo "; $known expectations are known to fail and did:")"
@@ -374,7 +398,8 @@ PY
 # guide
 # ---------------------------------------------------------------------------------------------
 step_guide() {
-    python3 - "$ROOT" "$TREE" "$GUIDE" "$SPECIFICATION" <<'PY'
+    local status=0
+    python3 - "$ROOT" "$TREE" "$GUIDE" "$SPECIFICATION" <<'PY' || status=1
 import os, re, sys
 
 root, tree, guide_path, specification = sys.argv[1:5]
@@ -555,6 +580,9 @@ if findings:
 print("guide: %d rows of §5.11.1, each with its section; %d code blocks, each equal to the region of a compiled file it names (%d marked regions)"
       % (len(rows), blocks, len(regions)))
 PY
+    # The guide is generated: what its template and the marked regions make, to the byte.
+    python3 "$ROOT/Scripts/lib/extension_guide.py" --check --root "$ROOT" --tree "$TREE" --template "$TEMPLATE" --guide "$GUIDE" || status=1
+    return "$status"
 }
 
 # ---------------------------------------------------------------------------------------------
@@ -625,6 +653,13 @@ step_audits() {
     XCENV=()
     xcode "$log" Release test-without-building "${filters[@]}"
     status=$?
+    verdict "$log" "$status" || return 1
+    # An audit that opens before the first block shows a first use only where nothing ran before
+    # it: this one runs again by itself, in a process of its own.
+    log="$LOGS/audits-first-block.log"
+    xcode "$log" Release test-without-building "-only-testing:$FIRST_BLOCK_AUDIT"
+    status=$?
+    say "the audit that opens before the first block, alone in its process:"
     verdict "$log" "$status"
 }
 
@@ -642,10 +677,14 @@ step_speed() {
         XCENV=()
         say "launch $launch of $launches:"
         grep -a -E "^SPEED .* against " "$log" | awk '!seen[$0]++' | indent
-        if verdict "$log" "$status"; then
+        if verdict "$log" "$status" "$GAIN_SPEED_CASE"; then
             if [ -s "$report" ]; then
                 cp "$report" "$DERIVED/speed.json"
-                say "every stage ran within its bound; the figures are in $DERIVED/speed.json"
+                if known_issues "$log" | grep -q -F "Test $GAIN_SPEED_CASE recorded a known issue"; then
+                    say "every stage but the gain written as a SampleProcessor ran within its bound; that gain missed it, as CR-025 item 1 records; the figures are in $DERIVED/speed.json"
+                else
+                    say "every stage ran within its bound; the figures are in $DERIVED/speed.json"
+                fi
                 return 0
             fi
             say "the suite passed and recorded nothing: it did not run as a benchmark, so its bounds were not held"

@@ -203,3 +203,38 @@ extension Pipeline where Input == Samples {
         _ = try runOffline([samples], format, blockSize, crossovers)
     }
 }
+
+/// A pipeline compiled for one format and run block by block on the caller's thread, with
+/// nothing between the caller and its plan: what the package's test product runs inside the
+/// allocation audit (EXT-3).
+///
+/// `package`: a hook for `ZTronDSPTesting`, which is part of this package (VIS-1), not API.
+/// One thread makes it, runs it and finishes it.
+package final class DrivenPipeline {
+    private let runner: OfflineRunner
+    /// Frames run so far: where the next block begins.
+    private var position = 0
+
+    /// Compiles `pipeline` as an attachment does, for a signal of `format` in blocks of at
+    /// most `blockSize` frames, and claims its sinks. Allocates.
+    package init<Output: SignalDomain>(
+        _ pipeline: Pipeline<Samples, Output>, format: SignalFormat, blockSize: Int, crossovers: CrossoverTable
+    ) throws(DSPError) {
+        runner = try OfflineRunner(stages: pipeline.stages, format: format, blockSize: blockSize, crossovers: crossovers)
+        // The runner's own collection of the main line allocates; the plan does not.
+        runner.plan.output = nil
+    }
+
+    /// Runs the valid frames of `block` through the plan, as the block that follows the ones
+    /// run before. `block` has the format's channels and at most `blockSize` frames. It
+    /// allocates nothing when no stage of the pipeline does (RT-2).
+    package func run(_ block: AudioBlock) {
+        runner.plan.process(FrameView(samples: block, index: position, time: Double(position) / runner.format.sampleRate))
+        position &+= block.frameCount
+    }
+
+    /// Releases the pipeline's sinks.
+    package func finish() {
+        runner.finish()
+    }
+}

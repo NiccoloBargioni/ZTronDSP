@@ -60,6 +60,17 @@ bench = jobs["gate-8-benchmarks"]["runs-on"]
 print("benchmarks on a pinned runner: %s" % ("yes" if isinstance(bench, list) and "self-hosted" in bench and "ztrondsp-benchmark" in bench else "NO"))
 print("self-tests of the gates: %s" % ("yes" if any("Scripts/tests/run-all.sh" in (s.get("run") or "") for j in jobs.values() for s in j.get("steps", [])) else "NO"))
 print("strict run by dispatch: %s" % ("yes" if "--strict" in workflow.get("env", {}).get("ZTD_CI_STRICT", "") else "NO"))
+
+# The UI tests of the gallery: a nightly job through `Scripts/ci.sh --nightly`, not a gate; the nightly
+# run skips the gates. YAML 1.1 reads the key `on` as true, which JSON writes as "true". These lines say
+# "no", not "NO": the check of the order of the gates looks for ": NO" in the whole output.
+triggers = workflow.get("on") or workflow.get("true") or workflow.get(True) or {}
+nightly = sorted(name for name, job in jobs.items() if any("Scripts/ci.sh --nightly" in (s.get("run") or "") for s in job.get("steps", [])))
+print("nightly job: %s" % (" ".join(nightly) or "missing"))
+scheduled = isinstance(triggers, dict) and bool(triggers.get("schedule")) and bool(nightly) and all("schedule" in str(jobs[n].get("if", "")) for n in nightly)
+print("nightly job on a schedule: %s" % ("yes" if scheduled else "no"))
+print("nightly job is not a gate: %s" % ("yes" if nightly and not any(re.search(r"--gate \d", s.get("run") or "") or jobs[n].get("needs") for n in nightly for s in jobs[n].get("steps", [])) else "no"))
+print("the nightly run skips the gates: %s" % ("yes" if all("schedule" in str(jobs[n].get("if", "")) for n in ("gates-1-4", "gate-9-external-parity")) else "no"))
 ' 2>&1)"
 for gate in 1 2 3 4 5 6 7 8 9; do expect_contains "gate $gate is run through Scripts/ci.sh" "gate $gate: run by"; done
 expect_lacks "every gate runs after the one before it (§10.3: in order)" ": NO"
@@ -70,4 +81,9 @@ expect_contains "benchmarks run on a pinned runner" "benchmarks on a pinned runn
 expect_contains "the self-tests of the gates run too" "self-tests of the gates: yes"
 expect_contains "a strict run can be dispatched" "strict run by dispatch: yes"
 expect_contains "the tests of gate 5 name their runtime" "--gate 5 --runtime com.apple.CoreSimulator.SimRuntime.\${{ matrix.runtime }}"
+expect_contains "the gallery's UI tests run in a job of their own" "nightly job: gallery-ui-nightly"
+expect_contains "… on a schedule" "nightly job on a schedule: yes"
+expect_contains "… which is not a gate" "nightly job is not a gate: yes"
+expect_contains "… on each runtime of the matrix" "Scripts/ci.sh --nightly --runtime com.apple.CoreSimulator.SimRuntime.\${{ matrix.runtime }}"
+expect_contains "the nightly run skips the gates" "the nightly run skips the gates: yes"
 finish

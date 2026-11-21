@@ -1,0 +1,22 @@
+UI tests (GalleryUITests) on iOS 27.0, 2026-11-18 01:21:29 to 01:45:31, package as corrected (CR-027, proposed), Debug:
+summary lines of the xcodebuild log. size-spike-device.log of this folder is from this run: the device
+was turned to landscape and back twice.
+The line about a crash of `xctest` is not about the gallery: while these UI tests ran, mutation checks of the
+package's own tests ran on the same simulator, and one of their runs was stopped by hand at 01:37. The machine
+was at a load average of 500 to 1000 at the time, hence the durations. The result bundle could not be saved in
+full at the end ("failed to import activit..."), which changes nothing in what was executed.
+
+started 2026-11-18 01:21:29
+GalleryUITestCase: passed over a crash that is not the gallery's: Critical process xctest crashed in (null)
+	 Executed 2 tests, with 0 failures (0 unexpected) in 468.920 (468.932) seconds
+ZTD pinch out: span 4 -> 0.9947, range 40.0 ... 20000.0 -> 40.0 ... 20000.0
+ZTD pinch in: span 0.9947 -> 0.9947, range 40.0 ... 20000.0 -> 20.0 ... 24000.0
+	 Executed 1 test, with 0 failures (0 unexpected) in 278.482 (278.485) seconds
+	 Executed 7 tests, with 0 failures (0 unexpected) in 652.020 (652.037) seconds
+	 Executed 1 test, with 0 failures (0 unexpected) in 13.065 (13.066) seconds
+	 Executed 11 tests, with 0 failures (0 unexpected) in 1412.488 (1412.528) seconds
+	 Executed 11 tests, with 0 failures (0 unexpected) in 1412.488 (1412.530) seconds
+2026-11-18 01:45:31.720 xcodebuild[94364:20482122] [MT] IDETesting: Result bundle saving failed with error: Error Domain=IDEFoundationErrorDomain Code=12 "The result bundle could not be saved due to multiple errors: failed to import activity log, underlying error: fileSystemFailure(reason: "mkstemp: No such file or directory"), The operation couldn’t be completed. (XCResultKit_CASDB.FileBackedCASDatabase.Error erro
+** TEST EXECUTE SUCCEEDED **
+exit=0
+ended 01:45:31

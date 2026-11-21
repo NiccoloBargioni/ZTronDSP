@@ -182,3 +182,59 @@ public final class ThreadAllocationAudit: @unchecked Sendable {
                                 bytes: Int(ztd_atomic_load(bytes)))
     }
 }
+
+/// The real-time audit of a pipeline (RT-7, layer 3; EXT-3): compiles `pipeline`, runs it on
+/// the calling thread, block by block, inside `expectNoAllocations`, and records an issue as
+/// that does when a stage allocates or frees heap memory while it runs.
+///
+/// The pipeline is compiled as an attachment compiles it, for a signal of `format` in blocks
+/// of `blockSize` frames of seeded noise. Eight blocks run before the audit opens: a stage
+/// that waits for its history takes its other path afterwards, and what a first call makes
+/// the Swift runtime instantiate is not what this audit is about. Then `blocks` blocks run
+/// inside it. Sinks at the end of the pipeline are written as in a session; a result bound
+/// to a `Binding` is delivered when the run is over, if the caller is on the main thread.
+///
+/// Everything runs on the caller's thread: a node or a processor written outside the package
+/// is held to RT-2 here as the stock stages are, with no engine and no thread of its own.
+///
+/// Threading: a test's own thread, never an engine's analysis thread (the plan it drives is
+/// its own). It allocates outside the audit: the plan, the noise, the eight blocks before it.
+/// The eight blocks mean that it shows no first use (RT-2): a stage whose first block makes
+/// the Swift runtime instantiate something is held to that by an audit that opens before the
+/// first block, in an optimised build and a process of its own.
+///
+/// - Parameters:
+///   - format: the signal the pipeline is compiled for; mono at 48 kHz by default.
+///   - blockSize: frames per block.
+///   - blocks: blocks that run inside the audit.
+///   - crossovers: the table the plan binds its implementations by.
+/// - Returns: what the calling thread asked of the heap inside the audit.
+/// - Throws: what compiling the pipeline throws; an audit that cannot run is recorded as an
+///   issue, as by `expectNoAllocations`.
+@discardableResult
+public func expectNoAllocationsRunning<Output: SignalDomain>(
+    _ pipeline: Pipeline<Samples, Output>, format: SignalFormat = SignalFormat(sampleRate: 48_000), blockSize: Int = 512, blocks: Int = 1_000,
+    crossovers: CrossoverTable = .shipped, _ comment: @autoclosure () -> String = "", sourceLocation: SourceLocation = #_sourceLocation
+) throws(DSPError) -> AllocationCounts {
+    let driven = try DrivenPipeline(pipeline, format: format, blockSize: blockSize, crossovers: crossovers)
+    defer { driven.finish() }
+    let buffer = try AudioBuffer(channelCount: format.channelCount, capacity: max(blockSize, 1))
+    for channel in 0 ..< format.channelCount {
+        let noise = TestSignal.whiteNoise(count: max(blockSize, 1), seed: UInt64(17 + channel), amplitude: 0.5)
+        let target = buffer.channel(channel)
+        for index in noise.indices { target[index] = noise[index] }
+    }
+    let block = buffer.block(frameCount: max(blockSize, 1))
+    var warm = 0
+    while warm < 8 {
+        driven.run(block)
+        warm += 1
+    }
+    return expectNoAllocations(comment(), sourceLocation: sourceLocation) {
+        var count = 0
+        while count < blocks {
+            driven.run(block)
+            count += 1
+        }
+    }
+}

@@ -1,9 +1,10 @@
-/// An immutable value (IMM-1): nothing here can be set from outside.
+/// An immutable value (IMM-1): nothing here can be set from outside, and what is stored as a
+/// `var` the type alone can set.
 public struct Frequency: Hashable, Sendable {
     public let hertz: Double
-    public private(set) var resolved: Bool = false
-    public internal(set) var cached: Double?
-    var scratch: Double = 0
+    private(set) var resolved: Bool = false
+    fileprivate(set) var cached: Double?
+    private var scratch: Double = 0
 
     public init(hertz: Double) { self.hertz = hertz }
 

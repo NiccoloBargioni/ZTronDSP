@@ -31,6 +31,46 @@ public protocol SampleProcessor: AnyObject {
     func reset()
 }
 
+/// A `SampleProcessor` that takes its stage's continuous values while it runs (§5.5.4,
+/// EXT-1): what `CustomProcessor.init(name:key:values:latencyFrames:make:)` makes.
+///
+/// A change of the values a stage states is then a change of values: no plan is compiled, the
+/// processor keeps its state, and the new values reach it between two blocks.
+///
+/// Threading as for every `SampleProcessor`: created on the control context, where it
+/// allocates what it needs; `setValues(_:)`, `process` and `reset` run on the analysis thread
+/// under RT-2, one thread at a time.
+public protocol AdjustableSampleProcessor: SampleProcessor {
+    /// Takes the stage's values: as many as `CustomProcessor.values` states, in that order.
+    ///
+    /// Analysis thread, between two blocks, under RT-2: no allocation, no lock, nothing that
+    /// blocks. The buffer belongs to the engine and is valid during the call only: copy what
+    /// is needed. A reset keeps the values that were set last.
+    func setValues(_ values: UnsafeBufferPointer<Double>)
+}
+
+/// A `SampleProcessor` that reads one block and writes another (EXT-4).
+///
+/// A processor that works in place is handed a copy of its input, because the block a plan
+/// reads is not the plan's to write. One that conforms to this protocol is handed the plan's
+/// input and the plan's output instead, and nothing is copied in front of it: a processor of
+/// one multiplication then costs what the stock gain costs. The plan calls this entry and
+/// never the in-place one, which the type keeps for whoever runs it by hand.
+///
+/// Threading as for every `SampleProcessor`: created on the control context, where it
+/// allocates what it needs; both `process` entries and `reset` run on the analysis thread
+/// under RT-2, one thread at a time. The plan asks whether a processor conforms once, on the
+/// control context, when it makes the processor's kernel.
+public protocol OutOfPlaceSampleProcessor: SampleProcessor {
+    /// Writes `input`, processed, into `output`.
+    ///
+    /// Both blocks have the channels the processor was made for; `output` holds
+    /// `input.frameCount` frames, each of which the processor writes. The two never overlap,
+    /// and `input` is read only: it may be the block every session on the source reads.
+    /// Analysis thread, under RT-2: no allocation, no lock, nothing that blocks.
+    func process(_ input: AudioBlock, into output: inout AudioBlock)
+}
+
 /// Where a `FrameWriter` sends what it is given. The plan's continuation is one; a test
 /// harness is another.
 @usableFromInline

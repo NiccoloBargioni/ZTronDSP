@@ -1,0 +1,541 @@
+turn.end now=0.0002 shown=0.0003
+turn.end now=0.0009 shown=0.0009
+turn.end now=0.0020 shown=0.0020
+turn.end now=0.0037 shown=0.0037
+turn.end now=0.0044 shown=0.0044
+turn.end now=0.0065 shown=0.0065
+turn.end now=0.0079 shown=0.0079
+turn.end now=0.0085 shown=0.0086
+turn.end now=0.0101 shown=0.0101
+turn.end now=0.0107 shown=0.0107
+turn.end now=0.0123 shown=0.0123
+turn.end now=0.0140 shown=0.0140
+turn.end now=0.0156 shown=0.0156
+tick now=0.0171 timestamp=0.0155 target=0.0322 shown=0.0156
+turn.end now=0.0172 shown=0.0172
+turn.end now=0.0172 shown=0.0173
+turn.end now=0.0183 shown=0.0183
+turn.end now=0.0199 shown=0.0199
+turn.end now=0.0215 shown=0.0215
+turn.end now=0.0231 shown=0.0232
+turn.end now=0.0249 shown=0.0249
+turn.end now=0.0265 shown=0.0265
+turn.end now=0.0281 shown=0.0281
+turn.end now=0.0298 shown=0.0298
+turn.end now=0.0314 shown=0.0314
+tick now=0.0330 timestamp=0.0322 target=0.0489 shown=0.0314
+turn.end now=0.0331 shown=0.0331
+turn.end now=0.0332 shown=0.0332
+turn.end now=0.0343 shown=0.0343
+turn.end now=0.0359 shown=0.0359
+turn.end now=0.0376 shown=0.0376
+turn.end now=0.0388 shown=0.0388
+turn.end now=0.0404 shown=0.0404
+turn.end now=0.0415 shown=0.0415
+turn.end now=0.0432 shown=0.0432
+turn.end now=0.0448 shown=0.0448
+turn.end now=0.0465 shown=0.0465
+turn.end now=0.0481 shown=0.0481
+tick now=0.0497 timestamp=0.0489 target=0.0655 shown=0.0481
+turn.end now=0.0498 shown=0.0498
+turn.end now=0.0500 shown=0.0500
+turn.end now=0.0510 shown=0.0510
+turn.end now=0.0527 shown=0.0527
+turn.end now=0.0543 shown=0.0543
+turn.end now=0.0555 shown=0.0555
+turn.end now=0.0571 shown=0.0571
+turn.end now=0.0588 shown=0.0588
+turn.end now=0.0605 shown=0.0605
+turn.end now=0.0621 shown=0.0621
+turn.end now=0.0638 shown=0.0638
+turn.end now=0.0655 shown=0.0655
+tick now=0.0670 timestamp=0.0655 target=0.0822 shown=0.0655
+turn.end now=0.0671 shown=0.0671
+turn.end now=0.0672 shown=0.0672
+turn.end now=0.0683 shown=0.0683
+turn.end now=0.0699 shown=0.0699
+turn.end now=0.0716 shown=0.0716
+turn.end now=0.0733 shown=0.0733
+turn.end now=0.0750 shown=0.0750
+turn.end now=0.0766 shown=0.0766
+turn.end now=0.0783 shown=0.0783
+turn.end now=0.0800 shown=0.0800
+turn.end now=0.0817 shown=0.0817
+tick now=0.0832 timestamp=0.0822 target=0.0989 shown=0.0817
+turn.end now=0.0833 shown=0.0834
+turn.end now=0.0835 shown=0.0835
+turn.end now=0.0846 shown=0.0846
+turn.end now=0.0862 shown=0.0863
+turn.end now=0.0879 shown=0.0880
+turn.end now=0.0890 shown=0.0890
+turn.end now=0.0907 shown=0.0908
+turn.end now=0.0926 shown=0.0926
+turn.end now=0.0944 shown=0.0944
+turn.end now=0.0960 shown=0.0961
+turn.end now=0.0969 shown=0.0970
+turn.end now=0.0986 shown=0.0986
+tick now=0.1001 timestamp=0.0989 target=0.1155 shown=0.0986
+turn.end now=0.1002 shown=0.1003
+turn.end now=0.1004 shown=0.1004
+turn.end now=0.1015 shown=0.1015
+turn.end now=0.1032 shown=0.1032
+turn.end now=0.1049 shown=0.1049
+turn.end now=0.1058 shown=0.1058
+turn.end now=0.1074 shown=0.1074
+turn.end now=0.1092 shown=0.1092
+turn.end now=0.1109 shown=0.1109
+turn.end now=0.1126 shown=0.1126
+turn.end now=0.1142 shown=0.1142
+tick now=0.1158 timestamp=0.1155 target=0.1322 shown=0.1142
+turn.end now=0.1159 shown=0.1159
+turn.end now=0.1160 shown=0.1160
+turn.end now=0.1167 shown=0.1167
+turn.end now=0.1185 shown=0.1185
+turn.end now=0.1201 shown=0.1201
+turn.end now=0.1218 shown=0.1218
+turn.end now=0.1236 shown=0.1236
+turn.end now=0.1253 shown=0.1254
+turn.end now=0.1271 shown=0.1271
+turn.end now=0.1289 shown=0.1290
+turn.end now=0.1308 shown=0.1308
+tick now=0.1324 timestamp=0.1322 target=0.1489 shown=0.1308
+turn.end now=0.1325 shown=0.1325
+turn.end now=0.1327 shown=0.1327
+turn.end now=0.1335 shown=0.1335
+turn.end now=0.1352 shown=0.1352
+turn.end now=0.1369 shown=0.1369
+turn.end now=0.1386 shown=0.1386
+turn.end now=0.1403 shown=0.1403
+turn.end now=0.1420 shown=0.1421
+turn.end now=0.1432 shown=0.1432
+turn.end now=0.1450 shown=0.1450
+turn.end now=0.1467 shown=0.1467
+turn.end now=0.1485 shown=0.1485
+tick now=0.1501 timestamp=0.1489 target=0.1655 shown=0.1485
+turn.end now=0.1502 shown=0.1502
+turn.end now=0.1503 shown=0.1503
+turn.end now=0.1514 shown=0.1514
+turn.end now=0.1531 shown=0.1531
+turn.end now=0.1548 shown=0.1548
+turn.end now=0.1560 shown=0.1560
+turn.end now=0.1575 shown=0.1576
+turn.end now=0.1592 shown=0.1592
+turn.end now=0.1609 shown=0.1609
+turn.end now=0.1626 shown=0.1627
+turn.end now=0.1644 shown=0.1644
+tick now=0.1660 timestamp=0.1655 target=0.1822 shown=0.1644
+turn.end now=0.1661 shown=0.1661
+turn.end now=0.1662 shown=0.1662
+turn.end now=0.1673 shown=0.1673
+turn.end now=0.1689 shown=0.1689
+turn.end now=0.1706 shown=0.1706
+turn.end now=0.1723 shown=0.1723
+turn.end now=0.1740 shown=0.1740
+turn.end now=0.1758 shown=0.1758
+turn.end now=0.1775 shown=0.1775
+turn.end now=0.1792 shown=0.1792
+turn.end now=0.1808 shown=0.1809
+tick now=0.1824 timestamp=0.1822 target=0.1989 shown=0.1809
+turn.end now=0.1825 shown=0.1825
+turn.end now=0.1826 shown=0.1826
+turn.end now=0.1834 shown=0.1834
+turn.end now=0.1851 shown=0.1851
+turn.end now=0.1867 shown=0.1867
+turn.end now=0.1884 shown=0.1884
+turn.end now=0.1894 shown=0.1894
+turn.end now=0.1912 shown=0.1912
+turn.end now=0.1929 shown=0.1929
+turn.end now=0.1946 shown=0.1946
+turn.end now=0.1963 shown=0.1963
+turn.end now=0.1972 shown=0.1972
+turn.end now=0.1988 shown=0.1988
+tick now=0.2004 timestamp=0.1989 target=0.2155 shown=0.1988
+turn.end now=0.2005 shown=0.2005
+turn.end now=0.2006 shown=0.2006
+turn.end now=0.2017 shown=0.2017
+turn.end now=0.2034 shown=0.2034
+turn.end now=0.2051 shown=0.2051
+turn.end now=0.2062 shown=0.2062
+turn.end now=0.2079 shown=0.2079
+turn.end now=0.2096 shown=0.2096
+turn.end now=0.2113 shown=0.2113
+turn.end now=0.2130 shown=0.2130
+turn.end now=0.2146 shown=0.2146
+tick now=0.2162 timestamp=0.2155 target=0.2322 shown=0.2146
+turn.end now=0.2163 shown=0.2163
+turn.end now=0.2164 shown=0.2164
+turn.end now=0.2175 shown=0.2175
+turn.end now=0.2192 shown=0.2192
+turn.end now=0.2209 shown=0.2209
+turn.end now=0.2226 shown=0.2226
+turn.end now=0.2243 shown=0.2243
+turn.end now=0.2260 shown=0.2260
+turn.end now=0.2277 shown=0.2277
+turn.end now=0.2294 shown=0.2294
+turn.end now=0.2310 shown=0.2310
+tick now=0.2326 timestamp=0.2322 target=0.2489 shown=0.2310
+turn.end now=0.2327 shown=0.2327
+turn.end now=0.2329 shown=0.2329
+turn.end now=0.2339 shown=0.2339
+turn.end now=0.2356 shown=0.2356
+turn.end now=0.2373 shown=0.2373
+turn.end now=0.2390 shown=0.2390
+turn.end now=0.2407 shown=0.2407
+turn.end now=0.2424 shown=0.2424
+turn.end now=0.2442 shown=0.2442
+turn.end now=0.2458 shown=0.2458
+turn.end now=0.2476 shown=0.2476
+tick now=0.2491 timestamp=0.2489 target=0.2655 shown=0.2476
+turn.end now=0.2492 shown=0.2492
+turn.end now=0.2494 shown=0.2494
+turn.end now=0.2501 shown=0.2501
+turn.end now=0.2518 shown=0.2518
+turn.end now=0.2534 shown=0.2534
+turn.end now=0.2551 shown=0.2551
+turn.end now=0.2564 shown=0.2564
+turn.end now=0.2582 shown=0.2582
+turn.end now=0.2599 shown=0.2599
+turn.end now=0.2615 shown=0.2615
+turn.end now=0.2632 shown=0.2632
+turn.end now=0.2649 shown=0.2649
+tick now=0.2665 timestamp=0.2655 target=0.2822 shown=0.2649
+turn.end now=0.2666 shown=0.2666
+turn.end now=0.2667 shown=0.2667
+turn.end now=0.2678 shown=0.2678
+turn.end now=0.2695 shown=0.2695
+turn.end now=0.2712 shown=0.2712
+turn.end now=0.2730 shown=0.2730
+turn.end now=0.2747 shown=0.2747
+turn.end now=0.2764 shown=0.2764
+turn.end now=0.2781 shown=0.2781
+turn.end now=0.2798 shown=0.2798
+turn.end now=0.2811 shown=0.2811
+tick now=0.2826 timestamp=0.2822 target=0.2989 shown=0.2811
+turn.end now=0.2827 shown=0.2827
+turn.end now=0.2828 shown=0.2828
+turn.end now=0.2839 shown=0.2839
+turn.end now=0.2856 shown=0.2856
+turn.end now=0.2873 shown=0.2873
+turn.end now=0.2890 shown=0.2890
+turn.end now=0.2899 shown=0.2899
+turn.end now=0.2916 shown=0.2916
+turn.end now=0.2933 shown=0.2933
+turn.end now=0.2951 shown=0.2951
+turn.end now=0.2968 shown=0.2968
+turn.end now=0.2985 shown=0.2985
+tick now=0.3001 timestamp=0.2989 target=0.3155 shown=0.2985
+turn.end now=0.3002 shown=0.3002
+turn.end now=0.3004 shown=0.3004
+turn.end now=0.3015 shown=0.3015
+turn.end now=0.3032 shown=0.3032
+turn.end now=0.3048 shown=0.3048
+turn.end now=0.3067 shown=0.3067
+turn.end now=0.3085 shown=0.3085
+turn.end now=0.3101 shown=0.3101
+turn.end now=0.3119 shown=0.3119
+turn.end now=0.3135 shown=0.3135
+turn.end now=0.3152 shown=0.3152
+tick now=0.3168 timestamp=0.3155 target=0.3322 shown=0.3152
+turn.end now=0.3169 shown=0.3169
+turn.end now=0.3170 shown=0.3170
+turn.end now=0.3181 shown=0.3181
+turn.end now=0.3199 shown=0.3199
+turn.end now=0.3216 shown=0.3216
+turn.end now=0.3233 shown=0.3233
+turn.end now=0.3251 shown=0.3251
+turn.end now=0.3265 shown=0.3265
+turn.end now=0.3282 shown=0.3283
+turn.end now=0.3300 shown=0.3300
+turn.end now=0.3317 shown=0.3317
+tick now=0.3332 timestamp=0.3322 target=0.3489 shown=0.3317
+turn.end now=0.3333 shown=0.3333
+turn.end now=0.3334 shown=0.3334
+turn.end now=0.3345 shown=0.3345
+turn.end now=0.3362 shown=0.3362
+turn.end now=0.3371 shown=0.3371
+turn.end now=0.3388 shown=0.3388
+turn.end now=0.3401 shown=0.3401
+turn.end now=0.3418 shown=0.3418
+turn.end now=0.3435 shown=0.3435
+turn.end now=0.3452 shown=0.3452
+turn.end now=0.3468 shown=0.3468
+turn.end now=0.3485 shown=0.3485
+tick now=0.3501 timestamp=0.3489 target=0.3655 shown=0.3485
+turn.end now=0.3502 shown=0.3502
+turn.end now=0.3503 shown=0.3503
+turn.end now=0.3514 shown=0.3514
+turn.end now=0.3531 shown=0.3531
+turn.end now=0.3548 shown=0.3548
+turn.end now=0.3559 shown=0.3559
+turn.end now=0.3569 shown=0.3569
+turn.end now=0.3586 shown=0.3586
+turn.end now=0.3603 shown=0.3603
+turn.end now=0.3620 shown=0.3620
+turn.end now=0.3635 shown=0.3636
+turn.end now=0.3653 shown=0.3653
+tick now=0.3670 timestamp=0.3655 target=0.3822 shown=0.3653
+turn.end now=0.3671 shown=0.3671
+turn.end now=0.3672 shown=0.3672
+turn.end now=0.3683 shown=0.3683
+turn.end now=0.3698 shown=0.3698
+turn.end now=0.3715 shown=0.3715
+turn.end now=0.3732 shown=0.3732
+turn.end now=0.3750 shown=0.3750
+turn.end now=0.3767 shown=0.3767
+turn.end now=0.3785 shown=0.3785
+turn.end now=0.3803 shown=0.3803
+turn.end now=0.3821 shown=0.3821
+tick now=0.3836 timestamp=0.3822 target=0.3989 shown=0.3821
+turn.end now=0.3837 shown=0.3837
+turn.end now=0.3839 shown=0.3839
+turn.end now=0.3850 shown=0.3850
+turn.end now=0.3868 shown=0.3868
+turn.end now=0.3885 shown=0.3885
+turn.end now=0.3904 shown=0.3905
+turn.end now=0.3924 shown=0.3924
+turn.end now=0.3936 shown=0.3937
+turn.end now=0.3954 shown=0.3954
+turn.end now=0.3972 shown=0.3972
+turn.end now=0.3981 shown=0.3981
+tick now=0.3996 timestamp=0.3989 target=0.4155 shown=0.3981
+turn.end now=0.3997 shown=0.3998
+turn.end now=0.3999 shown=0.3999
+turn.end now=0.4009 shown=0.4010
+turn.end now=0.4026 shown=0.4026
+turn.end now=0.4043 shown=0.4043
+turn.end now=0.4061 shown=0.4061
+turn.end now=0.4071 shown=0.4071
+turn.end now=0.4089 shown=0.4089
+turn.end now=0.4106 shown=0.4106
+turn.end now=0.4123 shown=0.4123
+turn.end now=0.4139 shown=0.4140
+turn.end now=0.4156 shown=0.4156
+tick now=0.4171 timestamp=0.4155 target=0.4322 shown=0.4156
+turn.end now=0.4172 shown=0.4173
+turn.end now=0.4174 shown=0.4174
+turn.end now=0.4185 shown=0.4185
+turn.end now=0.4201 shown=0.4202
+turn.end now=0.4219 shown=0.4219
+turn.end now=0.4237 shown=0.4237
+turn.end now=0.4254 shown=0.4254
+turn.end now=0.4265 shown=0.4265
+turn.end now=0.4282 shown=0.4282
+turn.end now=0.4299 shown=0.4299
+turn.end now=0.4316 shown=0.4316
+tick now=0.4332 timestamp=0.4322 target=0.4489 shown=0.4316
+turn.end now=0.4333 shown=0.4333
+turn.end now=0.4334 shown=0.4334
+turn.end now=0.4345 shown=0.4346
+turn.end now=0.4362 shown=0.4362
+turn.end now=0.4379 shown=0.4379
+turn.end now=0.4395 shown=0.4395
+turn.end now=0.4406 shown=0.4406
+turn.end now=0.4423 shown=0.4423
+turn.end now=0.4440 shown=0.4440
+turn.end now=0.4457 shown=0.4457
+turn.end now=0.4473 shown=0.4473
+turn.end now=0.4490 shown=0.4490
+tick now=0.4505 timestamp=0.4489 target=0.4655 shown=0.4490
+turn.end now=0.4506 shown=0.4506
+turn.end now=0.4508 shown=0.4508
+turn.end now=0.4518 shown=0.4518
+turn.end now=0.4535 shown=0.4535
+turn.end now=0.4552 shown=0.4552
+turn.end now=0.4569 shown=0.4569
+turn.end now=0.4586 shown=0.4586
+turn.end now=0.4603 shown=0.4603
+turn.end now=0.4620 shown=0.4620
+turn.end now=0.4637 shown=0.4637
+turn.end now=0.4654 shown=0.4654
+tick now=0.4670 timestamp=0.4655 target=0.4822 shown=0.4654
+turn.end now=0.4671 shown=0.4671
+turn.end now=0.4672 shown=0.4672
+turn.end now=0.4683 shown=0.4683
+turn.end now=0.4700 shown=0.4700
+turn.end now=0.4717 shown=0.4717
+turn.end now=0.4733 shown=0.4734
+turn.end now=0.4743 shown=0.4743
+turn.end now=0.4760 shown=0.4760
+turn.end now=0.4777 shown=0.4777
+turn.end now=0.4794 shown=0.4794
+turn.end now=0.4810 shown=0.4810
+tick now=0.4826 timestamp=0.4822 target=0.4989 shown=0.4810
+turn.end now=0.4827 shown=0.4827
+turn.end now=0.4828 shown=0.4829
+turn.end now=0.4839 shown=0.4839
+turn.end now=0.4856 shown=0.4856
+turn.end now=0.4873 shown=0.4873
+turn.end now=0.4889 shown=0.4889
+turn.end now=0.4906 shown=0.4906
+turn.end now=0.4923 shown=0.4923
+turn.end now=0.4940 shown=0.4940
+turn.end now=0.4957 shown=0.4957
+turn.end now=0.4974 shown=0.4974
+turn.end now=0.4991 shown=0.4991
+tick now=0.5006 timestamp=0.4989 target=0.5155 shown=0.4991
+turn.end now=0.5008 shown=0.5008
+turn.end now=0.5009 shown=0.5009
+turn.end now=0.5020 shown=0.5020
+turn.end now=0.5037 shown=0.5037
+turn.end now=0.5054 shown=0.5054
+turn.end now=0.5071 shown=0.5071
+turn.end now=0.5088 shown=0.5088
+turn.end now=0.5105 shown=0.5105
+turn.end now=0.5116 shown=0.5116
+turn.end now=0.5133 shown=0.5133
+turn.end now=0.5150 shown=0.5150
+tick now=0.5165 timestamp=0.5155 target=0.5322 shown=0.5150
+turn.end now=0.5166 shown=0.5166
+turn.end now=0.5168 shown=0.5168
+turn.end now=0.5179 shown=0.5179
+turn.end now=0.5195 shown=0.5195
+turn.end now=0.5212 shown=0.5212
+turn.end now=0.5229 shown=0.5229
+turn.end now=0.5242 shown=0.5242
+turn.end now=0.5260 shown=0.5260
+turn.end now=0.5267 shown=0.5267
+turn.end now=0.5284 shown=0.5284
+turn.end now=0.5300 shown=0.5300
+turn.end now=0.5317 shown=0.5317
+tick now=0.5332 timestamp=0.5322 target=0.5489 shown=0.5317
+turn.end now=0.5333 shown=0.5333
+turn.end now=0.5335 shown=0.5335
+turn.end now=0.5346 shown=0.5346
+turn.end now=0.5364 shown=0.5364
+turn.end now=0.5382 shown=0.5382
+turn.end now=0.5398 shown=0.5398
+turn.end now=0.5409 shown=0.5409
+turn.end now=0.5426 shown=0.5427
+turn.end now=0.5443 shown=0.5443
+turn.end now=0.5460 shown=0.5460
+turn.end now=0.5467 shown=0.5468
+turn.end now=0.5484 shown=0.5485
+tick now=0.5500 timestamp=0.5489 target=0.5655 shown=0.5485
+turn.end now=0.5501 shown=0.5501
+turn.end now=0.5502 shown=0.5502
+turn.end now=0.5513 shown=0.5513
+turn.end now=0.5530 shown=0.5530
+turn.end now=0.5546 shown=0.5546
+turn.end now=0.5563 shown=0.5563
+turn.end now=0.5577 shown=0.5577
+turn.end now=0.5594 shown=0.5594
+turn.end now=0.5610 shown=0.5610
+turn.end now=0.5627 shown=0.5627
+turn.end now=0.5643 shown=0.5643
+tick now=0.5659 timestamp=0.5655 target=0.5822 shown=0.5643
+turn.end now=0.5661 shown=0.5661
+turn.end now=0.5662 shown=0.5662
+turn.end now=0.5673 shown=0.5673
+turn.end now=0.5690 shown=0.5690
+turn.end now=0.5707 shown=0.5707
+turn.end now=0.5723 shown=0.5723
+turn.end now=0.5741 shown=0.5741
+turn.end now=0.5758 shown=0.5758
+turn.end now=0.5777 shown=0.5777
+turn.end now=0.5794 shown=0.5794
+turn.end now=0.5810 shown=0.5810
+tick now=0.5825 timestamp=0.5822 target=0.5989 shown=0.5810
+turn.end now=0.5826 shown=0.5826
+turn.end now=0.5827 shown=0.5827
+turn.end now=0.5834 shown=0.5834
+turn.end now=0.5851 shown=0.5851
+turn.end now=0.5867 shown=0.5867
+turn.end now=0.5884 shown=0.5884
+turn.end now=0.5901 shown=0.5901
+turn.end now=0.5911 shown=0.5911
+turn.end now=0.5929 shown=0.5929
+turn.end now=0.5945 shown=0.5945
+turn.end now=0.5962 shown=0.5962
+turn.end now=0.5978 shown=0.5978
+tick now=0.5994 timestamp=0.5989 target=0.6155 shown=0.5978
+turn.end now=0.5995 shown=0.5995
+turn.end now=0.5996 shown=0.5997
+turn.end now=0.6008 shown=0.6008
+turn.end now=0.6026 shown=0.6026
+turn.end now=0.6042 shown=0.6042
+turn.end now=0.6059 shown=0.6059
+turn.end now=0.6076 shown=0.6076
+turn.end now=0.6093 shown=0.6093
+turn.end now=0.6110 shown=0.6110
+turn.end now=0.6127 shown=0.6127
+turn.end now=0.6144 shown=0.6144
+tick now=0.6159 timestamp=0.6155 target=0.6322 shown=0.6144
+turn.end now=0.6161 shown=0.6161
+turn.end now=0.6162 shown=0.6162
+turn.end now=0.6173 shown=0.6173
+turn.end now=0.6190 shown=0.6190
+turn.end now=0.6207 shown=0.6207
+turn.end now=0.6224 shown=0.6224
+turn.end now=0.6241 shown=0.6241
+turn.end now=0.6258 shown=0.6258
+turn.end now=0.6275 shown=0.6275
+turn.end now=0.6291 shown=0.6291
+turn.end now=0.6308 shown=0.6308
+tick now=0.6324 timestamp=0.6322 target=0.6489 shown=0.6308
+turn.end now=0.6325 shown=0.6325
+turn.end now=0.6326 shown=0.6326
+turn.end now=0.6334 shown=0.6334
+turn.end now=0.6351 shown=0.6351
+turn.end now=0.6368 shown=0.6368
+turn.end now=0.6385 shown=0.6385
+turn.end now=0.6402 shown=0.6402
+turn.end now=0.6413 shown=0.6413
+turn.end now=0.6430 shown=0.6430
+turn.end now=0.6447 shown=0.6447
+turn.end now=0.6465 shown=0.6465
+turn.end now=0.6479 shown=0.6479
+tick now=0.6494 timestamp=0.6489 target=0.6655 shown=0.6479
+turn.end now=0.6495 shown=0.6495
+turn.end now=0.6497 shown=0.6497
+turn.end now=0.6508 shown=0.6508
+turn.end now=0.6524 shown=0.6524
+turn.end now=0.6540 shown=0.6541
+turn.end now=0.6558 shown=0.6558
+turn.end now=0.6575 shown=0.6575
+turn.end now=0.6593 shown=0.6593
+turn.end now=0.6610 shown=0.6610
+turn.end now=0.6627 shown=0.6627
+turn.end now=0.6644 shown=0.6644
+tick now=0.6660 timestamp=0.6655 target=0.6822 shown=0.6644
+turn.end now=0.6661 shown=0.6661
+no reading at the end of the turn from here on
+tick now=0.6827 timestamp=0.6822 target=0.6989 shown=0.6827
+tick now=0.6998 timestamp=0.6989 target=0.7155 shown=0.6998
+tick now=0.7166 timestamp=0.7155 target=0.7322 shown=0.7166
+tick now=0.7333 timestamp=0.7322 target=0.7489 shown=0.7333
+tick now=0.7501 timestamp=0.7489 target=0.7655 shown=0.7501
+tick now=0.7669 timestamp=0.7655 target=0.7822 shown=0.7669
+tick now=0.7833 timestamp=0.7822 target=0.7989 shown=0.7833
+tick now=0.8002 timestamp=0.7989 target=0.8155 shown=0.8002
+tick now=0.8168 timestamp=0.8155 target=0.8322 shown=0.8168
+tick now=0.8330 timestamp=0.8322 target=0.8489 shown=0.8330
+tick now=0.8502 timestamp=0.8489 target=0.8655 shown=0.8502
+tick now=0.8663 timestamp=0.8655 target=0.8822 shown=0.8663
+tick now=0.8836 timestamp=0.8822 target=0.8989 shown=0.8836
+tick now=0.9002 timestamp=0.8989 target=0.9155 shown=0.9002
+tick now=0.9167 timestamp=0.9155 target=0.9322 shown=0.9167
+tick now=0.9324 timestamp=0.9322 target=0.9489 shown=0.9324
+tick now=0.9502 timestamp=0.9489 target=0.9655 shown=0.9502
+tick now=0.9671 timestamp=0.9655 target=0.9822 shown=0.9671
+tick now=0.9823 timestamp=0.9822 target=0.9989 shown=0.9823
+tick now=0.9993 timestamp=0.9989 target=1.0155 shown=0.9993
+tick now=1.0162 timestamp=1.0155 target=1.0322 shown=1.0162
+tick now=1.0329 timestamp=1.0322 target=1.0489 shown=1.0329
+tick now=1.0497 timestamp=1.0489 target=1.0655 shown=1.0497
+tick now=1.0665 timestamp=1.0655 target=1.0822 shown=1.0665
+tick now=1.0833 timestamp=1.0822 target=1.0989 shown=1.0833
+tick now=1.1001 timestamp=1.0989 target=1.1155 shown=1.1001
+tick now=1.1169 timestamp=1.1155 target=1.1322 shown=1.1169
+tick now=1.1331 timestamp=1.1322 target=1.1489 shown=1.1331
+tick now=1.1499 timestamp=1.1489 target=1.1655 shown=1.1500
+tick now=1.1666 timestamp=1.1655 target=1.1822 shown=1.1666
+tick now=1.1837 timestamp=1.1822 target=1.1989 shown=1.1837
+tick now=1.2004 timestamp=1.1989 target=1.2155 shown=1.2004
+tick now=1.2157 timestamp=1.2155 target=1.2322 shown=1.2157
+tick now=1.2337 timestamp=1.2322 target=1.2489 shown=1.2337
+tick now=1.2500 timestamp=1.2489 target=1.2655 shown=1.2500
+tick now=1.2669 timestamp=1.2655 target=1.2822 shown=1.2670
+tick now=1.2825 timestamp=1.2822 target=1.2989 shown=1.2825
+tick now=1.3003 timestamp=1.2989 target=1.3155 shown=1.3004
+tick now=1.3159 timestamp=1.3155 target=1.3322 shown=1.3159
+tick now=1.3339 timestamp=1.3322 target=1.3489 shown=1.3339

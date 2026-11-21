@@ -1,0 +1,17 @@
+UI tests (GalleryUITests) on iOS 27.0, 2026-11-21 11:59:19 to 2026-11-21 12:05:35, the main tree as integrated on 2026-11-21 (package as corrected,
+CR-027 proposed), Debug: summary lines of the xcodebuild log (gallery.sh ui). size-spike-device.log of this folder is from
+this run: the device was turned to landscape and back twice.
+
+started 2026-11-21 11:59:19
+** TEST BUILD SUCCEEDED **
+	 Executed 2 tests, with 0 failures (0 unexpected) in 95.786 (95.793) seconds
+ZTD pinch out: span 4 -> 0.9947, range 40.0 ... 20000.0 -> 40.0 ... 20000.0
+ZTD pinch in: span 0.9947 -> 0.9947, range 40.0 ... 20000.0 -> 20.0 ... 24000.0
+	 Executed 1 test, with 0 failures (0 unexpected) in 8.467 (8.468) seconds
+	 Executed 7 tests, with 0 failures (0 unexpected) in 252.887 (252.892) seconds
+	 Executed 1 test, with 0 failures (0 unexpected) in 11.140 (11.141) seconds
+	 Executed 11 tests, with 0 failures (0 unexpected) in 368.280 (368.297) seconds
+	 Executed 11 tests, with 0 failures (0 unexpected) in 368.280 (368.298) seconds
+** TEST EXECUTE SUCCEEDED **
+exit=0
+ended 2026-11-21 12:05:35

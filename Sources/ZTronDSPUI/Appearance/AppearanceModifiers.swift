@@ -144,6 +144,12 @@ extension View {
     /// computed (PINCH-2). Off by default: without this modifier, or with an empty set, a
     /// component installs no gesture.
     ///
+    /// On iOS 18 and later the two touches give the finger line. Before iOS 18 the gestures
+    /// report where the first finger went down only when it lands before the second; when
+    /// both fingers land in the same moment the finger line is not known, and the pinch
+    /// scales every axis named here (PINCH-8). With one axis named that is the same pinch;
+    /// with both, a pinch whose fingers land together scales both whatever its direction.
+    ///
     /// Threading: main actor, like every view modifier; it stores one small value.
     public func pinchScaling(_ axes: Axis.Set) -> some View {
         environment(\.dspPinchAxes, axes)

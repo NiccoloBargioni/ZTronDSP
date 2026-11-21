@@ -74,8 +74,26 @@ elif [ "$1" = "create" ]; then
     echo "11111111-1111-1111-1111-111111111111"
 fi
 EOS
-chmod +x "$S/bin/xc" "$S/bin/xcodebuild" "$S/bin/simctl"
-export ZTD_CI_XC="$S/bin/xc" ZTD_CI_XCODEBUILD="$S/bin/xcodebuild" ZTD_CI_SIMCTL="$S/bin/simctl" STUB_PRODUCTS="$S/products" STUB_ROOT="$S"
+# The gallery's script: `hosted` says what Swift Testing says, and records a known issue on the
+# simulator STUB_GALLERY_KNOWN names (`any`: on every one).
+cat > "$S/bin/gallery" <<'EOS'
+#!/bin/bash
+echo "gallery $* [config=${ZTD_CONFIG:-} device=${ZTD_DEVICE:-} derived=${ZTD_DERIVED##*/}]" >> "$STUB_LOG"
+case "${1:-}" in
+    app) exit "${STUB_GALLERY_APP:-0}" ;;
+    hosted)
+        if [ "${STUB_GALLERY_KNOWN:-none}" = "any" ] || [ "${STUB_GALLERY_KNOWN:-none}" = "${ZTD_DEVICE:-}" ]; then
+            echo "◇ Test aHostedExpectation() recorded a known issue at Hosted.swift:9:9: Expectation failed"
+            echo "✔ Test run with 24 tests in 8 suites passed after 9.000 seconds with 1 known issue."
+        else
+            echo "✔ Test run with 24 tests in 8 suites passed after 9.000 seconds."
+        fi
+        exit "${STUB_GALLERY_HOSTED:-0}" ;;
+    ui) exit "${STUB_GALLERY_UI:-0}" ;;
+esac
+EOS
+chmod +x "$S/bin/xc" "$S/bin/xcodebuild" "$S/bin/simctl" "$S/bin/gallery"
+export ZTD_CI_XC="$S/bin/xc" ZTD_CI_XCODEBUILD="$S/bin/xcodebuild" ZTD_CI_SIMCTL="$S/bin/simctl" ZTD_CI_GALLERY="$S/bin/gallery" STUB_PRODUCTS="$S/products" STUB_ROOT="$S"
 unset ZTD_DERIVED ZTD_DEVICE ZTD_CI_COVERAGE_REPORT ZTD_CI_CHANGED_FILES ZTD_CI_BASE_REF GITHUB_ACTIONS
 CI="$S/Scripts/ci.sh"
 
@@ -86,7 +104,7 @@ not_logged() { if grep -q -F -- "$2" "$STUB_LOG"; then fail "$1 (the log holds: 
 ci 0 "with every tool succeeding, no gate fails" "$CI"
 expect_contains "… and every gate reports" "ci: gate 9  external parity                      passed"
 order="$(sed -E 's/ .*//' "$STUB_LOG" | awk '!seen[$0]++' | tr '\n' ' ')"
-if [ "$order" = "xc xcodebuild lint-bans check-dependency-graph compile-fixtures order-matrix api-digest coverage-gate golden benchmarks external-parity " ]; then
+if [ "$order" = "xc xcodebuild gallery lint-bans check-dependency-graph compile-fixtures order-matrix api-digest coverage-gate golden benchmarks external-parity " ]; then
     pass "the gates run in the order of §10.3"
 else
     fail "the gates run in the order of §10.3" "$order"
@@ -95,12 +113,15 @@ logged "gate 1 builds each production scheme for the simulator with warnings as 
 logged "… and for a device" "xcodebuild build -scheme ZTronDSP -destination generic/platform=iOS"
 logged "… with the two settings" "SWIFT_TREAT_WARNINGS_AS_ERRORS=YES GCC_TREAT_WARNINGS_AS_ERRORS=YES"
 logged "… from inside the package, wherever ci.sh was started" "CODE_SIGNING_ALLOWED=NO [in=$S]"
+logged "gate 1 builds the gallery application in Release, in derived data of its own" "gallery app [config=Release device= derived=ci-gallery-release]"
 logged "gate 5 runs the tests in Debug with coverage and a result bundle" "xc test-only [config=Debug device= derived=ci xcargs=-enableCodeCoverage YES -resultBundlePath .build/ci-results/Debug.xcresult]"
+logged "… and the gallery's hosted suites, in Debug, in derived data of their own" "gallery hosted [config=Debug device= derived=ci-gallery]"
+not_logged "the UI tests are not a gate" "gallery ui"
 logged "gate 4 checks the digest" "api-digest --check"
 logged "gate 7 checks the manifest" "golden --check"
 logged "gate 8 checks the benchmarks" "benchmarks --check"
 
-for case in "1:STUB_XCODEBUILD:build" "1:STUB_XC_BUILD:build" "2:STUB_LINT_BANS:lint and dependency graph" "2:STUB_CHECK_DEPENDENCY_GRAPH:lint and dependency graph" \
+for case in "1:STUB_XCODEBUILD:build" "1:STUB_XC_BUILD:build" "1:STUB_GALLERY_APP:build" "5:STUB_GALLERY_HOSTED:tests" "2:STUB_LINT_BANS:lint and dependency graph" "2:STUB_CHECK_DEPENDENCY_GRAPH:lint and dependency graph" \
             "3:STUB_COMPILE_FIXTURES:compile fixtures and order matrix" "3:STUB_ORDER_MATRIX:compile fixtures and order matrix" "4:STUB_API_DIGEST:API digest" \
             "5:STUB_XC_TEST_ONLY:tests" "6:STUB_COVERAGE_GATE:coverage" "7:STUB_GOLDEN:golden vectors" "8:STUB_BENCHMARKS:benchmarks" "9:STUB_EXTERNAL_PARITY:external parity"; do
     gate="${case%%:*}"; rest="${case#*:}"; variable="${rest%%:*}"; name="${rest#*:}"
@@ -163,6 +184,40 @@ logged "… after the other runtimes ran" "device=ztdsp-ci-27-0"
 ci 0 "a named runtime runs alone" "$CI" --gate 5 --runtime com.apple.CoreSimulator.SimRuntime.iOS-27-0
 not_logged "… and no other" "ztdsp-ci-17-5"
 
+# Gate 5: the gallery's hosted suites, on each simulator of the matrix, with no known issue.
+ci 0 "the gallery's hosted suites run on each runtime of the matrix" "$CI" --gate 5 --matrix
+logged "… on iOS 17.5" "gallery hosted [config=Debug device=ztdsp-ci-17-5 derived=ci-gallery]"
+logged "… and on iOS 27.0" "gallery hosted [config=Debug device=ztdsp-ci-27-0 derived=ci-gallery]"
+ci 1 "a known issue in the gallery's hosted suites fails gate 5" env STUB_GALLERY_KNOWN=any "$CI" --gate 5
+expect_contains "… and says why" "the gallery's hosted suites recorded a known issue: there, none may stand"
+expect_contains "… with the test that recorded it" "Test aHostedExpectation() recorded a known issue"
+expect_contains "… as a failure of the gate" "$(printf 'ci: gate 5  %-36s FAILED' tests)"
+ci 1 "a known issue on one runtime of the matrix fails the gate" env STUB_GALLERY_KNOWN=ztdsp-ci-18-6 "$CI" --gate 5 --matrix
+expect_contains "… which is named" "FAILED: the gallery's hosted suites on ztdsp-ci-18-6, with no known issue"
+logged "… after the other runtimes ran" "gallery hosted [config=Debug device=ztdsp-ci-27-0 derived=ci-gallery]"
+
+# The nightly job: the gallery's UI tests, which are not a gate.
+ci 0 "--nightly runs the gallery's UI tests" "$CI" --nightly
+logged "… in Debug, in the gallery's derived data" "gallery ui [config=Debug device= derived=ci-gallery]"
+not_logged "… and no gate" "lint-bans"
+not_logged "… not even the build" "xcodebuild"
+expect_contains "… and reports as the nightly job" "$(printf 'ci: nightly  %-36s passed' "the gallery's UI tests (not a gate)")"
+ci 0 "--nightly --matrix runs them on each runtime of the matrix" "$CI" --nightly --matrix
+logged "… on iOS 17.5" "gallery ui [config=Debug device=ztdsp-ci-17-5 derived=ci-gallery]"
+logged "… and on iOS 27.0" "gallery ui [config=Debug device=ztdsp-ci-27-0 derived=ci-gallery]"
+ci 1 "a UI test that fails fails the nightly run" env STUB_GALLERY_UI=1 "$CI" --nightly
+expect_contains "… which is reported" "$(printf 'ci: nightly  %-36s FAILED' "the gallery's UI tests (not a gate)")"
+ci 1 "… with its own annotation on GitHub" env GITHUB_ACTIONS=true STUB_GALLERY_UI=1 "$CI" --nightly
+expect_contains "… that names the nightly job" "::error title=CI nightly job (the gallery's UI tests (not a gate))::"
+expect_status 2 "--nightly with a gate is a usage error" "$CI" --nightly --gate 1
+expect_status 0 "--list names what each gate runs" "$CI" --list
+expect_contains "… gate 1, the gallery application in Release" "the gallery
+     application in Release (Examples/ZTronDSPGallery/gallery.sh app"
+expect_contains "… gate 5, the gallery's hosted suites" "suites (gallery.sh hosted), which fail on the words \"recorded a known issue\""
+expect_contains "… gate 9, the parity suite as part A of brief 61 adapted it" "two known issues may stand: the probe's"
+expect_contains "… the second the out-of-place gain at its bound" "and over it in about half the launches (CR-025 item 1)"
+expect_contains "… and the nightly job, which is not a gate" "Nightly, not a gate (--nightly): the gallery's UI tests (gallery.sh ui"
+
 ci 0 "without audit tests the Release run is skipped" "$CI" --gate 5
 expect_contains "… loudly" "SKIPPED: the Release run of the allocation-audit tests: no test calls expectNoAllocations yet"
 printf 'import Testing\n@Test func kernelDoesNotAllocate() { expectNoAllocations { } }\n' > "$S/Tests/ZTronDSPCoreTests/AuditTests.swift"
@@ -177,10 +232,11 @@ ci 0 "--tsan adds the Thread Sanitizer run" "$CI" --gate 5 --tsan
 logged "… in a derived-data folder of its own" "xc test [config= device= derived=ci-tsan xcargs=-enableThreadSanitizer YES]"
 ci 0 "--tsan-only runs nothing else" "$CI" --gate 5 --tsan-only
 not_logged "… no Debug run" "test-only"
+not_logged "… and no gallery" "gallery hosted"
 
 expect_status 2 "an unknown gate is a usage error" "$CI" --gate 12
 expect_status 2 "an unknown option is a usage error" "$CI" --everything
-unset ZTD_CI_XC ZTD_CI_XCODEBUILD ZTD_CI_SIMCTL STUB_PRODUCTS STUB_ROOT
+unset ZTD_CI_XC ZTD_CI_XCODEBUILD ZTD_CI_SIMCTL ZTD_CI_GALLERY STUB_PRODUCTS STUB_ROOT
 
 # ---------------------------------------------------------------------------------------------
 # Part 2: the real scripts, on a copy of the package with one violation seeded per gate

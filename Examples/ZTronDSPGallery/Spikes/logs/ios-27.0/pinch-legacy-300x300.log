@@ -1,0 +1,92 @@
+00000    0.0422 screen variant=legacy size=(300.00,300.00) os=Version 27.0 (Build 24A434)
+00001    2.5675 mark 1
+00002    2.9346 legacy.changed pinch.scale=1.57 drag=nil
+00003    2.9509 legacy.changed pinch.scale=1.71 drag=nil
+00004    2.9675 legacy.changed pinch.scale=2.00 drag=nil
+00005    2.9841 legacy.changed pinch.scale=2.14 drag=nil
+00006    3.0508 legacy.changed pinch.scale=2.29 drag=nil
+00007    3.1341 legacy.changed pinch.scale=2.43 drag=nil
+00008    3.2011 legacy.changed pinch.scale=2.57 drag=nil
+00009    3.2511 legacy.changed pinch.scale=2.71 drag=nil
+00010    3.3178 legacy.changed pinch.scale=2.86 drag=nil
+00011    3.3845 legacy.changed pinch.scale=3.00 drag=nil
+00012    3.4347 legacy.changed pinch.scale=3.14 drag=nil
+00013    3.5015 legacy.changed pinch.scale=3.29 drag=nil
+00014    3.5512 legacy.changed pinch.scale=3.43 drag=nil
+00015    3.6178 legacy.changed pinch.scale=3.57 drag=nil
+00016    3.6682 legacy.changed pinch.scale=3.71 drag=nil
+00017    3.7348 legacy.changed pinch.scale=3.86 drag=nil
+00018    3.8013 legacy.changed pinch.scale=4.00 drag=nil
+00019    3.8680 legacy.changed pinch.scale=4.14 drag=nil
+00020    3.9511 legacy.changed pinch.scale=4.29 drag=nil
+00021    4.0013 legacy.ended pinch.scale=4.29 drag=nil
+00022    4.3341 mark 2
+00023    4.7013 legacy.changed pinch.scale=1.01 drag=nil
+00024    4.7173 legacy.changed pinch.scale=1.02 drag=nil
+00025    4.7342 legacy.changed pinch.scale=1.02 drag=nil
+00026    4.7674 legacy.changed pinch.scale=0.99 drag=nil
+00027    4.7840 legacy.changed pinch.scale=0.96 drag=nil
+00028    4.8007 legacy.changed pinch.scale=0.93 drag=nil
+00029    4.8346 legacy.changed pinch.scale=0.85 drag=nil
+00030    4.8681 legacy.changed pinch.scale=0.81 drag=nil
+00031    4.8844 legacy.changed pinch.scale=0.78 drag=nil
+00032    4.9014 legacy.changed pinch.scale=0.70 drag=nil
+00033    4.9178 legacy.changed pinch.scale=0.66 drag=nil
+00034    4.9512 legacy.changed pinch.scale=0.62 drag=nil
+00035    4.9681 legacy.changed pinch.scale=0.56 drag=nil
+00036    4.9844 legacy.changed pinch.scale=0.53 drag=nil
+00037    5.0178 legacy.changed pinch.scale=0.51 drag=nil
+00038    5.0184 legacy.ended pinch.scale=0.51 drag=nil
+00039    5.3508 mark 3
+00040    5.7047 legacy.changed pinch.scale=0.95 drag=nil
+00041    5.7341 legacy.changed pinch.scale=0.95 drag=nil
+00042    5.7507 legacy.changed pinch.scale=0.94 drag=nil
+00043    5.7674 legacy.changed pinch.scale=0.95 drag=nil
+00044    5.7842 legacy.changed pinch.scale=0.94 drag=nil
+00045    5.8008 legacy.changed pinch.scale=0.95 drag=nil
+00046    5.8174 legacy.changed pinch.scale=0.95 drag=nil
+00047    5.8340 legacy.changed pinch.scale=0.95 drag=nil
+00048    5.8507 legacy.changed pinch.scale=0.95 drag=nil
+00049    5.8673 legacy.changed pinch.scale=0.94 drag=nil
+00050    5.8840 legacy.changed pinch.scale=0.94 drag=nil
+00051    5.9007 legacy.changed pinch.scale=0.94 drag=nil
+00052    5.9181 legacy.changed pinch.scale=0.95 drag=nil
+00053    5.9350 legacy.changed pinch.scale=0.95 drag=nil
+00054    5.9514 legacy.changed pinch.scale=0.95 drag=nil
+00055    5.9683 legacy.changed pinch.scale=0.94 drag=nil
+00056    5.9848 legacy.changed pinch.scale=0.94 drag=nil
+00057    6.0018 legacy.changed pinch.scale=0.94 drag=nil
+00058    6.0181 legacy.changed pinch.scale=0.94 drag=nil
+00059    6.0355 legacy.changed pinch.scale=0.94 drag=nil
+00060    6.0515 legacy.changed pinch.scale=0.95 drag=nil
+00061    6.0687 legacy.changed pinch.scale=0.95 drag=nil
+00062    6.0848 legacy.changed pinch.scale=0.95 drag=nil
+00063    6.1018 legacy.changed pinch.scale=0.94 drag=nil
+00064    6.1182 legacy.changed pinch.scale=0.95 drag=nil
+00065    6.1350 legacy.changed pinch.scale=0.94 drag=nil
+00066    6.1519 legacy.changed pinch.scale=0.94 drag=nil
+00067    6.1683 legacy.changed pinch.scale=0.95 drag=nil
+00068    6.1849 legacy.changed pinch.scale=0.95 drag=nil
+00069    6.3022 legacy.ended pinch.scale=0.95 drag=nil
+00070    6.7351 mark 4
+00071    7.4508 mark 5
+00072    7.9174 legacy.changed pinch=nil drag.start=(90.00,120.00) drag.at=(90.00,120.00) drag.move=(0.00,0.00)
+00073    7.9675 legacy.changed pinch=nil drag.start=(90.00,120.00) drag.at=(95.67,123.00) drag.move=(5.67,3.00)
+00074    7.9840 legacy.changed pinch=nil drag.start=(90.00,120.00) drag.at=(102.67,126.33) drag.move=(12.67,6.33)
+00075    8.0008 legacy.changed pinch=nil drag.start=(90.00,120.00) drag.at=(110.00,130.00) drag.move=(20.00,10.00)
+00076    8.0175 legacy.changed pinch=nil drag.start=(90.00,120.00) drag.at=(118.00,134.00) drag.move=(28.00,14.00)
+00077    8.0341 legacy.changed pinch=nil drag.start=(90.00,120.00) drag.at=(126.33,138.00) drag.move=(36.33,18.00)
+00078    8.0512 legacy.changed pinch=nil drag.start=(90.00,120.00) drag.at=(134.67,142.33) drag.move=(44.67,22.33)
+00079    8.0683 legacy.changed pinch=nil drag.start=(90.00,120.00) drag.at=(143.00,146.67) drag.move=(53.00,26.67)
+00080    8.0849 legacy.changed pinch=nil drag.start=(90.00,120.00) drag.at=(151.67,150.67) drag.move=(61.67,30.67)
+00081    8.1014 legacy.changed pinch=nil drag.start=(90.00,120.00) drag.at=(160.00,155.00) drag.move=(70.00,35.00)
+00082    8.1181 legacy.changed pinch=nil drag.start=(90.00,120.00) drag.at=(168.67,159.33) drag.move=(78.67,39.33)
+00083    8.1348 legacy.changed pinch=nil drag.start=(90.00,120.00) drag.at=(176.67,163.33) drag.move=(86.67,43.33)
+00084    8.1514 legacy.changed pinch=nil drag.start=(90.00,120.00) drag.at=(184.67,167.33) drag.move=(94.67,47.33)
+00085    8.1681 legacy.changed pinch=nil drag.start=(90.00,120.00) drag.at=(192.00,171.00) drag.move=(102.00,51.00)
+00086    8.1847 legacy.changed pinch=nil drag.start=(90.00,120.00) drag.at=(199.00,174.67) drag.move=(109.00,54.67)
+00087    8.2015 legacy.changed pinch=nil drag.start=(90.00,120.00) drag.at=(205.00,177.67) drag.move=(115.00,57.67)
+00088    8.2181 legacy.changed pinch=nil drag.start=(90.00,120.00) drag.at=(209.67,179.67) drag.move=(119.67,59.67)
+00089    8.2346 legacy.changed pinch=nil drag.start=(90.00,120.00) drag.at=(210.00,180.00) drag.move=(120.00,60.00)
+00090    8.2353 legacy.ended pinch=nil drag.start=(90.00,120.00) drag.at=(210.00,180.00) drag.move=(120.00,60.00)
+00091    8.5675 mark 6

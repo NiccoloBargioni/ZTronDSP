@@ -58,10 +58,69 @@ final class EventLog: @unchecked Sendable {
     }
 }
 
+/// The events of a `ManualPushSource`, handed out one at a time.
+///
+/// Whoever listens to a source comes back for its next event only when it is through with the
+/// one before. So a test can know, without letting a time pass, that every event it sent has
+/// been handed on: the listener is then waiting for an event that has not been sent yet.
+final class ManualEventLine: Sendable {
+    private struct State {
+        var pending: [SourceEvent] = []
+        var waiter: CheckedContinuation<SourceEvent?, Never>?
+        var isFinished = false
+    }
+
+    private let state = Locked(State())
+
+    /// The next event, for the stream's one listener; `nil` once the line is finished.
+    func next() async -> SourceEvent? {
+        await withCheckedContinuation { (continuation: CheckedContinuation<SourceEvent?, Never>) in
+            let ready: SourceEvent?? = state.withLock { state -> SourceEvent?? in
+                if !state.pending.isEmpty { return .some(state.pending.removeFirst()) }
+                if state.isFinished { return .some(nil) }
+                state.waiter = continuation
+                return nil
+            }
+            if let ready { continuation.resume(returning: ready) }
+        }
+    }
+
+    func send(_ event: SourceEvent) {
+        let waiter = state.withLock { state -> CheckedContinuation<SourceEvent?, Never>? in
+            guard !state.isFinished else { return nil }
+            if let waiter = state.waiter {
+                state.waiter = nil
+                return waiter
+            }
+            state.pending.append(event)
+            return nil
+        }
+        waiter?.resume(returning: event)
+    }
+
+    /// Ends the stream: the listener leaves.
+    func finish() {
+        let waiter = state.withLock { state -> CheckedContinuation<SourceEvent?, Never>? in
+            state.isFinished = true
+            let waiter = state.waiter
+            state.waiter = nil
+            return waiter
+        }
+        waiter?.resume(returning: nil)
+    }
+
+    /// True while the listener waits for an event that has not been sent: it has taken every
+    /// event sent so far and has passed each of them on.
+    var isTaken: Bool {
+        state.withLock { $0.waiter != nil && $0.pending.isEmpty }
+    }
+}
+
 /// A push source for tests: the test writes blocks into the ring by hand and sends events.
 final class ManualPushSource: PushSampleSource, @unchecked Sendable {
     private let stored: Locked<SignalFormat>
-    private let channel = SourceEventChannel()
+    private let line: ManualEventLine
+    private let stream: AsyncStream<SourceEvent>
     private let writer = Locked<RingWriter?>(nil)
     private let counts = Locked<(prepares: Int, starts: Int, stops: Int, connects: Int)>((0, 0, 0, 0))
     let startError: DSPError?
@@ -69,10 +128,21 @@ final class ManualPushSource: PushSampleSource, @unchecked Sendable {
     init(format: SignalFormat, startError: DSPError? = nil) {
         stored = Locked(format)
         self.startError = startError
+        let line = ManualEventLine()
+        self.line = line
+        stream = AsyncStream(unfolding: { await line.next() })
+    }
+
+    deinit {
+        line.finish()
     }
 
     var format: SignalFormat { stored.get() }
-    var events: AsyncStream<SourceEvent> { channel.stream }
+    var events: AsyncStream<SourceEvent> { stream }
+    /// True once whoever listens to the source has taken every event sent so far and passed
+    /// it on. An engine queues what it is passed on its control context, in order, so after
+    /// this `engine.core.flush()` returns when the engine has dealt with all of them.
+    var eventsAreTaken: Bool { line.isTaken }
     var prepares: Int { counts.get().prepares }
     var starts: Int { counts.get().starts }
     var stops: Int { counts.get().stops }
@@ -108,12 +178,12 @@ final class ManualPushSource: PushSampleSource, @unchecked Sendable {
         writer.withLock { $0?.write(block) ?? 0 }
     }
 
-    func send(_ event: SourceEvent) { channel.send(event) }
+    func send(_ event: SourceEvent) { line.send(event) }
 
     /// Changes the format the source reports and says so.
     func changeFormat(to format: SignalFormat) {
         stored.set(format)
-        channel.send(.formatChanged(format))
+        line.send(.formatChanged(format))
     }
 }
 

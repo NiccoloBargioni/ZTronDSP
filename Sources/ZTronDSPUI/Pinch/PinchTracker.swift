@@ -13,11 +13,13 @@ enum PinchSample: Equatable {
     case touches(CGPoint, CGPoint)
     /// iOS 17 (`MagnifyGesture` with a simultaneous `DragGesture`): the magnification, the
     /// pinch's start location, which is its centroid, and where the first finger went down,
-    /// once the drag has said so.
+    /// when the drag says so. It says so when the first finger lands before the second;
+    /// when both land together the drag reports nothing for the whole pinch, and this is
+    /// `nil` throughout.
     case magnification(scale: CGFloat, start: CGPoint, firstFingerStart: CGPoint?)
     /// iOS 15 and 16 (`MagnificationGesture` with a simultaneous `DragGesture`): the
     /// magnification, where the first finger went down and how far it has travelled since,
-    /// once the drag has said so.
+    /// when the drag says so; `nil` throughout when both fingers land together, as above.
     case legacy(scale: CGFloat, firstFingerStart: CGPoint?, firstFingerTravel: CGSize?)
 }
 
@@ -27,7 +29,8 @@ enum PinchSample: Equatable {
 struct PinchState: Equatable {
     /// The axes the pinch scales. They are decided once, from the line through the two
     /// fingers when the pinch begins (PINCH-3), and limited to the axes that are enabled: a
-    /// pinch along an axis that is not enabled scales nothing, and this is empty.
+    /// pinch along an axis that is not enabled scales nothing, and this is empty. A pinch
+    /// whose finger line is not known scales every enabled axis (PINCH-8).
     var axes: Axis.Set
     /// The distance between the fingers now over their distance when the pinch began
     /// (PINCH-4). Above 1 the fingers have moved apart.
@@ -48,8 +51,15 @@ struct PinchState: Equatable {
 /// | Sample | The finger line |
 /// |---|---|
 /// | `.touches` | Both touch locations. |
-/// | `.magnification` | From the pinch's start location to the first finger's start location. |
+/// | `.magnification` | From the pinch's start location (the centroid) to the first finger's start location, which the drag reports only when the first finger lands before the second. |
 /// | `.legacy` | The direction the first finger travels in its first 8 points; nothing scales until then. With one axis enabled, that axis is used at once. |
+///
+/// **A finger line that is not known.** When both fingers land together, the drag of the
+/// `.magnification` and of the `.legacy` path reports nothing for the whole pinch (found by
+/// the spike WP-818 on iOS 17.5, 18.6 and 27.0), so there is no first finger to draw a line
+/// to and no travel to read. Such a pinch scales every enabled axis, from its first report.
+/// It is told from a drag that has not travelled far enough yet by the drag's silence: a
+/// drag that has reported once and falls silent decides nothing.
 ///
 /// On the legacy path the scale counts from the moment the axis is known, so that the
 /// picture does not jump by what the fingers moved while nothing scaled.
@@ -68,6 +78,8 @@ struct PinchTracker: Equatable {
     private var startCentroid: CGPoint?
     /// On the legacy path: the magnification at the moment the axis was decided.
     private var referenceScale: CGFloat = 1
+    /// On the legacy path: whether the drag has reported the first finger in this pinch.
+    private var heardTheFirstFinger = false
 
     init(enabled: Axis.Set) {
         self.enabled = enabled
@@ -107,12 +119,18 @@ struct PinchTracker: Equatable {
 
         case .magnification(let scale, let start, let firstFingerStart):
             if decided == nil {
-                if let finger = firstFingerStart, let named = Self.axes(along: CGVector(dx: finger.x - start.x, dy: finger.y - start.y)) {
-                    decided = named.intersection(enabled)
-                } else if let only = onlyEnabledAxis {
-                    decided = only
+                if let finger = firstFingerStart {
+                    if let named = Self.axes(along: CGVector(dx: finger.x - start.x, dy: finger.y - start.y)) {
+                        decided = named.intersection(enabled)
+                    } else if let only = onlyEnabledAxis {
+                        decided = only
+                    } else {
+                        return nil
+                    }
                 } else {
-                    return nil
+                    // The drag is silent: both fingers landed together, and the finger line
+                    // is not known. The pinch scales every enabled axis (PINCH-8).
+                    decided = enabled
                 }
                 startCentroid = start
             }
@@ -124,10 +142,18 @@ struct PinchTracker: Equatable {
                 if let only = onlyEnabledAxis {
                     decided = only
                     referenceScale = 1
-                } else if let travel, hypot(travel.width, travel.height) >= Self.decisionDistance,
-                          let named = Self.axes(along: CGVector(dx: travel.width, dy: travel.height)) {
+                } else if let travel {
+                    heardTheFirstFinger = true
+                    guard hypot(travel.width, travel.height) >= Self.decisionDistance,
+                          let named = Self.axes(along: CGVector(dx: travel.width, dy: travel.height)) else { return nil }
                     decided = named.intersection(enabled)
                     referenceScale = scale > 0 && scale.isFinite ? scale : 1
+                } else if !heardTheFirstFinger {
+                    // The drag is silent from the first report on: both fingers landed
+                    // together, and the finger line is not known. The pinch scales every
+                    // enabled axis at once, by the whole magnification (PINCH-8).
+                    decided = enabled
+                    referenceScale = 1
                 } else {
                     return nil
                 }
@@ -144,6 +170,7 @@ struct PinchTracker: Equatable {
         initialDistance = nil
         startCentroid = nil
         referenceScale = 1
+        heardTheFirstFinger = false
     }
 
     /// The enabled axis, when exactly one is enabled: then no finger line is needed.

@@ -70,6 +70,37 @@ extension SecondOrderSections {
     /// - Throws: `DSPError.unsupportedConfiguration` for an analog cascade or one that is not
     ///   stable; `DSPError.resourceAllocationFailed` when a kernel cannot be created.
     public func singleVersusDoubleDeviation() throws(DSPError) -> Double {
+        try singleVersusDoubleDeviation(accelerated: true, channelCount: 1, blockFrames: 512)
+    }
+
+    /// The precision the cascade should run in (REAL-3): `.double` when
+    /// ``singleVersusDoubleDeviation()`` exceeds −100 dB, `.single` otherwise. Control or
+    /// background context.
+    public func recommendedPrecision() throws(DSPError) -> BiquadPrecision {
+        try recommendedPrecision(accelerated: true, channelCount: 1, blockFrames: 512)
+    }
+
+    /// ``singleVersusDoubleDeviation()`` for the place a stage stands at (REAL-3): the same
+    /// measurement, with the single-precision kernel a plan creates there and in blocks of
+    /// the size it runs there. The stock filter stages make it with exactly these three
+    /// figures when the environment asks for `.automatic`, so a filter written outside the
+    /// package that passes them picks the precision its stock twin picks (EXT-1).
+    ///
+    /// Creates two kernels and runs them: control or background context, which is where a
+    /// stage's `lower(_:)` runs.
+    ///
+    /// - Parameters:
+    ///   - accelerated: whether a plan runs a single-precision cascade on Accelerate at that
+    ///     place. In `lower(_:)`:
+    ///     `context.implementation(for: .biquadKernel, size: context.maximumBlockFrames) == .accelerate`.
+    ///     Otherwise the single path is the C loop, which rounds differently.
+    ///   - channelCount: channels of the signal there, `context.channelCount`. From three
+    ///     channels up an accelerated cascade runs on one setup for all channels
+    ///     (`vDSP_biquadm`), another routine than the one for one or two.
+    ///   - blockFrames: frames per block there, `context.maximumBlockFrames`; taken as
+    ///     1 … 4 096.
+    /// - Throws: as ``singleVersusDoubleDeviation()``.
+    public func singleVersusDoubleDeviation(accelerated: Bool, channelCount: Int, blockFrames: Int) throws(DSPError) -> Double {
         guard domain == .digital else {
             throw .unsupportedConfiguration(reason: "only a digital cascade runs: an analog one has no single-precision realisation to measure")
         }
@@ -78,14 +109,16 @@ extension SecondOrderSections {
         }
         let realised = spreadingGain().biquadSections
         guard !realised.isEmpty else { return DSP.decibelFloor }
-        return try PrecisionMeasurement.deviation(of: realised, accelerated: true, channelCount: 1, blockFrames: 512)
+        return try PrecisionMeasurement.deviation(of: realised, accelerated: accelerated, channelCount: channelCount, blockFrames: blockFrames)
     }
 
-    /// The precision the cascade should run in (REAL-3): `.double` when
-    /// ``singleVersusDoubleDeviation()`` exceeds −100 dB, `.single` otherwise. Control or
-    /// background context.
-    public func recommendedPrecision() throws(DSPError) -> BiquadPrecision {
-        PrecisionMeasurement.precision(for: try singleVersusDoubleDeviation())
+    /// The precision the cascade should run in at the place a stage stands at (REAL-3):
+    /// `.double` when ``singleVersusDoubleDeviation(accelerated:channelCount:blockFrames:)``
+    /// exceeds −100 dB, `.single` otherwise. What a stock filter stage picks there for
+    /// `.automatic`. Control or background context; allocates (it makes the measurement).
+    public func recommendedPrecision(accelerated: Bool, channelCount: Int, blockFrames: Int) throws(DSPError) -> BiquadPrecision {
+        PrecisionMeasurement.precision(
+            for: try singleVersusDoubleDeviation(accelerated: accelerated, channelCount: channelCount, blockFrames: blockFrames))
     }
 
     /// The sections as the kernels take them.

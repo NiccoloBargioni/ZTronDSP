@@ -16,8 +16,10 @@ extern "C" {
    after another, not multiplied into one, so a fused plan is bit-identical to the unfused one.
 
    A changed factor ramps linearly to its target over `ramp_frames` frames, continuous across
-   blocks, and lands on the target exactly; 0 jumps (§6.2). A factor that rests at 1 is not
-   applied: it changes no sample (F4).
+   blocks, and lands on the target exactly; 0 jumps (§6.2). Frame by frame the ramp is the closed
+   form of the gain kernel (ztd_kernels.h), rounded step by step: the same floats, so one gain
+   stage and a gain per channel ramp alike. A factor that rests at 1 is not applied: it changes
+   no sample (F4).
    ZTD_COMMAND_SET_VALUES: `count` floats at `values`, the new factors, in order. */
 ztd_kernel_t ztd_gain_cascade_create(uint32_t channels, const float *factors, uint32_t count,
                                      uint32_t ramp_frames, ztd_implementation_t implementation);
@@ -25,7 +27,10 @@ ztd_kernel_t ztd_gain_cascade_create(uint32_t channels, const float *factors, ui
 /* --- A plan as one kernel --------------------------------------------------------------------
    Wraps a plan so that it runs as a single kernel of another plan: what a `Group(isActive:)` of
    several kernels becomes, so that one switch bypasses the whole group (ACT-6). The kernel owns
-   the plan and destroys it. Its latency and settling time are the sums of the plan's kernels'.
+   the plan and destroys it. Its latency and settling time are the sums of the plan's kernels';
+   a settling time beyond 32 bits is UINT32_MAX frames. A plan whose kernels' latencies add up
+   to more than 32 bits count gives a null kernel, and stays the caller's to destroy: a latency
+   is not cut to fit (REAL-5).
    A command for it is forwarded to the kernel of the inner plan whose index is in the command's
    `flags`.
 

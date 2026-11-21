@@ -1,0 +1,79 @@
+UI tests (GalleryUITests) on iOS 17.5 (ztdsp-175-m8b), 2026-11-17, package as built, Debug: summary lines of the
+xcodebuild logs. The turn of the device was run six times in all: the gallery ended in three of them (runs 1, 3
+and the last of the three runs at the end of this file) and lived through the other three.
+
+Run 1, 20:23 to 20:35, all eleven tests, before the two expected failures were marked in the tests. The walk
+through the list passed (2 tests); the pinch spike passed (4 tests; the 3 that need SpatialEventGesture are skipped
+below iOS 18); the pinch on the spectrogram screen scaled nothing (finding of WP-818: on iOS 17 a pinch whose
+fingers land together gives the tracker no finger line, and with both axes enabled it scales nothing); the turn of
+the device ended the gallery in MetalViewHost.draw(in:) (finding (B) of WP-822).
+
+	 Executed 2 tests, with 0 failures (0 unexpected) in 118.736 (118.741) seconds
+ZTD pinch out: span 4 -> 4.0, range 40.0 ... 20000.0 -> 40.0 ... 20000.0
+PinchSpikeUITests.swift:166: error: -[GalleryUITests.PinchScreenUITests testAPinchOnTheSpectrogramScalesItsBoundTimeSpanAndRange] : XCTAssertTrue failed - fingers apart: less is shown along at least one axis
+ZTD pinch in: span 4.0 -> 4.0, range 40.0 ... 20000.0 -> 40.0 ... 20000.0
+PinchSpikeUITests.swift:175: error: -[GalleryUITests.PinchScreenUITests testAPinchOnTheSpectrogramScalesItsBoundTimeSpanAndRange] : XCTAssertTrue failed - fingers together: more is shown along at least one axis
+	 Executed 1 test, with 2 failures (0 unexpected) in 15.100 (15.101) seconds
+	 Executed 7 tests, with 3 tests skipped and 0 failures (0 unexpected) in 602.414 (602.419) seconds
+SizeSpikeUITests.swift:18: error: -[GalleryUITests.SizeSpikeUITests testAnAnimatedFrameAndATurnOfTheDevice] : Failed to get matching snapshot: Lost connection to the application (pid 69231). (Underlying Error: Impossibile comunicare con un’applicazione di supporto. Prova di nuovo a eseguire l’operazione. Se non riesce, esci, ria
+<unknown>:0: error: -[GalleryUITests.SizeSpikeUITests testAnAnimatedFrameAndATurnOfTheDevice] : com.zombietron.ztrondsp.gallery crashed in MetalViewHost.draw(in:)
+	 Executed 1 test, with 2 failures (0 unexpected) in 15.095 (15.096) seconds
+	 Executed 11 tests, with 3 tests skipped and 4 failures (0 unexpected) in 751.344 (751.363) seconds
+	 Executed 11 tests, with 3 tests skipped and 4 failures (0 unexpected) in 751.344 (751.364) seconds
+** TEST EXECUTE FAILED **
+exit=65
+
+Run 2, 20:42, the two tests that failed, now with XCTExpectFailure (strict for the pinch, not strict for the turn
+of the device). In this run the gallery lived through the turn of the device.
+
+ZTD pinch out: span 4 -> 4.0, range 40.0 ... 20000.0 -> 40.0 ... 20000.0
+ZTD pinch in: span 4.0 -> 4.0, range 40.0 ... 20000.0 -> 40.0 ... 20000.0
+	 Executed 1 test, with 0 failures (0 unexpected) in 8.402 (8.404) seconds
+	 Executed 1 test, with 0 failures (0 unexpected) in 7.188 (7.188) seconds
+	 Executed 2 tests, with 0 failures (0 unexpected) in 15.590 (15.594) seconds
+	 Executed 2 tests, with 0 failures (0 unexpected) in 15.590 (15.595) seconds
+** TEST EXECUTE SUCCEEDED **
+exit=0
+
+Run 3, 20:55, the turn of the device alone. The gallery ended again in MetalViewHost.draw(in:); the crash report
+of the system names -[MTLTextureDescriptorInternal validateWithDevice:] under -[CAMetalLayer nextDrawable], called
+from MetalViewHost.draw(in:) (Bridge/MetalViewRepresentable.swift:96) on SurfaceCoordinator.tick()
+(Surface/SurfaceCoordinator.swift:275).
+
+XCTExpectFailure: matcher accepted UI Automation Failure: com.zombietron.ztrondsp.gallery crashed in MetalViewHost.draw(in:)
+Expected failure in -[GalleryUITests.SizeSpikeUITests testAnAnimatedFrameAndATurnOfTheDevice]: com.zombietron.ztrondsp.gallery crashed in MetalViewHost.draw(in:)Reason: (As built, a rotation can end the application: the drawable grows past the largest texture)
+	 Executed 1 test, with 0 failures (0 unexpected) in 40.607 (40.610) seconds
+	 Executed 1 test, with 0 failures (0 unexpected) in 40.607 (40.612) seconds
+	 Executed 1 test, with 0 failures (0 unexpected) in 40.607 (40.614) seconds
+** TEST EXECUTE SUCCEEDED **
+exit=0
+
+Runs of 22:19 to 22:20, the turn of the device three times with the final test code (the test now expects only
+the end of the application and presses "Save" until the press registers). size-spike-device.log of this folder
+is from the first of them. In the first two the gallery lived
+(the probe was handed (718.00,155.67) once on the way there and (836.00,123.00), (377.00,548.00) on the way
+back); in the third it ended in MetalViewHost.draw(in:), which the test expects.
+
+started 22:19:31
+	 Executed 1 test, with 0 failures (0 unexpected) in 24.658 (24.660) seconds
+	 Executed 1 test, with 0 failures (0 unexpected) in 24.658 (24.661) seconds
+** TEST EXECUTE SUCCEEDED **
+exit=0
+ended 22:20:13
+
+started 22:20:14
+	 Executed 1 test, with 0 failures (0 unexpected) in 8.326 (8.328) seconds
+	 Executed 1 test, with 0 failures (0 unexpected) in 8.326 (8.329) seconds
+	 Executed 1 test, with 0 failures (0 unexpected) in 8.326 (8.330) seconds
+** TEST EXECUTE SUCCEEDED **
+exit=0
+ended 22:20:31
+
+started 22:20:32
+XCTExpectFailure: matcher accepted UI Automation Failure: com.zombietron.ztrondsp.gallery crashed in MetalViewHost.draw(in:)
+Expected failure in -[GalleryUITests.SizeSpikeUITests testAnAnimatedFrameAndATurnOfTheDevice]: com.zombietron.ztrondsp.gallery crashed in MetalViewHost.draw(in:)Reason: (As built, a rotation can end the application: the drawable grows past the largest texture)
+	 Executed 1 test, with 0 failures (0 unexpected) in 12.548 (12.550) seconds
+	 Executed 1 test, with 0 failures (0 unexpected) in 12.548 (12.551) seconds
+** TEST EXECUTE SUCCEEDED **
+exit=0
+ended 22:20:48

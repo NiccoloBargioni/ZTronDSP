@@ -1,0 +1,19 @@
+Excerpt of the xcodebuild log of the hosted suite on iOS 18.6 (ztdsp-18-m8b), 2026-11-17 19:27, package as built.
+The interface was turned to landscape and back with a SpectrogramView in the window. On the way back the
+drawable grew with every tick until Metal refused the texture; the application ended. It happened twice in
+the run: in the acceptance test and in the spike. After this run the tests take the component away before
+the interface turns back when the package runs as built.
+
+95:◇ Test case passing 1 argument rule → asBuilt to aRotation(rule:) started.
+96:2026-11-17 19:27:37.196285+0100 ZTronDSPGallery[92655:17342097] -[MTLTextureDescriptorInternal validateWithDevice:], line 1405: error 'Texture Descriptor Validation
+97:MTLTextureDescriptor has height (8388) greater than the maximum allowed size of 8192.
+99:-[MTLTextureDescriptorInternal validateWithDevice:]:1405: failed assertion `Texture Descriptor Validation
+100:MTLTextureDescriptor has height (8388) greater than the maximum allowed size of 8192.
+105:Restarting after unexpected exit, crash, or test timeout; summary will include totals from previous launches.
+139:◇ Test aRotationOfTheInterface(rule:) started.
+140:◇ Test case passing 1 argument rule → asBuilt to aRotationOfTheInterface(rule:) started.
+141:2026-11-17 19:28:23.380189+0100 ZTronDSPGallery[96315:17357380] -[MTLTextureDescriptorInternal validateWithDevice:], line 1405: error 'Texture Descriptor Validation
+142:MTLTextureDescriptor has height (10033) greater than the maximum allowed size of 8192.
+144:-[MTLTextureDescriptorInternal validateWithDevice:]:1405: failed assertion `Texture Descriptor Validation
+145:MTLTextureDescriptor has height (10033) greater than the maximum allowed size of 8192.
+149:Restarting after unexpected exit, crash, or test timeout; summary will include totals from previous launches.

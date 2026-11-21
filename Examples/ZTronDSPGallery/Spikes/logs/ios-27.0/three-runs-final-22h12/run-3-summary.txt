@@ -1,0 +1,36 @@
+Hosted suite (GalleryTests) on iOS 27.0 (ztdsp-27-m8b), 2026-11-17, package as built, Debug, final test code:
+run 3 of three in a row (22:12 to 22:19). Summary lines of the xcodebuild log.
+
+started 22:17:13
+	 Executed 0 tests, with 0 failures (0 unexpected) in 0.000 (0.001) seconds
+ZTD sheet: draws=3 columns=1 toldActive=true
+━ Test aComponentInAHostingControllerDrawsAsItDoesInAScene() recorded a known issue at GalleryScreenTests.swift:152:17: Expectation failed: seen.value.last == .active
+━ Test aComponentInAHostingControllerDrawsAsItDoesInAScene() recorded a known issue at GalleryScreenTests.swift:153:17: Expectation failed: probe.draws >= 1
+ZTD-824 frame asBuilt: frames=31 draws=30 uploads=0 worstCommitted=18.00 px (frame 15) worstAtTick=0.00 px captured=780x630 shownAtCapture=792x648 psnr=36.8 dB finalDrawable=960x900 finalMismatch=0.00 px
+━ Test anAnimatedFrameChange(rule:) recorded a known issue with 1 argument rule → asBuilt at SizeTransitionAcceptanceTests.swift:200:21: Expectation failed: verdict.worstCommitted <= 1
+ZTD-824 frame asBuilt midpoint PSNR 36.83039901969354
+ZTD-824 frame displayScale: frames=31 draws=30 uploads=0 worstCommitted=18.00 px (frame 15) worstAtTick=0.00 px captured=780x630 shownAtCapture=792x648 psnr=36.8 dB finalDrawable=960x900 finalMismatch=0.00 px
+━ Test anAnimatedFrameChange(rule:) recorded a known issue with 1 argument rule → displayScale at SizeTransitionAcceptanceTests.swift:200:21: Expectation failed: verdict.worstCommitted <= 1
+ZTD-824 frame displayScale midpoint PSNR 36.83039901969354
+ZTD-824 frame endOfTurn: frames=30 draws=30 uploads=0 worstCommitted=0.00 px (frame 0) worstAtTick=0.00 px captured=780x630 shownAtCapture=780x630 psnr=inf dB finalDrawable=960x900 finalMismatch=0.00 px
+ZTD-824 frame endOfTurn midpoint PSNR inf
+ZTD-824 rotation asBuilt: frames=13 draws=13 uploads=0 worstCommitted=2376.00 px (frame 11) worstAtTick=2376.00 px captured=8x7 shownAtCapture=1799x1549 psnr=12.3 dB finalDrawable=6x2 finalMismatch=2376.00 px
+━ Test aRotation(rule:) recorded a known issue with 1 argument rule → asBuilt at SizeTransitionAcceptanceTests.swift:269:21: Expectation failed: verdict.worstAtTick <= 1
+━ Test aRotation(rule:) recorded a known issue with 1 argument rule → asBuilt at SizeTransitionAcceptanceTests.swift:270:21: Expectation failed: verdict.worstCommitted <= 1
+━ Test aRotation(rule:) recorded a known issue with 1 argument rule → asBuilt at SizeTransitionAcceptanceTests.swift:271:21: Expectation failed: verdict.finalMismatch <= 1
+━ Test aRotation(rule:) recorded a known issue with 1 argument rule → asBuilt at SizeTransitionAcceptanceTests.swift:272:21: Expectation failed: (verdict.psnr ?? 0) >= 35
+ZTD-824 rotation displayScale: frames=17 draws=17 uploads=0 worstCommitted=0.47 px (frame 6) worstAtTick=0.47 px captured=1808x1540 shownAtCapture=1808x1540 psnr=inf dB finalDrawable=2382x966 finalMismatch=0.00 px
+ZTD-824 rotation displayScale back in portrait: drawable (966.0, 2382.0) for (322.0, 794.0) points
+ZTD-824 rotation endOfTurn: frames=16 draws=16 uploads=0 worstCommitted=0.48 px (frame 2) worstAtTick=1416.00 px captured=1800x1548 shownAtCapture=1800x1548 psnr=inf dB finalDrawable=2382x966 finalMismatch=0.00 px
+ZTD-824 rotation endOfTurn back in portrait: drawable (966.0, 2382.0) for (322.0, 794.0) points
+━ Test aResizeWithoutAnimationIsOneDrawPerChangedSizeAndNoUpload(kind:) recorded a known issue with 1 argument kind → heatmap at StabilityLevel2Tests.swift:307:21: Expectation failed: watch.probe.draws == before.draws + index + 1
+ZTD resize without animation, heatmap: draws after each of the three sizes [2, 4, 6]
+━ Test aResizeWithoutAnimationIsOneDrawPerChangedSizeAndNoUpload(kind:) recorded a known issue with 1 argument kind → waveform at StabilityLevel2Tests.swift:307:21: Expectation failed: watch.probe.draws == before.draws + index + 1
+ZTD resize without animation, waveform: draws after each of the three sizes [2, 4, 6]
+ZTD stagehand: a display link of its own ticked 18 times while the application was in the background
+ZTD stagehand: phases [SwiftUI.ScenePhase.active, SwiftUI.ScenePhase.inactive, SwiftUI.ScenePhase.background, SwiftUI.ScenePhase.inactive, SwiftUI.ScenePhase.active]
+ZTD stagehand: a view in a hosting controller that is told nothing read [SwiftUI.ScenePhase.background]
+━ Test run with 23 tests in 8 suites passed after 105.290 seconds with 14 known issues.
+** TEST EXECUTE SUCCEEDED **
+exit=0
+ended 22:19:08

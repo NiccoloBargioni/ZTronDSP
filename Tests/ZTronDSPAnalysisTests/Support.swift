@@ -169,39 +169,8 @@ func run<Output: SignalDomain>(
     runner.finish()
 }
 
-/// The real-time audit of a pipeline (RT-7, layer 3): its plan runs `blocks` blocks of
-/// `blockSize` frames of noise inside `expectNoAllocations`, after one block outside it.
-/// Returns the plan's runner so a test can check that the sinks did receive frames.
-@discardableResult
-func expectNoAllocationsRunning<Output: SignalDomain>(
-    _ pipeline: Pipeline<Samples, Output>, format: SignalFormat = mono48, blockSize: Int = 512, blocks: Int = 1_000,
-    crossovers: CrossoverTable = .shipped, sourceLocation: SourceLocation = #_sourceLocation
-) throws -> Int {
-    let runner = try OfflineRunner(stages: pipeline.stages, format: format, blockSize: blockSize, crossovers: crossovers)
-    defer { runner.finish() }
-    var channels: [[Float]] = []
-    for channel in 0 ..< format.channelCount {
-        channels.append(TestSignal.whiteNoise(count: blockSize, seed: UInt64(17 + channel), amplitude: 0.5))
-    }
-    let buffer = try AudioBuffer(channels: channels)
-    let plan = runner.plan
-    plan.output = nil       // the runner's own collection of the main line allocates; the plan must not
-    // Blocks outside the audit: first calls may instantiate metadata, and a step that waits
-    // for its history takes its other path afterwards.
-    var warm = 0
-    while warm < 8 {
-        plan.process(FrameView(samples: buffer.block(), index: warm * blockSize, time: Double(warm * blockSize) / format.sampleRate))
-        warm += 1
-    }
-    _ = expectNoAllocations(sourceLocation: sourceLocation) {
-        var block = 8
-        while block < blocks + 8 {
-            plan.process(FrameView(samples: buffer.block(), index: block &* blockSize, time: Double(block &* blockSize) / format.sampleRate))
-            block += 1
-        }
-    }
-    return blocks
-}
+// The real-time audit of a pipeline, `expectNoAllocationsRunning`, is the public one of
+// `ZTronDSPTesting`: the helper of that name that stood here reached the plan with `@testable`.
 
 /// Lowers a pipeline as the engine would and returns what the plan compiler made of it.
 func lowered<Output: SignalDomain>(

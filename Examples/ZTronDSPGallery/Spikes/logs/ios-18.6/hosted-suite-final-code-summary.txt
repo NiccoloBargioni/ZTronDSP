@@ -1,0 +1,43 @@
+Hosted suite (GalleryTests) on iOS 18.6 (ztdsp-18-m8b), 2026-11-17 22:07 to 22:10, package as built, Debug, final test
+code: summary lines of the xcodebuild log. The journals of this run are under final-run/.
+
+The run before it, 21:59 to 22:05, lost the application at the end of the spike's rotation under the corrected
+rule, after both turns had been recorded: the system gave a geometry request up after its timeout and called the
+request's error handler on a queue of its own, where a closure of the test that belonged to the main actor
+trapped (EXC_BREAKPOINT in dispatch_assert_queue; a fault of the test, not of the package). The handler now
+belongs to no actor (GalleryTests/Support/Hosting.swift, UIWindowScene.turnInterface).
+
+started 22:07:13
+** TEST BUILD SUCCEEDED **
+	 Executed 0 tests, with 0 failures (0 unexpected) in 0.000 (0.004) seconds
+ZTD sheet: draws=2 columns=2 toldActive=true
+━ Test aComponentInAHostingControllerDrawsAsItDoesInAScene() recorded a known issue at GalleryScreenTests.swift:152:17: Expectation failed: seen.value.last == .active
+━ Test aComponentInAHostingControllerDrawsAsItDoesInAScene() recorded a known issue at GalleryScreenTests.swift:153:17: Expectation failed: probe.draws >= 1
+ZTD-824 frame asBuilt: frames=31 draws=30 uploads=0 worstCommitted=18.00 px (frame 15) worstAtTick=0.00 px captured=780x630 shownAtCapture=792x648 psnr=36.8 dB finalDrawable=960x900 finalMismatch=0.00 px
+━ Test anAnimatedFrameChange(rule:) recorded a known issue with 1 argument rule → asBuilt at SizeTransitionAcceptanceTests.swift:200:21: Expectation failed: verdict.worstCommitted <= 1
+ZTD-824 frame asBuilt midpoint PSNR 36.83039901969354
+ZTD-824 frame displayScale: frames=31 draws=30 uploads=0 worstCommitted=18.00 px (frame 15) worstAtTick=0.00 px captured=780x630 shownAtCapture=792x648 psnr=36.8 dB finalDrawable=960x900 finalMismatch=0.00 px
+━ Test anAnimatedFrameChange(rule:) recorded a known issue with 1 argument rule → displayScale at SizeTransitionAcceptanceTests.swift:200:21: Expectation failed: verdict.worstCommitted <= 1
+ZTD-824 frame displayScale midpoint PSNR 36.83039901969354
+ZTD-824 frame endOfTurn: frames=30 draws=30 uploads=0 worstCommitted=0.00 px (frame 0) worstAtTick=0.00 px captured=780x630 shownAtCapture=780x630 psnr=inf dB finalDrawable=960x900 finalMismatch=0.00 px
+ZTD-824 frame endOfTurn midpoint PSNR inf
+ZTD-824 rotation asBuilt: frames=20 draws=20 uploads=0 worstCommitted=2315.00 px (frame 19) worstAtTick=2314.99 px captured=1x1 shownAtCapture=1628x1627 psnr=9.1 dB finalDrawable=1x1 finalMismatch=2315.00 px
+━ Test aRotation(rule:) recorded a known issue with 1 argument rule → asBuilt at SizeTransitionAcceptanceTests.swift:269:21: Expectation failed: verdict.worstAtTick <= 1
+━ Test aRotation(rule:) recorded a known issue with 1 argument rule → asBuilt at SizeTransitionAcceptanceTests.swift:270:21: Expectation failed: verdict.worstCommitted <= 1
+━ Test aRotation(rule:) recorded a known issue with 1 argument rule → asBuilt at SizeTransitionAcceptanceTests.swift:271:21: Expectation failed: verdict.finalMismatch <= 1
+━ Test aRotation(rule:) recorded a known issue with 1 argument rule → asBuilt at SizeTransitionAcceptanceTests.swift:272:21: Expectation failed: (verdict.psnr ?? 0) >= 35
+ZTD-824 rotation displayScale: frames=17 draws=17 uploads=0 worstCommitted=24.19 px (frame 2) worstAtTick=0.48 px captured=1749x1506 shownAtCapture=1951x1304 psnr=41.4 dB finalDrawable=2316x939 finalMismatch=0.00 px
+ZTD-824 rotation displayScale back in portrait: drawable (939.0, 2316.0) for (313.0, 772.0) points
+ZTD-824 rotation endOfTurn: frames=18 draws=18 uploads=0 worstCommitted=0.36 px (frame 1) worstAtTick=1377.00 px captured=1628x1627 shownAtCapture=1628x1627 psnr=inf dB finalDrawable=2316x939 finalMismatch=0.00 px
+ZTD-824 rotation endOfTurn back in portrait: drawable (939.0, 2316.0) for (313.0, 772.0) points
+━ Test aResizeWithoutAnimationIsOneDrawPerChangedSizeAndNoUpload(kind:) recorded a known issue with 1 argument kind → heatmap at StabilityLevel2Tests.swift:307:21: Expectation failed: watch.probe.draws == before.draws + index + 1
+ZTD resize without animation, heatmap: draws after each of the three sizes [2, 4, 6]
+━ Test aResizeWithoutAnimationIsOneDrawPerChangedSizeAndNoUpload(kind:) recorded a known issue with 1 argument kind → waveform at StabilityLevel2Tests.swift:307:21: Expectation failed: watch.probe.draws == before.draws + index + 1
+ZTD resize without animation, waveform: draws after each of the three sizes [2, 4, 6]
+ZTD stagehand: a display link of its own ticked 18 times while the application was in the background
+ZTD stagehand: phases [SwiftUI.ScenePhase.active, SwiftUI.ScenePhase.inactive, SwiftUI.ScenePhase.background, SwiftUI.ScenePhase.inactive, SwiftUI.ScenePhase.active]
+ZTD stagehand: a view in a hosting controller that is told nothing read [SwiftUI.ScenePhase.background]
+━ Test run with 23 tests in 8 suites passed after 155.109 seconds with 14 known issues.
+** TEST EXECUTE SUCCEEDED **
+exit=0
+ended 22:10:07

@@ -112,7 +112,20 @@ public final class SourceEventChannel: Sendable {
     /// A channel that keeps the newest `capacity` events while nobody is listening.
     public init(capacity: Int = 64) {
         (stream, continuation) = AsyncStream.makeStream(of: SourceEvent.self, bufferingPolicy: .bufferingNewest(max(capacity, 1)))
+        _ = SourceEventChannel.firstUse
     }
+
+    /// Sends one event into a stream nobody listens to, once in a process, where the first
+    /// channel is made (RT-2). Code that sends keeps what `yield` returns for a moment, and
+    /// the first use of that type in a process makes the Swift runtime instantiate it, which
+    /// allocates. A source that sends from its `render`, as `ScriptedSource` does, reaches
+    /// such code on the thread that renders, at the entry of `render`, whether it sends or
+    /// not. Here it is reached first, on a thread that may allocate.
+    private static let firstUse: Void = {
+        let (_, scratch) = AsyncStream.makeStream(of: SourceEvent.self, bufferingPolicy: .bufferingNewest(1))
+        scratch.yield(.interrupted)
+        scratch.finish()
+    }()
 
     /// Delivers an event.
     public func send(_ event: SourceEvent) {

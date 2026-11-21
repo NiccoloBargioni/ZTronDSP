@@ -1,0 +1,260 @@
+00000   0.0002 recorder.start displayScale=3.0000 model=(320.00,340.00) shown=(320.00,340.00) keys=[] drawable=(960.00,1020.00) scale=3.0000 auto=1 withTransaction=0
+00001   0.0005 rule endOfTurn
+00002   0.0163 frame 0 end model=(320.00,340.00) shown=(320.00,340.00) keys=[] drawable=(960.00,1020.00) scale=3.0000 auto=1 withTransaction=0 mismatch=0.00 inTransition=0 draws=1 uploads=1 ticks=1 handled=1
+00003   0.0329 stimulus withAnimation(linear, 0.5 s) neighbour height 60 -> 240
+00004   0.0335 probe.set size=(320.00,340.00)
+00005   0.0340 frame 1 end model=(320.00,340.00) shown=(320.00,340.00) keys=[] drawable=(960.00,1020.00) scale=3.0000 auto=1 withTransaction=0 mismatch=0.00 inTransition=0 draws=1 uploads=1 ticks=1 handled=1
+00006   0.0497 probe.set size=(320.00,340.00)
+00007   0.0501 frame 2 end model=(320.00,340.00) shown=(320.00,340.00) keys=[] drawable=(960.00,1020.00) scale=3.0000 auto=1 withTransaction=0 mismatch=0.00 inTransition=0 draws=1 uploads=1 ticks=1 handled=1
+00008   0.0668 probe.set size=(320.00,340.00)
+00009   0.0671 frame 3 end model=(320.00,340.00) shown=(320.00,340.00) keys=[] drawable=(960.00,1020.00) scale=3.0000 auto=1 withTransaction=0 mismatch=0.00 inTransition=0 draws=1 uploads=1 ticks=1 handled=1
+00010   0.0831 probe.set size=(320.00,334.00)
+00011   0.0831 probe.body size=(320.00,334.00)
+00012   0.0836 view.drawableSizeWillChange size=(960.00,1002.00)
+00013   0.0839 view.draw.begin drawable=(960.00,1002.00)
+00014   0.0872 view.draw.end draws=2
+00015   0.0873 frame 4 end model=(320.00,334.00) shown=(320.00,334.00) keys=[] drawable=(960.00,1002.00) scale=3.0000 auto=0 withTransaction=1 mismatch=0.00 inTransition=0 draws=2 uploads=1 ticks=1 handled=1
+00016   0.0999 surface.tick begin model=(320.00,334.00) shown=(320.00,334.00) keys=[] drawable=(960.00,1002.00) scale=3.0000 auto=1 withTransaction=0
+00017   0.0999 surface.tick end   model=(320.00,334.00) shown=(320.00,334.00) keys=[] drawable=(960.00,1002.00) scale=3.0000 auto=1 withTransaction=0 inTransition=0 draws=2
+00018   0.1000 probe.set size=(320.00,328.00)
+00019   0.1000 probe.body size=(320.00,328.00)
+00020   0.1006 view.drawableSizeWillChange size=(960.00,984.00)
+00021   0.1013 view.draw.begin drawable=(960.00,984.00)
+00022   0.1051 view.draw.end draws=3
+00023   0.1054 frame 5 end model=(320.00,328.00) shown=(320.00,328.00) keys=[] drawable=(960.00,984.00) scale=3.0000 auto=0 withTransaction=1 mismatch=0.00 inTransition=0 draws=3 uploads=1 ticks=2 handled=2
+00024   0.1163 surface.tick begin model=(320.00,328.00) shown=(320.00,328.00) keys=[] drawable=(960.00,984.00) scale=3.0000 auto=1 withTransaction=0
+00025   0.1163 surface.tick end   model=(320.00,328.00) shown=(320.00,328.00) keys=[] drawable=(960.00,984.00) scale=3.0000 auto=1 withTransaction=0 inTransition=0 draws=3
+00026   0.1164 probe.set size=(320.00,322.00)
+00027   0.1165 probe.body size=(320.00,322.00)
+00028   0.1169 view.drawableSizeWillChange size=(960.00,966.00)
+00029   0.1185 view.draw.begin drawable=(960.00,966.00)
+00030   0.1232 view.draw.end draws=4
+00031   0.1234 frame 6 end model=(320.00,322.00) shown=(320.00,322.00) keys=[] drawable=(960.00,966.00) scale=3.0000 auto=0 withTransaction=1 mismatch=0.00 inTransition=0 draws=4 uploads=1 ticks=3 handled=3
+00032   0.1344 surface.tick begin model=(320.00,322.00) shown=(320.00,322.00) keys=[] drawable=(960.00,966.00) scale=3.0000 auto=1 withTransaction=0
+00033   0.1344 surface.tick end   model=(320.00,322.00) shown=(320.00,322.00) keys=[] drawable=(960.00,966.00) scale=3.0000 auto=1 withTransaction=0 inTransition=0 draws=4
+00034   0.1345 probe.set size=(320.00,316.00)
+00035   0.1346 probe.body size=(320.00,316.00)
+00036   0.1354 view.drawableSizeWillChange size=(960.00,948.00)
+00037   0.1366 view.draw.begin drawable=(960.00,948.00)
+00038   0.1394 view.draw.end draws=5
+00039   0.1396 frame 7 end model=(320.00,316.00) shown=(320.00,316.00) keys=[] drawable=(960.00,948.00) scale=3.0000 auto=0 withTransaction=1 mismatch=0.00 inTransition=0 draws=5 uploads=1 ticks=4 handled=4
+00040   0.1496 surface.tick begin model=(320.00,316.00) shown=(320.00,316.00) keys=[] drawable=(960.00,948.00) scale=3.0000 auto=1 withTransaction=0
+00041   0.1496 surface.tick end   model=(320.00,316.00) shown=(320.00,316.00) keys=[] drawable=(960.00,948.00) scale=3.0000 auto=1 withTransaction=0 inTransition=0 draws=5
+00042   0.1497 probe.set size=(320.00,310.00)
+00043   0.1497 probe.body size=(320.00,310.00)
+00044   0.1500 view.drawableSizeWillChange size=(960.00,930.00)
+00045   0.1513 view.draw.begin drawable=(960.00,930.00)
+00046   0.1539 view.draw.end draws=6
+00047   0.1541 frame 8 end model=(320.00,310.00) shown=(320.00,310.00) keys=[] drawable=(960.00,930.00) scale=3.0000 auto=0 withTransaction=1 mismatch=0.00 inTransition=0 draws=6 uploads=1 ticks=5 handled=5
+00048   0.1662 surface.tick begin model=(320.00,310.00) shown=(320.00,310.00) keys=[] drawable=(960.00,930.00) scale=3.0000 auto=1 withTransaction=0
+00049   0.1662 surface.tick end   model=(320.00,310.00) shown=(320.00,310.00) keys=[] drawable=(960.00,930.00) scale=3.0000 auto=1 withTransaction=0 inTransition=0 draws=6
+00050   0.1663 probe.set size=(320.00,304.00)
+00051   0.1663 probe.body size=(320.00,304.00)
+00052   0.1666 view.drawableSizeWillChange size=(960.00,912.00)
+00053   0.1679 view.draw.begin drawable=(960.00,912.00)
+00054   0.1748 view.draw.end draws=7
+00055   0.1749 frame 9 end model=(320.00,304.00) shown=(320.00,304.00) keys=[] drawable=(960.00,912.00) scale=3.0000 auto=0 withTransaction=1 mismatch=0.00 inTransition=0 draws=7 uploads=1 ticks=6 handled=6
+00056   0.1829 surface.tick begin model=(320.00,304.00) shown=(320.00,304.00) keys=[] drawable=(960.00,912.00) scale=3.0000 auto=1 withTransaction=0
+00057   0.1830 surface.tick end   model=(320.00,304.00) shown=(320.00,304.00) keys=[] drawable=(960.00,912.00) scale=3.0000 auto=1 withTransaction=0 inTransition=0 draws=7
+00058   0.1831 probe.set size=(320.00,298.00)
+00059   0.1831 probe.body size=(320.00,298.00)
+00060   0.1835 view.drawableSizeWillChange size=(960.00,894.00)
+00061   0.1848 view.draw.begin drawable=(960.00,894.00)
+00062   0.1875 view.draw.end draws=8
+00063   0.1876 frame 10 end model=(320.00,298.00) shown=(320.00,298.00) keys=[] drawable=(960.00,894.00) scale=3.0000 auto=0 withTransaction=1 mismatch=0.00 inTransition=0 draws=8 uploads=1 ticks=7 handled=7
+00064   0.2001 surface.tick begin model=(320.00,298.00) shown=(320.00,298.00) keys=[] drawable=(960.00,894.00) scale=3.0000 auto=1 withTransaction=0
+00065   0.2002 surface.tick end   model=(320.00,298.00) shown=(320.00,298.00) keys=[] drawable=(960.00,894.00) scale=3.0000 auto=1 withTransaction=0 inTransition=0 draws=8
+00066   0.2003 probe.set size=(320.00,292.00)
+00067   0.2003 probe.body size=(320.00,292.00)
+00068   0.2007 view.drawableSizeWillChange size=(960.00,876.00)
+00069   0.2015 view.draw.begin drawable=(960.00,876.00)
+00070   0.2059 view.draw.end draws=9
+00071   0.2060 frame 11 end model=(320.00,292.00) shown=(320.00,292.00) keys=[] drawable=(960.00,876.00) scale=3.0000 auto=0 withTransaction=1 mismatch=0.00 inTransition=0 draws=9 uploads=1 ticks=8 handled=8
+00072   0.2164 surface.tick begin model=(320.00,292.00) shown=(320.00,292.00) keys=[] drawable=(960.00,876.00) scale=3.0000 auto=1 withTransaction=0
+00073   0.2164 surface.tick end   model=(320.00,292.00) shown=(320.00,292.00) keys=[] drawable=(960.00,876.00) scale=3.0000 auto=1 withTransaction=0 inTransition=0 draws=9
+00074   0.2165 probe.set size=(320.00,286.00)
+00075   0.2165 probe.body size=(320.00,286.00)
+00076   0.2170 view.drawableSizeWillChange size=(960.00,858.00)
+00077   0.2182 view.draw.begin drawable=(960.00,858.00)
+00078   0.2212 view.draw.end draws=10
+00079   0.2214 frame 12 end model=(320.00,286.00) shown=(320.00,286.00) keys=[] drawable=(960.00,858.00) scale=3.0000 auto=0 withTransaction=1 mismatch=0.00 inTransition=0 draws=10 uploads=1 ticks=9 handled=9
+00080   0.2336 surface.tick begin model=(320.00,286.00) shown=(320.00,286.00) keys=[] drawable=(960.00,858.00) scale=3.0000 auto=1 withTransaction=0
+00081   0.2337 surface.tick end   model=(320.00,286.00) shown=(320.00,286.00) keys=[] drawable=(960.00,858.00) scale=3.0000 auto=1 withTransaction=0 inTransition=0 draws=10
+00082   0.2338 probe.set size=(320.00,280.00)
+00083   0.2338 probe.body size=(320.00,280.00)
+00084   0.2343 view.drawableSizeWillChange size=(960.00,840.00)
+00085   0.2348 view.draw.begin drawable=(960.00,840.00)
+00086   0.2375 view.draw.end draws=11
+00087   0.2377 frame 13 end model=(320.00,280.00) shown=(320.00,280.00) keys=[] drawable=(960.00,840.00) scale=3.0000 auto=0 withTransaction=1 mismatch=0.00 inTransition=0 draws=11 uploads=1 ticks=10 handled=10
+00088   0.2496 surface.tick begin model=(320.00,280.00) shown=(320.00,280.00) keys=[] drawable=(960.00,840.00) scale=3.0000 auto=1 withTransaction=0
+00089   0.2496 surface.tick end   model=(320.00,280.00) shown=(320.00,280.00) keys=[] drawable=(960.00,840.00) scale=3.0000 auto=1 withTransaction=0 inTransition=0 draws=11
+00090   0.2497 probe.set size=(320.00,274.00)
+00091   0.2497 probe.body size=(320.00,274.00)
+00092   0.2501 view.drawableSizeWillChange size=(960.00,822.00)
+00093   0.2515 view.draw.begin drawable=(960.00,822.00)
+00094   0.2540 view.draw.end draws=12
+00095   0.2541 frame 14 end model=(320.00,274.00) shown=(320.00,274.00) keys=[] drawable=(960.00,822.00) scale=3.0000 auto=0 withTransaction=1 mismatch=0.00 inTransition=0 draws=12 uploads=1 ticks=11 handled=11
+00096   0.2666 surface.tick begin model=(320.00,274.00) shown=(320.00,274.00) keys=[] drawable=(960.00,822.00) scale=3.0000 auto=1 withTransaction=0
+00097   0.2666 surface.tick end   model=(320.00,274.00) shown=(320.00,274.00) keys=[] drawable=(960.00,822.00) scale=3.0000 auto=1 withTransaction=0 inTransition=0 draws=12
+00098   0.2667 probe.set size=(320.00,268.00)
+00099   0.2667 probe.body size=(320.00,268.00)
+00100   0.2671 view.drawableSizeWillChange size=(960.00,804.00)
+00101   0.2680 view.draw.begin drawable=(960.00,804.00)
+00102   0.2707 view.draw.end draws=13
+00103   0.2708 frame 15 end model=(320.00,268.00) shown=(320.00,268.00) keys=[] drawable=(960.00,804.00) scale=3.0000 auto=0 withTransaction=1 mismatch=0.00 inTransition=0 draws=13 uploads=1 ticks=12 handled=12
+00104   0.2829 surface.tick begin model=(320.00,268.00) shown=(320.00,268.00) keys=[] drawable=(960.00,804.00) scale=3.0000 auto=1 withTransaction=0
+00105   0.2830 surface.tick end   model=(320.00,268.00) shown=(320.00,268.00) keys=[] drawable=(960.00,804.00) scale=3.0000 auto=1 withTransaction=0 inTransition=0 draws=13
+00106   0.2831 probe.set size=(320.00,262.00)
+00107   0.2831 probe.body size=(320.00,262.00)
+00108   0.2835 view.drawableSizeWillChange size=(960.00,786.00)
+00109   0.2848 view.draw.begin drawable=(960.00,786.00)
+00110   0.2875 view.draw.end draws=14
+00111   0.2876 frame 16 end model=(320.00,262.00) shown=(320.00,262.00) keys=[] drawable=(960.00,786.00) scale=3.0000 auto=0 withTransaction=1 mismatch=0.00 inTransition=0 draws=14 uploads=1 ticks=13 handled=13
+00112   0.2999 surface.tick begin model=(320.00,262.00) shown=(320.00,262.00) keys=[] drawable=(960.00,786.00) scale=3.0000 auto=1 withTransaction=0
+00113   0.2999 surface.tick end   model=(320.00,262.00) shown=(320.00,262.00) keys=[] drawable=(960.00,786.00) scale=3.0000 auto=1 withTransaction=0 inTransition=0 draws=14
+00114   0.3000 probe.set size=(320.00,256.00)
+00115   0.3000 probe.body size=(320.00,256.00)
+00116   0.3004 view.drawableSizeWillChange size=(960.00,768.00)
+00117   0.3013 view.draw.begin drawable=(960.00,768.00)
+00118   0.3041 view.draw.end draws=15
+00119   0.3042 frame 17 end model=(320.00,256.00) shown=(320.00,256.00) keys=[] drawable=(960.00,768.00) scale=3.0000 auto=0 withTransaction=1 mismatch=0.00 inTransition=0 draws=15 uploads=1 ticks=14 handled=14
+00120   0.3162 surface.tick begin model=(320.00,256.00) shown=(320.00,256.00) keys=[] drawable=(960.00,768.00) scale=3.0000 auto=1 withTransaction=0
+00121   0.3162 surface.tick end   model=(320.00,256.00) shown=(320.00,256.00) keys=[] drawable=(960.00,768.00) scale=3.0000 auto=1 withTransaction=0 inTransition=0 draws=15
+00122   0.3163 probe.set size=(320.00,250.00)
+00123   0.3163 probe.body size=(320.00,250.00)
+00124   0.3166 view.drawableSizeWillChange size=(960.00,750.00)
+00125   0.3179 view.draw.begin drawable=(960.00,750.00)
+00126   0.3205 view.draw.end draws=16
+00127   0.3206 frame 18 end model=(320.00,250.00) shown=(320.00,250.00) keys=[] drawable=(960.00,750.00) scale=3.0000 auto=0 withTransaction=1 mismatch=0.00 inTransition=0 draws=16 uploads=1 ticks=15 handled=15
+00128   0.3334 surface.tick begin model=(320.00,250.00) shown=(320.00,250.00) keys=[] drawable=(960.00,750.00) scale=3.0000 auto=1 withTransaction=0
+00129   0.3334 surface.tick end   model=(320.00,250.00) shown=(320.00,250.00) keys=[] drawable=(960.00,750.00) scale=3.0000 auto=1 withTransaction=0 inTransition=0 draws=16
+00130   0.3335 probe.set size=(320.00,244.00)
+00131   0.3335 probe.body size=(320.00,244.00)
+00132   0.3339 view.drawableSizeWillChange size=(960.00,732.00)
+00133   0.3346 view.draw.begin drawable=(960.00,732.00)
+00134   0.3376 view.draw.end draws=17
+00135   0.3378 frame 19 end model=(320.00,244.00) shown=(320.00,244.00) keys=[] drawable=(960.00,732.00) scale=3.0000 auto=0 withTransaction=1 mismatch=0.00 inTransition=0 draws=17 uploads=1 ticks=16 handled=16
+00136   0.3498 surface.tick begin model=(320.00,244.00) shown=(320.00,244.00) keys=[] drawable=(960.00,732.00) scale=3.0000 auto=1 withTransaction=0
+00137   0.3498 surface.tick end   model=(320.00,244.00) shown=(320.00,244.00) keys=[] drawable=(960.00,732.00) scale=3.0000 auto=1 withTransaction=0 inTransition=0 draws=17
+00138   0.3500 probe.set size=(320.00,238.00)
+00139   0.3500 probe.body size=(320.00,238.00)
+00140   0.3505 view.drawableSizeWillChange size=(960.00,714.00)
+00141   0.3516 view.draw.begin drawable=(960.00,714.00)
+00142   0.3563 view.draw.end draws=18
+00143   0.3565 frame 20 end model=(320.00,238.00) shown=(320.00,238.00) keys=[] drawable=(960.00,714.00) scale=3.0000 auto=0 withTransaction=1 mismatch=0.00 inTransition=0 draws=18 uploads=1 ticks=17 handled=17
+00144   0.3663 surface.tick begin model=(320.00,238.00) shown=(320.00,238.00) keys=[] drawable=(960.00,714.00) scale=3.0000 auto=1 withTransaction=0
+00145   0.3663 surface.tick end   model=(320.00,238.00) shown=(320.00,238.00) keys=[] drawable=(960.00,714.00) scale=3.0000 auto=1 withTransaction=0 inTransition=0 draws=18
+00146   0.3664 probe.set size=(320.00,232.00)
+00147   0.3665 probe.body size=(320.00,232.00)
+00148   0.3669 view.drawableSizeWillChange size=(960.00,696.00)
+00149   0.3681 view.draw.begin drawable=(960.00,696.00)
+00150   0.3708 view.draw.end draws=19
+00151   0.3709 frame 21 end model=(320.00,232.00) shown=(320.00,232.00) keys=[] drawable=(960.00,696.00) scale=3.0000 auto=0 withTransaction=1 mismatch=0.00 inTransition=0 draws=19 uploads=1 ticks=18 handled=18
+00152   0.3830 surface.tick begin model=(320.00,232.00) shown=(320.00,232.00) keys=[] drawable=(960.00,696.00) scale=3.0000 auto=1 withTransaction=0
+00153   0.3830 surface.tick end   model=(320.00,232.00) shown=(320.00,232.00) keys=[] drawable=(960.00,696.00) scale=3.0000 auto=1 withTransaction=0 inTransition=0 draws=19
+00154   0.3831 probe.set size=(320.00,226.00)
+00155   0.3831 probe.body size=(320.00,226.00)
+00156   0.3835 view.drawableSizeWillChange size=(960.00,678.00)
+00157   0.3849 view.draw.begin drawable=(960.00,678.00)
+00158   0.3875 view.draw.end draws=20
+00159   0.3876 frame 22 end model=(320.00,226.00) shown=(320.00,226.00) keys=[] drawable=(960.00,678.00) scale=3.0000 auto=0 withTransaction=1 mismatch=0.00 inTransition=0 draws=20 uploads=1 ticks=19 handled=19
+00160   0.3996 surface.tick begin model=(320.00,226.00) shown=(320.00,226.00) keys=[] drawable=(960.00,678.00) scale=3.0000 auto=1 withTransaction=0
+00161   0.3996 surface.tick end   model=(320.00,226.00) shown=(320.00,226.00) keys=[] drawable=(960.00,678.00) scale=3.0000 auto=1 withTransaction=0 inTransition=0 draws=20
+00162   0.3997 probe.set size=(320.00,220.00)
+00163   0.3997 probe.body size=(320.00,220.00)
+00164   0.4001 view.drawableSizeWillChange size=(960.00,660.00)
+00165   0.4013 view.draw.begin drawable=(960.00,660.00)
+00166   0.4040 view.draw.end draws=21
+00167   0.4041 frame 23 end model=(320.00,220.00) shown=(320.00,220.00) keys=[] drawable=(960.00,660.00) scale=3.0000 auto=0 withTransaction=1 mismatch=0.00 inTransition=0 draws=21 uploads=1 ticks=20 handled=20
+00168   0.4163 surface.tick begin model=(320.00,220.00) shown=(320.00,220.00) keys=[] drawable=(960.00,660.00) scale=3.0000 auto=1 withTransaction=0
+00169   0.4163 surface.tick end   model=(320.00,220.00) shown=(320.00,220.00) keys=[] drawable=(960.00,660.00) scale=3.0000 auto=1 withTransaction=0 inTransition=0 draws=21
+00170   0.4164 probe.set size=(320.00,214.00)
+00171   0.4164 probe.body size=(320.00,214.00)
+00172   0.4169 view.drawableSizeWillChange size=(960.00,642.00)
+00173   0.4181 view.draw.begin drawable=(960.00,642.00)
+00174   0.4208 view.draw.end draws=22
+00175   0.4211 frame 24 end model=(320.00,214.00) shown=(320.00,214.00) keys=[] drawable=(960.00,642.00) scale=3.0000 auto=0 withTransaction=1 mismatch=0.00 inTransition=0 draws=22 uploads=1 ticks=21 handled=21
+00176   0.4332 surface.tick begin model=(320.00,214.00) shown=(320.00,214.00) keys=[] drawable=(960.00,642.00) scale=3.0000 auto=1 withTransaction=0
+00177   0.4332 surface.tick end   model=(320.00,214.00) shown=(320.00,214.00) keys=[] drawable=(960.00,642.00) scale=3.0000 auto=1 withTransaction=0 inTransition=0 draws=22
+00178   0.4333 probe.set size=(320.00,208.00)
+00179   0.4333 probe.body size=(320.00,208.00)
+00180   0.4337 view.drawableSizeWillChange size=(960.00,624.00)
+00181   0.4346 view.draw.begin drawable=(960.00,624.00)
+00182   0.4373 view.draw.end draws=23
+00183   0.4374 frame 25 end model=(320.00,208.00) shown=(320.00,208.00) keys=[] drawable=(960.00,624.00) scale=3.0000 auto=0 withTransaction=1 mismatch=0.00 inTransition=0 draws=23 uploads=1 ticks=22 handled=22
+00184   0.4496 surface.tick begin model=(320.00,208.00) shown=(320.00,208.00) keys=[] drawable=(960.00,624.00) scale=3.0000 auto=1 withTransaction=0
+00185   0.4496 surface.tick end   model=(320.00,208.00) shown=(320.00,208.00) keys=[] drawable=(960.00,624.00) scale=3.0000 auto=1 withTransaction=0 inTransition=0 draws=23
+00186   0.4497 probe.set size=(320.00,202.00)
+00187   0.4497 probe.body size=(320.00,202.00)
+00188   0.4501 view.drawableSizeWillChange size=(960.00,606.00)
+00189   0.4514 view.draw.begin drawable=(960.00,606.00)
+00190   0.4540 view.draw.end draws=24
+00191   0.4542 frame 26 end model=(320.00,202.00) shown=(320.00,202.00) keys=[] drawable=(960.00,606.00) scale=3.0000 auto=0 withTransaction=1 mismatch=0.00 inTransition=0 draws=24 uploads=1 ticks=23 handled=23
+00192   0.4666 surface.tick begin model=(320.00,202.00) shown=(320.00,202.00) keys=[] drawable=(960.00,606.00) scale=3.0000 auto=1 withTransaction=0
+00193   0.4666 surface.tick end   model=(320.00,202.00) shown=(320.00,202.00) keys=[] drawable=(960.00,606.00) scale=3.0000 auto=1 withTransaction=0 inTransition=0 draws=24
+00194   0.4667 probe.set size=(320.00,196.00)
+00195   0.4667 probe.body size=(320.00,196.00)
+00196   0.4671 view.drawableSizeWillChange size=(960.00,588.00)
+00197   0.4680 view.draw.begin drawable=(960.00,588.00)
+00198   0.4705 view.draw.end draws=25
+00199   0.4706 frame 27 end model=(320.00,196.00) shown=(320.00,196.00) keys=[] drawable=(960.00,588.00) scale=3.0000 auto=0 withTransaction=1 mismatch=0.00 inTransition=0 draws=25 uploads=1 ticks=24 handled=24
+00200   0.4829 surface.tick begin model=(320.00,196.00) shown=(320.00,196.00) keys=[] drawable=(960.00,588.00) scale=3.0000 auto=1 withTransaction=0
+00201   0.4830 surface.tick end   model=(320.00,196.00) shown=(320.00,196.00) keys=[] drawable=(960.00,588.00) scale=3.0000 auto=1 withTransaction=0 inTransition=0 draws=25
+00202   0.4830 probe.set size=(320.00,190.00)
+00203   0.4831 probe.body size=(320.00,190.00)
+00204   0.4835 view.drawableSizeWillChange size=(960.00,570.00)
+00205   0.4848 view.draw.begin drawable=(960.00,570.00)
+00206   0.4875 view.draw.end draws=26
+00207   0.4876 frame 28 end model=(320.00,190.00) shown=(320.00,190.00) keys=[] drawable=(960.00,570.00) scale=3.0000 auto=0 withTransaction=1 mismatch=0.00 inTransition=0 draws=26 uploads=1 ticks=25 handled=25
+00208   0.4998 surface.tick begin model=(320.00,190.00) shown=(320.00,190.00) keys=[] drawable=(960.00,570.00) scale=3.0000 auto=1 withTransaction=0
+00209   0.4998 surface.tick end   model=(320.00,190.00) shown=(320.00,190.00) keys=[] drawable=(960.00,570.00) scale=3.0000 auto=1 withTransaction=0 inTransition=0 draws=26
+00210   0.4999 probe.set size=(320.00,184.00)
+00211   0.5000 probe.body size=(320.00,184.00)
+00212   0.5004 view.drawableSizeWillChange size=(960.00,552.00)
+00213   0.5013 view.draw.begin drawable=(960.00,552.00)
+00214   0.5043 view.draw.end draws=27
+00215   0.5044 frame 29 end model=(320.00,184.00) shown=(320.00,184.00) keys=[] drawable=(960.00,552.00) scale=3.0000 auto=0 withTransaction=1 mismatch=0.00 inTransition=0 draws=27 uploads=1 ticks=26 handled=26
+00216   0.5164 surface.tick begin model=(320.00,184.00) shown=(320.00,184.00) keys=[] drawable=(960.00,552.00) scale=3.0000 auto=1 withTransaction=0
+00217   0.5164 surface.tick end   model=(320.00,184.00) shown=(320.00,184.00) keys=[] drawable=(960.00,552.00) scale=3.0000 auto=1 withTransaction=0 inTransition=0 draws=27
+00218   0.5165 probe.set size=(320.00,178.00)
+00219   0.5165 probe.body size=(320.00,178.00)
+00220   0.5170 view.drawableSizeWillChange size=(960.00,534.00)
+00221   0.5182 view.draw.begin drawable=(960.00,534.00)
+00222   0.5208 view.draw.end draws=28
+00223   0.5210 frame 30 end model=(320.00,178.00) shown=(320.00,178.00) keys=[] drawable=(960.00,534.00) scale=3.0000 auto=0 withTransaction=1 mismatch=0.00 inTransition=0 draws=28 uploads=1 ticks=27 handled=27
+00224   0.5332 surface.tick begin model=(320.00,178.00) shown=(320.00,178.00) keys=[] drawable=(960.00,534.00) scale=3.0000 auto=1 withTransaction=0
+00225   0.5332 surface.tick end   model=(320.00,178.00) shown=(320.00,178.00) keys=[] drawable=(960.00,534.00) scale=3.0000 auto=1 withTransaction=0 inTransition=0 draws=28
+00226   0.5333 probe.set size=(320.00,172.00)
+00227   0.5333 probe.body size=(320.00,172.00)
+00228   0.5337 view.drawableSizeWillChange size=(960.00,516.00)
+00229   0.5346 view.draw.begin drawable=(960.00,516.00)
+00230   0.5372 view.draw.end draws=29
+00231   0.5373 frame 31 end model=(320.00,172.00) shown=(320.00,172.00) keys=[] drawable=(960.00,516.00) scale=3.0000 auto=0 withTransaction=1 mismatch=0.00 inTransition=0 draws=29 uploads=1 ticks=28 handled=28
+00232   0.5496 surface.tick begin model=(320.00,172.00) shown=(320.00,172.00) keys=[] drawable=(960.00,516.00) scale=3.0000 auto=1 withTransaction=0
+00233   0.5496 surface.tick end   model=(320.00,172.00) shown=(320.00,172.00) keys=[] drawable=(960.00,516.00) scale=3.0000 auto=1 withTransaction=0 inTransition=0 draws=29
+00234   0.5497 probe.set size=(320.00,166.00)
+00235   0.5497 probe.body size=(320.00,166.00)
+00236   0.5502 view.drawableSizeWillChange size=(960.00,498.00)
+00237   0.5515 view.draw.begin drawable=(960.00,498.00)
+00238   0.5538 view.draw.end draws=30
+00239   0.5539 frame 32 end model=(320.00,166.00) shown=(320.00,166.00) keys=[] drawable=(960.00,498.00) scale=3.0000 auto=0 withTransaction=1 mismatch=0.00 inTransition=0 draws=30 uploads=1 ticks=29 handled=29
+00240   0.5665 surface.tick begin model=(320.00,166.00) shown=(320.00,166.00) keys=[] drawable=(960.00,498.00) scale=3.0000 auto=1 withTransaction=0
+00241   0.5665 surface.tick end   model=(320.00,166.00) shown=(320.00,166.00) keys=[] drawable=(960.00,498.00) scale=3.0000 auto=1 withTransaction=0 inTransition=0 draws=30
+00242   0.5666 probe.set size=(320.00,160.00)
+00243   0.5666 probe.body size=(320.00,160.00)
+00244   0.5670 view.drawableSizeWillChange size=(960.00,480.00)
+00245   0.5680 view.draw.begin drawable=(960.00,480.00)
+00246   0.5705 view.draw.end draws=31
+00247   0.5706 frame 33 end model=(320.00,160.00) shown=(320.00,160.00) keys=[] drawable=(960.00,480.00) scale=3.0000 auto=0 withTransaction=1 mismatch=0.00 inTransition=0 draws=31 uploads=1 ticks=30 handled=30
+00248   0.5830 surface.tick begin model=(320.00,160.00) shown=(320.00,160.00) keys=[] drawable=(960.00,480.00) scale=3.0000 auto=1 withTransaction=0
+00249   0.5830 surface.tick end   model=(320.00,160.00) shown=(320.00,160.00) keys=[] drawable=(960.00,480.00) scale=3.0000 auto=1 withTransaction=0 inTransition=0 draws=31
+00250   0.5831 probe.set size=(320.00,160.00)
+00251   0.5848 stimulus.completed
+00252   0.5851 frame 34 end model=(320.00,160.00) shown=(320.00,160.00) keys=[] drawable=(960.00,480.00) scale=3.0000 auto=1 withTransaction=0 mismatch=0.00 inTransition=0 draws=31 uploads=1 ticks=31 handled=31
+00253   0.5998 frame 35 end model=(320.00,160.00) shown=(320.00,160.00) keys=[] drawable=(960.00,480.00) scale=3.0000 auto=1 withTransaction=0 mismatch=0.00 inTransition=0 draws=31 uploads=1 ticks=31 handled=31
+00254   0.6163 frame 36 end model=(320.00,160.00) shown=(320.00,160.00) keys=[] drawable=(960.00,480.00) scale=3.0000 auto=1 withTransaction=0 mismatch=0.00 inTransition=0 draws=31 uploads=1 ticks=31 handled=31
+00255   0.6331 frame 37 end model=(320.00,160.00) shown=(320.00,160.00) keys=[] drawable=(960.00,480.00) scale=3.0000 auto=1 withTransaction=0 mismatch=0.00 inTransition=0 draws=31 uploads=1 ticks=31 handled=31
+00256   0.6496 frame 38 end model=(320.00,160.00) shown=(320.00,160.00) keys=[] drawable=(960.00,480.00) scale=3.0000 auto=1 withTransaction=0 mismatch=0.00 inTransition=0 draws=31 uploads=1 ticks=31 handled=31
+00257   0.6663 frame 39 end model=(320.00,160.00) shown=(320.00,160.00) keys=[] drawable=(960.00,480.00) scale=3.0000 auto=1 withTransaction=0 mismatch=0.00 inTransition=0 draws=31 uploads=1 ticks=31 handled=31
+00258   0.6830 frame 40 end model=(320.00,160.00) shown=(320.00,160.00) keys=[] drawable=(960.00,480.00) scale=3.0000 auto=1 withTransaction=0 mismatch=0.00 inTransition=0 draws=31 uploads=1 ticks=31 handled=31
+00259   0.7000 frame 41 end model=(320.00,160.00) shown=(320.00,160.00) keys=[] drawable=(960.00,480.00) scale=3.0000 auto=1 withTransaction=0 mismatch=0.00 inTransition=0 draws=31 uploads=1 ticks=31 handled=31

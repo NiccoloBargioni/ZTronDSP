@@ -62,6 +62,8 @@ struct IRKernel: Hashable, Sendable {
         case (.channelGains(let a, let rampA), .channelGains(let b, let rampB)): return a.count == b.count && rampA == rampB
         case (.biquad(let a, let precisionA), .biquad(let b, let precisionB)): return a.count == b.count && precisionA == precisionB
         case (.fir(let a, let latencyA), .fir(let b, let latencyB)): return a.count == b.count && latencyA == latencyB
+        case (.custom(let a), .custom(let b)): return a.hasSameStructure(as: b)
+        case (.processor(let a), .processor(let b)): return a.hasSameStructure(as: b)
         default: return spec == other.spec
         }
     }
@@ -164,6 +166,12 @@ struct LoweredPipeline: Sendable {
     let readerEnvironments: [DSPEnvironment]
     /// The environment at the source.
     let sourceEnvironment: DSPEnvironment
+    /// How often the bindings of this pipeline receive results, per second (OUT-2): the
+    /// highest `resultRate` among the environments its bound results stand in, which is what a
+    /// pipeline or a group sets with `.environment(\.resultRate, …)` around them (ENV-3). One
+    /// heartbeat serves every bound result of a session. The rate at the source where no
+    /// result is bound: there is no heartbeat then.
+    let resultRate: Double
     /// Domain, environment and block size at the end of the main line.
     let output: IRPosition
     /// True when the main line ends behind a stage that is switched off for good and changes
@@ -202,6 +210,15 @@ extension IRKernel {
             hasher.combine(4)
             hasher.combine(taps.count)
             hasher.combine(latency)
+        case .custom(let custom):
+            // Name and key, as the description hashes itself: its values are left out.
+            hasher.combine(6)
+            hasher.combine(custom)
+            hasher.combine(custom.values.count)
+        case .processor(let processor):
+            hasher.combine(7)
+            hasher.combine(processor)
+            hasher.combine(processor.values.count)
         default:
             hasher.combine(5)
             hasher.combine(spec)

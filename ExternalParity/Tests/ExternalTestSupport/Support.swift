@@ -401,9 +401,11 @@ public final class BlockCounter: @unchecked Sendable {
 /// the engine's analysis thread for a source paced in real time (`pacing: .realTime`), and a
 /// thread of the session's own for one that is read as fast as it is processed.
 ///
-/// Nothing public runs a plan block by block on the caller's thread, so `expectNoAllocations`
-/// cannot hold a pipeline; `ThreadAllocationAudit` is opened and closed from a callback on the
-/// engine's thread instead.
+/// `expectNoAllocationsRunning` of ZTronDSPTesting holds a pipeline on the caller's thread,
+/// with no source and no engine. This holds it where it runs in an app: `ThreadAllocationAudit`
+/// is opened and closed from a callback on the engine's thread. With `warmUp: 0` the audit
+/// opens before the first block, so it shows what a first `process` makes the Swift runtime
+/// instantiate (RT-2): hold that in an optimised build, the test alone in its process.
 public func expectNoAllocationsOnTheEngineThread<Output: SignalDomain>(
     _ pipeline: Pipeline<Samples, Output>, on source: (any SampleSource)? = nil, format: SignalFormat = mono48, blockSize: Int = 512,
     blocks: Int = 1_000, warmUp: Int = 16, pacing: Pacing = .asFastAsPossible, _ comment: String = "",

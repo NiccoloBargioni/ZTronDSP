@@ -118,8 +118,13 @@ platform="$(xcrun --sdk iphonesimulator --show-sdk-platform-path)"
         fi
         maps="$(cd "$products/../.." && pwd)/Intermediates.noindex/GeneratedModuleMaps-iphonesimulator"
         printf '%s\n' -I "$products" -F "$products" -F "$products/PackageFrameworks"
-        # Swift Testing and XCTest, for a fixture that imports the test product.
+        # Swift Testing and XCTest, for a fixture that imports the test product, with the macros of
+        # Swift Testing: `#_sourceLocation` is the default of a source location in ZTronDSPTesting.
         printf '%s\n' -F "$platform/Developer/Library/Frameworks" -I "$platform/Developer/usr/lib"
+        toolchain="$(dirname "$(dirname "$(xcrun --find swiftc)")")"
+        if [ -d "$toolchain/lib/swift/host/plugins/testing" ]; then
+            printf '%s\n' -plugin-path "$toolchain/lib/swift/host/plugins/testing"
+        fi
         for map in "$maps"/C*.modulemap; do
             [ -f "$map" ] && printf '%s\n' -Xcc "-fmodule-map-file=$map"
         done

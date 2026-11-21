@@ -1,0 +1,59 @@
+Where a rotation ended the application on iOS 17.5 (ztdsp-175-m8b), 2026-11-17, package as built.
+The largest texture of this simulator is 8 192 pixels.
+
+1. The gallery itself, in its own scene, with nothing of the tests in it.
+
+A UI test (GalleryUITests/SizeSpikeUITests) turned the device to landscape and back with the size-spike screen
+open, which shows two SpectrogramViews. In three runs of six the gallery ended (ui-tests-summary.txt: runs 1 and 3,
+and the last of the three runs of 22:19 to 22:20):
+
+    com.zombietron.ztrondsp.gallery crashed in MetalViewHost.draw(in:)
+
+The crash report the system wrote for run 3 (ZTronDSPGallery-2026-11-17-205626.ips, main thread, innermost first):
+
+    abort
+    __assert_rtn
+    MTLReportFailure
+    -[MTLTextureDescriptorInternal validateWithDevice:]
+    -[MTLSimDevice newTextureWithDescriptor:iosurface:plane:]
+    allocate_drawable_texture
+    -[CAMetalLayer nextDrawable]
+    -[MTKView currentDrawable]
+    -[MTKView currentRenderPassDescriptor]
+    MetalViewHost.draw(in:)                    Bridge/MetalViewRepresentable.swift:96
+    -[MTKView draw]
+    MetalViewHost.draw()                       Bridge/MetalViewRepresentable.swift:85
+    SurfaceCoordinator.tick()                  Surface/SurfaceCoordinator.swift:275
+    FrameScheduler.tick(at:)                   Scheduling/FrameScheduler.swift:128
+    DisplayLinkClock.Target.tick(_:)           Scheduling/FrameClock.swift:36
+
+That is the drawable growing on the way back of a rotation until Metal refuses its texture (finding (B) of
+WP-822-findings.md). In the other three runs the gallery lived through the turn; size-spike-device.log is from
+one of them.
+
+2. The hosted suite, runs 4 (20:19) and 5 (20:40).
+
+The application ended in the rotation cases of the acceptance test, each time at the start of a case that itself
+ran a corrected rule, with the same assertion of Metal. So the surface that grew was not the one under test but
+another one, built as the package is, that was still alive in the scene when the interface turned again. Which
+surface that was is an attribution, not an observation: in run 4 it is taken to be the component of the as-built
+case before it (out of its window, not yet released; since then a hosted window ends its surfaces when it is
+closed), in run 5 a screen of the gallery that the screen test had pushed twice and that iOS 17.5 kept alive out
+of sight (since then the screen test opens a screen once and waits before it closes it). Runs 6, 7 and 8 and the
+run of 22:24, after both changes, passed. The rotation acceptance run alone, between runs 5 and 6, passed for all three rules.
+
+Run 4, lines of the xcodebuild log:
+
+92:◇ Test case passing 1 argument rule → asBuilt to aRotation(rule:) started.
+119:◇ Test case passing 1 argument rule → displayScale to aRotation(rule:) started.
+121:MTLTextureDescriptor has width (9722) greater than the maximum allowed size of 8192.
+127:Restarting after unexpected exit, crash, or test timeout; summary will include totals from previous launches.
+
+Run 5, lines of the xcodebuild log:
+
+91:◇ Test case passing 1 argument rule → asBuilt to aRotation(rule:) started.
+117:◇ Test case passing 1 argument rule → displayScale to aRotation(rule:) started.
+120:◇ Test case passing 1 argument rule → endOfTurn to aRotation(rule:) started.
+122:MTLTextureDescriptor has width (8648) greater than the maximum allowed size of 8192.
+123:MTLTextureDescriptor has height (10370) greater than the maximum allowed size of 8192.
+130:Restarting after unexpected exit, crash, or test timeout; summary will include totals from previous launches.

@@ -14,5 +14,6 @@
 #include "ztd_ring.h"
 #include "ztd_sink_node.h"
 #include "ztd_thread.h"
+#include "ztd_vdsp.h"
 
 #endif /* CZTRONDSP_H */

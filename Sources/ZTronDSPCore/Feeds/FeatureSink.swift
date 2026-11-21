@@ -87,7 +87,7 @@ final class FeatureSinkAdapter<Sink: FeatureSink>: NamedSink {
 
 /// A sink as a stage description holds it. Sinks that are objects compare by identity; a
 /// binding has no identity, so all bound results of one kind compare equal (OUT-4).
-public struct SinkDescription: Hashable, Sendable {
+struct SinkDescription: Hashable, Sendable {
     enum Target: Sendable {
         /// A feed, a stream, a callback or a sink written outside the package.
         case object(any NamedSink, identity: ObjectIdentifier)
@@ -117,7 +117,7 @@ public struct SinkDescription: Hashable, Sendable {
         }
     }
 
-    public static func == (lhs: SinkDescription, rhs: SinkDescription) -> Bool {
+    static func == (lhs: SinkDescription, rhs: SinkDescription) -> Bool {
         switch (lhs.target, rhs.target) {
         case (.object(_, let a), .object(_, let b)): a == b
         case (.result(let a), .result(let b)): a == b
@@ -126,7 +126,7 @@ public struct SinkDescription: Hashable, Sendable {
         }
     }
 
-    public func hash(into hasher: inout Hasher) {
+    func hash(into hasher: inout Hasher) {
         switch target {
         case .object(_, let identity): hasher.combine(identity)
         case .result(let result): hasher.combine(result)

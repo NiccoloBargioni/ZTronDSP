@@ -263,14 +263,24 @@ struct SpeedTests {
         #expect(try Pipeline().appending(IdleProcessorStage()).process(Array(signal[..<4_096]), format: mono48) == Array(signal[..<4_096]))
         #expect(try Pipeline().appending(CopyingKernelStage()).process(Array(signal[..<4_096]), format: mono48) == Array(signal[..<4_096]))
 
+        // What the bound below rests on, held in every run: the gain of the suite reads one block
+        // and writes another, so the plan copies nothing in front of it. Written in place it took
+        // ×1.71 the stock gain's time (2026-11-21), and the known issue below would not show that.
+        let processor: any SampleProcessor = try ExternalGainProcessor(factors: [Float(amount.linear)])
+        #expect(processor is any OutOfPlaceSampleProcessor, "ExternalGainProcessor no longer reads one block and writes another (OutOfPlaceSampleProcessor, CR-025 item 1)")
+
         if holdsBudgets {
-            // FINDING. A `SampleProcessor` works on a block in place, and a kernel is handed an
-            // input and an output. The core therefore copies every block from the one to the other
-            // before the processor runs (ProcessorKernel), and calls the processor through an
-            // existential. For a stage as small as a gain those two cost about what the stock
-            // kernel costs in all: the bound of §5.7 cannot be met by a gain written as a
-            // `SampleProcessor`. The same multiplication on the kernel ABI meets it.
-            withKnownIssue("FINDING: a gain written as a SampleProcessor is more than 5 % slower than the stock gain: the processor path copies the block and dispatches through an existential") {
+            // A `SampleProcessor` works on a block in place, and a kernel is handed an input and an
+            // output: for such a processor the core copies every block from the one to the other
+            // before it runs (the idle processor above shows what that costs). The gain of the
+            // suite reads one block and writes another (`OutOfPlaceSampleProcessor`), so nothing
+            // is copied in front of it (CR-025, item 1). That took it from 1.75 to 1.81 times the
+            // stock gain to the bound of §5.7, and not reliably under it: nine launches of the
+            // speed check on 2026-11-21 measured ×1.009 to ×1.081 round by round, five of them
+            // over 1.05. The miss is stated, not hidden, and the bound is not loosened; gate 9 lets
+            // this known issue stand, in the speed check only. The same multiplication on the
+            // kernel ABI is held to the bound as a plain expectation.
+            withKnownIssue("CR-025 item 1: the gain written as a SampleProcessor, out of place, is at the 5 % bound of its stock twin and over it in about half the launches", isIntermittent: true) {
                 #expect(gain.paired <= SpeedTests.bound, "\(gain.text)")
             }
             #expect(onTheABI.paired <= SpeedTests.bound, "\(onTheABI.text)")

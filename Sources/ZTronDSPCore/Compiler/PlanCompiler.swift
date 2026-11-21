@@ -45,6 +45,8 @@ struct PlanCompiler: Sendable {
         /// without compiling it (§5.5.4).
         var switchSites: [Int] = []
         var resultSites: [Int] = []
+        /// The result rate of the environment each bound result stands in (OUT-2).
+        var resultRates: [Double] = []
         var nextSite = 0
         /// The environment each `EnvironmentReader` was expanded in, in the order of the walk.
         var readerEnvironments: [DSPEnvironment] = []
@@ -60,7 +62,8 @@ struct PlanCompiler: Sendable {
             resolved: resolved, steps: fuse(steps), skeleton: fuse(steps, keepingIdentitiesByValue: true),
             switches: collected.switches, results: collected.results,
             switchSites: collected.switchSites, resultSites: collected.resultSites,
-            readerEnvironments: collected.readerEnvironments, sourceEnvironment: environment, output: cursor.position,
+            readerEnvironments: collected.readerEnvironments, sourceEnvironment: environment,
+            resultRate: collected.resultRates.max() ?? environment.resultRate, output: cursor.position,
             isSuspended: suspended)
     }
 
@@ -96,6 +99,7 @@ struct PlanCompiler: Sendable {
                 collected.switchSites.removeSubrange(marks.0...)
                 collected.results.removeSubrange(marks.1...)
                 collected.resultSites.removeSubrange(marks.1...)
+                collected.resultRates.removeSubrange(marks.1...)
             }
             if suspended {
                 drop(&collected)
@@ -168,6 +172,13 @@ struct PlanCompiler: Sendable {
             let outer = cursor.environment
             var scope: [ObjectIdentifier: AnyStrategy] = [:]
             for override in overrides { scope[override.key] = override.value }
+            // The result rate is the one value a pipeline sets that a timer is made from: a rate
+            // that is no positive, finite number is refused where it is set (OUT-2, §9.3).
+            if let rate = scope[ObjectIdentifier(ResultRateKey.self)]?.value(as: Double.self), !(rate > 0 && rate.isFinite) {
+                throw .invalidParameter(
+                    stage: path, parameter: "resultRate",
+                    reason: "bindings receive results a positive, finite number of times per second, not \(rate)")
+            }
             cursor.environment = outer.applyingOverrides(of: scope)
             let (resolved, steps, suspended) = try walk(inner, &cursor, path, &collected)
             cursor.environment = cursor.environment.restoringOverrides(of: outer)
@@ -183,6 +194,7 @@ struct PlanCompiler: Sendable {
                 ordinal = collected.results.count
                 collected.results.append(result)
                 collected.resultSites.append(site)
+                collected.resultRates.append(cursor.environment.resultRate)
                 // The plan writes a slot of the binding's kind; the binding stays with the
                 // description and with the pump that captured it (BIND-6).
                 written = SinkDescription(target: .slot(result.kind), accepts: sink.accepts)

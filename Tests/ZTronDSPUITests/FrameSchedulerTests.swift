@@ -154,6 +154,42 @@ struct FrameSchedulerTests {
         #expect(FrameScheduler(clock: ManualClock(), maximumFrameRate: -5).maximumFrameRate == 1)
     }
 
+    /// While the surface follows a size transition no tick is held against the cap (SZ-2):
+    /// every tick of the display reaches the handler, and the clock is asked for the
+    /// display's own rate. A frame of a transition that is not made is shown stretched.
+    @Test(arguments: [30, 60])
+    func duringASizeTransitionEveryTickOfTheDisplayIsAFrame(cap: Int) {
+        let (scheduler, clock, frames) = scheduler(maximumFrameRate: cap)
+        scheduler.setFeedLive(true)
+        clock.fire()
+        scheduler.setFollowsDisplay(true)
+        #expect(scheduler.followsDisplay && clock.preferredRate == FrameScheduler.displayRate, "the clock is asked for the display's rate")
+        var first = frames()
+        clock.fire(120, rate: 120)
+        #expect(frames() - first == 120, "a 120 Hz display: 120 frames, whatever the cap of \(cap)")
+        // A tick that follows a late one comes sooner than the display's period: still a frame.
+        first = frames()
+        for _ in 0 ..< 10 {
+            clock.fire(rate: 45)
+            clock.fire(rate: 90)
+        }
+        #expect(frames() - first == 20)
+        // The cap can change meanwhile, and counts again when the transition is over.
+        scheduler.setMaximumFrameRate(20)
+        #expect(clock.preferredRate == FrameScheduler.displayRate)
+        scheduler.setFollowsDisplay(false)
+        scheduler.setFollowsDisplay(false)
+        #expect(!scheduler.followsDisplay && clock.preferredRate == 20)
+        clock.fire()
+        first = frames()
+        clock.fire(60)
+        #expect(frames() - first == 20, "20 frames a second again")
+        // A cap above the fastest display is what the clock is asked for.
+        scheduler.setMaximumFrameRate(240)
+        scheduler.setFollowsDisplay(true)
+        #expect(clock.preferredRate == 240)
+    }
+
     /// A skipped tick keeps what is pending: the request is served by the next tick the cap
     /// lets through.
     @Test func aRequestSurvivesATickTheCapSkips() {

@@ -18,10 +18,11 @@ extern "C" {
      - ignores a command that is not for it: another kind, another count, no payload, NULL.
 
    Block sizes. The output stream of a kernel does not depend on how its input is cut into
-   blocks, bit for bit, nor on where the caller keeps its buffers, with two exceptions that are
-   Accelerate's and are stated at the kernels concerned: the single-precision biquads on vDSP
+   blocks, bit for bit, nor on where the caller keeps its buffers, with three exceptions. Two
+   are Accelerate's and are stated at the kernels concerned: the single-precision biquads on vDSP
    (bit for bit for blocks of a multiple of four frames, within round-off otherwise) and the
-   partitioned convolution (within -100 dB).
+   partitioned convolution (within -100 dB). The third is state hygiene's, below, and holds
+   for the recursive kernels.
 
    State hygiene (RT-6). No kernel leaves a state value below ZTD_STATE_FLOOR in magnitude
    behind at the end of a block. The recursive kernels (biquads, alpha-beta) set such values to
@@ -29,6 +30,20 @@ extern "C" {
    section of a cascade works near the level of the signal (see the biquads). The kernels with an
    input history (FIR, decimator, interpolator, partitioned) take a sample below the floor as
    zero when it enters, so their histories never hold one.
+
+   What that means for block sizes. RT-6 fixes the flush at the end of each block, so a
+   recursive kernel is its recurrence with every state value below the floor set to zero at
+   the end of each of its blocks: bit for bit that, for any cut of the input. Two cuts of one
+   input therefore give the same output, bit for bit, as long as neither has cleared a value
+   that the other kept, which is so whenever no state value is below the floor, and not zero,
+   at the end of a block; from the frame at which one of them has, the outputs differ by what
+   the cleared values would have come to, as the rest of the kernel passes it on. A section
+   that starts from silence, or decays to it, passes through such values. Measured (the
+   double-precision cascade, a 10 Hz low-pass of order 8 at 192 kHz with its gain spread over
+   the sections, on 8 192 frames of full-scale noise): blocks of 1 and of 512 frames differ
+   from the second frame on, by at most 4.5e-13 where the output peaks at 2.5e-5, and a cut
+   that shares the first one's blocks for the first 2 048 frames gives the first one's output.
+   The kernels with an input history are not affected: they clean samples, not blocks.
    --------------------------------------------------------------------------------------------- */
 
 /* --- Gain (WP-207) ---------------------------------------------------------------------------
@@ -52,8 +67,10 @@ ztd_kernel_t ztd_gain_create(uint32_t channels, const float *gains, uint32_t ram
        y[n] = b0·x[n] + b1·x[n−1] + b2·x[n−2] − a1·y[n−1] − a2·y[n−2]
    ZTD_IMPLEMENTATION_ACCELERATE runs on vDSP_biquad; ZTD_IMPLEMENTATION_NATIVE on a C loop
    (it leads below about 4 frames per block, E-26). The C loop is the recurrence above in
-   Float32, frame by frame: block-size invariant bit for bit. vDSP_biquad filters four frames at
-   a time: blocks of any multiple of four frames give the same floats, other sizes differ by
+   Float32, frame by frame: block-size invariant bit for bit, but for what state hygiene
+   clears at the end of a block (see "What that means for block sizes"). vDSP_biquad filters
+   four frames at a time: blocks of any multiple of four frames give the same floats, other
+   sizes differ by
    round-off (about −100 dB of the peak on full-scale noise for a 1 kHz high-pass of order 4).
    Neither depends on how the caller's buffers are aligned.
    ZTD_COMMAND_SET_VALUES: 5·sections doubles at `values`, set in place; the filter keeps its
@@ -87,7 +104,9 @@ ztd_kernel_t ztd_biquadm_create(uint32_t channels, uint32_t sections, const doub
 
 /* --- Biquad cascade, double precision (WP-211) -----------------------------------------------
    The package's own kernel: transposed direct form II with double state and coefficients,
-   Float32 samples in and out. Block-size invariant bit for bit. ZTD_COMMAND_SET_VALUES:
+   Float32 samples in and out. Block-size invariant bit for bit, but for what state hygiene
+   clears at the end of a block (see "What that means for block sizes": the case measured there
+   is this kernel's). ZTD_COMMAND_SET_VALUES:
    5·sections doubles at `values`, exchanged at the block boundary; the state is kept.
    `settling_frames` and the rule about the gain of the sections are those of the single-precision
    kernel. */
@@ -165,7 +184,9 @@ uint32_t ztd_partitioned_spectrum(const ztd_kernel_t *kernel, uint32_t index, fl
 /* --- Alpha–beta tracker (WP-218) -------------------------------------------------------------
    Per sample z:  r = z − (x + dt·v);  x ← x + dt·v + alpha·r;  v ← v + (beta / dt)·r.
    Outputs the position x, or the velocity v when `output_velocity` is set. The two states are
-   kept in double precision, so the output is the recurrence itself rounded to Float32.
+   kept in double precision, so the output is the recurrence itself rounded to Float32, with a
+   state below ZTD_STATE_FLOOR cleared at the end of each block (RT-6; see "What that means for
+   block sizes").
    `time_step` (dt) is positive. A reset returns to the initial position and velocity. */
 ztd_kernel_t ztd_alpha_beta_create(uint32_t channels, float alpha, float beta, float time_step,
                                    float initial_position, float initial_velocity, bool output_velocity);

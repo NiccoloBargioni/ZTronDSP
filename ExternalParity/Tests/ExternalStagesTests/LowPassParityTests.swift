@@ -385,37 +385,41 @@ struct BiquadKernelTests {
         expectClose(try output(.double, [512]), reference, .deviationBelow(decibels: -90))
     }
 
-    @Test func theStockDoublePrecisionCascadeDependsOnTheBlocksWhileASectionStartsBelowTheFloor() throws {
-        // FINDING. ztd_kernels.h says of the double-precision cascade "block-size invariant bit
-        // for bit". RT-6 clears every state value below 1e-20 at the end of each block, so where a
-        // section's memory is still that small when a block ends (the later sections of a 10 Hz
-        // low-pass of order 8 at 192 kHz, in the first frames after a cold start), what is
-        // cleared depends on where the blocks end. The kernel of the suite follows the same rule
-        // and shows the same dependence: it equals the stock kernel for every way of cutting the
-        // signal into blocks.
+    @Test func theDoublePrecisionCascadeDependsOnTheBlocksOnlyThroughWhatTheFloorClears() throws {
+        // What ztd_kernels.h says under "What that means for block sizes": RT-6 clears every state
+        // value below ZTD_STATE_FLOOR at the end of each block, so a recursive kernel is its
+        // recurrence with those values set to zero at the end of each of its blocks, and two cuts
+        // of one input agree bit for bit until one of them has cleared a value the other kept.
+        // The later sections of a 10 Hz low-pass of order 8 at 192 kHz start from silence and pass
+        // through such values in the first frames after a cold start. The kernel of the suite
+        // follows the same rule: it equals the stock kernel for every cut.
         let coefficients = try BiquadKernelTests.coefficients(cutoff: 10, order: 8, sampleRate: 192_000)
         func output(_ make: (UInt32, [Double]) -> ztd_kernel_t, _ blockSizes: [Int]) throws -> [Float] {
             var kernel = make(1, coefficients)
             defer { ztd_kernel_destroy(&kernel) }
             return try BiquadKernelTests.run(kernel, on: noise, blockSizes: blockSizes)
         }
-        let stock = try output(Form.double.stock, [512])
-        for blockSizes in [[512], [1], [7, 300, 13, 64], [4_096]] {
-            #expect(try output(Form.double.external, blockSizes) == output(Form.double.stock, blockSizes), "blocks of \(blockSizes)")
+        // A cut that shares the blocks of one frame for the first 2 048 frames, then blocks of 512.
+        let shared = [Int](repeating: 1, count: 2_048) + [512]
+        for blockSizes in [[512], [1], [7, 300, 13, 64], [4_096], shared] {
+            #expect(try output(Form.double.external, blockSizes) == output(Form.double.stock, blockSizes), "blocks of \(blockSizes.count > 8 ? "1 for 2 048 frames, then 512" : "\(blockSizes)")")
         }
-        let single = try output(Form.double.stock, [1])
-        withKnownIssue("FINDING: the stock double-precision cascade is not block-size invariant bit for bit while a section's memory is below the state floor") {
-            #expect(single == stock)
-        }
-        // How far apart: what RT-6 cleared, as the rest of the cascade passes it on.
+        // Blocks of 1 and of 512 differ from an early frame on, by what the floor cleared as the
+        // rest of the cascade passes it on: far below the signal.
+        let single = try output(Form.double.stock, [1]), blocks = try output(Form.double.stock, [512])
         var worst = 0.0, first = -1
-        for index in 0 ..< min(single.count, stock.count) where single[index] != stock[index] {
+        for index in 0 ..< min(single.count, blocks.count) where single[index] != blocks[index] {
             if first < 0 { first = index }
-            worst = max(worst, abs(Double(single[index]) - Double(stock[index])))
+            worst = max(worst, abs(Double(single[index]) - Double(blocks[index])))
         }
-        let peak = Double(stock.map { abs($0) }.max() ?? 0)
-        print("PARITY stock double-precision cascade, blocks of 1 against blocks of 512: first difference at frame \(first), largest \(worst) for a peak of \(peak)")
-        #expect(first >= 0 && worst <= 1.0e-6 * peak)
+        let peak = Double(blocks.map { abs($0) }.max() ?? 0)
+        print("PARITY double-precision cascade, blocks of 1 against blocks of 512: first difference at frame \(first), largest \(worst) for a peak of \(peak)")
+        #expect(first >= 0 && first < 2_048 && worst <= 1.0e-6 * peak, "first difference at frame \(first), largest \(worst) for a peak of \(peak)")
+        // And a cut that shares the first one's blocks while the sections are below the floor gives
+        // the first one's output, bit for bit, for the whole signal: once no state value is below
+        // the floor at the end of a block, the blocks no longer matter.
+        #expect(try output(Form.double.stock, shared) == single, "the stock kernel")
+        #expect(try output(Form.double.external, shared) == single, "the kernel of the suite")
     }
 
     @Test func itDeclaresTheSettlingTimeOfTheStockKernelAndNoLatency() throws {

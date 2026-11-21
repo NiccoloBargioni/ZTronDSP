@@ -35,8 +35,26 @@ enum KernelFactory {
         case .custom(let custom):
             kernel = custom.make(Int(channels), rate, frames)
             try agree(custom.latencyFrames, Int(kernel.latency_frames), custom.name, &kernel, step)
+            // Values reach a kernel that runs through its `command` entry (§5.5.4). A stage that
+            // states values and makes a kernel without one could never be given other values.
+            if !custom.values.isEmpty, !ztd_kernel_is_null(&kernel), kernel.command == nil {
+                ztd_kernel_destroy(&kernel)
+                throw .unsupportedConfiguration(
+                    reason: "\(custom.name) states \(custom.values.count) value(s), and its kernel has no `command` entry to take them", stage: step.path)
+            }
         case .processor(let custom):
-            let processor = try custom.make(position.environment)
+            let processor: any SampleProcessor
+            // The processor as the one that takes values, when it was made as one: known here,
+            // so nothing is asked of the processor's type on the thread that runs it.
+            let adjustable: (any AdjustableSampleProcessor)?
+            if let makeAdjustable = custom.makeAdjustable {
+                let made = try makeAdjustable(position.environment)
+                processor = made
+                adjustable = made
+            } else {
+                processor = try custom.make(position.environment)
+                adjustable = nil
+            }
             // What the processor says of itself goes into the 32 bits a kernel counts in. A
             // figure they do not hold is refused, not cut: the delay of everything behind the
             // stage is counted from it (REAL-5, §9.3).
@@ -50,7 +68,7 @@ enum KernelFactory {
                     stage: step.path, parameter: "settlingFrames",
                     reason: "\(custom.name) runs with a settling time of \(processor.settlingFrames) frames, more than a kernel can count")
             }
-            kernel = ProcessorKernel.make(processor, latencyFrames: latency, settlingFrames: settling)
+            kernel = ProcessorKernel.make(processor, adjustable: adjustable, latencyFrames: latency, settlingFrames: settling)
             try agree(custom.latencyFrames, Int(kernel.latency_frames), custom.name, &kernel, step)
         case .analysis:
             throw .unsupportedConfiguration(reason: "an analysis step is a node, not a kernel", stage: step.path)

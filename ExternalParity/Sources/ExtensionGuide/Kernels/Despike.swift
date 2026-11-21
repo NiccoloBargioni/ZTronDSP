@@ -25,7 +25,15 @@ public struct Despike: SequenceStage {
         // runs: a plan in which the two differ is refused.
         context.emit(.processor(CustomProcessor(name: "Despike", key: channels, latencyFrames: 1) {
             _ throws(DSPError) -> any SampleProcessor in
-            try DespikeProcessor(channelCount: channels)
+            let processor = try DespikeProcessor(channelCount: channels)
+            // `make` runs on the control context. One block of silence here makes whatever the
+            // first `process` asks of the Swift runtime happen now, and not on the analysis
+            // thread (RT-2); the reset forgets the block.
+            let scratch = try AudioBuffer(channelCount: max(channels, 1), capacity: 1)
+            var block = scratch.block()
+            processor.process(&block)
+            processor.reset()
+            return processor
         }))
     }
 }

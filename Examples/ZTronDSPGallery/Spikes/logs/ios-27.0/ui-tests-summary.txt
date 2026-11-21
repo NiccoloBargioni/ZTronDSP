@@ -1,0 +1,31 @@
+UI tests (GalleryUITests) on iOS 27.0 (ztdsp-27-m8b), 2026-11-17 21:28 to 21:43, package as built, Debug, test code
+of that hour (the test of the device's turn changed once more afterwards; its run is at the end of this file):
+summary lines of the xcodebuild log. Eleven tests, no failure, no expected failure: the walk through the
+list (2), the pinch on the spectrogram screen (1), the pinch spike (7), the turn of the device (1; the gallery
+lived through it). The pinch-*.log files and size-spike-device.log of this folder are from the run of 19:11 to
+19:22 with the same gestures.
+
+started 21:28:32
+	 Executed 2 tests, with 0 failures (0 unexpected) in 224.405 (224.420) seconds
+ZTD pinch out: span 4 -> 0.9947, range 40.0 ... 20000.0 -> 40.0 ... 20000.0
+ZTD pinch in: span 0.9947 -> 0.9947, range 40.0 ... 20000.0 -> 20.0 ... 24000.0
+	 Executed 1 test, with 0 failures (0 unexpected) in 50.717 (50.718) seconds
+GalleryUITestCase: passed over a crash that is not the gallery's: Critical process xctest crashed in (null)
+	 Executed 7 tests, with 0 failures (0 unexpected) in 508.309 (508.315) seconds
+	 Executed 1 test, with 0 failures (0 unexpected) in 61.654 (61.655) seconds
+	 Executed 11 tests, with 0 failures (0 unexpected) in 845.085 (845.110) seconds
+	 Executed 11 tests, with 0 failures (0 unexpected) in 845.085 (845.127) seconds
+** TEST EXECUTE SUCCEEDED **
+exit=0
+ended 21:43:15
+
+Run of 22:19, the turn of the device with the last change to its test (it expects only the end of the application
+and presses "Save" until the press registers): passed, no expected failure; the gallery lived.
+
+started 22:19:09
+	 Executed 1 test, with 0 failures (0 unexpected) in 12.277 (12.282) seconds
+	 Executed 1 test, with 0 failures (0 unexpected) in 12.277 (12.283) seconds
+	 Executed 1 test, with 0 failures (0 unexpected) in 12.277 (12.284) seconds
+** TEST EXECUTE SUCCEEDED **
+exit=0
+ended 22:19:29

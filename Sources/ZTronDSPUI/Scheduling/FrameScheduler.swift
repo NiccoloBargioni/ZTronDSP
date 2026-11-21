@@ -16,6 +16,11 @@ import QuartzCore
 /// second. The handler asks the renderer whether a draw is due (one atomic load when there is
 /// nothing to do) and says whether it still wants a frame; a request is good for one tick.
 ///
+/// While the surface follows a size transition the cap is lifted (§8.9, SZ-2): the surface
+/// is called on every tick of the display, and the clock is asked for the display's own
+/// rate. A frame of a transition that is not made is a frame in which the last picture is
+/// shown stretched over other bounds, so no tick of a transition is held against the cap.
+///
 /// ```swift
 /// let scheduler = FrameScheduler(clock: DisplayLinkClock())
 /// scheduler.onFrame = { _ in renderer.needsDraw() ? draw() : false }
@@ -48,6 +53,13 @@ final class FrameScheduler {
     private(set) var ticks = 0
     /// Ticks that reached the handler: those the frame-rate cap let through.
     private(set) var frames = 0
+    /// True while the surface follows a size transition: no tick is held against the cap.
+    private(set) var followsDisplay = false
+
+    /// The most ticks a second a clock is asked for while a size transition is followed:
+    /// the refresh rate of the fastest display the package runs on. A slower display ticks
+    /// at its own rate.
+    static let displayRate = 120
 
     /// - Parameter maximumFrameRate: the cap of `.maximumFrameRate`; values below 1 count as 1.
     init(clock: any FrameClock, maximumFrameRate: Int = 60) {
@@ -88,7 +100,20 @@ final class FrameScheduler {
         let rate = max(rate, 1)
         guard rate != maximumFrameRate else { return }
         maximumFrameRate = rate
-        clock.preferredRate = rate
+        clock.preferredRate = preferredRate
+    }
+
+    /// A size transition began, or ended. While one is under way every tick of the display
+    /// reaches the handler, whatever the cap (SZ-2).
+    func setFollowsDisplay(_ follows: Bool) {
+        guard follows != followsDisplay else { return }
+        followsDisplay = follows
+        clock.preferredRate = preferredRate
+    }
+
+    /// What the clock is asked for: the cap, or the display's own rate during a transition.
+    private var preferredRate: Int {
+        followsDisplay ? max(maximumFrameRate, Self.displayRate) : maximumFrameRate
     }
 
     /// Ends the scheduler: the clock never ticks again.
@@ -120,8 +145,9 @@ final class FrameScheduler {
             evaluate()
             return
         }
-        // A clock faster than the cap: this tick is skipped, and what is pending waits for the next.
-        if let lastFrame, time > lastFrame, time - lastFrame < minimumInterval { return }
+        // A clock faster than the cap: this tick is skipped, and what is pending waits for the
+        // next. Not during a size transition, which needs every frame of the display.
+        if !followsDisplay, let lastFrame, time > lastFrame, time - lastFrame < minimumInterval { return }
         lastFrame = time
         frames += 1
         isFrameRequested = false

@@ -90,4 +90,38 @@ printf '# nothing\n' > "$S/filters.txt"
 expect_status 2 "an empty list of suites is refused" run_stub env ZTD_BENCHMARKS_BASELINE="$S/run/baseline.json" "$B"
 
 if [ -f "$ROOT/Scripts/ci/benchmark-filters.txt" ] && grep -q '^[A-Za-z]' "$ROOT/Scripts/ci/benchmark-filters.txt"; then pass "the package's own list names suites"; else fail "the package's own list names suites"; fi
+# Every suite that records a benchmark is on the list: a budget it holds is held only in the
+# benchmark run, so a suite the list leaves out never holds its budget. A file is covered when
+# its target is listed whole, or a suite type it declares is listed as Target/Suite. The
+# harness's own tests (ZTronDSPTestingTests) call `Benchmark.record` to test it, not to measure.
+unlisted="$(python3 - "$ROOT" <<'PY'
+import os, re, sys
+root = sys.argv[1]
+listed = set()
+for raw in open(os.path.join(root, "Scripts", "ci", "benchmark-filters.txt"), encoding="utf-8"):
+    line = raw.split("#", 1)[0].strip()
+    if line:
+        listed.add(line)
+tests = os.path.join(root, "Tests")
+for target in sorted(os.listdir(tests)):
+    folder = os.path.join(tests, target)
+    if not os.path.isdir(folder) or target in ("Fixtures", "CompileFixtures", "Golden", "ZTronDSPTestingTests"):
+        continue
+    for directory, _, files in os.walk(folder):
+        for name in sorted(files):
+            if not name.endswith(".swift"):
+                continue
+            text = open(os.path.join(directory, name), encoding="utf-8").read()
+            if "Benchmark.record(" not in text or target in listed:
+                continue
+            types = re.findall(r"^(?:final\s+)?(?:struct|class)\s+([A-Za-z_]\w*)", text, re.MULTILINE)
+            if not any("%s/%s" % (target, kind) in listed for kind in types):
+                print("%s/%s" % (target, os.path.relpath(os.path.join(directory, name), folder)))
+PY
+)"
+if [ -z "$unlisted" ]; then
+    pass "every suite of the package that records a benchmark is on the list"
+else
+    fail "every suite of the package that records a benchmark is on the list" "not listed: $unlisted"
+fi
 finish

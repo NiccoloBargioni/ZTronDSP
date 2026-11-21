@@ -28,7 +28,10 @@ import ZTronDSPMetal
 ///
 /// Stability and threading are those of ``HeatmapView``, whichever way in is used: nothing
 /// is drawn without a cause, the display link is paused while the feed is not live, and a
-/// change of appearance costs one draw and uploads nothing (§8.4).
+/// change of appearance costs one draw and uploads nothing (§8.4). As every component, the
+/// view draws only while the scene phase it reads is `.active`: a host that is not a SwiftUI
+/// scene has to hand the phase of its scene down with `.environment(\.scenePhase, …)`, as
+/// ``HeatmapView`` describes.
 public struct WaveformView: View, Equatable {
     private let input: ComponentInput<WaveformFeed>
 

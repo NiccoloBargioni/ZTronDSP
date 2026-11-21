@@ -100,11 +100,16 @@ enum PinchPath: Equatable, Sendable {
 /// Installs the pinch gesture of §8.8 on a surface, by the path of the OS it runs on
 /// (PINCH-8), and reports where the pinch stands.
 ///
-/// | OS | Gestures |
-/// |---|---|
-/// | iOS 18 and later | `SpatialEventGesture`: both touch locations. |
-/// | iOS 17 | `MagnifyGesture` with a simultaneous `DragGesture`. |
-/// | iOS 15 and 16 | `MagnificationGesture` with a simultaneous `DragGesture`. |
+/// | OS | Gestures | The finger line |
+/// |---|---|---|
+/// | iOS 18 and later | `SpatialEventGesture` | Both touch locations. |
+/// | iOS 17 | `MagnifyGesture` with a simultaneous `DragGesture` | From the pinch's start location (the centroid) to the first finger's start location, which the drag reports only when the first finger lands before the second. |
+/// | iOS 15 and 16 | `MagnificationGesture` with a simultaneous `DragGesture` | The direction the first finger travels in its first 8 points; nothing scales until then. With one axis enabled, that axis is used at once. |
+///
+/// On the two older paths the drag reports nothing for the whole pinch when both fingers
+/// land together, and the finger line is not known: such a pinch scales every enabled axis
+/// (PINCH-8; the spike WP-818 saw it on iOS 17.5, 18.6 and 27.0, and could not make a first
+/// finger land first, which remains as the table says and unobserved).
 ///
 /// With no axis enabled nothing is installed (PINCH-1). What each path's gestures report is
 /// turned into a ``PinchSample`` and nothing more; everything else is the tracker's.

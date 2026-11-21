@@ -1,0 +1,23 @@
+Hosted suite (GalleryTests) on iOS 27.0 (ztdsp-27-m8b), 2026-11-17 19:09, package as built, Debug: summary lines of
+the xcodebuild log. The wp822-*.log and wp824-*.log files of this folder are from this run, the last one in which
+the as-built component stayed in the window while the interface turned back (the tests take it away since).
+wp824-verdicts.log carries the verdicts of every run of the day on this simulator. Three runs in a row are under
+three-runs-21h18/ (with the journals of the third), and the three runs in a row made with the final test code
+under three-runs-final-22h12/.
+
+** TEST BUILD SUCCEEDED **
+	 Executed 0 tests, with 0 failures (0 unexpected) in 0.000 (0.001) seconds
+━ Test aComponentInAHostingControllerDrawsAsItDoesInAScene() recorded a known issue at GalleryScreenTests.swift:135:17: Expectation failed: seen.value.last == .active
+━ Test aComponentInAHostingControllerDrawsAsItDoesInAScene() recorded a known issue at GalleryScreenTests.swift:136:17: Expectation failed: probe.draws >= 1
+━ Test anAnimatedFrameChange(rule:) recorded a known issue with 1 argument rule → asBuilt at SizeTransitionAcceptanceTests.swift:179:21: Expectation failed: verdict.worstCommitted <= 1
+━ Test anAnimatedFrameChange(rule:) recorded a known issue with 1 argument rule → displayScale at SizeTransitionAcceptanceTests.swift:179:21: Expectation failed: verdict.worstCommitted <= 1
+━ Test aRotation(rule:) recorded a known issue with 1 argument rule → asBuilt at SizeTransitionAcceptanceTests.swift:237:21: Expectation failed: verdict.worstAtTick <= 1
+━ Test aRotation(rule:) recorded a known issue with 1 argument rule → asBuilt at SizeTransitionAcceptanceTests.swift:238:21: Expectation failed: verdict.worstCommitted <= 1
+━ Test aRotation(rule:) recorded a known issue with 1 argument rule → asBuilt at SizeTransitionAcceptanceTests.swift:239:21: Expectation failed: verdict.finalMismatch <= 1
+━ Test aRotation(rule:) recorded a known issue with 1 argument rule → asBuilt at SizeTransitionAcceptanceTests.swift:240:21: Expectation failed: (verdict.psnr ?? 0) >= 35
+━ Test aRotation(rule:) recorded a known issue with 1 argument rule → asBuilt at SizeTransitionAcceptanceTests.swift:241:21: Expectation failed: back.mismatch <= 1
+━ Test aResizeWithoutAnimationIsOneDrawPerChangedSizeAndNoUpload(kind:) recorded a known issue with 1 argument kind → heatmap at StabilityLevel2Tests.swift:299:21: Expectation failed: watch.probe.draws == before.draws + index + 1
+━ Test aResizeWithoutAnimationIsOneDrawPerChangedSizeAndNoUpload(kind:) recorded a known issue with 1 argument kind → waveform at StabilityLevel2Tests.swift:299:21: Expectation failed: watch.probe.draws == before.draws + index + 1
+━ Test run with 23 tests in 8 suites passed after 88.495 seconds with 15 known issues.
+** TEST EXECUTE SUCCEEDED **
+exit=0

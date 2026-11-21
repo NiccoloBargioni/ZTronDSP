@@ -1,0 +1,732 @@
+# The public API of ZTronDSP against the specification (WP-901a).
+#
+# One line per entry, four columns separated by one tab: module, symbol, where it is listed, note.
+#
+#   module   the module that declares the symbol, as Docs/API/<module>.txt names it.
+#   symbol   as the digests spell it: a top-level declaration (`DSPEngine`, `ztd_ring_create(_:_:_:)`); a
+#            member of the module's own type that §4–§8 write out (`DSPEngine.attach(_:to:)`); a member the
+#            module adds to a type it does not own (`extension Pipeline.gain(_:ramp:isActive:)`); or a module
+#            the facade re-exports (`reexport ZTronDSPCore`). Overloads share their name, and so one line.
+#   where    the clause that lists it: a section of the specification (`§5.11.1`), a rule or a row it defines
+#            (`VC-4`, `WP-204`, `F5`), a row of Appendix A (`App. A row 6`), or a change request
+#            (`CR-018 item 11`). Never empty. For CZTronDSP the unit is the header function or type, as
+#            §5.11.1 and the rows of M2 name them.
+#   note     a few words on what the symbol is there for.
+#
+# Lines are sorted by module, then by symbol (byte order). `Scripts/api-digest.sh --check` (check 3) and
+# `Scripts/api-digest.sh --spec-map` fail on a public symbol without a line, a line no digest holds, a place
+# the specification or Docs/Process/changes does not have, and a line out of order or repeated.
+#
+# module	symbol	where listed	note
+CZTronDSP	ZTD_ABI_VERSION	§5.11.1	the kernel ABI version the header and the library agree on
+CZTronDSP	ZTD_COMMAND_CUSTOM	§5.11.1	the kernel ABI: a kernel and the command it is sent
+CZTronDSP	ZTD_COMMAND_SET_ACTIVE	§5.11.1	the kernel ABI: a kernel and the command it is sent
+CZTronDSP	ZTD_COMMAND_SET_VALUES	§5.11.1	the kernel ABI: a kernel and the command it is sent
+CZTronDSP	ZTD_IMPLEMENTATION_ACCELERATE	SEL-3	which implementation a kernel is bound to (§7.4)
+CZTronDSP	ZTD_IMPLEMENTATION_NATIVE	SEL-3	which implementation a kernel is bound to (§7.4)
+CZTronDSP	ZTD_RING_STORAGE_AUTOMATIC	WP-203	mirrored ring storage, with the fall-back
+CZTronDSP	ZTD_RING_STORAGE_MIRRORED	WP-203	mirrored ring storage, with the fall-back
+CZTronDSP	ZTD_RING_STORAGE_PLAIN	WP-203	mirrored ring storage, with the fall-back
+CZTronDSP	ZTD_SINK_TAP_MAX_CHANNELS	CR-017 item 15	the tap behind the input sink node
+CZTronDSP	ZTD_STATE_FLOOR	WP-216	state hygiene (RT-6)
+CZTronDSP	ZTD_SWITCH_ACTIVE	WP-220	the activation switch of a kernel (ACT-5, ACT-7)
+CZTronDSP	ZTD_SWITCH_BYPASSED	WP-220	the activation switch of a kernel (ACT-5, ACT-7)
+CZTronDSP	ZTD_SWITCH_FADING_IN	WP-220	the activation switch of a kernel (ACT-5, ACT-7)
+CZTronDSP	ZTD_SWITCH_FADING_OUT	WP-220	the activation switch of a kernel (ACT-5, ACT-7)
+CZTronDSP	ZTD_SWITCH_PREROLLING	WP-220	the activation switch of a kernel (ACT-5, ACT-7)
+CZTronDSP	mach_absolute_time()	CR-025 item 5	the one system function of the audited allow-list
+CZTronDSP	ztd_abi_version()	§5.11.1	the kernel ABI version the header and the library agree on
+CZTronDSP	ztd_alpha_beta_create(_:_:_:_:_:_:_:)	WP-218	the alpha-beta kernel
+CZTronDSP	ztd_atomic_add(_:_:)	RT-4	single atomic words that cross threads (C11, opaque to Swift)
+CZTronDSP	ztd_atomic_barrier()	RT-4	single atomic words that cross threads (C11, opaque to Swift)
+CZTronDSP	ztd_atomic_compare_exchange(_:_:_:)	RT-4	single atomic words that cross threads (C11, opaque to Swift)
+CZTronDSP	ztd_atomic_create(_:)	RT-4	single atomic words that cross threads (C11, opaque to Swift)
+CZTronDSP	ztd_atomic_destroy(_:)	RT-4	single atomic words that cross threads (C11, opaque to Swift)
+CZTronDSP	ztd_atomic_exchange(_:_:)	RT-4	single atomic words that cross threads (C11, opaque to Swift)
+CZTronDSP	ztd_atomic_load(_:)	RT-4	single atomic words that cross threads (C11, opaque to Swift)
+CZTronDSP	ztd_atomic_store(_:_:)	RT-4	single atomic words that cross threads (C11, opaque to Swift)
+CZTronDSP	ztd_biquad_create(_:_:_:_:)	WP-208	the single-precision biquad kernel
+CZTronDSP	ztd_biquad_double_create(_:_:_:)	WP-211	the double-precision biquad kernel (REAL-3)
+CZTronDSP	ztd_biquadm_create(_:_:_:)	WP-210	the multichannel biquad kernel
+CZTronDSP	ztd_buffer_color()	CR-032 item 8	the offset that keeps buffers off 4K aliasing; Core allocates with it
+CZTronDSP	ztd_command	§5.11.1	the kernel ABI: a kernel and the command it is sent
+CZTronDSP	ztd_command_queue_acknowledge(_:_:)	WP-206	the SPSC command queue (RT-4)
+CZTronDSP	ztd_command_queue_applied(_:)	WP-206	the SPSC command queue (RT-4)
+CZTronDSP	ztd_command_queue_create(_:)	WP-206	the SPSC command queue (RT-4)
+CZTronDSP	ztd_command_queue_destroy(_:)	WP-206	the SPSC command queue (RT-4)
+CZTronDSP	ztd_command_queue_overflows(_:)	WP-206	the SPSC command queue (RT-4)
+CZTronDSP	ztd_command_queue_pop(_:_:)	WP-206	the SPSC command queue (RT-4)
+CZTronDSP	ztd_command_queue_push(_:_:)	WP-206	the SPSC command queue (RT-4)
+CZTronDSP	ztd_command_t	§5.11.1	the kernel ABI: a kernel and the command it is sent
+CZTronDSP	ztd_copy_finite(_:_:_:)	NUM-1	non-finite input replaced and counted
+CZTronDSP	ztd_crossfade	WP-217	the cross-fade helper
+CZTronDSP	ztd_crossfade_begin(_:_:)	WP-217	the cross-fade helper
+CZTronDSP	ztd_crossfade_is_done(_:)	WP-217	the cross-fade helper
+CZTronDSP	ztd_crossfade_mix(_:_:_:_:_:)	WP-217	the cross-fade helper
+CZTronDSP	ztd_crossfade_t	WP-217	the cross-fade helper
+CZTronDSP	ztd_decimator_create(_:_:_:_:_:)	WP-213	the decimator kernel
+CZTronDSP	ztd_fir_create(_:_:_:_:_:)	WP-212	the direct FIR kernel
+CZTronDSP	ztd_flush_state(_:_:)	WP-216	state hygiene (RT-6)
+CZTronDSP	ztd_flush_state_double(_:_:)	WP-216	state hygiene (RT-6)
+CZTronDSP	ztd_gain_cascade_create(_:_:_:_:_:)	CR-006	adjacent gains fused into one cascade
+CZTronDSP	ztd_gain_create(_:_:_:_:)	WP-207	the gain kernel
+CZTronDSP	ztd_implementation	SEL-3	which implementation a kernel is bound to (§7.4)
+CZTronDSP	ztd_implementation_t	SEL-3	which implementation a kernel is bound to (§7.4)
+CZTronDSP	ztd_interpolator_create(_:_:_:_:_:)	WP-223	the interpolator kernel
+CZTronDSP	ztd_kernel	§5.11.1	the kernel ABI: a kernel and the command it is sent
+CZTronDSP	ztd_kernel_destroy(_:)	WP-204	kernel ABI helpers
+CZTronDSP	ztd_kernel_identity()	WP-204	kernel ABI helpers
+CZTronDSP	ztd_kernel_is_null(_:)	WP-204	kernel ABI helpers
+CZTronDSP	ztd_kernel_t	§5.11.1	the kernel ABI: a kernel and the command it is sent
+CZTronDSP	ztd_lane_exchange_accelerate(_:_:_:)	WP-219	minimum / maximum exchange of two lanes, both implementations
+CZTronDSP	ztd_lane_exchange_fn	WP-219	minimum / maximum exchange of two lanes, both implementations
+CZTronDSP	ztd_lane_exchange_function(_:)	WP-219	minimum / maximum exchange of two lanes, both implementations
+CZTronDSP	ztd_lane_exchange_native(_:_:_:)	WP-219	minimum / maximum exchange of two lanes, both implementations
+CZTronDSP	ztd_parker_create()	WP-319a	where the analysis thread parks while no session runs
+CZTronDSP	ztd_parker_destroy(_:)	WP-319a	where the analysis thread parks while no session runs
+CZTronDSP	ztd_parker_park(_:)	WP-319a	where the analysis thread parks while no session runs
+CZTronDSP	ztd_parker_park_count(_:)	WP-319a	where the analysis thread parks while no session runs
+CZTronDSP	ztd_parker_unpark(_:)	WP-319a	where the analysis thread parks while no session runs
+CZTronDSP	ztd_partitioned_create(_:_:_:_:_:)	WP-215	partitioned convolution
+CZTronDSP	ztd_partitioned_spectrum(_:_:_:_:)	WP-214	the kernel spectra of partitioned convolution
+CZTronDSP	ztd_plan_append(_:_:_:)	WP-204	the plan: kernels run in order
+CZTronDSP	ztd_plan_as_kernel(_:)	WP-204	the plan: kernels run in order
+CZTronDSP	ztd_plan_channels(_:)	WP-204	the plan: kernels run in order
+CZTronDSP	ztd_plan_command(_:_:)	WP-204	the plan: kernels run in order
+CZTronDSP	ztd_plan_count(_:)	WP-204	the plan: kernels run in order
+CZTronDSP	ztd_plan_create(_:_:_:)	WP-204	the plan: kernels run in order
+CZTronDSP	ztd_plan_destroy(_:)	WP-204	the plan: kernels run in order
+CZTronDSP	ztd_plan_kernel(_:_:)	WP-204	the plan: kernels run in order
+CZTronDSP	ztd_plan_latency(_:)	WP-204	the plan: kernels run in order
+CZTronDSP	ztd_plan_make_switchable(_:_:_:_:)	WP-220	the activation switch of a kernel (ACT-5, ACT-7)
+CZTronDSP	ztd_plan_maximum_frames(_:)	WP-204	the plan: kernels run in order
+CZTronDSP	ztd_plan_preroll(_:_:_:_:_:)	WP-225	the pre-roll runner (SWAP-2)
+CZTronDSP	ztd_plan_reset(_:)	WP-204	the plan: kernels run in order
+CZTronDSP	ztd_plan_run(_:_:_:_:_:)	WP-204	the plan: kernels run in order
+CZTronDSP	ztd_plan_run_range(_:_:_:_:_:_:_:)	WP-204	the plan: kernels run in order
+CZTronDSP	ztd_plan_set_switch_preroll(_:_:_:)	WP-220	the activation switch of a kernel (ACT-5, ACT-7)
+CZTronDSP	ztd_plan_slot_create(_:)	WP-205	the plan slot: atomic exchange, retire list
+CZTronDSP	ztd_plan_slot_current(_:)	WP-205	the plan slot: atomic exchange, retire list
+CZTronDSP	ztd_plan_slot_destroy(_:)	WP-205	the plan slot: atomic exchange, retire list
+CZTronDSP	ztd_plan_slot_exchanges(_:)	WP-205	the plan slot: atomic exchange, retire list
+CZTronDSP	ztd_plan_slot_has_pending(_:)	WP-205	the plan slot: atomic exchange, retire list
+CZTronDSP	ztd_plan_slot_install(_:_:)	WP-205	the plan slot: atomic exchange, retire list
+CZTronDSP	ztd_plan_slot_next_retired(_:)	WP-205	the plan slot: atomic exchange, retire list
+CZTronDSP	ztd_plan_slot_publish(_:_:)	WP-205	the plan slot: atomic exchange, retire list
+CZTronDSP	ztd_plan_slot_retire(_:_:)	WP-205	the plan slot: atomic exchange, retire list
+CZTronDSP	ztd_plan_slot_take(_:)	WP-205	the plan slot: atomic exchange, retire list
+CZTronDSP	ztd_plan_slot_withdraw(_:)	WP-205	the plan slot: atomic exchange, retire list
+CZTronDSP	ztd_plan_switch_state(_:_:)	WP-220	the activation switch of a kernel (ACT-5, ACT-7)
+CZTronDSP	ztd_plan_transfer(_:_:_:_:)	WP-224	kernel ownership moved between plans (SWAP-1)
+CZTronDSP	ztd_pointer_queue_create(_:)	WP-205	the retire list of the plan slot, and events back to the control side
+CZTronDSP	ztd_pointer_queue_destroy(_:)	WP-205	the retire list of the plan slot, and events back to the control side
+CZTronDSP	ztd_pointer_queue_pop(_:)	WP-205	the retire list of the plan slot, and events back to the control side
+CZTronDSP	ztd_pointer_queue_push(_:_:)	WP-205	the retire list of the plan slot, and events back to the control side
+CZTronDSP	ztd_ring_available(_:)	WP-202	the SPSC ring (RT-8)
+CZTronDSP	ztd_ring_capacity(_:)	WP-202	the SPSC ring (RT-8)
+CZTronDSP	ztd_ring_channels(_:)	WP-202	the SPSC ring (RT-8)
+CZTronDSP	ztd_ring_close(_:)	WP-202	the SPSC ring (RT-8)
+CZTronDSP	ztd_ring_consume(_:_:)	WP-202	the SPSC ring (RT-8)
+CZTronDSP	ztd_ring_create(_:_:_:)	WP-202	the SPSC ring (RT-8)
+CZTronDSP	ztd_ring_destroy(_:)	WP-202	the SPSC ring (RT-8)
+CZTronDSP	ztd_ring_is_mirrored(_:)	WP-203	mirrored ring storage, with the fall-back
+CZTronDSP	ztd_ring_overrun_frames(_:)	WP-202	the SPSC ring (RT-8)
+CZTronDSP	ztd_ring_peek(_:_:_:)	WP-202	the SPSC ring (RT-8)
+CZTronDSP	ztd_ring_read(_:_:_:)	WP-202	the SPSC ring (RT-8)
+CZTronDSP	ztd_ring_reset(_:)	WP-202	the SPSC ring (RT-8)
+CZTronDSP	ztd_ring_space(_:)	WP-202	the SPSC ring (RT-8)
+CZTronDSP	ztd_ring_storage	WP-203	mirrored ring storage, with the fall-back
+CZTronDSP	ztd_ring_storage_t	WP-203	mirrored ring storage, with the fall-back
+CZTronDSP	ztd_ring_write(_:_:_:)	WP-202	the SPSC ring (RT-8)
+CZTronDSP	ztd_ring_write_interleaved(_:_:_:)	WP-202	the SPSC ring (RT-8)
+CZTronDSP	ztd_ring_write_waiting(_:_:_:)	WP-222	the lossless ring mode for reader threads
+CZTronDSP	ztd_sink_node_create(_:_:)	CR-017 item 15	the input sink node and its receiver
+CZTronDSP	ztd_sink_node_has_realtime_safe_initialiser()	CR-017 item 15	the input sink node and its receiver
+CZTronDSP	ztd_sink_node_receiver(_:_:)	CR-017 item 15	the input sink node and its receiver
+CZTronDSP	ztd_sink_receiver_t	CR-017 item 15	the input sink node and its receiver
+CZTronDSP	ztd_sink_tap_create()	CR-017 item 15	the tap behind the input sink node
+CZTronDSP	ztd_sink_tap_discarded_frames(_:)	CR-017 item 15	the tap behind the input sink node
+CZTronDSP	ztd_sink_tap_receive(_:_:_:)	CR-017 item 15	the tap behind the input sink node
+CZTronDSP	ztd_sink_tap_release(_:)	CR-017 item 15	the tap behind the input sink node
+CZTronDSP	ztd_sink_tap_retain(_:)	CR-017 item 15	the tap behind the input sink node
+CZTronDSP	ztd_sink_tap_set_ring(_:_:)	CR-017 item 15	the tap behind the input sink node
+CZTronDSP	ztd_sink_tap_written_frames(_:)	CR-017 item 15	the tap behind the input sink node
+CZTronDSP	ztd_subsample_create(_:_:_:)	WP-227	the subsample and zero-stuff kernels
+CZTronDSP	ztd_switch_state	WP-220	the activation switch of a kernel (ACT-5, ACT-7)
+CZTronDSP	ztd_switch_state_t	WP-220	the activation switch of a kernel (ACT-5, ACT-7)
+CZTronDSP	ztd_thread_clear_time_constraint()	WP-226	the scheduling helper of the analysis thread (RT-9)
+CZTronDSP	ztd_thread_get_time_constraint(_:)	WP-226	the scheduling helper of the analysis thread (RT-9)
+CZTronDSP	ztd_thread_now()	WP-226	the scheduling helper of the analysis thread (RT-9)
+CZTronDSP	ztd_thread_set_time_constraint(_:_:_:)	WP-226	the scheduling helper of the analysis thread (RT-9)
+CZTronDSP	ztd_thread_sleep_until(_:)	WP-226	the scheduling helper of the analysis thread (RT-9)
+CZTronDSP	ztd_zero_stuff_create(_:_:)	WP-227	the subsample and zero-stuff kernels
+CZTronDSPTesting	ZTDT_ALLOC_MAX_AUDITS	WP-005	the C hook on malloc_logger behind the allocation probe
+CZTronDSPTesting	ztdt_alloc_audit_begin()	WP-005	the C hook on malloc_logger behind the allocation probe
+CZTronDSPTesting	ztdt_alloc_audit_end(_:)	WP-005	the C hook on malloc_logger behind the allocation probe
+CZTronDSPTesting	ztdt_alloc_counts	WP-005	the C hook on malloc_logger behind the allocation probe
+CZTronDSPTesting	ztdt_alloc_counts_t	WP-005	the C hook on malloc_logger behind the allocation probe
+CZTronDSPTesting	ztdt_alloc_hook_is_live()	WP-005	the C hook on malloc_logger behind the allocation probe
+CZTronDSPTesting	ztdt_floating_point_environment()	WP-216	reads the floating-point environment (FPCR / MXCSR)
+CZTronDSPTesting	ztdt_force_allocation(_:)	WP-005	the C hook on malloc_logger behind the allocation probe
+CZTronDSPTesting	ztdt_force_reallocation(_:_:)	WP-005	the C hook on malloc_logger behind the allocation probe
+ZTronDSP	reexport ZTronDSPAnalysis	§4.2	the facade re-exports ZTronDSPAnalysis
+ZTronDSP	reexport ZTronDSPCore	§4.2	the facade re-exports ZTronDSPCore
+ZTronDSP	reexport ZTronDSPDesign	§4.2	the facade re-exports ZTronDSPDesign
+ZTronDSP	reexport ZTronDSPIO	§4.2	the facade re-exports ZTronDSPIO
+ZTronDSP	reexport ZTronDSPMetal	§4.2	the facade re-exports ZTronDSPMetal
+ZTronDSPAnalysis	AnalysisCalibrationReport	CR-023 item 16	an addition to the public surface that the change request names
+ZTronDSPAnalysis	Autocorrelation	§5.2	named in the text of §5.2
+ZTronDSPAnalysis	AutocorrelationTempogram	CR-023 item 16	an addition to the public surface that the change request names
+ZTronDSPAnalysis	AutomaticMedian	CR-023 item 16	an addition to the public surface that the change request names
+ZTronDSPAnalysis	CepstralCoefficients	O-10	named in the text of §5.8.1
+ZTronDSPAnalysis	CepstralPitch	O-10	named in the text of §5.8.1
+ZTronDSPAnalysis	Cepstrum	§6.6	the cepstrum step
+ZTronDSPAnalysis	CepstrumKind	CR-019 item 15	an addition to the public surface that the change request names
+ZTronDSPAnalysis	ChromaCQT	§5.2	named in the text of §5.2
+ZTronDSPAnalysis	ChromaFold	O-7	named in the text of §5.8.1
+ZTronDSPAnalysis	ChromaNormalization	§6.8	named in the text of §6.8
+ZTronDSPAnalysis	ConstantQ	§6.8	the constant-Q transform
+ZTronDSPAnalysis	ConstantQGeometry	CR-032 item 3	the bins of a constant-Q transform, as its strategy is given them
+ZTronDSPAnalysis	ConstantQKernel	CR-032 item 3	the sparse kernel of one octave, for inspection away from a pipeline
+ZTronDSPAnalysis	ConstantQScale	§6.8	the constant-Q scale of a spectrum
+ZTronDSPAnalysis	ConstantQStrategy	§5.3	named in the text of §5.3
+ZTronDSPAnalysis	ContextDependentStep	CR-019 item 15	an addition to the public surface that the change request names
+ZTronDSPAnalysis	ConvolutionCrossover	CR-023 item 16	an addition to the public surface that the change request names
+ZTronDSPAnalysis	ConvolutionMode	CR-023 item 16	an addition to the public surface that the change request names
+ZTronDSPAnalysis	CorrelationNormalization	CR-023 item 16	an addition to the public surface that the change request names
+ZTronDSPAnalysis	Decibels	O-4	named in the text of §5.8.1
+ZTronDSPAnalysis	FFTBackend	§5.11.4	named in the text of §5.11.4
+ZTronDSPAnalysis	FFTPlan	CR-019 item 15	an addition to the public surface that the change request names
+ZTronDSPAnalysis	FourierTempogram	CR-023 item 16	an addition to the public surface that the change request names
+ZTronDSPAnalysis	FrameAlignment	CR-019 item 15	an addition to the public surface that the change request names
+ZTronDSPAnalysis	Framer	§6.4.1	the framer: frame, hop and mode; the engine owns it and branches share it (F5)
+ZTronDSPAnalysis	FrequencyRange	CR-019 item 15	an addition to the public surface that the change request names
+ZTronDSPAnalysis	HPSS	§5.2	named in the text of §5.2
+ZTronDSPAnalysis	HardMask	CR-023 item 16	an addition to the public surface that the change request names
+ZTronDSPAnalysis	HarmonicPercussive	§5.2	named in the text of §5.2
+ZTronDSPAnalysis	HarmonicPercussiveComponent	CR-023 item 16	an addition to the public surface that the change request names
+ZTronDSPAnalysis	InverseCepstralCoefficients	§5.2	named in the text of §5.2
+ZTronDSPAnalysis	InverseCepstrum	§5.2	named in the text of §5.2
+ZTronDSPAnalysis	InverseDecibels	§5.2	named in the text of §5.2
+ZTronDSPAnalysis	InverseSTFT	O-6	named in the text of §5.8.1
+ZTronDSPAnalysis	InversionCondition	CR-019 item 15	an addition to the public surface that the change request names
+ZTronDSPAnalysis	InversionContext	CR-019 item 15	an addition to the public surface that the change request names
+ZTronDSPAnalysis	InversionMeasurement	CR-019 item 15	an addition to the public surface that the change request names
+ZTronDSPAnalysis	InversionReport	§6.14	named in the text of §6.14
+ZTronDSPAnalysis	InversionRoundTrip	CR-019 item 15	an addition to the public surface that the change request names
+ZTronDSPAnalysis	InvertibleStage	INV-1	named in the text of §6.13
+ZTronDSPAnalysis	L1ChromaNormalization	§5.3	the type of a stock `ChromaNormalization` value
+ZTronDSPAnalysis	L2ChromaNormalization	§5.3	the type of a stock `ChromaNormalization` value
+ZTronDSPAnalysis	Level	§5.2	named in the text of §5.2
+ZTronDSPAnalysis	LevelKind	CR-019 item 15	an addition to the public surface that the change request names
+ZTronDSPAnalysis	Lifter	O-10	named in the text of §5.8.1
+ZTronDSPAnalysis	LinearValueKind	CR-019 item 15	an addition to the public surface that the change request names
+ZTronDSPAnalysis	MFCC	§5.2	named in the text of §5.2
+ZTronDSPAnalysis	Magnitude	O-3	named in the text of §5.8.1
+ZTronDSPAnalysis	MaskStrategy	§5.3	named in the text of §5.3
+ZTronDSPAnalysis	MaximumChromaNormalization	§5.3	the type of a stock `ChromaNormalization` value
+ZTronDSPAnalysis	MeasuredSpectrum	CR-019 item 15	an addition to the public surface that the change request names
+ZTronDSPAnalysis	MedianAxis	CR-023 item 16	an addition to the public surface that the change request names
+ZTronDSPAnalysis	MedianFilter	CR-023 item 16	an addition to the public surface that the change request names
+ZTronDSPAnalysis	MedianStrategy	§5.3	the median strategy
+ZTronDSPAnalysis	MelFilterBank	CR-019 item 15	an addition to the public surface that the change request names
+ZTronDSPAnalysis	MelNormalization	§6.11	named in the text of §6.11
+ZTronDSPAnalysis	MelScale	O-5	named in the text of §5.8.1
+ZTronDSPAnalysis	MelSpectrogram	§5.2	named in the text of §5.2
+ZTronDSPAnalysis	MetalMedian	CR-023 item 16	an addition to the public surface that the change request names
+ZTronDSPAnalysis	MultirateSparseKernelStrategy	§5.3	the type of the stock `ConstantQStrategy` value `.multirateSparseKernel`
+ZTronDSPAnalysis	OnsetStrength	O-9	named in the text of §5.8.1
+ZTronDSPAnalysis	Power	O-3	named in the text of §5.8.1
+ZTronDSPAnalysis	STFT	§6.4.1	the framer and transform of the spectral front-end
+ZTronDSPAnalysis	ScalarTrack	CR-019 item 15	an addition to the public surface that the change request names
+ZTronDSPAnalysis	SelectionNetworkMedian	CR-023 item 16	an addition to the public surface that the change request names
+ZTronDSPAnalysis	SlaneyMelNormalization	§5.3	the type of a stock `MelNormalization` value
+ZTronDSPAnalysis	SoftMask	CR-023 item 16	an addition to the public surface that the change request names
+ZTronDSPAnalysis	SpectralCentroid	O-8	named in the text of §5.8.1
+ZTronDSPAnalysis	Spectrogram	§5.2	named in the text of §5.2
+ZTronDSPAnalysis	Tempogram	O-9	named in the text of §5.8.1
+ZTronDSPAnalysis	TempogramMethod	§5.3	named in the text of §5.3
+ZTronDSPAnalysis	TempogramTransform	CR-023 item 16	an addition to the public surface that the change request names
+ZTronDSPAnalysis	UnitPeakMelNormalization	§5.3	the type of a stock `MelNormalization` value
+ZTronDSPAnalysis	UnscaledChromaNormalization	§5.3	the type of a stock `ChromaNormalization` value
+ZTronDSPAnalysis	VDSPFFTBackend	CR-019 item 15	an addition to the public surface that the change request names
+ZTronDSPAnalysis	Waveform	§5.2	named in the text of §5.2
+ZTronDSPAnalysis	WindowAnalysis	WIN-4	what `window.analysis(frame:hop:)` returns
+ZTronDSPAnalysis	WindowNormalization	CR-019 item 15	an addition to the public surface that the change request names
+ZTronDSPAnalysis	extension Calibration.analysisReport(startingFrom:)	CR-023 item 16	an addition to the public surface that the change request names
+ZTronDSPAnalysis	extension Calibration.measureAnalysis(startingFrom:)	CR-023 item 16	an addition to the public surface that the change request names
+ZTronDSPAnalysis	extension DSP.autocorrelate(_:maxLag:normalization:strategy:floor:crossovers:)	§6.7	written in the code of §6.7
+ZTronDSPAnalysis	extension DSP.convolve(_:_:mode:strategy:crossovers:)	§6.7	written in the code of §6.7
+ZTronDSPAnalysis	extension DSP.correlate(_:_:mode:normalization:strategy:floor:crossovers:)	§6.7	written in the code of §6.7
+ZTronDSPAnalysis	extension DSP.correlationFloor	CR-023 item 16	an addition to the public surface that the change request names
+ZTronDSPAnalysis	extension DSP.harmonicPercussive(_:binCount:select:timeKernel:frequencyKernel:mask:harmonicMargin:percussiveMargin:floor:median:crossovers:)	CR-023 item 16	an addition to the public surface that the change request names
+ZTronDSPAnalysis	extension DSP.harmonicPercussiveMasks(of:binCount:timeKernel:frequencyKernel:mask:harmonicMargin:percussiveMargin:floor:median:crossovers:)	CR-023 item 16	an addition to the public surface that the change request names
+ZTronDSPAnalysis	extension DSP.inverseRealDFT(real:imaginary:)	CR-019 item 15	an addition to the public surface that the change request names
+ZTronDSPAnalysis	extension DSP.inversionReport(ofSubsampling:by:phase:sampleRate:)	§6.13	the inversion report of the row `Subsample` of §6.13 (INV-2)
+ZTronDSPAnalysis	extension DSP.inversionReport(ofUpsampling:by:sampleRate:)	§6.13	the inversion report of the row `Upsample` of §6.13 (INV-2)
+ZTronDSPAnalysis	extension DSP.realDFT(_:)	CR-019 item 15	an addition to the public surface that the change request names
+ZTronDSPAnalysis	extension Decimate.inverse	INV-1	`Decimate` as an `InvertibleStage`: it names its inverse, `Interpolate`
+ZTronDSPAnalysis	extension Decimate.inversionConditions(in:)	INV-1	`Decimate` as an `InvertibleStage`: its conditions (its row of §6.13)
+ZTronDSPAnalysis	extension Decimate.inversionRoundTrip(in:)	INV-1	`Decimate` as an `InvertibleStage`: the round trip through its inverse (INV-2)
+ZTronDSPAnalysis	extension FeedSnapshot.matlabScript()	§6.14	written in the code of §6.14
+ZTronDSPAnalysis	extension Pipeline.autocorrelation(window:hop:maxLag:normalization:floor:channels:backend:isActive:)	STG-1	the fluent modifier of a stage (STG-1)
+ZTronDSPAnalysis	extension Pipeline.cepstralCoefficients(count:isActive:)	STG-1	the fluent modifier of a stage (STG-1)
+ZTronDSPAnalysis	extension Pipeline.cepstralPitch(range:isActive:)	STG-1	the fluent modifier of a stage (STG-1)
+ZTronDSPAnalysis	extension Pipeline.cepstralPitch(range:to:isActive:)	STG-1	the fluent modifier of a stage (STG-1)
+ZTronDSPAnalysis	extension Pipeline.cepstrum(_:floor:isActive:)	STG-1	the fluent modifier of a stage (STG-1)
+ZTronDSPAnalysis	extension Pipeline.chromaCQT(fmin:octaves:binsPerOctave:tuning:gamma:hop:normalization:threshold:to:isActive:)	STG-1	the fluent modifier of a stage (STG-1)
+ZTronDSPAnalysis	extension Pipeline.chromaFold(normalization:threshold:floor:isActive:)	STG-1	the fluent modifier of a stage (STG-1)
+ZTronDSPAnalysis	extension Pipeline.constantQ(fmin:octaves:binsPerOctave:tuning:filterScale:gamma:hop:window:sparsity:strategy:channels:isActive:)	STG-1	the fluent modifier of a stage (STG-1)
+ZTronDSPAnalysis	extension Pipeline.constantQScale(fmin:octaves:binsPerOctave:tuning:filterScale:gamma:window:sparsity:isActive:)	STG-1	the fluent modifier of a stage (STG-1)
+ZTronDSPAnalysis	extension Pipeline.decibels(reference:floor:isActive:)	§5.1	written in the code of §5.1
+ZTronDSPAnalysis	extension Pipeline.harmonicPercussive(select:timeKernel:frequencyKernel:mask:harmonicMargin:percussiveMargin:alignment:median:floor:isActive:)	STG-1	the fluent modifier of a stage (STG-1)
+ZTronDSPAnalysis	extension Pipeline.hpss(select:frame:hop:window:timeKernel:frequencyKernel:mask:harmonicMargin:percussiveMargin:alignment:median:channels:isActive:)	STG-1	the fluent modifier of a stage (STG-1)
+ZTronDSPAnalysis	extension Pipeline.inverseCepstralCoefficients(bands:isActive:)	STG-1	the fluent modifier of a stage (STG-1)
+ZTronDSPAnalysis	extension Pipeline.inverseCepstrum(isActive:)	STG-1	the fluent modifier of a stage (STG-1)
+ZTronDSPAnalysis	extension Pipeline.inverseDecibels(_:reference:isActive:)	STG-1	the fluent modifier of a stage (STG-1)
+ZTronDSPAnalysis	extension Pipeline.inverseSTFT(window:normalization:alignment:backend:isActive:)	STG-1	the fluent modifier of a stage (STG-1)
+ZTronDSPAnalysis	extension Pipeline.level(_:window:hop:channels:isActive:)	STG-1	the fluent modifier of a stage (STG-1)
+ZTronDSPAnalysis	extension Pipeline.level(_:window:hop:channels:to:isActive:)	STG-1	the fluent modifier of a stage (STG-1)
+ZTronDSPAnalysis	extension Pipeline.lifter(_:isActive:)	STG-1	the fluent modifier of a stage (STG-1)
+ZTronDSPAnalysis	extension Pipeline.magnitude(isActive:)	§5.1	written in the code of §5.1
+ZTronDSPAnalysis	extension Pipeline.melScale(bands:range:formula:normalization:isActive:)	§5.1	written in the code of §5.1
+ZTronDSPAnalysis	extension Pipeline.melSpectrogram(frame:hop:bands:window:range:to:isActive:)	STG-1	the fluent modifier of a stage (STG-1)
+ZTronDSPAnalysis	extension Pipeline.mfcc(frame:hop:count:melBands:window:to:isActive:)	STG-1	the fluent modifier of a stage (STG-1)
+ZTronDSPAnalysis	extension Pipeline.onsetStrength(lag:maxSize:floor:isActive:)	STG-1	the fluent modifier of a stage (STG-1)
+ZTronDSPAnalysis	extension Pipeline.power(isActive:)	§5.1	written in the code of §5.1
+ZTronDSPAnalysis	extension Pipeline.spectralCentroid(range:floor:isActive:)	§5.8.2	named in the text of §5.8.2
+ZTronDSPAnalysis	extension Pipeline.spectralCentroid(range:floor:to:isActive:)	§5.1	written in the code of §5.1
+ZTronDSPAnalysis	extension Pipeline.spectrogram(frame:hop:window:normalization:to:isActive:)	STG-1	the fluent modifier of a stage (STG-1)
+ZTronDSPAnalysis	extension Pipeline.stft(frame:hop:window:paddedTo:normalization:alignment:channels:backend:isActive:)	§5.1	written in the code of §5.1
+ZTronDSPAnalysis	extension Pipeline.tempogram(_:window:taper:range:alignment:isActive:)	STG-1	the fluent modifier of a stage (STG-1)
+ZTronDSPAnalysis	extension Pipeline.waveform(resolution:channels:isActive:)	STG-1	the fluent modifier of a stage (STG-1)
+ZTronDSPAnalysis	extension PipelineBuilder.buildPartialBlock(accumulated:next:)	ORD-1	the builder overloads of the context-dependent families: one per family (ORD-1)
+ZTronDSPAnalysis	extension PipelineBuilder.buildPartialBlock(first:)	ORD-1	the builder overloads of the context-dependent families: one per family (ORD-1)
+ZTronDSPAnalysis	extension Window.analysis(frame:hop:tail:)	§6.4.2	written in the code of §6.4.2
+ZTronDSPCore	ActivatedSequenceStage	CR-015 item 11	an addition to the public surface that the change request names
+ZTronDSPCore	ActivatedStage	CR-015 item 11	an addition to the public surface that the change request names
+ZTronDSPCore	Activation	ACT-2	named in the text of §5.9
+ZTronDSPCore	ActivationSource	ACT-2	named in the text of §5.9
+ZTronDSPCore	AdjustableSampleProcessor	CR-025 item 2	named by the change request
+ZTronDSPCore	AlignedBuffer	§5.11.4	named in the text of §5.11.4
+ZTronDSPCore	Amplification	§6.1	named in the text of §6.1
+ZTronDSPCore	AnalysisNode	§5.11.1	written in the code of §5.11.1
+ZTronDSPCore	AnalysisNode.latencyFrames	§5.11.1	the declaration §5.11.1 writes out
+ZTronDSPCore	AnalysisNode.process(_:_:)	§5.11.1	the declaration §5.11.1 writes out
+ZTronDSPCore	AnalysisNode.reset()	§5.11.1	the declaration §5.11.1 writes out
+ZTronDSPCore	AnalysisNode.settlingFrames	§5.11.1	the declaration §5.11.1 writes out
+ZTronDSPCore	AnalysisScheduling	CR-015 item 11	an addition to the public surface that the change request names
+ZTronDSPCore	AnalysisStep	CR-015 item 11	an addition to the public surface that the change request names
+ZTronDSPCore	AnyStrategy	CR-032 item 1	the box a description keeps a strategy in, stock or written outside the package
+ZTronDSPCore	AudioBlock	§4.4	written in the code of §4.4
+ZTronDSPCore	AudioBuffer	CR-032 item 1	the owned, aligned storage of a block; IO, Design, the test product and the external package build with it
+ZTronDSPCore	BackgroundWork	§5.11.4	named in the text of §5.11.4
+ZTronDSPCore	BiquadPrecision	§5.3	named in the text of §5.3
+ZTronDSPCore	BiquadPrecisionKey	ENV-3	a settable built-in key: the key path of `.environment(_:_:)` names it
+ZTronDSPCore	BiquadSection	CR-032 item 1	one second-order section as a `KernelSpec` carries it to the kernels
+ZTronDSPCore	BoundResult	CR-015 item 11	an addition to the public surface that the change request names
+ZTronDSPCore	BoundSwitch	CR-015 item 11	an addition to the public surface that the change request names
+ZTronDSPCore	BufferSource	§4.4	named in the text of §4.4
+ZTronDSPCore	ChannelPolicy	MIC-6	named in the text of §4.6
+ZTronDSPCore	Chroma	§5.2	named in the text of §5.2
+ZTronDSPCore	Complex	WP-107	named in the text of §12
+ZTronDSPCore	ComplexFrame	§5.2	named in the text of §5.2
+ZTronDSPCore	ComplexValues	§5.2	named in the text of §5.2
+ZTronDSPCore	ConstantQFrequency	§5.2	named in the text of §5.2
+ZTronDSPCore	CrossoverTable	SEL-5	crossovers are data: an immutable table (§7.4)
+ZTronDSPCore	CustomKernel	CR-015 item 11	an addition to the public surface that the change request names
+ZTronDSPCore	CustomProcessor	CR-015 item 11	an addition to the public surface that the change request names
+ZTronDSPCore	DSP	§6.2	named in the text of §6.2
+ZTronDSPCore	DSPEngine	§4.5	written in the code of §4.5
+ZTronDSPCore	DSPEngine.attach(_:to:)	§4.5	the declaration §4.5 writes out
+ZTronDSPCore	DSPEngine.init(blockSize:crossovers:)	§4.5	the declaration §4.5 writes out
+ZTronDSPCore	DSPEngine.shared	§4.5	the declaration §4.5 writes out
+ZTronDSPCore	DSPEnvironment	§5.4	written in the code of §5.4
+ZTronDSPCore	DSPEnvironmentKey	§5.4	written in the code of §5.4
+ZTronDSPCore	DSPEnvironmentKey.Value	§5.4	the declaration §5.4 writes out
+ZTronDSPCore	DSPError	§4.5	the one error type of the package: every throwing call throws it, typed
+ZTronDSPCore	DecibelValues	§5.2	named in the text of §5.2
+ZTronDSPCore	DomainRule	ORD-1	named in the text of §5.8.2
+ZTronDSPCore	DomainTag	§5.8.2	named in the text of §5.8.2
+ZTronDSPCore	DynamicPipeline	ORD-5	named in the text of §5.8.2
+ZTronDSPCore	Emit	§5.2	named in the text of §5.2
+ZTronDSPCore	Envelope	§5.2	named in the text of §5.2
+ZTronDSPCore	EnvelopeFrame	§5.2	named in the text of §5.2
+ZTronDSPCore	EnvelopePyramid	CR-015 item 11	an addition to the public surface that the change request names
+ZTronDSPCore	EnvironmentReader	§5.2	named in the text of §5.2
+ZTronDSPCore	FeatureCallback	§5.2	named in the text of §5.2
+ZTronDSPCore	FeatureFrame	CR-015 item 11	an addition to the public surface that the change request names
+ZTronDSPCore	FeatureSink	§5.11.1	written in the code of §5.11.1
+ZTronDSPCore	FeatureSink.Domain	§5.11.1	the declaration §5.11.1 writes out
+ZTronDSPCore	FeatureSink.claim(axis:environment:)	§5.11.1	the declaration §5.11.1 writes out
+ZTronDSPCore	FeatureSink.release()	§5.11.1	the declaration §5.11.1 writes out
+ZTronDSPCore	FeatureSink.write(_:)	§5.11.1	the declaration §5.11.1 writes out
+ZTronDSPCore	FeatureStream	§5.2	named in the text of §5.2
+ZTronDSPCore	FeedAxis	VC-5	named in the text of §8.1
+ZTronDSPCore	FeedCursor	CR-015 item 11	an addition to the public surface that the change request names
+ZTronDSPCore	FeedObservation	CR-015 item 11	an addition to the public surface that the change request names
+ZTronDSPCore	FeedRead	CR-015 item 11	an addition to the public surface that the change request names
+ZTronDSPCore	FeedSnapshot	WP-341	an immutable copy of a feed's history with its axis and frame times
+ZTronDSPCore	FrameFormat	CR-015 item 11	an addition to the public surface that the change request names
+ZTronDSPCore	FrameView	§5.11.1	written in the code of §5.11.1
+ZTronDSPCore	FrameWriter	§5.11.1	written in the code of §5.11.1
+ZTronDSPCore	Frequency	§6.1	a frequency in any unit, resolved against the environment (ENV-2)
+ZTronDSPCore	GeneratorSource	§4.4	named in the text of §4.4
+ZTronDSPCore	Group	§5.2	named in the text of §5.2
+ZTronDSPCore	HTKMelFormula	§5.3	the type of a stock `MelFormula` value
+ZTronDSPCore	HeatmapFeed	§5.2	named in the text of §5.2
+ZTronDSPCore	HistoryBuffer	§5.11.4	named in the text of §5.11.4
+ZTronDSPCore	Implementation	SEL-2	named in the text of §7.4
+ZTronDSPCore	ImplementationKey	ENV-3	a settable built-in key: the key path of `.environment(_:_:)` names it
+ZTronDSPCore	KernelSpec	§5.5.3	named in the text of §5.5.3
+ZTronDSPCore	Lags	§5.2	named in the text of §5.2
+ZTronDSPCore	LinearFrequency	§5.2	named in the text of §5.2
+ZTronDSPCore	LinearValued	§5.8.2	named in the text of §5.8.2
+ZTronDSPCore	LoweringContext	§5.11.1	written in the code of §5.11.1
+ZTronDSPCore	MATLABExportable	MAT-1	named in the text of §6.14
+ZTronDSPCore	MATLABScript	WP-120	named in the text of §12
+ZTronDSPCore	MagnitudeValues	§5.2	named in the text of §5.2
+ZTronDSPCore	Measuring	CR-015 item 11	an addition to the public surface that the change request names
+ZTronDSPCore	MedianNetwork	CR-015 item 11	an addition to the public surface that the change request names
+ZTronDSPCore	MelCepstrum	§5.2	named in the text of §5.2
+ZTronDSPCore	MelFormula	§5.3	named in the text of §5.3
+ZTronDSPCore	MelFrequency	§5.2	named in the text of §5.2
+ZTronDSPCore	MemoryPressureLevel	§4.5	written in the code of §4.5
+ZTronDSPCore	Novelty	§5.2	named in the text of §5.2
+ZTronDSPCore	OutOfPlaceSampleProcessor	CR-025 item 1	named by the change request
+ZTronDSPCore	OverlapAdder	§5.11.4	named in the text of §5.11.4
+ZTronDSPCore	Pacing	§4.4	written in the code of §4.4
+ZTronDSPCore	ParameterVector	ANI-2	named in the text of §8.7
+ZTronDSPCore	Pipeline	§5.1	a pipeline of stages in either spelling; itself a stage, so pipelines nest (§5.11.1)
+ZTronDSPCore	PipelineBuilder	API-2	named in the text of §5.1
+ZTronDSPCore	PipelineContent	CR-032 item 1	what the result builder and the fluent spelling produce
+ZTronDSPCore	PipelineSession	§4.5	written in the code of §4.5
+ZTronDSPCore	PipelineSession.detach()	§4.5	the declaration §4.5 writes out
+ZTronDSPCore	PipelineSession.environment	§4.5	the declaration §4.5 writes out
+ZTronDSPCore	PipelineSession.events	§4.5	the declaration §4.5 writes out
+ZTronDSPCore	PipelineSession.start()	§4.5	the declaration §4.5 writes out
+ZTronDSPCore	PipelineSession.state	§4.5	the declaration §4.5 writes out
+ZTronDSPCore	PipelineSession.stop()	§4.5	the declaration §4.5 writes out
+ZTronDSPCore	PipelineSession.syncBindings()	§4.5	the declaration §4.5 writes out
+ZTronDSPCore	PipelineSession.update(_:)	§4.5	the declaration §4.5 writes out
+ZTronDSPCore	PipelineStage	§5.11.1	written in the code of §5.11.1
+ZTronDSPCore	PipelineStage.Input	§5.11.1	the declaration §5.11.1 writes out
+ZTronDSPCore	PipelineStage.Output	§5.11.1	the declaration §5.11.1 writes out
+ZTronDSPCore	PowerValues	§5.2	named in the text of §5.2
+ZTronDSPCore	Primitive	§7.4	the primitives that exist in more than one implementation
+ZTronDSPCore	ProcessedSource	§4.4	named in the text of §4.4
+ZTronDSPCore	PullSampleSource	§4.4	written in the code of §4.4
+ZTronDSPCore	PullSampleSource.pacing	§4.4	the declaration §4.4 writes out
+ZTronDSPCore	PullSampleSource.render(into:)	§4.4	the declaration §4.4 writes out
+ZTronDSPCore	PushSampleSource	§4.4	written in the code of §4.4
+ZTronDSPCore	PushSampleSource.connect(to:)	§4.4	the declaration §4.4 writes out
+ZTronDSPCore	Quefrency	§5.2	named in the text of §5.2
+ZTronDSPCore	Ramp	§5.11.4	named in the text of §5.11.4
+ZTronDSPCore	RealFrame	§5.2	named in the text of §5.2
+ZTronDSPCore	RealValued	§5.2	what the type parameters of `Spectrum<Axis, Values>` conform to
+ZTronDSPCore	RealVectorDomain	O-11	the domains a sink accepts
+ZTronDSPCore	Recipe	CR-015 item 11	an addition to the public surface that the change request names
+ZTronDSPCore	ReplanReason	§4.5	written in the code of §4.5
+ZTronDSPCore	ResultRateKey	ENV-3	a settable built-in key: the key path of `.environment(_:_:)` names it
+ZTronDSPCore	RingWriter	§4.4	written in the code of §4.4
+ZTronDSPCore	RollOff	§6.3.4	named in the text of §6.3.4
+ZTronDSPCore	RollOffRounding	§5.3	named in the text of §5.3
+ZTronDSPCore	RouteChange	§4.4	written in the code of §4.4
+ZTronDSPCore	SampleProcessor	§5.11.1	written in the code of §5.11.1
+ZTronDSPCore	SampleProcessor.latencyFrames	§5.11.1	the declaration §5.11.1 writes out
+ZTronDSPCore	SampleProcessor.process(_:)	§5.11.1	the declaration §5.11.1 writes out
+ZTronDSPCore	SampleProcessor.reset()	§5.11.1	the declaration §5.11.1 writes out
+ZTronDSPCore	SampleProcessor.settlingFrames	§5.11.1	the declaration §5.11.1 writes out
+ZTronDSPCore	SampleSource	§4.4	written in the code of §4.4
+ZTronDSPCore	SampleSource.events	§4.4	the declaration §4.4 writes out
+ZTronDSPCore	SampleSource.format	§4.4	the declaration §4.4 writes out
+ZTronDSPCore	SampleSource.prepare()	§4.4	the declaration §4.4 writes out
+ZTronDSPCore	SampleSource.start()	§4.4	the declaration §4.4 writes out
+ZTronDSPCore	SampleSource.stop()	§4.4	the declaration §4.4 writes out
+ZTronDSPCore	SampledSequence	WP-110a	named in the text of §12
+ZTronDSPCore	Samples	§5.2	named in the text of §5.2
+ZTronDSPCore	Scalar	§5.2	named in the text of §5.2
+ZTronDSPCore	ScalarBindingTarget	CR-015 item 11	an addition to the public surface that the change request names
+ZTronDSPCore	ScalarFrame	§5.2	the frame of the `Novelty` and `Scalar` domains
+ZTronDSPCore	ScalarResultTarget	CR-015 item 11	an addition to the public surface that the change request names
+ZTronDSPCore	ScalarResultValue	CR-015 item 11	an addition to the public surface that the change request names
+ZTronDSPCore	ScalarValuedDomain	O-11	the domains a sink accepts
+ZTronDSPCore	ScopeChange	CR-015 item 11	an addition to the public surface that the change request names
+ZTronDSPCore	ScriptedSource	§4.4	named in the text of §4.4
+ZTronDSPCore	SequenceChain	§5.8.2	named in the text of §5.8.2
+ZTronDSPCore	SequenceStage	§5.11.1	named in the text of §5.11.1
+ZTronDSPCore	SessionEvent	§4.5	written in the code of §4.5
+ZTronDSPCore	SessionEvent.memoryPressure(_:)	§4.5	the declaration §4.5 writes out
+ZTronDSPCore	SessionEvent.nonFiniteInput(count:)	§4.5	the declaration §4.5 writes out
+ZTronDSPCore	SessionEvent.outputChanged	§4.5	the declaration §4.5 writes out
+ZTronDSPCore	SessionEvent.overrun(droppedFrames:)	§4.5	the declaration §4.5 writes out
+ZTronDSPCore	SessionEvent.replanned(_:)	§4.5	the declaration §4.5 writes out
+ZTronDSPCore	SessionEvent.stateChanged(_:)	§4.5	the declaration §4.5 writes out
+ZTronDSPCore	SessionState	§4.5	written in the code of §4.5
+ZTronDSPCore	SessionState.detached	§4.5	the declaration §4.5 writes out
+ZTronDSPCore	SessionState.failed(_:)	§4.5	the declaration §4.5 writes out
+ZTronDSPCore	SessionState.finished	§4.5	the declaration §4.5 writes out
+ZTronDSPCore	SessionState.idle	§4.5	the declaration §4.5 writes out
+ZTronDSPCore	SessionState.interrupted	§4.5	the declaration §4.5 writes out
+ZTronDSPCore	SessionState.running	§4.5	the declaration §4.5 writes out
+ZTronDSPCore	SettableDSPEnvironmentKey	§5.4	written in the code of §5.4
+ZTronDSPCore	SignalDomain	§5.11.1	written in the code of §5.11.1
+ZTronDSPCore	SignalFormat	§4.4	written in the code of §4.4
+ZTronDSPCore	SlaneyMelFormula	§5.3	the type of a stock `MelFormula` value
+ZTronDSPCore	SourceEvent	§4.4	written in the code of §4.4
+ZTronDSPCore	SourceEvent.ended	§4.4	the declaration §4.4 writes out
+ZTronDSPCore	SourceEvent.failed(_:)	§4.4	the declaration §4.4 writes out
+ZTronDSPCore	SourceEvent.formatChanged(_:)	§4.4	the declaration §4.4 writes out
+ZTronDSPCore	SourceEvent.interrupted	§4.4	the declaration §4.4 writes out
+ZTronDSPCore	SourceEvent.mediaServicesReset	§4.4	the declaration §4.4 writes out
+ZTronDSPCore	SourceEvent.overrun(droppedFrames:)	§4.4	the declaration §4.4 writes out
+ZTronDSPCore	SourceEvent.resumed	§4.4	the declaration §4.4 writes out
+ZTronDSPCore	SourceEvent.routeChanged(_:)	§4.4	the declaration §4.4 writes out
+ZTronDSPCore	SourceEventChannel	CR-015 item 11	an addition to the public surface that the change request names
+ZTronDSPCore	SourceKind	§5.4	named in the text of §5.4
+ZTronDSPCore	SpectralAxis	§5.2	what the type parameters of `Spectrum<Axis, Values>` conform to
+ZTronDSPCore	SpectralValues	§5.2	what the type parameters of `Spectrum<Axis, Values>` conform to
+ZTronDSPCore	Spectrum	§5.2	named in the text of §5.2
+ZTronDSPCore	StageActivation	CR-015 item 11	an addition to the public surface that the change request names
+ZTronDSPCore	StageDescription	WP-301	named in the text of §12
+ZTronDSPCore	StagePath	CR-003	named by the change request
+ZTronDSPCore	StageValidation	§5.11.4	named in the text of §5.11.4
+ZTronDSPCore	StageValue	CR-015 item 11	an addition to the public surface that the change request names
+ZTronDSPCore	Tap	§5.2	named in the text of §5.2
+ZTronDSPCore	TempoSpectrum	§5.2	named in the text of §5.2
+ZTronDSPCore	Vector	§5.11.4	named in the text of §5.11.4
+ZTronDSPCore	VectorBindingTarget	CR-015 item 11	an addition to the public surface that the change request names
+ZTronDSPCore	VectorResultTarget	CR-015 item 11	an addition to the public surface that the change request names
+ZTronDSPCore	WaveformFeed	§5.2	named in the text of §5.2
+ZTronDSPCore	Window	§6.4.2	a window: stock shapes, a closure, its analysis
+ZTronDSPCore	ZeroPadding	§6.12	where `zeroPadded(_:to:placement:)` puts the zeros
+ZTronDSPCore	extension Binding.boundResult	§5.10	how a binding receives results
+ZTronDSPCore	extension Binding.stageActivation	§5.9	how a `Binding<Bool>` serves as `isActive:`
+ZTronDSPCore	extension Bool.stageActivation	§5.9	how a constant serves as `isActive:`
+ZTronDSPCore	extension Float.boundResult(_:)	§5.10	how a binding of a `Float` receives a scalar result
+ZTronDSPCore	flushSmallState(_:count:threshold:)	§5.11.4	named in the text of §5.11.4
+ZTronDSPCore	subsample(_:count:by:phase:into:)	CR-032 item 1	the allocation-free form of a toolkit hook (§5.11.4) that kernels call
+ZTronDSPCore	subsampled(_:by:phase:)	§5.11.4	named in the text of §5.11.4
+ZTronDSPCore	upsample(_:count:by:into:)	CR-032 item 1	the allocation-free form of a toolkit hook (§5.11.4) that kernels call
+ZTronDSPCore	upsampled(_:by:)	§5.11.4	named in the text of §5.11.4
+ZTronDSPCore	zeroPad(_:count:into:paddedCount:placement:)	CR-032 item 1	the allocation-free form of a toolkit hook (§5.11.4) that kernels call
+ZTronDSPCore	zeroPadded(_:to:placement:)	§5.11.4	named in the text of §5.11.4
+ZTronDSPDesign	AlphaBeta	§6.3.6	a smoothing filter
+ZTronDSPDesign	AnalogPrototype	App. A row 1	a row of Appendix A names it
+ZTronDSPDesign	BandBoost	§6.3.4	named in the text of §6.3.4
+ZTronDSPDesign	BandPass	§5.2	a sequence stage, IIR or FIR by its first argument (§6.3)
+ZTronDSPDesign	BandStop	§5.2	a sequence stage, IIR or FIR by its first argument (§6.3)
+ZTronDSPDesign	Bandwidth	CR-018 item 11	an addition to the public surface that the change request names
+ZTronDSPDesign	BesselFamily	CR-018 item 11	a family or order-strategy type behind the values of §5.3
+ZTronDSPDesign	BesselNormalization	CR-018 item 11	an addition to the public surface that the change request names
+ZTronDSPDesign	ButterworthFamily	CR-018 item 11	a family or order-strategy type behind the values of §5.3
+ZTronDSPDesign	ButterworthOrderStrategy	CR-018 item 11	a family or order-strategy type behind the values of §5.3
+ZTronDSPDesign	Chebyshev1Family	CR-018 item 11	a family or order-strategy type behind the values of §5.3
+ZTronDSPDesign	Chebyshev1OrderStrategy	CR-018 item 11	a family or order-strategy type behind the values of §5.3
+ZTronDSPDesign	Chebyshev2Family	CR-018 item 11	a family or order-strategy type behind the values of §5.3
+ZTronDSPDesign	Chebyshev2OrderStrategy	CR-018 item 11	a family or order-strategy type behind the values of §5.3
+ZTronDSPDesign	CompanionQRRootFinder	CR-018 item 11	an addition to the public surface that the change request names
+ZTronDSPDesign	ConvolutionStrategy	§5.3	named in the text of §5.3
+ZTronDSPDesign	Convolve	§5.2	named in the text of §5.2
+ZTronDSPDesign	Decimate	§6.12	a rate change
+ZTronDSPDesign	DifferenceEquation	§6.3.7	named in the text of §6.3.7
+ZTronDSPDesign	EllipticFamily	CR-018 item 11	a family or order-strategy type behind the values of §5.3
+ZTronDSPDesign	EllipticOrderStrategy	CR-018 item 11	a family or order-strategy type behind the values of §5.3
+ZTronDSPDesign	EqualizerDesign	CR-018 item 11	an addition to the public surface that the change request names
+ZTronDSPDesign	FIRDesign	CR-018 item 11	an addition to the public surface that the change request names
+ZTronDSPDesign	FIRDesignMethod	§6.3.3	named in the text of §6.3.3
+ZTronDSPDesign	FIRSystem	§6.3.7	a system declared from its elements
+ZTronDSPDesign	FIRSystemBuilder	CR-018 item 11	an addition to the public surface that the change request names
+ZTronDSPDesign	FIRSystemContent	CR-018 item 11	an addition to the public surface that the change request names
+ZTronDSPDesign	FIRSystemElement	CR-018 item 11	an addition to the public surface that the change request names
+ZTronDSPDesign	Filter	§6.3.7	the stage that runs a declared system
+ZTronDSPDesign	FilterDesign	CR-018 item 11	an addition to the public surface that the change request names
+ZTronDSPDesign	FilterFamily	§6.3.3	named in the text of §6.3.3
+ZTronDSPDesign	FilterOrderEstimate	CR-018 item 11	an addition to the public surface that the change request names
+ZTronDSPDesign	FilterOrderStrategy	§6.3.2	named in the text of §6.3.2
+ZTronDSPDesign	FilterResponse	CR-018 item 11	an addition to the public surface that the change request names
+ZTronDSPDesign	FrequencyTransformation	App. A row 8	a row of Appendix A names it
+ZTronDSPDesign	Gain	§6.2	the gain stage (§6.2)
+ZTronDSPDesign	HighPass	§5.2	a sequence stage, IIR or FIR by its first argument (§6.3)
+ZTronDSPDesign	HighShelf	§6.3.5	named in the text of §6.3.5
+ZTronDSPDesign	IIRDesign	App. A row 6	a row of Appendix A names it
+ZTronDSPDesign	IIRSystem	§6.3.7	a system declared from its elements
+ZTronDSPDesign	IIRSystemBuilder	CR-018 item 11	an addition to the public surface that the change request names
+ZTronDSPDesign	IIRSystemContent	CR-018 item 11	an addition to the public surface that the change request names
+ZTronDSPDesign	IIRSystemElement	CR-018 item 11	an addition to the public surface that the change request names
+ZTronDSPDesign	Interpolate	§6.12	a rate change
+ZTronDSPDesign	LTISystem	§6.3.1	named in the text of §6.3.1
+ZTronDSPDesign	LeastSquares	§6.3.3	named in the text of §6.3.3
+ZTronDSPDesign	LeastSquaresMethod	CR-018 item 11	an addition to the public surface that the change request names
+ZTronDSPDesign	LowPass	§5.2	a sequence stage, IIR or FIR by its first argument (§6.3)
+ZTronDSPDesign	LowShelf	§6.3.5	named in the text of §6.3.5
+ZTronDSPDesign	MagnitudeScale	CR-018 item 11	an addition to the public surface that the change request names
+ZTronDSPDesign	MatchedPeak	CR-018 item 11	an addition to the public surface that the change request names
+ZTronDSPDesign	MatchedPeakDesign	CR-018 item 11	an addition to the public surface that the change request names
+ZTronDSPDesign	Pole	§6.3.7	written in the code of §6.3.7
+ZTronDSPDesign	Polynomial	WP-401	named in the text of §12
+ZTronDSPDesign	PolynomialRootFinder	§5.3	named in the text of §5.3
+ZTronDSPDesign	RootConditions	CR-018 item 11	an addition to the public surface that the change request names
+ZTronDSPDesign	SavitzkyGolay	§6.3.6	a smoothing filter
+ZTronDSPDesign	SavitzkyGolayEdge	CR-018 item 11	an addition to the public surface that the change request names
+ZTronDSPDesign	SecondOrderSections	§6.3.1	named in the text of §6.3.1
+ZTronDSPDesign	Section	§6.3.7	written in the code of §6.3.7
+ZTronDSPDesign	ShelfSlope	CR-018 item 11	an addition to the public surface that the change request names
+ZTronDSPDesign	Subsample	§6.12	a rate change without a filter
+ZTronDSPDesign	SystemAnalysis	§6.14	named in the text of §6.14
+ZTronDSPDesign	SystemDomain	CR-018 item 11	an addition to the public surface that the change request names
+ZTronDSPDesign	SystemElement	CR-018 item 11	an addition to the public surface that the change request names
+ZTronDSPDesign	SystemKind	CR-018 item 11	an addition to the public surface that the change request names
+ZTronDSPDesign	Taps	§6.3.3	named in the text of §6.3.3
+ZTronDSPDesign	TransferFunction	App. A row 12	a row of Appendix A names it
+ZTronDSPDesign	Upsample	§6.12	a rate change without a filter
+ZTronDSPDesign	WindowedSincMethod	CR-018 item 11	an addition to the public surface that the change request names
+ZTronDSPDesign	Zero	§6.3.7	written in the code of §6.3.7
+ZTronDSPDesign	ZeroPoleGain	App. A row 12	a row of Appendix A names it
+ZTronDSPDesign	extension DSP.alphaBeta(_:alpha:beta:timeStep:initialPosition:initialVelocity:output:)	WP-434	the offline function the `AlphaBeta` stage is held to (WP-434)
+ZTronDSPDesign	extension DSP.decimate(_:by:rejection:passband:)	§6.12	named in the text of §6.12
+ZTronDSPDesign	extension DSP.interpolate(_:by:rejection:passband:)	§6.12	named in the text of §6.12
+ZTronDSPDesign	extension DSP.maximumRateChangeFactor	CR-032 item 2	the largest factor `Decimate`, `Interpolate`, `Subsample`, `Upsample` and their offline functions accept
+ZTronDSPDesign	extension DSP.prewarpedAngularFrequency(hertz:sampleRate:)	CR-018 item 11	an addition to the public surface that the change request names
+ZTronDSPDesign	extension DSP.rateChangeTaps(by:rejection:passband:)	CR-032 item 2	the anti-alias filter of `Decimate` and `Interpolate`; `ZTronDSPAnalysis` designs with it
+ZTronDSPDesign	extension DSP.savitzkyGolay(_:window:polynomialOrder:derivative:edge:)	CR-018 item 3	named by the change request
+ZTronDSPDesign	extension DSP.savitzkyGolayCoefficients(window:polynomialOrder:derivative:)	CR-032 item 2	the design behind `SavitzkyGolay` (§6.3.6), for a filter of the app's own
+ZTronDSPDesign	extension DSP.savitzkyGolayMaximumWindow	CR-032 item 2	the widest window `SavitzkyGolay` and `DSP.savitzkyGolay` accept
+ZTronDSPDesign	extension Pipeline.alphaBeta(alpha:beta:initialPosition:initialVelocity:output:isActive:)	STG-1	the fluent modifier of a stage (STG-1)
+ZTronDSPDesign	extension Pipeline.bandBoost(center:gain:bandwidth:order:isActive:)	§5.1	written in the code of §5.1
+ZTronDSPDesign	extension Pipeline.bandBoost(center:gain:bandwidth:rollOff:rounding:isActive:)	§5.1	written in the code of §5.1
+ZTronDSPDesign	extension Pipeline.bandPass(_:from:to:order:isActive:)	STG-1	the fluent modifier of a stage (STG-1)
+ZTronDSPDesign	extension Pipeline.bandPass(_:from:to:rollOff:rounding:isActive:)	STG-1	the fluent modifier of a stage (STG-1)
+ZTronDSPDesign	extension Pipeline.bandPass(_:from:to:rollOff:stopband:isActive:)	STG-1	the fluent modifier of a stage (STG-1)
+ZTronDSPDesign	extension Pipeline.bandPass(_:from:to:transition:length:isActive:)	STG-1	the fluent modifier of a stage (STG-1)
+ZTronDSPDesign	extension Pipeline.bandPass(_:passband:stopband:maximumLoss:minimumAttenuation:isActive:)	STG-1	the fluent modifier of a stage (STG-1)
+ZTronDSPDesign	extension Pipeline.bandStop(_:from:to:order:isActive:)	STG-1	the fluent modifier of a stage (STG-1)
+ZTronDSPDesign	extension Pipeline.bandStop(_:from:to:rollOff:rounding:isActive:)	STG-1	the fluent modifier of a stage (STG-1)
+ZTronDSPDesign	extension Pipeline.bandStop(_:from:to:rollOff:stopband:isActive:)	STG-1	the fluent modifier of a stage (STG-1)
+ZTronDSPDesign	extension Pipeline.bandStop(_:from:to:transition:length:isActive:)	STG-1	the fluent modifier of a stage (STG-1)
+ZTronDSPDesign	extension Pipeline.bandStop(_:passband:stopband:maximumLoss:minimumAttenuation:isActive:)	STG-1	the fluent modifier of a stage (STG-1)
+ZTronDSPDesign	extension Pipeline.convolve(kernel:strategy:isActive:)	STG-1	the fluent modifier of a stage (STG-1)
+ZTronDSPDesign	extension Pipeline.decimate(by:rejection:passband:isActive:)	STG-1	the fluent modifier of a stage (STG-1)
+ZTronDSPDesign	extension Pipeline.filter(_:isActive:)	STG-1	the fluent modifier of a stage (STG-1)
+ZTronDSPDesign	extension Pipeline.gain(_:ramp:isActive:)	§5.1	written in the code of §5.1
+ZTronDSPDesign	extension Pipeline.gain(channels:ramp:isActive:)	STG-1	the fluent modifier of a stage (STG-1)
+ZTronDSPDesign	extension Pipeline.highPass(_:cutoff:order:isActive:)	STG-1	the fluent modifier of a stage (STG-1)
+ZTronDSPDesign	extension Pipeline.highPass(_:cutoff:rollOff:rounding:isActive:)	§5.1	written in the code of §5.1
+ZTronDSPDesign	extension Pipeline.highPass(_:cutoff:rollOff:stopband:isActive:)	§5.1	written in the code of §5.1
+ZTronDSPDesign	extension Pipeline.highPass(_:cutoff:transition:length:isActive:)	STG-1	the fluent modifier of a stage (STG-1)
+ZTronDSPDesign	extension Pipeline.highPass(_:passband:stopband:maximumLoss:minimumAttenuation:isActive:)	STG-1	the fluent modifier of a stage (STG-1)
+ZTronDSPDesign	extension Pipeline.highShelf(midpoint:gain:slope:isActive:)	STG-1	the fluent modifier of a stage (STG-1)
+ZTronDSPDesign	extension Pipeline.interpolate(by:rejection:passband:isActive:)	STG-1	the fluent modifier of a stage (STG-1)
+ZTronDSPDesign	extension Pipeline.lowPass(_:cutoff:order:isActive:)	STG-1	the fluent modifier of a stage (STG-1)
+ZTronDSPDesign	extension Pipeline.lowPass(_:cutoff:rollOff:rounding:isActive:)	STG-1	the fluent modifier of a stage (STG-1)
+ZTronDSPDesign	extension Pipeline.lowPass(_:cutoff:rollOff:stopband:isActive:)	STG-1	the fluent modifier of a stage (STG-1)
+ZTronDSPDesign	extension Pipeline.lowPass(_:cutoff:transition:length:isActive:)	STG-1	the fluent modifier of a stage (STG-1)
+ZTronDSPDesign	extension Pipeline.lowPass(_:passband:stopband:maximumLoss:minimumAttenuation:isActive:)	STG-1	the fluent modifier of a stage (STG-1)
+ZTronDSPDesign	extension Pipeline.lowShelf(midpoint:gain:slope:isActive:)	STG-1	the fluent modifier of a stage (STG-1)
+ZTronDSPDesign	extension Pipeline.matchedPeak(center:gain:bandwidth:isActive:)	STG-1	the fluent modifier of a stage (STG-1)
+ZTronDSPDesign	extension Pipeline.savitzkyGolay(window:polynomialOrder:derivative:edge:isActive:)	STG-1	the fluent modifier of a stage (STG-1)
+ZTronDSPDesign	extension Pipeline.subsample(by:phase:isActive:)	STG-1	the fluent modifier of a stage (STG-1)
+ZTronDSPDesign	extension Pipeline.upsample(by:isActive:)	STG-1	the fluent modifier of a stage (STG-1)
+ZTronDSPIO	AudioInput	§4.6	written in the code of §4.6
+ZTronDSPIO	AudioInput.dataSources	§4.6	the declaration §4.6 writes out
+ZTronDSPIO	AudioInput.id	§4.6	the declaration §4.6 writes out
+ZTronDSPIO	AudioInput.name	§4.6	the declaration §4.6 writes out
+ZTronDSPIO	AudioSessionControlling	§4.6	written in the code of §4.6
+ZTronDSPIO	AudioSessionPolicy	§4.6	written in the code of §4.6
+ZTronDSPIO	AudioSessionPolicy.allowingBluetoothHandsFree()	§4.6	the declaration §4.6 writes out
+ZTronDSPIO	AudioSessionPolicy.allowingHighQualityBluetoothRecording()	§4.6	the declaration §4.6 writes out
+ZTronDSPIO	AudioSessionPolicy.custom(_:)	§4.6	the declaration §4.6 writes out
+ZTronDSPIO	AudioSessionPolicy.deactivatingOnStop()	§4.6	the declaration §4.6 writes out
+ZTronDSPIO	AudioSessionPolicy.external	§4.6	the declaration §4.6 writes out
+ZTronDSPIO	AudioSessionPolicy.measurement	§4.6	the declaration §4.6 writes out
+ZTronDSPIO	AudioSessionPolicy.mixingWithOthers()	§4.6	the declaration §4.6 writes out
+ZTronDSPIO	AudioSessionPolicy.playAndRecord	§4.6	the declaration §4.6 writes out
+ZTronDSPIO	EngineNodeTapSource	§4.4	named in the text of §4.4
+ZTronDSPIO	FileSource	§4.4	named in the text of §4.4
+ZTronDSPIO	HardwareInputSource	§4.4	named in the text of §4.4
+ZTronDSPIO	HardwareInputSource.availableInputs(policy:)	§4.6	the declaration §4.6 writes out
+ZTronDSPMetal	Calibration	SEL-5	named in the text of §7.4
+ZTronDSPMetal	CalibrationCandidate	CR-016 item 14	an addition to the public surface that the change request names
+ZTronDSPMetal	CalibrationCurve	CR-016 item 14	an addition to the public surface that the change request names
+ZTronDSPMetal	CalibrationReport	CR-016 item 14	an addition to the public surface that the change request names
+ZTronDSPMetal	ColorMap	§5.3	named in the text of §5.3
+ZTronDSPMetal	CrossoverEntry	CR-016 item 14	an addition to the public surface that the change request names
+ZTronDSPMetal	CrossoverMeasurement	CR-016 item 14	an addition to the public surface that the change request names
+ZTronDSPMetal	DisplayColor	CR-016 item 14	an addition to the public surface that the change request names
+ZTronDSPMetal	FrequencyScale	§5.3	named in the text of §5.3
+ZTronDSPMetal	GrayscaleColorMap	CR-016 item 14	an addition to the public surface that the change request names
+ZTronDSPMetal	HeatmapRenderer	WP-606	named in the text of §12
+ZTronDSPMetal	LinearFrequencyScale	CR-016 item 14	an addition to the public surface that the change request names
+ZTronDSPMetal	ListedColorMap	CR-016 item 14	an addition to the public surface that the change request names
+ZTronDSPMetal	LogarithmicFrequencyScale	CR-016 item 14	an addition to the public surface that the change request names
+ZTronDSPMetal	MelFrequencyScale	CR-016 item 14	an addition to the public surface that the change request names
+ZTronDSPMetal	MetalCapabilities	CR-016 item 14	an addition to the public surface that the change request names
+ZTronDSPMetal	MetalContext	WP-601	named in the text of §12
+ZTronDSPMetal	MetalMedianFilter	CR-016 item 14	an addition to the public surface that the change request names
+ZTronDSPMetal	OffscreenTarget	CR-016 item 14	an addition to the public surface that the change request names
+ZTronDSPMetal	PixelImage	CR-016 item 14	an addition to the public surface that the change request names
+ZTronDSPMetal	RenderCauses	CR-016 item 14	an addition to the public surface that the change request names
+ZTronDSPMetal	RenderProbe	§8.4	named in the text of §8.4
+ZTronDSPMetal	RowInterpolation	CR-016 item 14	an addition to the public surface that the change request names
+ZTronDSPMetal	TurboColorMap	CR-016 item 14	an addition to the public surface that the change request names
+ZTronDSPMetal	WaveformRenderer	CR-016 item 14	an addition to the public surface that the change request names
+ZTronDSPMetal	extension CrossoverTable.replacing(_:with:)	CR-032 item 4	a table with one entry replaced: how a calibration report builds its table (SEL-5)
+ZTronDSPMetal	extension CrossoverTable.size(of:)	CR-032 item 4	the value of one entry of a table, by its `CrossoverEntry`
+ZTronDSPMetal	extension FeedSnapshot.image(size:colorMap:valueRange:frequencyScale:)	§8.2	named in the text of §8.2
+ZTronDSPTesting	AllocationAudit	WP-005	the allocation probe of the test product (EXT-3)
+ZTronDSPTesting	AllocationAuditError	WP-005	the allocation probe of the test product (EXT-3)
+ZTronDSPTesting	AllocationCounts	WP-005	the allocation probe of the test product (EXT-3)
+ZTronDSPTesting	Benchmark	WP-006	the benchmark harness of the test product
+ZTronDSPTesting	BenchmarkRegression	WP-006	the benchmark harness of the test product
+ZTronDSPTesting	BenchmarkReport	WP-006	the benchmark harness of the test product
+ZTronDSPTesting	BenchmarkResult	WP-006	the benchmark harness of the test product
+ZTronDSPTesting	Click	CLICK-1	the click detector that CLICK-1 measures with
+ZTronDSPTesting	Closeness	WP-004	`expectClose` and its tolerances (absolute, relative, dB)
+ZTronDSPTesting	ClosenessFailure	WP-004	`expectClose` and its tolerances (absolute, relative, dB)
+ZTronDSPTesting	GoldenCase	WP-004	the golden loader of the test product (JSON and raw floats)
+ZTronDSPTesting	GoldenError	WP-004	the golden loader of the test product (JSON and raw floats)
+ZTronDSPTesting	GoldenFile	WP-004	the golden loader of the test product (JSON and raw floats)
+ZTronDSPTesting	GoldenParameter	WP-004	the golden loader of the test product (JSON and raw floats)
+ZTronDSPTesting	GoldenValue	WP-004	the golden loader of the test product (JSON and raw floats)
+ZTronDSPTesting	MedianOracle	CR-023 item 16	an addition to the public surface that the change request names
+ZTronDSPTesting	SeededGenerator	WP-004	seeded signals of the test product
+ZTronDSPTesting	StressFixture	WP-016	the stress-fixture library (NUMS-2)
+ZTronDSPTesting	TestSignal	WP-004	seeded signals of the test product
+ZTronDSPTesting	ThreadAllocationAudit	WP-005	the allocation probe of the test product (EXT-3)
+ZTronDSPTesting	Tolerance	WP-004	`expectClose` and its tolerances (absolute, relative, dB)
+ZTronDSPTesting	countAllocations(_:)	WP-005	the allocation probe of the test product (EXT-3)
+ZTronDSPTesting	expectClose(_:_:_:_:sourceLocation:)	§5.11.4	named in the text of §5.11.4
+ZTronDSPTesting	expectNoAllocations(_:sourceLocation:_:)	RT-7	named in the text of §5.6
+ZTronDSPTesting	expectNoAllocationsRunning(_:format:blockSize:blocks:crossovers:_:sourceLocation:)	WP-005	the allocation probe of the test product (EXT-3)
+ZTronDSPTesting	floatingPointEnvironmentDigest()	WP-216	the floating-point environment a kernel must leave alone
+ZTronDSPTesting	forceAllocation(byteCount:)	WP-005	the allocation probe of the test product (EXT-3)
+ZTronDSPTesting	forceReallocation(from:to:)	WP-005	the allocation probe of the test product (EXT-3)
+ZTronDSPUI	ChromagramView	§8.1	named in the text of §8.1
+ZTronDSPUI	DSPAxis	CR-021 item 17	an addition to the public surface that the change request names
+ZTronDSPUI	FrequencyAxisView	VC-2	named in the text of §8.1
+ZTronDSPUI	HeatmapView	§8.1	named in the text of §8.1
+ZTronDSPUI	PitchClassAxisView	VC-2	named in the text of §8.1
+ZTronDSPUI	SpectrogramView	§8.1	named in the text of §8.1
+ZTronDSPUI	TempoAxisView	VC-2	named in the text of §8.1
+ZTronDSPUI	TempogramView	§8.1	named in the text of §8.1
+ZTronDSPUI	TimeAxisView	VC-2	named in the text of §8.1
+ZTronDSPUI	WaveformView	§8.1	named in the text of §8.1
+ZTronDSPUI	extension EnvironmentValues.dspChannelCount	§5.4	named in the text of §5.4
+ZTronDSPUI	extension EnvironmentValues.dspLatency	§5.4	named in the text of §5.4
+ZTronDSPUI	extension EnvironmentValues.dspNyquistFrequency	§5.4	named in the text of §5.4
+ZTronDSPUI	extension EnvironmentValues.dspSampleRate	§5.4	named in the text of §5.4
+ZTronDSPUI	extension View.amplitudeRange(_:)	CR-021 item 17	an addition to the public surface that the change request names
+ZTronDSPUI	extension View.analysisFrame(_:hop:window:)	§8.1	written in the code of §8.1
+ZTronDSPUI	extension View.axis(_:)	§8.1	written in the code of §8.1
+ZTronDSPUI	extension View.colorMap(_:)	§8.1	written in the code of §8.1
+ZTronDSPUI	extension View.dspEngine(_:)	§8.1	named in the text of §8.1
+ZTronDSPUI	extension View.dspEnvironment(_:)	§5.4	named in the text of §5.4
+ZTronDSPUI	extension View.frequencyRange(_:)	CR-021 item 17	an addition to the public surface that the change request names
+ZTronDSPUI	extension View.frequencyScale(_:)	§8.1	written in the code of §8.1
+ZTronDSPUI	extension View.maximumFrameRate(_:)	CR-027 item 6	named by the change request
+ZTronDSPUI	extension View.melBands(_:)	§8.1	named in the text of §8.1
+ZTronDSPUI	extension View.pinchScaling(_:)	§8.1	written in the code of §8.1
+ZTronDSPUI	extension View.pipeline(_:on:)	§8.7	named in the text of §8.7
+ZTronDSPUI	extension View.processing(_:)	§8.1	named in the text of §8.1
+ZTronDSPUI	extension View.timeSpan(_:)	§8.1	written in the code of §8.1
+ZTronDSPUI	extension View.valueRange(_:)	§8.1	written in the code of §8.1

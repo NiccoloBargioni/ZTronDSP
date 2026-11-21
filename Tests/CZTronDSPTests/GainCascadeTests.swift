@@ -86,6 +86,42 @@ struct GainCascadeTests {
         #expect(buffers.run(cascade, signal, blocks: [64]) == signal, "landed on 1: the input, untouched")
     }
 
+    /// ztd_engine.h: the ramp is the closed form of the gain kernel (ztd_kernels.h), rounded as
+    /// it is written, one operation at a time: with `left` frames of the move still to come after
+    /// a frame, its factor is target − increment·left, the product rounded and then the
+    /// difference. A product and a difference fused into one rounding would give other floats on
+    /// part of the ramp (measured: 72 frames of a 10 ms ramp from −6 dB to −12 dB). So one gain
+    /// stage (this cascade) and a gain per channel (the gain kernel) ramp to the same floats,
+    /// whatever the blocks, in both implementations.
+    @Test func theRampIsTheGainKernelsRampRoundedStepByStep() throws {
+        let start = Float(0.501_187_2), goal = Float(0.251_188_64)     // −6 dB and −12 dB
+        let signal = TestSignal.whiteNoise(count: 64 * 12, seed: 9_004, amplitude: 0.9)
+        let increment = (goal - start) / 480
+        let ramp = (0 ..< 480).map { (frame: Int) -> Float in
+            let left = 479 - frame
+            let product = increment * Float(left)
+            return signal[frame] * (left == 0 ? goal : goal - product)
+        }
+        for implementation in [ZTD_IMPLEMENTATION_NATIVE, ZTD_IMPLEMENTATION_ACCELERATE] {
+            for blocks in [[64], [7, 33, 64], [1]] {
+                let buffers = MonoBuffers(capacity: 64)
+                let cascade = try plan([start], ramp: 480, implementation)
+                defer { ztd_plan_destroy(cascade) }
+                let gain = try #require(ztd_plan_create(1, 1, 64))
+                defer { ztd_plan_destroy(gain) }
+                #expect(ztd_plan_append(gain, [start].withUnsafeBufferPointer { ztd_gain_create(1, $0.baseAddress, 480, implementation) }, true) == 0)
+                send([goal], to: cascade)
+                send([goal], to: gain)
+                let fromTheCascade = buffers.run(cascade, signal, blocks: blocks)
+                let fromTheKernel = buffers.run(gain, signal, blocks: blocks)
+                let differing = zip(fromTheCascade, ramp).filter { $0 != $1 }.count
+                #expect(Array(fromTheCascade[..<480]) == ramp, "\(implementation), blocks of \(blocks): \(differing) frames of the ramp differ from the closed form")
+                #expect(fromTheCascade == fromTheKernel, "\(implementation), blocks of \(blocks): the cascade and the gain kernel")
+                #expect(Array(fromTheCascade[480...]) == signal[480...].map { $0 * goal }, "and then the goal, exactly")
+            }
+        }
+    }
+
     /// ztd_engine.h: a cascade needs channels, and factors for the count it names. A command
     /// that is not a change of values, or that carries none, changes nothing; one that carries
     /// fewer values than the cascade has factors sets the first of them.

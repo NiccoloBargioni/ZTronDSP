@@ -26,13 +26,17 @@ struct SurfaceHost: View, Animatable {
     var size: CGSize
     let maximumFrameRate: Int
     let isPresented: Bool
+    /// Pixels per point of the display, as SwiftUI reports them (SZ-2).
+    let displayScale: CGFloat
+    /// True while the scene phase the view reads is `.background`.
+    let isSceneInBackground: Bool
     let probe: RenderProbe?
     let clocks: ClockSource?
     let inspector: SurfaceInspector?
 
     init(
-        content: SurfaceContent, vector: AppearanceVector, size: CGSize, maximumFrameRate: Int, isPresented: Bool, probe: RenderProbe? = nil,
-        clocks: ClockSource? = nil, inspector: SurfaceInspector? = nil
+        content: SurfaceContent, vector: AppearanceVector, size: CGSize, maximumFrameRate: Int, isPresented: Bool, displayScale: CGFloat = 1,
+        isSceneInBackground: Bool = false, probe: RenderProbe? = nil, clocks: ClockSource? = nil, inspector: SurfaceInspector? = nil
     ) {
         self.content = content
         rest = vector
@@ -40,6 +44,8 @@ struct SurfaceHost: View, Animatable {
         self.size = size
         self.maximumFrameRate = maximumFrameRate
         self.isPresented = isPresented
+        self.displayScale = displayScale
+        self.isSceneInBackground = isSceneInBackground
         self.probe = probe
         self.clocks = clocks
         self.inspector = inspector
@@ -65,13 +71,20 @@ struct SurfaceHost: View, Animatable {
     var body: some View {
         MetalViewRepresentable(input: SurfaceInput(
             content: shownContent, maximumFrameRate: maximumFrameRate, isPresented: isPresented, size: size, probe: probe, clocks: clocks,
-            inspector: inspector))
+            inspector: inspector, displayScale: displayScale, isSceneInBackground: isSceneInBackground))
     }
 }
 
 /// The place of a Metal surface in a component: it measures the size the surface is given,
-/// knows whether the surface is on screen in an active scene, and carries the pinch gesture
-/// when one is enabled.
+/// reads the display's scale, knows whether the surface is on screen in an active scene, and
+/// carries the pinch gesture when one is enabled.
+///
+/// **The scene phase (§8.3).** A surface draws only while the phase it reads from the
+/// environment is `.active`. SwiftUI hands the phase to the scenes of an `App`; a view that
+/// is hosted any other way, in a hosting controller for one, reads `.background` for as long
+/// as it lives and would never draw. Such a host has to hand the phase of its scene down
+/// itself, with `.environment(\.scenePhase, …)` on the view it hosts. A surface that has
+/// read nothing but `.background` by the time its feed is live says so once, in the log.
 ///
 /// Threading: main actor. The only state it writes is whether the view is on screen, when
 /// that changes (V-2).
@@ -89,12 +102,14 @@ struct SurfaceFrame: View {
     @Environment(\.dspClockSource) private var clocks
     @Environment(\.dspSurfaceInspector) private var inspector
     @Environment(\.scenePhase) private var scenePhase
+    @Environment(\.displayScale) private var displayScale
     @State private var isOnScreen = false
 
     var body: some View {
         GeometryReader { proxy in
             SurfaceHost(content: content, vector: vector, size: proxy.size, maximumFrameRate: maximumFrameRate,
-                        isPresented: isOnScreen && scenePhase == .active, probe: probe, clocks: clocks, inspector: inspector)
+                        isPresented: isOnScreen && scenePhase == .active, displayScale: displayScale,
+                        isSceneInBackground: scenePhase == .background, probe: probe, clocks: clocks, inspector: inspector)
                 .modifier(PinchGestureModifier(axes: pinchAxes, size: proxy.size, shown: content, onPinch: onPinch))
         }
         .onAppear { isOnScreen = true }

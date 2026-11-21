@@ -4,6 +4,7 @@
 #   Scripts/api-digest.sh --check  [--build]    compare the public API of the last build with Docs/API
 #                                               and run the checks below
 #   Scripts/api-digest.sh --update [--build]    rewrite Docs/API from the last build
+#   Scripts/api-digest.sh --spec-map            check 3 alone, on the committed digests (no build)
 #
 # The digest is the public symbol graph of each target as sorted text, Docs/API/<Target>.txt:
 # one line per public symbol with its declaration, its default values and its availability, one
@@ -18,10 +19,22 @@
 #   2. ZTronDSPDesign, ZTronDSPMetal, ZTronDSPAnalysis, ZTronDSPIO and ZTronDSPUI reference only
 #      public symbols of the targets below them (EXT-1, VIS-1): each is type-checked a second
 #      time as if it belonged to another package, so that a `package` symbol is out of reach.
+#   3. The public API is the one the specification lists (WP-901a): Docs/API/spec-map.tsv has a
+#      line for every top-level public symbol of every digest, every member a module adds to a
+#      type of another module and every module the facade re-exports; every line names a symbol
+#      the digests hold and a place that exists (a section or rule of the specification, a row of
+#      Appendix A, a change request in Docs/Process/changes). Scripts/lib/spec_map.py says how a
+#      line is written. With --check it reads the digests of the build; with --spec-map, the
+#      committed ones.
 #
 # Options: --digests DIR   the committed digests (default Docs/API)
 #          --graphs DIR    symbol graphs that are already extracted; no build is read, and
 #                          check 2 is not run
+#          --map FILE      the map of check 3 (default: spec-map.tsv beside the digests). When
+#                          --digests names another folder and it holds no map, check 3 is not
+#                          run, and that is said
+#          --spec FILE     the specification check 3 reads (default Docs/Specification/ZTronDSP-SPEC.md)
+#          --changes DIR   the change requests check 3 reads (default Docs/Process/changes)
 #          --skip-public-only
 #
 # For fixtures and for one target at a time:
@@ -41,23 +54,27 @@ PUBLIC_ONLY_TARGETS="ZTronDSPDesign ZTronDSPMetal ZTronDSPAnalysis ZTronDSPIO ZT
 PACKAGE_NAME="ztrondsp"            # what Xcode passes as -package-name for this package
 FOREIGN_PACKAGE_NAME="ztrondsp_seen_from_another_package"
 
-mode=""; build=0; digests="$ROOT/Docs/API"; graphs=""; skip_public_only=0
+mode=""; build=0; digests="$ROOT/Docs/API"; digests_given=0; graphs=""; skip_public_only=0
 public_module=""; public_sources=""; public_import=""; host=0
+map_option=""; spec="$ROOT/Docs/Specification/ZTronDSP-SPEC.md"; changes="$ROOT/Docs/Process/changes"
 while [ $# -gt 0 ]; do
     case "$1" in
-        --check|--update) mode="${1#--}" ;;
+        --check|--update|--spec-map) mode="${1#--}" ;;
         --build) build=1 ;;
         --skip-public-only) skip_public_only=1 ;;
         --host) host=1 ;;
-        --digests|--graphs|--public-only|--sources|--import|--package-name)
+        --digests|--graphs|--public-only|--sources|--import|--package-name|--map|--spec|--changes)
             [ $# -ge 2 ] || { echo "api-digest: $1 takes a value" >&2; exit 2; }
             case "$1" in
-                --digests) digests="$2" ;;
+                --digests) digests="$2"; digests_given=1 ;;
                 --graphs) graphs="$2" ;;
                 --public-only) mode="public-only"; public_module="$2" ;;
                 --sources) public_sources="$2" ;;
                 --import) public_import="$2" ;;
                 --package-name) PACKAGE_NAME="$2" ;;
+                --map) map_option="$2" ;;
+                --spec) spec="$2" ;;
+                --changes) changes="$2" ;;
             esac
             shift ;;
         -h|--help) awk 'NR > 1 && /^#/ { sub(/^# ?/, ""); print; next } NR > 1 { exit }' "${BASH_SOURCE[0]}"; exit 0 ;;
@@ -65,7 +82,29 @@ while [ $# -gt 0 ]; do
     esac
     shift
 done
-[ -n "$mode" ] || { echo "api-digest: say --check or --update (see --help)" >&2; exit 2; }
+[ -n "$mode" ] || { echo "api-digest: say --check, --update or --spec-map (see --help)" >&2; exit 2; }
+
+# ---------------------------------------------------------------------------------------------
+# Check 3 over a folder of digests: does the map list every public symbol, truly?
+#   spec_map <digests dir>      Status: 0 the map holds, 1 a finding, 2 the check could not run.
+# ---------------------------------------------------------------------------------------------
+spec_map() {
+    local map_file="$map_option"
+    if [ -z "$map_file" ]; then
+        map_file="$digests/spec-map.tsv"
+        if [ "$digests_given" -eq 1 ] && [ ! -f "$map_file" ]; then
+            echo "api-digest: ${digests#"$ROOT"/} holds no spec-map.tsv, so check 3 (the map of the public API) is not run"
+            return 0
+        fi
+    fi
+    python3 "$ROOT/Scripts/lib/spec_map.py" check --digests "$1" --map "$map_file" --spec "$spec" --changes "$changes" \
+        --label "${map_file#"$ROOT"/}"
+}
+
+if [ "$mode" = "spec-map" ]; then
+    spec_map "$digests"
+    exit $?
+fi
 
 scratch="$(mktemp -d "${TMPDIR:-/tmp}/ztd-api-digest.XXXXXX")" || { echo "api-digest: cannot make a scratch folder" >&2; exit 2; }
 trap 'case "$scratch" in */ztd-api-digest.??????) rm -rf "$scratch" ;; esac' EXIT
@@ -181,6 +220,10 @@ fi
 status=0
 python3 "$ENGINE" compare --fresh "$fresh" --committed "$digests" || status=1
 python3 "$ENGINE" rules --graphs "$graphs" --exemptions "$ROOT/Scripts/lint/stage-init-exemptions.txt" || status=1
+spec_map "$fresh"
+result=$?
+if [ "$result" -eq 2 ]; then exit 2; fi
+[ "$result" -eq 0 ] || status=1
 
 if [ "$from_build" -eq 1 ] && [ "$skip_public_only" -eq 0 ]; then
     for module in $PUBLIC_ONLY_TARGETS; do

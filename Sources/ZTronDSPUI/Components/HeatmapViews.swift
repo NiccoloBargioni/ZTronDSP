@@ -23,6 +23,20 @@ import ZTronDSPMetal
 /// (its session is stopped, or its branch suspended) the view's display link is paused and it
 /// wakes nobody. A change of appearance costs one draw and uploads nothing.
 ///
+/// **Outside a SwiftUI scene (§8.3).** A component draws only while the scene phase it reads
+/// from the environment is `.active`. SwiftUI hands that phase to the scenes of an `App`. A
+/// host that is not a SwiftUI scene, a `UIHostingController` for one, hands none down: the
+/// view reads `.background` for as long as it lives, and draws nothing. Such a host has to
+/// hand the phase of its scene down itself, and again whenever it changes:
+///
+/// ```swift
+/// UIHostingController(rootView: SpectrogramView(feed: feed).environment(\.scenePhase, phase))
+/// ```
+///
+/// A component that has read nothing but `.background` by the time its feed is live says so
+/// once in the log (subsystem `com.zombietron.ztrondsp`, category `surface`). This holds for
+/// every component of the package, the waveform included.
+///
 /// Threading: main actor, like every view. Create the feed once, in state or in a model, not
 /// in a `body`.
 public struct HeatmapView: View, Equatable {

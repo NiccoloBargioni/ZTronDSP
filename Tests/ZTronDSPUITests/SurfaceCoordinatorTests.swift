@@ -281,10 +281,15 @@ struct SurfaceCoordinatorTests {
         layer.contentsScale = 3
         let adapter = MetalLayerAdapter(layer)
         #expect(layer.isOpaque == false, "what the renderers leave untouched is transparent")
-        let geometry = adapter.geometry
-        #expect(geometry?.modelSize == CGSize(width: 120, height: 80) && geometry?.scale == 3)
+        // The scale is the one handed in, the display's as SwiftUI reports it (SZ-2), never
+        // the layer's own: the Metal view rewrites `contentsScale` whenever its drawable is
+        // given a size by hand, and a size computed with it shrinks or grows with every frame.
+        let geometry = adapter.geometry(scale: 2)
+        #expect(geometry?.modelSize == CGSize(width: 120, height: 80) && geometry?.scale == 2)
         #expect(geometry?.presentationSize == CGSize(width: 120, height: 80) && geometry?.isAnimating == false && geometry?.isMoving == false)
-        #expect(geometry?.modelPixels == CGSize(width: 360, height: 240))
+        #expect(geometry?.modelPixels == CGSize(width: 240, height: 160), "two pixels to the point, whatever the layer's contentsScale says")
+        layer.contentsScale = 0.37
+        #expect(adapter.geometry(scale: 2)?.modelPixels == CGSize(width: 240, height: 160))
         adapter.setPresentsWithTransaction(true)
         #expect(layer.presentsWithTransaction)
         adapter.setPresentsWithTransaction(false)
@@ -293,12 +298,12 @@ struct SurfaceCoordinatorTests {
         let animation = CABasicAnimation(keyPath: "bounds.size")
         animation.duration = 10
         layer.add(animation, forKey: "resize")
-        #expect(adapter.geometry?.isAnimating == true && adapter.geometry?.isMoving == true)
+        #expect(adapter.geometry(scale: 2)?.isAnimating == true && adapter.geometry(scale: 2)?.isMoving == true)
         // The layer belongs to the view: once it is gone the adapter says so.
         let orphan = autoreleasepool { MetalLayerAdapter(CAMetalLayer()) }
         // The transaction that noted the layer's change lets go of it when it is committed.
         CATransaction.flush()
-        #expect(orphan.geometry == nil)
+        #expect(orphan.geometry(scale: 2) == nil)
         orphan.setPresentsWithTransaction(true)
     }
 
@@ -351,6 +356,70 @@ struct SurfaceCoordinatorTests {
         stage.show(.waveform(feed, appearance))
         #expect(stage.probe.updates == 2)
         stage.settle()
+    }
+
+    // MARK: A scene phase nobody supplied (§8.3)
+
+    /// SwiftUI hands the scene phase to the scenes of an `App` only. In a hosting controller
+    /// a view reads `.background` for as long as the host does not hand the phase down, and
+    /// a surface there never draws. It says so, in the log, once: when its feed is live and
+    /// it has read no other phase since it was made.
+    @Test func aSurfaceThatOnlyEverReadTheBackgroundPhaseSaysSoOnceWhenItsFeedIsLive() async throws {
+        let live = try await LiveFeed(.heatmap)
+        var stage = try await Stage(live.content, isPresented: false, isSceneInBackground: true)
+        stage.updateAgain()
+        #expect(stage.coordinator.phaseNotices == 0, "nothing to say while there is nothing to show")
+        try await live.start()
+        #expect(stage.coordinator.phaseNotices == 1, "said when the feed became live")
+        // Once for the surface: not when the feed stops and starts, not with new data, not
+        // with another update, not with another feed.
+        await live.send(0 ..< 3)
+        await live.setBranchActive(false)
+        await live.setBranchActive(true)
+        stage.updateAgain()
+        let other = try await LiveFeed(.heatmap)
+        try await other.start()
+        stage.show(other.content)
+        #expect(stage.coordinator.phaseNotices == 1)
+        #expect(stage.settle() == 0 && stage.probe.draws == 0, "and it draws nothing: it is not presented")
+        await live.stop()
+        await other.stop()
+    }
+
+    /// A feed that is live already when the surface is made under `.background`: said at
+    /// once.
+    @Test func aSurfaceMadeUnderTheBackgroundPhaseOnALiveFeedSaysSoAtOnce() async throws {
+        let live = try await LiveFeed(.waveform)
+        try await live.start()
+        let stage = try await Stage(live.content, isPresented: false, isSceneInBackground: true)
+        #expect(stage.coordinator.phaseNotices == 1)
+        await live.stop()
+    }
+
+    /// A surface that has read any other phase knows that a phase is supplied: `.background`
+    /// is then what it says, and nothing is logged, whenever the feed is live.
+    @Test func aSurfaceThatReadAnotherPhaseSaysNothing() async throws {
+        // Made in an active scene, which then goes to the background with a live feed.
+        let live = try await LiveFeed(.heatmap)
+        try await live.start()
+        var stage = try await Stage(live.content)
+        stage.setPresented(false)
+        stage.setSceneInBackground(true)
+        await live.setBranchActive(false)
+        await live.setBranchActive(true)
+        #expect(stage.coordinator.phaseNotices == 0)
+        await live.stop()
+        // Made under `.background`, and told another phase before its feed is live.
+        let later = try await LiveFeed(.heatmap)
+        var other = try await Stage(later.content, isPresented: false, isSceneInBackground: true)
+        other.setSceneInBackground(false)
+        other.setSceneInBackground(true)
+        try await later.start()
+        #expect(other.coordinator.phaseNotices == 0)
+        await later.stop()
+        // A feed that is never live gives nothing to say.
+        let still = try await Stage(.heatmap(try heatmap(), HeatmapAppearance()), isPresented: false, isSceneInBackground: true)
+        #expect(still.coordinator.phaseNotices == 0)
     }
 
     /// A coordinator shows one kind of feed for its whole life; content of the other kind

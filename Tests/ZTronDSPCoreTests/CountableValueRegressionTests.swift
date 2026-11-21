@@ -416,9 +416,9 @@ struct CountableValueRegressionTests {
     }
 
     /// The time a new stage settles for is the sum of what its kernels and nodes say, capped at
-    /// one second (SWAP-2, ACT-7). The old expressions added the figures as they came:
-    /// `box.kernel.latency_frames + box.kernel.settling_frames` in 32 bits, and
-    /// `node.latencyFrames + node.settlingFrames`.
+    /// one second (SWAP-2); a switch runs a stage for its latency and for that (ACT-7). The old
+    /// expressions added the figures as they came: `box.kernel.latency_frames +
+    /// box.kernel.settling_frames` in 32 bits, and `node.latencyFrames + node.settlingFrames`.
     @Test func settlingTimesThatDoNotAddUpInTheirOwnTypeAreASecond() throws {
         #expect(UInt32(1).addingReportingOverflow(.max).overflow && Int.max.addingReportingOverflow(Int.max).overflow)
         let environment = DSPEnvironment(sampleRate: 48_000, channelCount: 1, blockSize: 64)
@@ -436,7 +436,7 @@ struct CountableValueRegressionTests {
         }
         // Inside a switched group: what the group runs for before it is faded in.
         let kernel = try plan(Pipeline { ZTronDSPCore.Group(isActive: StateBox(true).binding) { SlowToSettle(); TestLate(latency: 0, chunk: 64) } })
-        #expect(preroll(kernel) == 48_000, "a kernel that says 2³² frames in all: \(String(describing: preroll(kernel)))")
+        #expect(preroll(kernel) == 48_001, "a kernel that says 2³² frames in all, one of them latency: \(String(describing: preroll(kernel)))")
         let node = try plan(Pipeline { ZTronDSPCore.Group(isActive: StateBox(true).binding) { SlowNode(seconds: 0, frames: .max) } })
         #expect(preroll(node) == 48_000, "a node that says twice the largest count: \(String(describing: preroll(node)))")
 

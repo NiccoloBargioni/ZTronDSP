@@ -662,7 +662,9 @@ swift.method           SavitzkyGolay.lower(_:) : func lower(_ context: inout Low
 swift.method           SecondOrderSections.frequencyResponse(at:) : func frequencyResponse(at frequencies: [Double]) throws(DSPError) -> [Complex]
 swift.method           SecondOrderSections.groupDelay(at:) : func groupDelay(at frequencies: [Double]) throws(DSPError) -> [Double?]
 swift.method           SecondOrderSections.recommendedPrecision() : func recommendedPrecision() throws(DSPError) -> BiquadPrecision
+swift.method           SecondOrderSections.recommendedPrecision(accelerated:channelCount:blockFrames:) : func recommendedPrecision(accelerated: Bool, channelCount: Int, blockFrames: Int) throws(DSPError) -> BiquadPrecision
 swift.method           SecondOrderSections.singleVersusDoubleDeviation() : func singleVersusDoubleDeviation() throws(DSPError) -> Double
+swift.method           SecondOrderSections.singleVersusDoubleDeviation(accelerated:channelCount:blockFrames:) : func singleVersusDoubleDeviation(accelerated: Bool, channelCount: Int, blockFrames: Int) throws(DSPError) -> Double
 swift.method           SecondOrderSections.spreadingGain() : func spreadingGain() -> SecondOrderSections
 swift.method           SecondOrderSections.zeroPoleGain() : func zeroPoleGain() -> ZeroPoleGain
 swift.method           SecondOrderSections.zeroPoleGain(sampleRate:) : func zeroPoleGain(sampleRate: Double) throws(DSPError) -> ZeroPoleGain

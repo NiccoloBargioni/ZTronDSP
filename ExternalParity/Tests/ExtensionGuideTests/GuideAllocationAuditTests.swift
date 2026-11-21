@@ -14,6 +14,15 @@ import ZTronDSPTesting
 struct GuideAllocationAuditTests {
     let noise = TestSignal.whiteNoise(count: 512, seed: 23, amplitude: 0.5)
 
+    /// Whether the build is optimised: a first use is held there, where the stages run in an app.
+    static var isOptimised: Bool {
+        #if DEBUG
+        false
+        #else
+        true
+        #endif
+    }
+
     @Test func theProcessorOfRowTwoRunsAThousandBlocksWithoutAllocating() throws {
         // snippet:begin audit-processor
         let processor = try DespikeProcessor(channelCount: 2)
@@ -32,6 +41,30 @@ struct GuideAllocationAuditTests {
         }
         // snippet:end audit-processor
         #expect(buffer.array(ofChannel: 1).allSatisfy { $0.isFinite })
+    }
+
+    @Test func theNodesOfTheGuideRunOnTheTestsThreadWithoutAllocating() throws {
+        // A node runs inside a plan; this one runs block by block on the test's own thread.
+        // snippet:begin audit-running
+        let flux = CollectingCount<Novelty>()
+        let counts = try expectNoAllocationsRunning(
+            Pipeline {
+                Despike()
+                FeedbackComb(delay: 0.001, feedback: 0.5)
+                Tap { STFT(frame: 1_024, hop: 256); Magnitude(); PeakNormalize(); SpectralFlux(); Emit(to: flux) }
+            }, blockSize: 256, "rows 1 to 4 on the test's thread")
+        // snippet:end audit-running
+        #expect(counts.allocations == 0 && flux.frames >= 1_000, "\(counts), \(flux.frames) values of flux")
+    }
+
+    @Test(.enabled(if: GuideAllocationAuditTests.isOptimised, "a first use is held in an optimised build"))
+    func theProcessorOfRowTwoAllocatesNothingFromItsFirstBlock() async throws {
+        // The audit opens before the first block: whatever `make` left for the first `process`
+        // to instantiate would be counted here. Scripts/external-parity.sh runs this test once
+        // more by itself, in a process of its own, in Release.
+        // snippet:begin audit-first-block
+        try await expectNoAllocationsOnTheEngineThread(Pipeline { Despike() }, blocks: 200, warmUp: 0, "Despike from its first block")
+        // snippet:end audit-first-block
     }
 
     @Test func theKernelOfRowThreeRunsAThousandBlocksWithoutAllocating() throws {

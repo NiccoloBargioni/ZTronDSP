@@ -185,6 +185,39 @@ final class ManualClock: FrameClock {
     }
 }
 
+/// The end of a run-loop turn in the test's hands (the seam `TurnEnd`): a frame of a size
+/// transition is made when the test ends the turn, as the run loop does before it waits.
+@MainActor
+final class ManualTurn: TurnEnd {
+    var onEnd: (@MainActor () -> Void)?
+    /// True from a request to the end of the turn that answers it.
+    private(set) var isRequested = false
+    /// Requests that were made while none was pending.
+    private(set) var requests = 0
+    private(set) var isInvalidated = false
+
+    func request() {
+        guard !isRequested, !isInvalidated else { return }
+        isRequested = true
+        requests += 1
+    }
+
+    /// The run loop is about to wait: the call that was asked for is made. Returns whether
+    /// one was asked for.
+    @discardableResult
+    func end() -> Bool {
+        guard isRequested, !isInvalidated else { return false }
+        isRequested = false
+        onEnd?()
+        return true
+    }
+
+    func invalidate() {
+        isInvalidated = true
+        isRequested = false
+    }
+}
+
 // MARK: The surface and the layer a test stands in for
 
 /// An off-screen texture in the place of the Metal view (the seam `MetalSurface`): level 1 of
@@ -205,6 +238,8 @@ final class OffscreenSurface: MetalSurface {
     private(set) var drawnSizes: [CGSize] = []
     /// Whether the layer presented with its transaction at every frame that was drawn.
     private(set) var drawnWithTransaction: [Bool] = []
+    /// A view that has no drawable to hand out, whatever its size, when a test says so.
+    var handsOutNoDrawable = false
 
     var drawableSize: CGSize {
         didSet { if drawableSize != oldValue { target = nil } }
@@ -216,7 +251,7 @@ final class OffscreenSurface: MetalSurface {
     }
 
     func draw() {
-        guard let coordinator, drawableSize.width >= 1, drawableSize.height >= 1 else { return }
+        guard let coordinator, !handsOutNoDrawable, drawableSize.width >= 1, drawableSize.height >= 1 else { return }
         drawablesTaken += 1
         if target == nil { target = try? OffscreenTarget(context: context, width: Int(drawableSize.width), height: Int(drawableSize.height)) }
         guard let target else { return }
@@ -246,23 +281,43 @@ final class OffscreenSurface: MetalSurface {
     }
 }
 
-/// A layer whose geometry the test writes (the seam `SurfaceLayer`, WP-823).
+/// A layer whose sizes the test writes (the seam `SurfaceLayer`, WP-823). Like a real layer
+/// it knows no scale: the geometry it gives carries the scale the surface asks with.
 @MainActor
 final class ScriptedLayer: SurfaceLayer {
-    var geometry: LayerGeometry?
+    private var model: CGSize
+    private var presentation: CGSize
+    private var isAnimating = false
+    /// True once the layer is gone: it has no geometry any more.
+    private(set) var isGone = false
     private(set) var presentsWithTransaction = false
+    /// The scales the surface asked with, in order.
+    private(set) var askedScales: [CGFloat] = []
 
     func setPresentsWithTransaction(_ presents: Bool) {
         presentsWithTransaction = presents
     }
 
-    init(size: CGSize, scale: CGFloat = 2) {
-        geometry = LayerGeometry(modelSize: size, presentationSize: size, isAnimating: false, scale: scale)
+    init(size: CGSize) {
+        model = size
+        presentation = size
+    }
+
+    func geometry(scale: CGFloat) -> LayerGeometry? {
+        askedScales.append(scale)
+        return isGone ? nil : LayerGeometry(modelSize: model, presentationSize: presentation, isAnimating: isAnimating, scale: scale)
     }
 
     /// The layer is shown at `presentation` while its own size is `model`.
     func show(_ presentation: CGSize, model: CGSize, animating: Bool) {
-        geometry = LayerGeometry(modelSize: model, presentationSize: presentation, isAnimating: animating, scale: geometry?.scale ?? 2)
+        self.presentation = presentation
+        self.model = model
+        isAnimating = animating
+    }
+
+    /// The layer goes away with its view.
+    func vanish() {
+        isGone = true
     }
 }
 
@@ -483,39 +538,67 @@ struct LiveFeed {
 struct Stage {
     let context: MetalContext
     let clock: ManualClock
+    /// The ends of the run-loop turns, which the test decides.
+    let turns: ManualTurn
     let surface: OffscreenSurface
     let probe: RenderProbe
     let coordinator: SurfaceCoordinator
     private(set) var input: SurfaceInput
 
-    /// - Parameter probe: the probe the surface counts into; `nil` gives it one of its own.
-    ///   A source-fed component counts its surface and its attachment into one probe.
+    /// - Parameters:
+    ///   - probe: the probe the surface counts into; `nil` gives it one of its own. A
+    ///     source-fed component counts its surface and its attachment into one probe.
+    ///   - displayScale: pixels per point of the display, as SwiftUI would report them.
+    ///   - isSceneInBackground: whether the scene phase the view reads is `.background`.
     init(
         _ content: SurfaceContent, maximumFrameRate: Int = 60, isPresented: Bool = true, size: CGSize = CGSize(width: 48, height: 24),
-        probe: RenderProbe? = nil
+        probe: RenderProbe? = nil, displayScale: CGFloat = 2, isSceneInBackground: Bool = false
     ) async throws {
         context = try await sharedContext()
         clock = ManualClock()
+        turns = ManualTurn()
         self.probe = probe ?? RenderProbe()
         surface = OffscreenSurface(context: context, size: size)
-        input = SurfaceInput(content: content, maximumFrameRate: maximumFrameRate, isPresented: isPresented, size: nil, probe: self.probe)
-        coordinator = SurfaceCoordinator(input: input, clock: clock, context: context)
+        input = SurfaceInput(content: content, maximumFrameRate: maximumFrameRate, isPresented: isPresented, size: nil, probe: self.probe,
+                             displayScale: displayScale, isSceneInBackground: isSceneInBackground)
+        coordinator = SurfaceCoordinator(input: input, clock: clock, turns: turns, context: context)
         surface.coordinator = coordinator
         coordinator.attach(surface)
     }
 
-    /// One display tick; returns whether the clock delivered it.
+    /// One display tick; returns whether the clock delivered it. The turn the tick came in
+    /// is not over: what SwiftUI does after the tick comes next, then ``endTurn()``.
     @discardableResult
     func tick() -> Bool {
         clock.fire()
     }
 
-    /// Ticks until the display link pauses; returns the ticks it took. A link that never
+    /// The run loop is about to wait: a frame the surface asked to make at the end of the
+    /// turn is made. Returns whether the surface had asked.
+    @discardableResult
+    func endTurn() -> Bool {
+        turns.end()
+    }
+
+    /// One whole frame of the display in which nothing else happens: the tick, and the end
+    /// of its turn. Returns whether the clock delivered the tick.
+    @discardableResult
+    func frame() -> Bool {
+        let ticked = clock.fire()
+        turns.end()
+        return ticked
+    }
+
+    /// Frames until the display link pauses; returns the ticks it took. A link that never
     /// pauses, because the feed is live, is given `limit` ticks.
     @discardableResult
     func settle(limit: Int = 8) -> Int {
         var ticks = 0
-        while ticks < limit, clock.fire() { ticks += 1 }
+        turns.end()
+        while ticks < limit, clock.fire() {
+            turns.end()
+            ticks += 1
+        }
         return ticks
     }
 
@@ -538,6 +621,18 @@ struct Stage {
     /// The size probe of the SwiftUI wrapper reports `size`.
     mutating func report(size: CGSize) {
         input.size = size
+        coordinator.update(input)
+    }
+
+    /// SwiftUI reports another scale of the display.
+    mutating func setDisplayScale(_ scale: CGFloat) {
+        input.displayScale = scale
+        coordinator.update(input)
+    }
+
+    /// The scene phase the view reads is `.background`, or it is not.
+    mutating func setSceneInBackground(_ isBackground: Bool) {
+        input.isSceneInBackground = isBackground
         coordinator.update(input)
     }
 

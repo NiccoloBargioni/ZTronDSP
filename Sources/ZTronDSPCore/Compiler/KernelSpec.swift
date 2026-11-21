@@ -85,12 +85,29 @@ public struct AnalysisStep: Hashable, Sendable {
 /// `make` receives the channel count and the sample rate at the stage's position and returns
 /// a `ztd_kernel_t` whose state it allocated; the plan owns the kernel from then on and frees
 /// it through its `destroy`. A kernel with its own code is a fusion barrier (EXT-2).
+///
+/// A description has two parts (§5.5.4). Its structure, the name, the key, the rate ratio, the
+/// latency and the number of values, says which kernel it is: another structure is another
+/// kernel, made anew. Its `values` say what the kernel is set to: other values of the same
+/// number are sent to the kernel that runs, and nothing is compiled.
+///
+/// An immutable value, usable on any thread; `make` runs on the control context.
 public struct CustomKernel: Hashable, Sendable {
     /// The name of the stage, as errors and the description of the plan show it.
     public let name: String
     /// What tells this kernel from another of the same name: two descriptions with equal names
     /// and keys are the same stage, and an update keeps the kernel's state (SWAP-1).
     public let key: AnyStrategy
+    /// The stage's continuous values, in the order the kernel takes them: a gain, the
+    /// coefficients of a filter (§5.5.4). They stand outside the identity. When an update
+    /// changes them and nothing else, the kernel that runs is handed the new ones through its
+    /// `command` entry, on the analysis thread at a block boundary, as
+    /// `ZTD_COMMAND_SET_VALUES` with `count` doubles at `values` (memory the engine owns and
+    /// frees off that thread; the kernel copies what it needs). The kernel keeps its state,
+    /// and a kernel that is moved into a later plan keeps the values it was sent last. A
+    /// change of their number is a change of structure. Empty for a kernel without values.
+    /// Usable on any thread.
+    public let values: [Double]
     /// Output frames per input frame, as a ratio: 1 and 1 for a kernel that keeps the rate.
     public let interpolation: Int
     /// The denominator of that ratio.
@@ -98,8 +115,11 @@ public struct CustomKernel: Hashable, Sendable {
     /// The delay the kernel adds, in input frames (REAL-5). It must equal the
     /// `latency_frames` of the kernel `make` returns.
     public let latencyFrames: Int
+    /// Makes the kernel, set to the values of this description.
     let make: @Sendable (_ channelCount: Int, _ sampleRate: Double, _ maximumFrames: Int) -> ztd_kernel_t
 
+    /// A kernel without values: everything that tells it from another is in `key`.
+    ///
     /// - Parameter make: creates the kernel for the channel count, the sample rate and the
     ///   largest block at the stage's position. Control context; may allocate. A kernel whose
     ///   `process` is null is taken as a failed allocation.
@@ -109,15 +129,47 @@ public struct CustomKernel: Hashable, Sendable {
     ) {
         self.name = name
         self.key = AnyStrategy(key)
+        self.values = []
         self.interpolation = max(interpolation, 1)
         self.decimation = max(decimation, 1)
         self.latencyFrames = max(latencyFrames, 0)
         self.make = make
     }
 
+    /// A kernel with values that can change while it runs (§5.5.4).
+    ///
+    /// Any thread, typically the control context in `lower(_:)`; allocates (the description
+    /// keeps a copy of `values`). Nothing of `make` runs here.
+    ///
+    /// - Parameters:
+    ///   - key: the structure of the stage, without its values: an order, a family, a strategy.
+    ///   - values: the stage's continuous values; see ``values``.
+    ///   - make: creates the kernel for the channel count, the sample rate and the largest
+    ///     block at the stage's position, set to `values`. Control context; may allocate. A
+    ///     kernel whose `process` is null is taken as a failed allocation. When `values` is
+    ///     not empty the kernel has a `command` entry that takes `ZTD_COMMAND_SET_VALUES`:
+    ///     a plan with a kernel that could never be given its values is refused.
+    public init(
+        name: String, key: some Hashable & Sendable, values: [Double], interpolation: Int = 1, decimation: Int = 1, latencyFrames: Int = 0,
+        make: @escaping @Sendable (_ channelCount: Int, _ sampleRate: Double, _ maximumFrames: Int, _ values: [Double]) -> ztd_kernel_t
+    ) {
+        self.name = name
+        self.key = AnyStrategy(key)
+        self.values = values
+        self.interpolation = max(interpolation, 1)
+        self.decimation = max(decimation, 1)
+        self.latencyFrames = max(latencyFrames, 0)
+        self.make = { channelCount, sampleRate, maximumFrames in make(channelCount, sampleRate, maximumFrames, values) }
+    }
+
     public static func == (lhs: CustomKernel, rhs: CustomKernel) -> Bool {
-        lhs.name == rhs.name && lhs.key == rhs.key && lhs.interpolation == rhs.interpolation && lhs.decimation == rhs.decimation
-            && lhs.latencyFrames == rhs.latencyFrames
+        lhs.hasSameStructure(as: rhs) && lhs.values == rhs.values
+    }
+
+    /// True when the two describe one kernel, set to the same values or to others (§5.5.4).
+    func hasSameStructure(as other: CustomKernel) -> Bool {
+        name == other.name && key == other.key && interpolation == other.interpolation && decimation == other.decimation
+            && latencyFrames == other.latencyFrames && values.count == other.values.count
     }
 
     public func hash(into hasher: inout Hasher) {
@@ -127,17 +179,36 @@ public struct CustomKernel: Hashable, Sendable {
 }
 
 /// A sample-domain stage written in Swift (§5.11.1): a factory for a `SampleProcessor`.
+///
+/// As for a `CustomKernel`, the name, the key, the latency and the number of values say which
+/// processor it is, and the `values` what it is set to (§5.5.4).
+///
+/// An immutable value, usable on any thread; `make` runs on the control context.
 public struct CustomProcessor: Hashable, Sendable {
     /// The name of the stage, as errors and the description of the plan show it.
     public let name: String
     /// What tells this processor from another of the same name: two descriptions with equal
     /// names and keys are the same stage, and an update keeps the processor (SWAP-1).
     public let key: AnyStrategy
+    /// The stage's continuous values, in the order the processor takes them (§5.5.4). They
+    /// stand outside the identity. When an update changes them and nothing else, the
+    /// processor that runs is handed the new ones through
+    /// `AdjustableSampleProcessor.setValues(_:)`, on the analysis thread between two blocks;
+    /// it keeps its state, and a processor that is moved into a later plan keeps the values
+    /// it was sent last. A change of their number is a change of structure. Empty for a
+    /// processor without values. Usable on any thread.
+    public let values: [Double]
     /// The delay the processor adds, in frames (REAL-5). It must equal the `latencyFrames`
     /// of the processor `make` returns.
     public let latencyFrames: Int
+    /// Makes the processor, set to the values of this description.
     let make: @Sendable (DSPEnvironment) throws(DSPError) -> any SampleProcessor
+    /// The same for a description that states values: the processor as the one that takes
+    /// new values while it runs. `nil` for a description without values.
+    let makeAdjustable: (@Sendable (DSPEnvironment) throws(DSPError) -> any AdjustableSampleProcessor)?
 
+    /// A processor without values: everything that tells it from another is in `key`.
+    ///
     /// - Parameter make: creates the processor for the environment at the stage's position.
     ///   Control context; may allocate and throw.
     public init(
@@ -146,12 +217,41 @@ public struct CustomProcessor: Hashable, Sendable {
     ) {
         self.name = name
         self.key = AnyStrategy(key)
+        self.values = []
         self.latencyFrames = max(latencyFrames, 0)
         self.make = make
+        self.makeAdjustable = nil
+    }
+
+    /// A processor with values that can change while it runs (§5.5.4).
+    ///
+    /// Any thread, typically the control context in `lower(_:)`; allocates (the description
+    /// keeps a copy of `values`). Nothing of `make` runs here.
+    ///
+    /// - Parameters:
+    ///   - key: the structure of the stage, without its values.
+    ///   - values: the stage's continuous values; see ``values``.
+    ///   - make: creates the processor for the environment at the stage's position, set to
+    ///     `values`. Control context; may allocate and throw.
+    public init(
+        name: String, key: some Hashable & Sendable, values: [Double], latencyFrames: Int = 0,
+        make: @escaping @Sendable (DSPEnvironment, _ values: [Double]) throws(DSPError) -> any AdjustableSampleProcessor
+    ) {
+        self.name = name
+        self.key = AnyStrategy(key)
+        self.values = values
+        self.latencyFrames = max(latencyFrames, 0)
+        self.make = { (environment: DSPEnvironment) throws(DSPError) -> any SampleProcessor in try make(environment, values) }
+        self.makeAdjustable = { (environment: DSPEnvironment) throws(DSPError) -> any AdjustableSampleProcessor in try make(environment, values) }
     }
 
     public static func == (lhs: CustomProcessor, rhs: CustomProcessor) -> Bool {
-        lhs.name == rhs.name && lhs.key == rhs.key && lhs.latencyFrames == rhs.latencyFrames
+        lhs.hasSameStructure(as: rhs) && lhs.values == rhs.values
+    }
+
+    /// True when the two describe one processor, set to the same values or to others (§5.5.4).
+    func hasSameStructure(as other: CustomProcessor) -> Bool {
+        name == other.name && key == other.key && latencyFrames == other.latencyFrames && values.count == other.values.count
     }
 
     public func hash(into hasher: inout Hasher) {
@@ -249,12 +349,18 @@ public enum KernelSpec: Hashable, Sendable {
 
 extension KernelSpec {
     /// The values of the spec as a command carries them to the kernel that runs it (§5.5.4,
-    /// and the kernels' documentation): floats for gains and taps, doubles for coefficients,
-    /// in memory the caller owns and frees once the command has been applied. `nil` for a
-    /// spec whose values are its structure: such a kernel takes none by command.
+    /// and the kernels' documentation): floats for gains and taps, doubles for coefficients
+    /// and for the values of a kernel or a processor of the caller's own, in memory the
+    /// caller owns and frees once the command has been applied. `nil` for a spec whose values
+    /// are its structure: such a kernel takes none by command.
     func commandPayload() -> (pointer: UnsafeMutableRawPointer, count: Int)? {
         func floats(_ values: [Float]) -> (UnsafeMutableRawPointer, Int) {
             let pointer = UnsafeMutablePointer<Float>.allocate(capacity: max(values.count, 1))
+            pointer.initialize(from: values, count: values.count)
+            return (UnsafeMutableRawPointer(pointer), values.count)
+        }
+        func doubles(_ values: [Double]) -> (UnsafeMutableRawPointer, Int) {
+            let pointer = UnsafeMutablePointer<Double>.allocate(capacity: max(values.count, 1))
             pointer.initialize(from: values, count: values.count)
             return (UnsafeMutableRawPointer(pointer), values.count)
         }
@@ -266,11 +372,12 @@ extension KernelSpec {
         case .fir(let taps, _):
             return floats(taps)
         case .biquad(let sections, _):
-            let values = sections.flatMap(\.coefficients)
-            let pointer = UnsafeMutablePointer<Double>.allocate(capacity: max(values.count, 1))
-            pointer.initialize(from: values, count: values.count)
-            return (UnsafeMutableRawPointer(pointer), values.count)
-        case .decimator, .interpolator, .subsample, .zeroStuff, .alphaBeta, .custom, .processor, .analysis:
+            return doubles(sections.flatMap(\.coefficients))
+        case .custom(let kernel):
+            return kernel.values.isEmpty ? nil : doubles(kernel.values)
+        case .processor(let processor):
+            return processor.values.isEmpty ? nil : doubles(processor.values)
+        case .decimator, .interpolator, .subsample, .zeroStuff, .alphaBeta, .analysis:
             return nil
         }
     }

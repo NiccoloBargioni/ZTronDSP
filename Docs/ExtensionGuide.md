@@ -7,9 +7,12 @@ Every example here is real code. It lives in `ExternalParity/`, a package of its
 repository that depends on ZTronDSP by path and on its three products only, as an app does: no
 `@testable import`, no `@_spi`, no internal symbol. Each example is compiled there, in Debug and
 in Release, and run by a test there. The code blocks of this guide are not copies that can go
-stale: `Scripts/external-parity.sh --step guide` fails when a block differs by one character from
-the marked region of the file it names. The same script builds the examples, runs their tests,
-their must-not-compile fixtures and their allocation audits (CI gate 9).
+stale: this file is generated from `Docs/ExtensionGuide.template.md`, which holds the text and
+names each region, by `python3 Scripts/lib/extension_guide.py`; edit the template, never this
+file. `Scripts/external-parity.sh --step guide` fails when a block differs by one character from
+the marked region of the file it names, or the file from what the template makes. The same
+script builds the examples, runs their tests, their must-not-compile fixtures and their
+allocation audits (CI gate 9).
 
 | Row of §5.11.1 | Example | Source | Tested by |
 |---|---|---|---|
@@ -65,7 +68,9 @@ dependencies of its targets. Nothing else is needed, and nothing else is used he
 
 `ZTronDSP` is everything but the views; `ZTronDSPUI` is the views; `ZTronDSPTesting` is what the
 stock stages are tested with (EXT-3). A C target that depends on the product `ZTronDSP` includes
-the kernel ABI by name, `#include "ztd_kernel.h"`.
+the kernel ABI by name, `#include "ztd_kernel.h"`, and, to call vDSP from non-blocking code,
+`#include "ztd_vdsp.h"`: the vDSP entry points ZTronDSP's own kernels call, declared
+`ZTD_NONBLOCKING`, each with the audit that holds the claim (row 3).
 
 **The four contexts.** Every declaration of ZTronDSP says where it may be called (VIS-2), and
 every example below says where each of its parts runs. There are four places:
@@ -207,11 +212,11 @@ again the node starts cold (ACT-10). Both are tested.
 
 | | |
 |---|---|
-| Conform to, or use | `SequenceStage` for the description; `SampleProcessor` for what runs. `lower(_:)` emits `.processor(CustomProcessor(…))` |
-| Runs on | `lower(_:)` and the closure that makes the processor: control context. `process(_:)` and `reset()`: analysis thread |
-| Supplies | `process(_:)` on a block, in place; `reset()`; the latency; a `key` |
+| Conform to, or use | `SequenceStage` for the description; `SampleProcessor` for what runs, refined by `OutOfPlaceSampleProcessor` for a processor that reads one block and writes another, and by `AdjustableSampleProcessor` for one that takes values while it runs. `lower(_:)` emits `.processor(CustomProcessor(…))` |
+| Runs on | `lower(_:)` and the closure that makes the processor: control context. `process(_:)`, `process(_:into:)`, `setValues(_:)` and `reset()`: analysis thread |
+| Supplies | `process(_:)` on a block, in place, or `process(_:into:)` out of place; `reset()`; the latency; a `key`; the values, if the stage has any, and `setValues(_:)` |
 | Latency and settling | `latencyFrames` is stated twice, by the `CustomProcessor` description (for the environment downstream) and by the processor that runs; a plan in which the two differ is refused. 1 frame here. `settlingFrames`: 2 here |
-| Threading contract | The stage is an immutable value, usable on any thread. The processor is created on the control context, where it allocates its memory once; `process` and `reset` belong to the analysis thread, one thread at a time, under RT-2, with `while` loops |
+| Threading contract | The stage is an immutable value, usable on any thread. The processor is created on the control context, where it allocates its memory once and meets whatever its first `process` needs; `process`, `setValues` and `reset` belong to the analysis thread, one thread at a time, under RT-2, with `while` loops |
 
 `Despike` replaces every sample by the median of itself and its two neighbours: not a linear
 filter, so no stock kernel computes it. A sequence stage runs on any sampled sequence (samples,
@@ -240,7 +245,15 @@ public struct Despike: SequenceStage {
         // runs: a plan in which the two differ is refused.
         context.emit(.processor(CustomProcessor(name: "Despike", key: channels, latencyFrames: 1) {
             _ throws(DSPError) -> any SampleProcessor in
-            try DespikeProcessor(channelCount: channels)
+            let processor = try DespikeProcessor(channelCount: channels)
+            // `make` runs on the control context. One block of silence here makes whatever the
+            // first `process` asks of the Swift runtime happen now, and not on the analysis
+            // thread (RT-2); the reset forgets the block.
+            let scratch = try AudioBuffer(channelCount: max(channels, 1), capacity: 1)
+            var block = scratch.block()
+            processor.process(&block)
+            processor.reset()
+            return processor
         }))
     }
 }
@@ -297,6 +310,11 @@ public final class DespikeProcessor: SampleProcessor {
 }
 ```
 
+`make` runs on the control context, and so does the block of silence it hands the processor:
+whatever a first `process` asks of the Swift runtime (the metadata of a generic type, a protocol
+conformance it looks up) happens there, not on the analysis thread, and the reset forgets the
+block. "Checking what you wrote" shows how to hold that.
+
 What the stage did not write and has: its latency is in `session.environment.latency` (REAL-5).
 Switched off, the signal passes through a delay of the stage's latency, so nothing downstream
 moves in time (ACT-8); off and on are cross-fades of 10 ms, and on the way back the processor is
@@ -317,19 +335,79 @@ extension PipelineBuilder {
 }
 ```
 
-A processor works on the block in place, and a kernel is handed an input and an output, so the
-plan copies each block from the one to the other before it calls the processor. For a stage as
-small as a gain that copy costs about what the multiplication costs: the parity suite measures a
-gain written this way at 1.7 to 1.8 times the stock gain. Where a stage has to run within 5 % of
-a stock kernel, write it on the kernel ABI (the next row), where the same gain measures 0.9 times.
+A `SampleProcessor` works on the block in place, and a kernel is handed an input and an output,
+so the plan copies each block from the one to the other before it calls the processor. For a
+stage as small as a gain that copy costs about what the multiplication costs: written in place,
+the gain of the parity suite measured 1.7 to 1.8 times the stock gain. A processor that also
+conforms to `OutOfPlaceSampleProcessor` is handed both blocks, and nothing is copied in front of
+it. Written so, the gain of the parity suite takes ×1.01 to ×1.08 the stock gain's time on
+blocks of 512 frames, round by round, in nine launches of the suite's speed check on
+2026-11-21: at the 5 % bound of §5.7, and over it in five of the nine. What is left is the cost
+of calling a processor, since the same multiplication on the kernel ABI is within the bound;
+the suite states the miss as a known issue (CR-025 item 1). That is how `ExternalGain` is
+written:
+
+<!-- snippet: ExternalParity/Sources/ExternalStages/Kernels/ExternalGain.swift#gain-out-of-place -->
+```swift
+    /// Writes the input, multiplied, into the output: what a plan calls, with nothing copied in
+    /// front of it. A channel beyond the factors passes unchanged. Analysis thread;
+    /// allocation-free.
+    public func process(_ input: AudioBlock, into output: inout AudioBlock) {
+        let frames = input.frameCount
+        var channel = 0
+        while channel < input.channelCount, channel < output.channelCount {
+            let source = UnsafePointer(input.channel(channel)), result = output.channel(channel)
+            if channel < channelCount {
+                apply(channel, from: source, into: result, frames: frames)
+            } else {
+                result.update(from: source, count: frames)
+            }
+            channel &+= 1
+        }
+    }
+
+    /// Takes new factors: one per channel, or one for every channel. Each channel moves from
+    /// the gain it is at to its new one over the ramp. Any other count is ignored. Analysis
+    /// thread, between two blocks; allocation-free.
+    public func setValues(_ values: UnsafeBufferPointer<Double>) {
+        guard let first = values.baseAddress, values.count == channelCount || values.count == 1 else { return }
+        var channel = 0
+        while channel < channelCount {
+            move(channel, to: Float(first[values.count == 1 ? 0 : channel]))
+            channel &+= 1
+        }
+    }
+```
+
+The same processor takes values while it runs, as the stock gain takes its amount (§5.5.4). Its
+description states them apart from its key, with `CustomProcessor(name:key:values:latencyFrames:make:)`;
+`make` is handed them and returns an `AdjustableSampleProcessor`. Another value of the same
+structure (the name, the key, the latency, the number of values) is then a value update: no plan
+is compiled, and the processor that runs is handed the new values through `setValues(_:)`, on the
+analysis thread between two blocks, and keeps its state. A processor that is moved into a later
+plan keeps the values it was sent last. The gain moves to a new amount over its ramp, frame by
+frame as the stock gain kernel does, so a sink behind it hears every frame (CLICK-1); another
+ramp is another processor:
+
+<!-- snippet: ExternalParity/Sources/ExternalStages/Kernels/ExternalGain.swift#gain-values -->
+```swift
+        // The factors are the processor's values, apart from its key: another amount is sent to
+        // the processor that runs, which ramps to it; another ramp is another processor. Each
+        // factor is a Float, held exactly by the Double that carries it.
+        let frames = Int(rampFrames)
+        context.emit(.processor(CustomProcessor(name: "ExternalGain", key: Key(rampFrames: frames), values: factors.map { Double($0) }, latencyFrames: 0) {
+            _, values throws(DSPError) -> any AdjustableSampleProcessor in
+            try ExternalGainProcessor(factors: values.map { Float($0) }, rampFrames: frames)
+        }))
+```
 
 ## 3. A sample-domain stage in C
 
 | | |
 |---|---|
-| Conform to, or use | `SequenceStage` with a `ztd_kernel_t`: `lower(_:)` emits `.custom(CustomKernel(…))`, whose closure returns the kernel. The ABI is `ztd_kernel.h`, a public header of the product `ZTronDSP` |
+| Conform to, or use | `SequenceStage` with a `ztd_kernel_t`: `lower(_:)` emits `.custom(CustomKernel(…))`, whose closure returns the kernel. The ABI is `ztd_kernel.h`, a public header of the product `ZTronDSP`; a kernel that calls vDSP from its non-blocking code includes `ztd_vdsp.h`, the audited list of the vDSP entry points declared `ZTD_NONBLOCKING` |
 | Runs on | The closure and the kernel's `destroy`: control context. The kernel's `process`, `command` and `reset`: analysis thread (the I/O thread too, should D-1 land) |
-| Supplies | The kernel table and its state: `process`, `reset`, `destroy`, `state`, `latency_frames`, `settling_frames`; `command` may stay null |
+| Supplies | The kernel table and its state: `process`, `reset`, `destroy`, `state`, `latency_frames`, `settling_frames`; `command`, which takes the values the description states (`CustomKernel(name:key:values:…)`), and may stay null for a kernel without values |
 | Latency and settling | `latency_frames` must equal the `latencyFrames` of the `CustomKernel`: 0 here. `settling_frames` is what a plan pre-rolls the kernel for before it is faded in: here the time an echo takes to decay by 100 dB |
 | Threading contract | Creation allocates everything, on the control context, and touches it, so that the analysis thread never takes a page fault. `process` and `reset` are declared `ZTD_NONBLOCKING` and belong to the analysis thread, one thread at a time. `destroy` is the only place the kernel frees: control context |
 
@@ -511,11 +589,56 @@ What the stage did not write and has: order checking, activation, and the pre-ro
 the comb is reset, runs with its output discarded for the 816 frames it declares (in whole
 blocks), and only then is faded in; the test holds the engine to that count.
 
-What it does not have: a kernel or a processor of your own is not sent values while it runs. A
-pipeline that differs from the running one in a value of such a stage holds another kernel, so
-the session compiles a plan, pre-rolls the new kernel and cross-fades to it, and a sink behind
-the stage receives nothing meanwhile. A stage that has to take a value in place, as a stock
-filter takes its coefficients, lowers to stock kernel specs (row 9).
+The comb keeps its feedback in its key, so another feedback is another kernel: the session
+compiles a plan, pre-rolls the new kernel and cross-fades to it, and a sink behind the stage hears
+nothing meanwhile. A kernel of your own can instead take values while it runs, as a stock filter
+takes its coefficients (§5.5.4). The description states them apart from its key, with
+`CustomKernel(name:key:values:…)`, and `make` is handed the values of the description. Another
+value of the same structure (the name, the key, the rate ratio, the latency, the number of
+values) then reaches the kernel that runs at a block boundary, as `ZTD_COMMAND_SET_VALUES` with
+`count` doubles at `values`: no plan is compiled, and nothing behind the stage misses a frame. A
+kernel that is moved into a later plan keeps the values it was sent last. The low-pass of the
+parity suite takes its coefficients that way, and keeps its memory:
+
+<!-- snippet: ExternalParity/Sources/ExternalStages/Kernels/ExternalLowPass.swift#lowpass-values -->
+```swift
+        // The coefficients are the kernel's values, apart from its key: another cutoff of the same
+        // order is sent to the kernel that runs (ZTD_COMMAND_SET_VALUES, 5 doubles per section),
+        // which keeps its memory. `make` is handed the values of the description.
+        let key = Key(sections: realised.sections.count, isDouble: isDouble, isAccelerated: isAccelerated)
+        context.emit(.custom(CustomKernel(name: "ExternalLowPass", key: key, values: coefficients, latencyFrames: 0) { channels, _, _, values in
+            extk_biquad_create(UInt32(max(channels, 0)), UInt32(values.count / 5), values, isDouble,
+                               isAccelerated ? ZTD_IMPLEMENTATION_ACCELERATE : ZTD_IMPLEMENTATION_NATIVE)
+        }))
+```
+
+<!-- snippet: ExternalParity/Sources/CExternalKernels/extk_biquad.c#biquad-command -->
+```c
+/* The values of the description, as the engine sends them at a block boundary: `count` doubles
+   at `values`, memory the engine owns. The coefficients are replaced; the memory is kept. A
+   command of another kind or count, or with no payload, is not for this kernel. */
+static void extk_biquad_command_double(void *state, const ztd_command_t *command) ZTD_NONBLOCKING {
+    extk_biquad_t *biquad = (extk_biquad_t *)state;
+    if (!command || command->kind != ZTD_COMMAND_SET_VALUES || !command->values) return;
+    if (command->count != 5 * biquad->sections) return;
+    memcpy(biquad->coefficients, command->values, (size_t)5 * biquad->sections * sizeof(double));
+}
+```
+
+It calls vDSP from its non-blocking functions through the public allow-list, as the kernels of
+ZTronDSP do, and the allocation audit of the suite runs every entry point it uses:
+
+<!-- snippet: ExternalParity/Sources/CExternalKernels/extk_biquad.c#biquad-vdsp -->
+```c
+#include "ztd_kernels.h" /* ztd_flush_state, ztd_flush_state_double: the toolkit's state hygiene (RT-6) */
+/* vDSP's declarations carry no `nonblocking` attribute, so clang rejects a call to them from a
+   non-blocking function. ztd_vdsp.h, a public header of ZTronDSP, is the audited allow-list:
+   it re-declares with the attribute the entry points ZTronDSP's own kernels call, among them
+   the five this kernel calls (vDSP_biquad and vDSP_biquadm, their coefficient setters, the
+   reset of vDSP_biquadm), each with the audit that holds the claim. The allocation audit of
+   this suite runs all five once more, in this kernel. */
+#include "ztd_vdsp.h"
+```
 
 ## 4. A context-dependent family
 
@@ -1238,9 +1361,25 @@ A processor or a kernel is an object of your own, so a test runs it on its own t
         }
 ```
 
-A node runs only inside a plan, and a plan runs on an engine's thread. The audit of that thread
-is `ThreadAllocationAudit`, opened and closed from a callback on the thread itself. The helper
-the suites use is written on the public API:
+A node runs only inside a plan. `expectNoAllocationsRunning` compiles a pipeline and runs its
+plan block by block on the test's own thread, inside the audit, so a node is held to RT-2 there
+as the stock stages are, with no engine and no thread of its own. Eight blocks run before the
+audit opens:
+
+<!-- snippet: ExternalParity/Tests/ExtensionGuideTests/GuideAllocationAuditTests.swift#audit-running -->
+```swift
+        let flux = CollectingCount<Novelty>()
+        let counts = try expectNoAllocationsRunning(
+            Pipeline {
+                Despike()
+                FeedbackComb(delay: 0.001, feedback: 0.5)
+                Tap { STFT(frame: 1_024, hop: 256); Magnitude(); PeakNormalize(); SpectralFlux(); Emit(to: flux) }
+            }, blockSize: 256, "rows 1 to 4 on the test's thread")
+```
+
+In an app a stage runs on an engine's thread, with the source and the sinks around it. The audit
+of that thread is `ThreadAllocationAudit`, opened and closed from a callback on the thread itself.
+The helper the suites use is written on the public API:
 
 <!-- snippet: ExternalParity/Tests/ExternalTestSupport/Support.swift#audit-on-the-engine-thread -->
 ```swift
@@ -1250,9 +1389,11 @@ the suites use is written on the public API:
 /// the engine's analysis thread for a source paced in real time (`pacing: .realTime`), and a
 /// thread of the session's own for one that is read as fast as it is processed.
 ///
-/// Nothing public runs a plan block by block on the caller's thread, so `expectNoAllocations`
-/// cannot hold a pipeline; `ThreadAllocationAudit` is opened and closed from a callback on the
-/// engine's thread instead.
+/// `expectNoAllocationsRunning` of ZTronDSPTesting holds a pipeline on the caller's thread,
+/// with no source and no engine. This holds it where it runs in an app: `ThreadAllocationAudit`
+/// is opened and closed from a callback on the engine's thread. With `warmUp: 0` the audit
+/// opens before the first block, so it shows what a first `process` makes the Swift runtime
+/// instantiate (RT-2): hold that in an optimised build, the test alone in its process.
 public func expectNoAllocationsOnTheEngineThread<Output: SignalDomain>(
     _ pipeline: Pipeline<Samples, Output>, on source: (any SampleSource)? = nil, format: SignalFormat = mono48, blockSize: Int = 512,
     blocks: Int = 1_000, warmUp: Int = 16, pacing: Pacing = .asFastAsPossible, _ comment: String = "",
@@ -1301,6 +1442,23 @@ public func expectNoAllocationsOnTheEngineThread<Output: SignalDomain>(
             .tap { $0.stft(frame: 1_024, hop: 256).magnitude().peakNormalized().emit(to: normalized) }
             .tap { $0.level(.rms).emit(to: meter) }
         try await expectNoAllocationsOnTheEngineThread(pipeline, "the stages of the guide")
+```
+
+**The first block.** A first call can make the Swift runtime instantiate something, the metadata
+of a generic type or a protocol conformance it looks up, and on the analysis thread that is an
+allocation (RT-2). The sources, nodes and runners of ZTronDSP meet theirs on the control context.
+For a stage of your own the rule is the same: `make` runs on the control context, so it reaches
+there whatever `process` will use for the first time. Run the processor or the node once on a
+scratch block and reset it, as `Despike` does, or touch the generic types it uses. A plan is not
+run for you before it is installed: a kernel or a node that a new plan takes over from the running
+one (SWAP-1) is running on the analysis thread at that moment, and one more `process` would be seen
+by every stage that counts its calls. Hold the rule with an audit that opens before the first
+block, in an optimised build, the test alone in its process; `Scripts/external-parity.sh` runs this
+one by itself in Release:
+
+<!-- snippet: ExternalParity/Tests/ExtensionGuideTests/GuideAllocationAuditTests.swift#audit-first-block -->
+```swift
+        try await expectNoAllocationsOnTheEngineThread(Pipeline { Despike() }, blocks: 200, warmUp: 0, "Despike from its first block")
 ```
 
 Run the audits in Debug and in Release: a loop that is free in an optimised build can allocate in

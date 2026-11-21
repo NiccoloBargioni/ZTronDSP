@@ -75,7 +75,7 @@ final class EngineCore: @unchecked Sendable {
                 await MainActor.run {
                     session.pump.capture(
                         switches: lowered.switches, compiledValues: values, results: lowered.results, slots: slots,
-                        generation: 1, resultRate: lowered.sourceEnvironment.resultRate)
+                        generation: 1, resultRate: lowered.resultRate)
                 }
                 return session
             }
@@ -657,7 +657,7 @@ final class EngineCore: @unchecked Sendable {
     private func beginUpdate(_ session: SessionCore, _ stages: [StageDescription]) throws(DSPError) -> UpdateStep {
         guard session.state != .detached else { throw DSPError.sessionDetached }
         let current = session.plan.lowered
-        let rate = current.sourceEnvironment.resultRate
+        let rate = current.resultRate
 
         // An equal pipeline: one description comparison, and its bindings (ACT-12).
         if let resolved = PlanCompiler.resolve(stages, readerEnvironments: current.readerEnvironments), resolved == current.resolved,
@@ -679,7 +679,7 @@ final class EngineCore: @unchecked Sendable {
             sendValues(of: lowered, replacing: current, to: session)
             session.plan.adoptValues(of: lowered)
             session.stages = stages
-            return .recapture(switches: lowered.switches, results: lowered.results, resultRate: lowered.sourceEnvironment.resultRate)
+            return .recapture(switches: lowered.switches, results: lowered.results, resultRate: lowered.resultRate)
         }
         return .compile(lowered)
     }
@@ -766,7 +766,7 @@ final class EngineCore: @unchecked Sendable {
         }
         session.freeAppliedPayloads()
         return PlanHandover(switches: lowered.switches, values: values, results: lowered.results, slots: plan.resultSlots,
-                            generation: plan.generation, resultRate: lowered.sourceEnvironment.resultRate)
+                            generation: plan.generation, resultRate: lowered.resultRate)
     }
 
     /// True when blocks reach the hub's sessions: started, not interrupted, and so all the way
@@ -1043,7 +1043,7 @@ final class EngineCore: @unchecked Sendable {
             session.runner.plans.drainRetired()
             session.freeAllPayloads()
             let pump = session.pump
-            let rate = lowered.sourceEnvironment.resultRate
+            let rate = lowered.resultRate
             DispatchQueue.main.async {
                 pump.capture(switches: lowered.switches, compiledValues: values, results: lowered.results, slots: plan.resultSlots,
                              generation: plan.generation, resultRate: rate)

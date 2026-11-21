@@ -154,6 +154,16 @@ struct LatencyAndUpdateTests {
 
         /// The frames from `start` on, where every one was heard.
         func samples(from start: Int) -> [Float] { timeline[start...].compactMap { $0 } }
+
+        /// Where two timelines part, for a message: the first frame that differs and what each heard there.
+        static func firstDifference(_ one: Heard, _ other: Heard) -> String {
+            let common = min(one.timeline.count, other.timeline.count)
+            guard let frame = (0 ..< common).first(where: { one.timeline[$0] != other.timeline[$0] }) else {
+                return one.timeline.count == other.timeline.count ? "no difference" : "\(one.timeline.count) frames against \(other.timeline.count)"
+            }
+            let last = (frame ..< common).last { one.timeline[$0] != other.timeline[$0] } ?? frame
+            return "frames \(frame) to \(last) differ; at \(frame) \(String(describing: one.timeline[frame])) against \(String(describing: other.timeline[frame]))"
+        }
     }
 
     /// Runs `before`, hands the session `after` at `cut`, and returns what the sink behind the
@@ -207,18 +217,14 @@ struct LatencyAndUpdateTests {
         expectClose(heard.samples(from: cut + exchange), Array(new[(cut + exchange)...]), .absolute(2.0e-5))
     }
 
-    // MARK: Findings
+    // MARK: Value updates of the suite's own kernel and processor (§5.5.4)
 
-    @Test func aChangedCutoffIsANewKernelWhereTheStockFilterKeepsItsMemory() async throws {
-        // FINDING. §5.5.4 says of the same topology with different values that IIR coefficients
-        // are set in place and the filter keeps its memory, and the kernel ABI gives every kernel
-        // a `command` for exactly that. The engine sends ZTD_COMMAND_SET_VALUES to the stock specs
-        // only (EngineCore.payload(of:) has no case for .custom or .processor), and a CustomKernel
-        // has no way to state its values apart from its identity. So a changed cutoff of
-        // ExternalLowPass is another kernel: a plan is compiled, the new kernel starts cold and is
-        // pre-rolled, and a sink behind it hears nothing meanwhile, where the stock LowPass takes
-        // the coefficients in place and its sink misses nothing. The kernel of the suite is ready
-        // for the command (BiquadKernelTests); it never arrives.
+    @Test func aChangedCutoffIsSetInTheRunningKernelAsTheStockFilterSetsIt() async throws {
+        // §5.5.4: the same topology with another cutoff is a value update. The coefficients are
+        // the values of the suite's kernel (CustomKernel(values:)), so the engine sends them to
+        // the kernel that runs (ZTD_COMMAND_SET_VALUES) at a block boundary: it sets them in place
+        // and keeps its memory. No plan is compiled, and the sink behind it hears every frame, the
+        // same floats as behind the stock filter.
         let stock = try await updated(
             probe, from: Pipeline { LowPass(.butterworth, cutoff: .hertz(1_000), order: 4) },
             to: Pipeline { LowPass(.butterworth, cutoff: .hertz(2_500), order: 4) })
@@ -226,37 +232,83 @@ struct LatencyAndUpdateTests {
             probe, from: Pipeline { ExternalLowPass(.butterworth, cutoff: .hertz(1_000), order: 4) },
             to: Pipeline { ExternalLowPass(.butterworth, cutoff: .hertz(2_500), order: 4) })
         #expect(!stock.replanned && stock.gap.count == 0, "the stock filter takes the new coefficients in place: no plan is compiled, and its sink misses nothing")
-        withKnownIssue("FINDING: a kernel of the caller's own receives no value update: a changed cutoff compiles a new plan and a new kernel, and a sink behind it misses the pre-roll and the fade") {
-            #expect(!external.replanned)
-            #expect(external.gap.count == 0, "the sink missed \(external.gap.count) frames from frame \(external.gap.start ?? -1)")
-            #expect(external.timeline == stock.timeline)
-        }
-        // What it does instead: the old filter up to the update, and the new one once it has settled.
-        let cut = LatencyAndUpdateTests.cut
-        #expect(Array(external.timeline[..<cut]) == Array(stock.timeline[..<cut]))
-        let settling = try Int(extk_biquad_settling(BiquadKernelTests.coefficients(cutoff: 2_500, order: 4), 2))
-        #expect(external.gap.start == cut && external.gap.count == exchangeFrames(settling: settling))
-        expectClose(external.samples(from: probe.count - 2_048), stock.samples(from: probe.count - 2_048), .absolute(2.0e-5))
+        #expect(!external.replanned, "no plan was compiled for a changed cutoff")
+        #expect(external.gap.count == 0, "the sink missed \(external.gap.count) frames from frame \(external.gap.start ?? -1)")
+        #expect(external.timeline == stock.timeline, "the sink hears the same frames, bit for bit, as behind the stock filter")
+        // And it hears the new filter: what it hears last is the 2 500 Hz filter's output.
+        let new = try Pipeline { ExternalLowPass(.butterworth, cutoff: .hertz(2_500), order: 4) }.process(probe, format: mono48, blockSize: LatencyAndUpdateTests.block)
+        expectClose(external.samples(from: probe.count - 2_048), Array(new.suffix(2_048)), .absolute(2.0e-5))
     }
 
-    @Test func aChangedAmountIsANewProcessorWhereTheStockGainRamps() async throws {
-        // FINDING. As above, for a SampleProcessor: it has no way to take a value while it runs.
-        // The stock Gain ramps to its new amount inside the running kernel; a changed amount of
-        // ExternalGain compiles a plan, and a sink behind it misses the 10 ms of the exchange.
+    @Test func aChangedAmountRampsInTheRunningProcessorAsTheStockGainRamps() async throws {
+        // §5.5.4 for a processor: the factors are the values of the suite's processor
+        // (CustomProcessor(values:)), so the engine hands them to the processor that runs
+        // (AdjustableSampleProcessor.setValues) between two blocks, and it ramps to them over
+        // 10 ms, frame by frame as the stock gain kernel ramps. No plan is compiled, and the sink
+        // behind it hears every frame, the same floats as behind the stock gain.
         let stock = try await updated(probe, from: Pipeline { Gain(.decibels(-6)) }, to: Pipeline { Gain(.decibels(-12)) })
         let external = try await updated(probe, from: Pipeline { ExternalGain(.decibels(-6)) }, to: Pipeline { ExternalGain(.decibels(-12)) })
         #expect(!stock.replanned && stock.gap.count == 0)
-        withKnownIssue("FINDING: a SampleProcessor receives no value update: a changed amount compiles a new plan and a new processor, and a sink behind it misses the fade") {
-            #expect(!external.replanned)
-            #expect(external.gap.count == 0, "the sink missed \(external.gap.count) frames from frame \(external.gap.start ?? -1)")
+        #expect(!external.replanned, "no plan was compiled for a changed amount")
+        #expect(external.gap.count == 0, "the sink missed \(external.gap.count) frames from frame \(external.gap.start ?? -1)")
+        #expect(external.timeline == stock.timeline, "the sink hears the same frames, bit for bit, as behind the stock gain: \(Heard.firstDifference(external, stock))")
+        // The old amount up to the update; a ramp of 480 frames from the block boundary where the
+        // value arrives; the new amount from then on.
+        let cut = LatencyAndUpdateTests.cut, block = LatencyAndUpdateTests.block
+        let old = Float(Amplification.decibels(-6).linear), new = Float(Amplification.decibels(-12).linear)
+        #expect(Array(external.timeline[..<cut]) == Array(probe[..<cut]).map { Optional($0 * old) })
+        let arrived = cut + 480 + block
+        #expect(external.samples(from: arrived) == Array(probe[arrived...]).map { $0 * new })
+        // In between, every frame's gain lies between the two amounts, and the frames move from one
+        // to the other: a ramp, not a jump (CLICK-1).
+        let gains = (cut..<arrived).compactMap { frame -> Float? in
+            guard abs(probe[frame]) > 0.1, let heard = external.timeline[frame] else { return nil }
+            return heard / probe[frame]
         }
-        // What it does instead: the old amount up to the update, the new one after the exchange.
+        #expect(gains.allSatisfy { $0 <= old * 1.0001 && $0 >= new * 0.9999 }, "\(gains.min() ?? .nan) … \(gains.max() ?? .nan)")
+        #expect(gains.contains { $0 < old * 0.99 && $0 > new * 1.01 }, "the amount moved through the values between the two")
+    }
+
+    @Test func aChangedRampIsAnotherProcessor() async throws {
+        // The length of the ramp is the processor's structure (its key), not one of its values:
+        // another ramp is another processor, which a new plan brings in.
+        let heard = try await updated(probe, from: Pipeline { ExternalGain(.decibels(-6)) }, to: Pipeline { ExternalGain(.decibels(-6), ramp: 0.020) })
+        #expect(heard.replanned, "a plan was compiled for another ramp")
+        #expect(heard.gap.start == LatencyAndUpdateTests.cut && heard.gap.count == exchangeFrames(settling: 0), "\(heard.gap)")
+    }
+
+    /// The suite's low-pass, or the stock one, at `cutoff`, a sink that hears what leaves it, and
+    /// an optional tap behind it: the filter of a run whose values and topology both change.
+    private func filtered(external: Bool, cutoff: Double, heardBy middle: CollectingSink<Samples>, tap: CollectingSink<Samples>? = nil) -> Pipeline<Samples, Samples> {
+        let filter = external
+            ? Pipeline().externalLowPass(.butterworth, cutoff: .hertz(cutoff), order: 4)
+            : Pipeline().lowPass(.butterworth, cutoff: .hertz(cutoff), order: 4)
+        let base = filter.emit(to: middle).gain(.decibels(-6))
+        guard let tap else { return base }
+        return base.tap { $0.emit(to: tap) }
+    }
+
+    @Test func aKernelMovedIntoANewPlanKeepsTheValuesItWasSentLast() async throws {
+        // SWAP-1 after §5.5.4: a changed cutoff is set in the kernel that runs; a later change of
+        // topology elsewhere moves that kernel into the new plan with its memory and with the
+        // coefficients it was sent, as it moves the stock filter.
         let cut = LatencyAndUpdateTests.cut
-        let factor = Float(Amplification.decibels(-12).linear)
-        #expect(Array(external.timeline[..<cut]) == Array(stock.timeline[..<cut]))
-        #expect(external.gap.start == cut && external.gap.count == exchangeFrames(settling: 0))
-        let arrived = cut + exchangeFrames(settling: 0)
-        #expect(external.samples(from: arrived) == Array(probe[arrived...]).map { $0 * factor })
-        #expect(stock.samples(from: arrived) == Array(probe[arrived...]).map { $0 * factor })
+        func heard(external: Bool) async throws -> (middle: [Float], replans: Int) {
+            let middle = CollectingSink<Samples>(), added = CollectingSink<Samples>()
+            let run = try await HandFedRun(filtered(external: external, cutoff: 1_000, heardBy: middle), blockSize: LatencyAndUpdateTests.block)
+            let log = EventLog(run.session)
+            try #require(await run.feed(Array(noise[..<cut])))
+            try await run.session.update(run.framed(filtered(external: external, cutoff: 2_500, heardBy: middle)))
+            try #require(await run.feed(Array(noise[cut..<(2 * cut)])))
+            try await run.session.update(run.framed(filtered(external: external, cutoff: 2_500, heardBy: middle, tap: added)))
+            try #require(await run.feed(Array(noise[(2 * cut)...]), awaitingOutput: false))
+            try #require(await run.finish())
+            try #require(await eventually { log.contains(.stateChanged(.finished)) })
+            return (middle.samples, log.all.filter { $0 == .replanned(.update) }.count)
+        }
+        let stock = try await heard(external: false), external = try await heard(external: true)
+        #expect(stock.replans == 1 && external.replans == 1, "one plan was compiled, for the tap: \(stock.replans) and \(external.replans)")
+        #expect(external.middle.count == noise.count, "the sink behind the filter heard \(external.middle.count) of \(noise.count) frames")
+        #expect(external.middle == stock.middle, "the filter ran through the value update and the exchange as the stock filter runs")
     }
 }

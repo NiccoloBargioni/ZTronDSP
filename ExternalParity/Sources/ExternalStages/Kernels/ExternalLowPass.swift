@@ -13,9 +13,11 @@ import ZTronDSP
 /// position: the family's prototype, the low-pass transformation, the bilinear transform,
 /// the section pairing, and the gain spread over the sections. It runs as second-order
 /// sections on `extk_biquad_create`, in the precision the environment's `biquadPrecision` asks
-/// for; `.automatic` takes what `SecondOrderSections.recommendedPrecision()` measures. In
-/// single precision the kernel is bound, when the plan is compiled, to vDSP or to a C loop by
-/// the size of the blocks at the stage's position (SEL-3).
+/// for; `.automatic` takes what
+/// `SecondOrderSections.recommendedPrecision(accelerated:channelCount:blockFrames:)` measures
+/// for the kernel, the channels and the blocks at the stage's position, the figures the stock
+/// filter measures with. In single precision the kernel is bound, when the plan is compiled,
+/// to vDSP or to a C loop by the size of the blocks at the stage's position (SEL-3).
 ///
 /// The stage runs on any sampled sequence and keeps its domain. A cutoff at or beyond the
 /// Nyquist frequency at its position is rejected when the plan is compiled, with the stage's
@@ -23,18 +25,21 @@ import ZTronDSP
 /// takes to decay by 100 dB, which is how long a plan pre-rolls it before it is heard
 /// (ACT-7, SWAP-2). The cutoff is the stage's continuous value (ANI-2).
 ///
-/// What it does not have that the stock stage has: the engine sends no value to a kernel of
-/// the caller's own, so a changed cutoff is a new kernel, pre-rolled and faded in (SWAP-2),
-/// where the stock filter takes new coefficients in place and keeps its memory; and a kernel
-/// of the caller's own is a fusion barrier (EXT-2).
+/// The coefficients are the kernel's values (`CustomKernel(name:key:values:…)`), and the key
+/// is what they leave: the number of sections, the precision, vDSP or the C loop. A changed
+/// cutoff that keeps those is a value update, as for the stock filter (§5.5.4): no plan is
+/// compiled, the kernel that runs takes the new coefficients in place at a block boundary
+/// (`ZTD_COMMAND_SET_VALUES`) and keeps its memory, and whatever is behind it hears every
+/// frame. What it does not have that the stock stage has: a kernel of the caller's own is a
+/// fusion barrier (EXT-2).
 ///
 /// An immutable value, usable on any thread. Designing happens in `design(sampleRate:)` and in
 /// `lower(_:)`: control or background context.
 public struct ExternalLowPass: SequenceStage {
-    /// What tells one cascade from another: its coefficients, its precision, and whether it runs
-    /// on vDSP or in a C loop.
+    /// What tells one cascade from another, apart from its coefficients: how many sections it
+    /// has, its precision, and whether it runs on vDSP or in a C loop.
     struct Key: Hashable, Sendable {
-        let coefficients: [Double]
+        let sections: Int
         let isDouble: Bool
         let isAccelerated: Bool
     }
@@ -118,25 +123,32 @@ public struct ExternalLowPass: SequenceStage {
         guard coefficients.allSatisfy(\.isFinite) else {
             throw context.invalid("sections", "a coefficient of the cascade is not a finite number")
         }
+        // vDSP, or the C loop where a block holds only a few frames: bound here, once (SEL-3).
+        let frames = context.maximumBlockFrames
+        let isAccelerated = context.implementation(for: .biquadKernel, size: frames) == .accelerate
         let isDouble: Bool
         switch context.environment.biquadPrecision {
         case .single: isDouble = false
         case .double: isDouble = true
-        case .automatic: isDouble = try sections.recommendedPrecision() == .double
+        case .automatic:
+            // The measurement the stock filter makes here: this kernel, these channels, these blocks.
+            isDouble = try sections.recommendedPrecision(accelerated: isAccelerated, channelCount: context.channelCount, blockFrames: frames) == .double
         }
         if !isDouble {
             guard coefficients.allSatisfy({ Float($0).isFinite }) else {
                 throw context.invalid("sections", "a coefficient of the cascade exceeds single precision; run it in double precision: .environment(\\.biquadPrecision, .double), or leave the choice to .automatic")
             }
         }
-        let count = realised.sections.count
-        // vDSP, or the C loop where a block holds only a few frames: bound here, once (SEL-3).
-        let isAccelerated = context.implementation(for: .biquadKernel, size: context.maximumBlockFrames) == .accelerate
-        let key = Key(coefficients: coefficients, isDouble: isDouble, isAccelerated: isAccelerated)
-        context.emit(.custom(CustomKernel(name: "ExternalLowPass", key: key, latencyFrames: 0) { channels, _, _ in
-            extk_biquad_create(UInt32(max(channels, 0)), UInt32(count), coefficients, isDouble,
+        // snippet:begin lowpass-values
+        // The coefficients are the kernel's values, apart from its key: another cutoff of the same
+        // order is sent to the kernel that runs (ZTD_COMMAND_SET_VALUES, 5 doubles per section),
+        // which keeps its memory. `make` is handed the values of the description.
+        let key = Key(sections: realised.sections.count, isDouble: isDouble, isAccelerated: isAccelerated)
+        context.emit(.custom(CustomKernel(name: "ExternalLowPass", key: key, values: coefficients, latencyFrames: 0) { channels, _, _, values in
+            extk_biquad_create(UInt32(max(channels, 0)), UInt32(values.count / 5), values, isDouble,
                                isAccelerated ? ZTD_IMPLEMENTATION_ACCELERATE : ZTD_IMPLEMENTATION_NATIVE)
         }))
+        // snippet:end lowpass-values
     }
 }
 

@@ -417,7 +417,9 @@ final class ExecutionPlan {
                     var inner = gates + [region.activation.ordinal]
                     try append(region.steps, to: segment, key: &key, gates: &inner)
                     if slot.fades {
-                        slot.prerollLength = Builder.settling(of: segment, from: at + 1, rate: slot.sampleRate)
+                        // Switched on, the group runs unheard for its latency, which is the
+                        // length of its delay line, and for its settling time (ACT-7).
+                        slot.prerollLength = slot.latency + Builder.settling(of: segment, from: at + 1, rate: slot.sampleRate)
                         segment.steps.append(.regionEnd(slot))
                     }
                     slot.end = segment.steps.count
@@ -427,26 +429,35 @@ final class ExecutionPlan {
             }
         }
 
-        /// Frames, at `rate`, that the steps of `segment` from `start` on need before their
-        /// output is what it would have been had they always run: their latencies and
-        /// settling times, at most one second.
+        /// The settling time of the steps of `segment` from `start` on, in frames at `rate`:
+        /// what their kernels and nodes say they need, beyond their latency, before their
+        /// output is what it would have been had they always run. It is the figure SWAP-2
+        /// defines, "declared by each stage, capped at one second", and a switch runs a stage
+        /// for its latency plus this (ACT-7): the same rule as for the switch of a kernel,
+        /// where `kernelRun` states it to the C plan.
         static func settling(of segment: PlanSegment, from start: Int, rate: Double) -> Int {
-            var seconds = 0.0
+            // Added in frames at `rate`: a figure stated at that rate stays the whole number it is.
+            var frames = 0.0
             for index in start ..< segment.steps.count {
                 switch segment.steps[index] {
                 case .kernels(let run):
                     for box in run.boxes {
-                        seconds += (Double(box.kernel.latency_frames) + Double(box.kernel.settling_frames)) / max(box.position.environment.sampleRate, 1)
+                        frames += Double(box.kernel.settling_frames) * (rate / max(box.position.environment.sampleRate, 1))
                     }
                 case .node(let slot):
                     let environment = slot.box.source.position.environment
                     let own = slot.box.source.position.domain == .samples ? environment.sampleRate : (environment.featureRate ?? environment.sampleRate)
-                    seconds += (Double(slot.box.node.latencyFrames) + Double(slot.box.node.settlingFrames)) / max(own, 1)
+                    frames += Double(slot.box.node.settlingFrames) * (rate / max(own, 1))
                 default:
                     break
                 }
             }
-            return FrameCount.capped(min(seconds, 1), at: rate)
+            return min(FrameCount.capped(frames, at: 1), Builder.oneSecond(at: rate))
+        }
+
+        /// One second in frames at `rate`: the most a stage is given to settle (SWAP-2).
+        static func oneSecond(at rate: Double) -> Int {
+            FrameCount.capped(1, at: rate)
         }
 
         /// Whether `candidate`, an object the previous plan holds at this place in the signal,
@@ -588,6 +599,11 @@ final class ExecutionPlan {
                         guard ztd_plan_make_switchable(plan, entry, UInt32(max(fade, position.maximumFrames, 1)), value(of: activation)) else {
                             throw DSPError.resourceAllocationFailed(what: "a switch")
                         }
+                        // Switched on, the kernel runs unheard for its latency and for its settling
+                        // time, the latter at most one second: the rule of a group that runs in
+                        // line (ACT-7, SWAP-2). The plan does not know the rate, so it is told.
+                        let preroll = Int(box.kernel.latency_frames) + min(Int(box.kernel.settling_frames), Builder.oneSecond(at: rate))
+                        _ = ztd_plan_set_switch_preroll(plan, entry, UInt32(clamping: preroll))
                     }
                 }
                 let run = try KernelRun(plan: plan, boxes: kept, isScalar: isScalar, channels: channels, maximumFrames: maximumFrames,
@@ -654,7 +670,8 @@ final class ExecutionPlan {
         lowered = LoweredPipeline(
             resolved: resolved, steps: lowered.steps, skeleton: lowered.skeleton, switches: switches, results: results,
             switchSites: lowered.switchSites, resultSites: lowered.resultSites, readerEnvironments: lowered.readerEnvironments,
-            sourceEnvironment: lowered.sourceEnvironment, output: lowered.output, isSuspended: lowered.isSuspended)
+            sourceEnvironment: lowered.sourceEnvironment, resultRate: lowered.resultRate, output: lowered.output,
+            isSuspended: lowered.isSuspended)
     }
 
     // MARK: Values (§5.5.4)

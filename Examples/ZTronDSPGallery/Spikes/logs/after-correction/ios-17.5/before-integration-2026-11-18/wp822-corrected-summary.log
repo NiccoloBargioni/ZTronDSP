@@ -1,0 +1,6 @@
+frame-linear: frames=82 draws=60 worstCommitted=0.00 px worstWhenDrawn=0.00 px movedOn=0 (worst 0.00 px) commitsWithoutAFrame=0 longest=0.0 ms
+frame-easeInOut: frames=82 draws=60 worstCommitted=0.48 px worstWhenDrawn=0.48 px movedOn=0 (worst 0.00 px) commitsWithoutAFrame=0 longest=0.0 ms
+frame-spring: frames=216 draws=82 worstCommitted=0.50 px worstWhenDrawn=0.50 px movedOn=0 (worst 0.00 px) commitsWithoutAFrame=0 longest=0.0 ms
+frame-plain: frames=29 draws=3 worstCommitted=0.00 px worstWhenDrawn=0.00 px movedOn=0 (worst 0.00 px) commitsWithoutAFrame=0 longest=0.0 ms
+neighbour: frames=42 draws=30 worstCommitted=0.00 px worstWhenDrawn=0.00 px movedOn=0 (worst 0.00 px) commitsWithoutAFrame=0 longest=0.0 ms
+rotation: frames=98 draws=40 worstCommitted=0.88 px worstWhenDrawn=0.50 px movedOn=34 (worst 27.67 px) commitsWithoutAFrame=0 longest=0.0 ms

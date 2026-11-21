@@ -128,6 +128,8 @@ final class BindingPump {
     var isObserving: Bool { observer != nil }
     /// True while the heartbeat timer exists.
     var hasHeartbeat: Bool { timer != nil }
+    /// The time between two beats of the heartbeat, while it exists: what a test of OUT-2 reads.
+    var heartbeatInterval: TimeInterval? { timer.map { CFRunLoopTimerGetInterval($0) } }
 
     // MARK: Capture (BIND-4, BIND-6)
 

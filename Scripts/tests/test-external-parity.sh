@@ -92,8 +92,15 @@ expect_contains "… by its name" "[API-6]"
 seeded rules "an unchecked Sendable type without a register entry fails the rules" Sources/ExtensionGuide/Kernels/Despike.swift \
     "final class Seeded: @unchecked Sendable {}"
 expect_contains "… and the register is named" "[SEND] \`Seeded\` is \`@unchecked Sendable\` and has no entry"
-seeded rules "a private header of ZTronDSP fails the rules" Sources/CExtensionGuide/extg_comb.c '#include "../../CZTronDSP/ztd_vdsp.h"'
+seeded rules "a private header of ZTronDSP fails the rules" Sources/CExtensionGuide/extg_comb.c '#include "ztd_internal.h"'
 expect_contains "… and the public headers are named" "includes its own headers and the public headers of ZTronDSP"
+expect_contains "… and the header is named" "\`#include ztd_internal.h\`"
+seeded rules "a public header by a path of the tree fails the rules" Sources/CExtensionGuide/extg_comb.c '#include "../../CZTronDSP/include/ztd_vdsp.h"'
+expect_contains "… because a header is included by name" "\`#include ../../CZTronDSP/include/ztd_vdsp.h\`"
+copy_tree public
+printf '%s\n' '#include "ztd_vdsp.h"' >> "$S/public/ExternalParity/Sources/CExtensionGuide/extg_comb.c"
+expect_status 0 "the public vDSP allow-list, by name, keeps the rules" env ZTD_EXTERNAL_TREE="$S/public/ExternalParity" ZTD_EXTERNAL_DERIVED="$S/derived" "$E" --step rules
+expect_contains "… and the rules say so" "rules: clean"
 
 copy_tree manifest
 replaced "$S/manifest/ExternalParity/Package.swift" '.product(name: "ZTronDSPTesting", package: "ZTronDSP")' '.product(name: "ZTronDSPCore", package: "ZTronDSP")'
@@ -175,6 +182,44 @@ expect_contains "… and is named" "the region open never ends"
 expect_status 1 "without the specification the rows cannot be read" guide_step ZTD_EXTERNAL_SPECIFICATION="$S/absent.md"
 expect_contains "… and the step says so" "there is no specification"
 
+# The guide is made from its template (Scripts/lib/extension_guide.py): a guide edited by hand,
+# a template that holds a copy of the code, a marker without its region, no template at all.
+TEMPLATE="$ROOT/Docs/ExtensionGuide.template.md"
+G="$S/generated"
+generated_step() { env ZTD_EXTERNAL_GUIDE="$G/ExtensionGuide.md" ZTD_EXTERNAL_DERIVED="$S/derived" "$@" "$E" --step guide; }
+generator() { python3 "$ROOT/Scripts/lib/extension_guide.py" "$@"; }
+reset_folder "$G"
+cp "$GUIDE" "$G/ExtensionGuide.md"
+cp "$TEMPLATE" "$G/ExtensionGuide.template.md"
+expect_status 0 "a guide beside its template passes" generated_step
+expect_contains "… and the guide is what the template makes" "ExtensionGuide.md is what its template makes"
+replaced "$G/ExtensionGuide.md" "How to add to ZTronDSP from outside it" "How to add to ZTronDSP from the outside"
+expect_status 1 "a guide edited by hand, apart from its template, fails" generated_step
+expect_contains "… and says where to edit" "is not what its template makes: edit"
+expect_contains "… and shows the line" "How to add to ZTronDSP from the outside"
+rm "$G/ExtensionGuide.template.md"
+expect_status 1 "a guide without its template fails" generated_step
+expect_contains "… and says so" "there is no template at"
+expect_status 0 "the generator writes the guide from its template" generator --template "$TEMPLATE" --guide "$G/written.md"
+if cmp -s "$G/written.md" "$GUIDE"; then
+    pass "… and writes the guide of the repository, to the byte"
+else
+    fail "… and writes the guide of the repository, to the byte" "$(diff "$G/written.md" "$GUIDE" | head -20)"
+fi
+cp "$TEMPLATE" "$G/ExtensionGuide.template.md"
+replaced "$G/ExtensionGuide.template.md" "SpectralFlux.swift#flux-node -->" "SpectralFlux.swift#flux-node -->
+\`\`\`swift
+let copied = 0
+\`\`\`"
+expect_status 1 "a template that holds a copy of the code is refused" generator --template "$G/ExtensionGuide.template.md" --guide "$G/refused.md"
+expect_contains "… and says why" "is followed by a fenced block"
+if [ -e "$G/refused.md" ]; then fail "… and nothing is written" "$(ls "$G")"; else pass "… and nothing is written"; fi
+cp "$TEMPLATE" "$G/ExtensionGuide.template.md"
+replaced "$G/ExtensionGuide.template.md" "SpectralFlux.swift#flux-node -->" "SpectralFlux.swift#flux-engine -->"
+expect_status 1 "a marker whose region does not exist is refused" generator --check --template "$G/ExtensionGuide.template.md" --guide "$GUIDE"
+expect_contains "… and says so" "that file marks no region of this name"
+expect_status 2 "the generator refuses an unknown argument" generator --everything
+
 # ---------------------------------------------------------------------------------------------
 # build, test, fixtures, release, audits, speed, with stand-ins for xcodebuild, Scripts/xc.sh
 # and Scripts/compile-fixtures.sh that record how they were called
@@ -212,6 +257,7 @@ case "$action" in
         case "${STUB_FAIL:-}" in
             "$kind") failing=1 ;;
             "$kind-first") [ "$count" -eq 1 ] && failing=1 ;;
+            "$kind-second") [ "$count" -eq 2 ] && failing=1 ;;
             "$kind-empty") echo "	 Executed 0 tests, with 0 failures (0 unexpected) in 0.000 (0.000) seconds"; echo "** TEST EXECUTE SUCCEEDED **"; exit 0 ;;
         esac
         if [ "$kind" = "speed" ]; then
@@ -224,7 +270,13 @@ case "$action" in
             echo "** TEST EXECUTE FAILED **"
             exit 65
         fi
-        echo "◇ Test control() recorded a known issue at Audit.swift:41:59: Expectation failed: counts.allocations == 0"
+        if [ "${STUB_FAIL:-}" = "known-$kind" ]; then
+            echo "◇ Test aPromiseStatedAsBroken() recorded a known issue at Finding.swift:1:1: Expectation failed: replans == 0"
+        fi
+        if [ "${STUB_FAIL:-}" = "gain-known-$kind" ]; then
+            echo "◇ Test theGainAgainstTheStockGain() recorded a known issue at SpeedTests.swift:284:17: Expectation failed: gain.paired <= SpeedTests.bound"
+        fi
+        echo "◇ Test theProbeCountsWhatAnAllocatingStageDoes() recorded a known issue at Audit.swift:41:59: Expectation failed: counts.allocations == 0"
         echo "✔ Test run with 5 tests in 2 suites passed after 0.100 seconds with 1 known issue."
         echo "** TEST EXECUTE SUCCEEDED **" ;;
 esac
@@ -239,7 +291,7 @@ STUB
 cat > "$S/fixtures.sh" <<'STUB'
 #!/bin/bash
 echo "fixtures [config ${ZTD_CONFIG:-}] [derived ${ZTD_DERIVED:-}] [cpath ${CPATH:-}] $*" >> "$STUB_LOG"
-echo "compile-fixtures: 2 valid fixtures compile, 21 invalid fixtures fail with their sentences"
+echo "compile-fixtures: 4 valid fixtures compile, 21 invalid fixtures fail with their sentences"
 exit "${STUB_FIXTURES_STATUS:-0}"
 STUB
 chmod +x "$S/xcodebuild" "$S/xc.sh" "$S/fixtures.sh"
@@ -257,11 +309,12 @@ xcodebuild test-without-building Debug [only:] [parallel yes] [seed ] [bench ]
 fixtures [config Debug] [derived $S/derived] [cpath $ROOT/Sources/CZTronDSP/include] --valid $TREE/Tests/CompileFixtures/valid --invalid $TREE/Tests/CompileFixtures/invalid
 xcodebuild build-for-testing Release [only:] [parallel yes] [seed ] [bench ]
 xcodebuild test-without-building Release [only: ExternalStagesTests/AllocationAuditTests ExtensionGuideTests/GuideAllocationAuditTests] [parallel yes] [seed ] [bench ]
+xcodebuild test-without-building Release [only: ExtensionGuideTests/GuideAllocationAuditTests/theProcessorOfRowTwoAllocatesNothingFromItsFirstBlock()] [parallel yes] [seed ] [bench ]
 xcodebuild test-without-building Release [only: ExternalStagesTests/SpeedTests] [parallel NO] [seed ] [bench yes]"
 if [ "$(env CPATH= true; calls | sed -E "s|\[cpath ([^]:]*)[^]]*\]|[cpath \1]|")" = "$expected" ]; then
-    pass "… in order: Debug build and tests, the fixtures against it, Release build, the audits, the speed check by itself"
+    pass "… in order: Debug build and tests, the fixtures against it, Release build, the audits, the first-block audit by itself, the speed check by itself"
 else
-    fail "… in order: Debug build and tests, the fixtures against it, Release build, the audits, the speed check by itself" "$(calls)"
+    fail "… in order: Debug build and tests, the fixtures against it, Release build, the audits, the first-block audit by itself, the speed check by itself" "$(calls)"
 fi
 if [ "$(sort -u "$S/log.settings")" = "ExternalParity-Package|NO|platform=iOS Simulator,id=STUB-UDID|$S/derived|$(cd "$TREE" && pwd -P)" ]; then
     pass "… each on the package's scheme, without coverage, on the simulator, into the derived data of its own"
@@ -270,7 +323,7 @@ else
 fi
 expect_contains "… the rules and the guide were held first" "external-parity: guide     passed"
 expect_contains "… the summary names every step" "external-parity: speed     passed"
-expect_contains "… an expectation that is known to fail is shown, not hidden" "Test control() recorded a known issue at Audit.swift:41:59"
+expect_contains "… an expectation that is known to fail is shown, not hidden" "Test theProbeCountsWhatAnAllocatingStageDoes() recorded a known issue at Audit.swift:41:59"
 expect_contains "… the figures of the speed check are shown" "ExternalLowPass, order 8 against stock LowPass, order 8: ×1.000"
 if [ -s "$S/derived/speed.json" ] && [ -s "$S/derived/logs/test.log" ]; then
     pass "… and the logs and the figures are kept under the derived data"
@@ -296,8 +349,14 @@ if calls | grep -q "SpeedTests"; then pass "… down to the speed check"; else f
 expect_contains "… and the summary shows which step failed" "external-parity: test      FAILED"
 expect_status 1 "a run in which no test ran fails" run_stub env STUB_FAIL=tests-empty "$E" --step test
 expect_contains "… because it proves nothing" "no test ran"
+expect_status 1 "a known issue of a test other than the control case fails the tests" run_stub env STUB_FAIL=known-tests "$E" --step test
+expect_contains "… and says what it means" "a test other than the control case recorded a known issue: a promise of EXT-1…EXT-4 is stated as broken instead of kept"
+expect_contains "… with the test" "Test aPromiseStatedAsBroken() recorded a known issue at Finding.swift:1:1"
+expect_status 1 "… and so in the audits" run_stub env STUB_FAIL=known-audits "$E" --step audits
 expect_status 1 "an audit that fails in Release fails the run" run_stub env STUB_FAIL=audits "$E"
 if calls | grep -q "SpeedTests"; then fail "… before the speed check" "$(calls)"; else pass "… before the speed check"; fi
+expect_status 1 "a first-block audit that fails by itself fails the run" run_stub env STUB_FAIL=audits-second "$E" --step audits
+expect_contains "… and says which audit" "the audit that opens before the first block, alone in its process:"
 
 expect_status 0 "a speed check that holds its bound at the second launch passes" run_stub env STUB_FAIL=speed-first "$E" --step speed
 expect_contains "… and says which launch" "launch 2 of 3"
@@ -308,10 +367,24 @@ expect_status 1 "--launches chooses how many" run_stub env STUB_FAIL=speed-first
 if [ "$(calls | grep -c SpeedTests)" -eq 1 ]; then pass "… here one"; else fail "… here one" "$(calls)"; fi
 expect_status 1 "a speed suite that passes without recording did not hold its bounds" run_stub env STUB_FAIL=speed-unrecorded "$E" --step speed --launches 1
 expect_contains "… and the step says why" "it did not run as a benchmark"
+# CR-025 item 1: the gain written as a SampleProcessor is at its 5 % bound and misses it in about
+# half the launches. That known issue may stand in the speed check, shown; nowhere else, and no other.
+expect_status 0 "the gain's known miss of its bound may stand in the speed check" run_stub env STUB_FAIL=gain-known-speed "$E" --step speed
+if [ "$(calls | grep -c SpeedTests)" -eq 1 ]; then pass "… at the first launch"; else fail "… at the first launch" "$(calls)"; fi
+expect_contains "… shown, not hidden" "Test theGainAgainstTheStockGain() recorded a known issue at SpeedTests.swift:284:17"
+expect_contains "… and the step says that the gain missed its bound" "every stage but the gain written as a SampleProcessor ran within its bound; that gain missed it, as CR-025 item 1 records"
+expect_status 0 "a speed check without that known issue says every stage held" run_stub "$E" --step speed
+expect_contains "… so" "every stage ran within its bound"
+expect_lacks "… and not that the gain missed" "that gain missed it"
+expect_status 1 "the same known issue outside the speed check fails its step" run_stub env STUB_FAIL=gain-known-tests "$E" --step test
+expect_contains "… as a promise stated as broken" "Test theGainAgainstTheStockGain() recorded a known issue at SpeedTests.swift:284:17"
+expect_status 1 "a known issue of another test fails the speed check" run_stub env STUB_FAIL=known-speed "$E" --step speed
+expect_contains "… in every launch" "the speed check did not hold in 3 launches"
 
 expect_status 0 "a seeded violation is handed to the tests" run_stub env ZTD_EXTERNAL_SEEDED_VIOLATION=gain "$E" --step test --step audits
 if [ "$(calls)" = "xcodebuild test-without-building Debug [only:] [parallel yes] [seed gain] [bench ]
-xcodebuild test-without-building Release [only: ExternalStagesTests/AllocationAuditTests ExtensionGuideTests/GuideAllocationAuditTests] [parallel yes] [seed ] [bench ]" ]; then
+xcodebuild test-without-building Release [only: ExternalStagesTests/AllocationAuditTests ExtensionGuideTests/GuideAllocationAuditTests] [parallel yes] [seed ] [bench ]
+xcodebuild test-without-building Release [only: ExtensionGuideTests/GuideAllocationAuditTests/theProcessorOfRowTwoAllocatesNothingFromItsFirstBlock()] [parallel yes] [seed ] [bench ]" ]; then
     pass "… of the test step, and of no other"
 else
     fail "… of the test step, and of no other" "$(calls)"

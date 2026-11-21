@@ -1,0 +1,285 @@
+00000    0.0545 screen variant=spatialLegacy size=(140.00,340.00) os=Version 27.0 (Build 24A434)
+00001    2.7004 mark 1
+00002    2.9904 spatial.changed finger=0 phase=active at=(66.33,168.67)
+00003    2.9905 spatial.changed finger=1 phase=active at=(73.67,171.33)
+00004    3.0002 spatial.changed finger=1 phase=active at=(73.67,171.67)
+00005    3.0003 spatial.changed finger=0 phase=active at=(66.33,168.33)
+00006    3.0171 spatial.changed finger=0 phase=active at=(66.00,167.67)
+00007    3.0171 spatial.changed finger=1 phase=active at=(74.00,172.33)
+00008    3.0171 legacy.changed pinch.scale=1.19 drag=nil
+00009    3.0337 spatial.changed finger=1 phase=active at=(74.33,173.33)
+00010    3.0337 spatial.changed finger=0 phase=active at=(65.67,166.67)
+00011    3.0337 legacy.changed pinch.scale=1.40 drag=nil
+00012    3.0502 spatial.changed finger=0 phase=active at=(65.33,166.00)
+00013    3.0503 spatial.changed finger=1 phase=active at=(74.67,174.00)
+00014    3.0503 legacy.changed pinch.scale=1.58 drag=nil
+00015    3.0670 spatial.changed finger=1 phase=active at=(74.67,174.67)
+00016    3.0670 spatial.changed finger=0 phase=active at=(65.33,165.33)
+00017    3.0670 legacy.changed pinch.scale=1.69 drag=nil
+00018    3.0837 spatial.changed finger=1 phase=active at=(75.00,175.00)
+00019    3.0837 spatial.changed finger=0 phase=active at=(65.00,165.00)
+00020    3.0837 legacy.changed pinch.scale=1.81 drag=nil
+00021    3.1502 spatial.changed finger=1 phase=active at=(75.00,175.33)
+00022    3.1503 spatial.changed finger=0 phase=active at=(65.00,164.67)
+00023    3.1503 legacy.changed pinch.scale=1.87 drag=nil
+00024    3.2002 spatial.changed finger=0 phase=active at=(64.67,164.33)
+00025    3.2003 spatial.changed finger=1 phase=active at=(75.33,175.67)
+00026    3.2003 legacy.changed pinch.scale=1.99 drag=nil
+00027    3.2511 spatial.changed finger=1 phase=active at=(75.33,176.00)
+00028    3.2511 spatial.changed finger=0 phase=active at=(64.67,164.00)
+00029    3.2511 legacy.changed pinch.scale=2.06 drag=nil
+00030    3.3011 spatial.changed finger=1 phase=active at=(75.33,176.33)
+00031    3.3012 spatial.changed finger=0 phase=active at=(64.67,163.67)
+00032    3.3012 legacy.changed pinch.scale=2.12 drag=nil
+00033    3.3347 spatial.changed finger=1 phase=active at=(75.67,176.33)
+00034    3.3348 spatial.changed finger=0 phase=active at=(64.33,163.67)
+00035    3.3349 legacy.changed pinch.scale=2.18 drag=nil
+00036    3.3513 spatial.changed finger=0 phase=active at=(64.33,163.33)
+00037    3.3514 spatial.changed finger=1 phase=active at=(75.67,176.67)
+00038    3.3514 legacy.changed pinch.scale=2.24 drag=nil
+00039    3.4012 spatial.changed finger=1 phase=active at=(75.67,177.00)
+00040    3.4012 spatial.changed finger=0 phase=active at=(64.33,163.00)
+00041    3.4013 legacy.changed pinch.scale=2.31 drag=nil
+00042    3.4503 spatial.changed finger=0 phase=active at=(64.00,162.67)
+00043    3.4503 spatial.changed finger=1 phase=active at=(76.00,177.33)
+00044    3.4504 legacy.changed pinch.scale=2.43 drag=nil
+00045    3.4845 spatial.changed finger=1 phase=active at=(76.00,177.67)
+00046    3.4846 spatial.changed finger=0 phase=active at=(64.00,162.33)
+00047    3.4847 legacy.changed pinch.scale=2.50 drag=nil
+00048    3.5348 spatial.changed finger=1 phase=active at=(76.00,178.00)
+00049    3.5349 spatial.changed finger=0 phase=active at=(64.00,162.00)
+00050    3.5351 legacy.changed pinch.scale=2.56 drag=nil
+00051    3.5674 spatial.changed finger=1 phase=active at=(76.33,178.33)
+00052    3.5674 spatial.changed finger=0 phase=active at=(63.67,161.67)
+00053    3.5675 legacy.changed pinch.scale=2.68 drag=nil
+00054    3.6179 spatial.changed finger=0 phase=active at=(63.67,161.33)
+00055    3.6179 spatial.changed finger=1 phase=active at=(76.33,178.67)
+00056    3.6180 legacy.changed pinch.scale=2.75 drag=nil
+00057    3.6674 spatial.changed finger=1 phase=active at=(76.33,179.00)
+00058    3.6674 spatial.changed finger=0 phase=active at=(63.67,161.00)
+00059    3.6675 legacy.changed pinch.scale=2.82 drag=nil
+00060    3.6845 spatial.changed finger=1 phase=active at=(76.67,179.00)
+00061    3.6845 spatial.changed finger=0 phase=active at=(63.33,161.00)
+00062    3.6846 legacy.changed pinch.scale=2.87 drag=nil
+00063    3.7009 spatial.changed finger=1 phase=active at=(76.67,179.33)
+00064    3.7010 spatial.changed finger=0 phase=active at=(63.33,160.67)
+00065    3.7011 legacy.changed pinch.scale=2.94 drag=nil
+00066    3.7512 spatial.changed finger=0 phase=active at=(63.33,160.33)
+00067    3.7513 spatial.changed finger=1 phase=active at=(76.67,179.67)
+00068    3.7513 legacy.changed pinch.scale=3.01 drag=nil
+00069    3.8010 spatial.changed finger=1 phase=active at=(77.00,180.00)
+00070    3.8011 spatial.changed finger=0 phase=active at=(63.00,160.00)
+00071    3.8012 legacy.changed pinch.scale=3.13 drag=nil
+00072    3.8516 spatial.changed finger=1 phase=active at=(77.00,180.33)
+00073    3.8517 spatial.changed finger=0 phase=active at=(63.00,159.67)
+00074    3.8518 legacy.changed pinch.scale=3.20 drag=nil
+00075    3.9026 spatial.changed finger=1 phase=active at=(77.00,180.67)
+00076    3.9027 spatial.changed finger=0 phase=active at=(63.00,159.33)
+00077    3.9028 legacy.changed pinch.scale=3.27 drag=nil
+00078    3.9345 spatial.changed finger=1 phase=active at=(77.33,180.67)
+00079    3.9346 spatial.changed finger=0 phase=active at=(62.67,159.33)
+00080    3.9348 legacy.changed pinch.scale=3.32 drag=nil
+00081    3.9519 spatial.changed finger=1 phase=active at=(77.33,181.00)
+00082    3.9520 spatial.changed finger=0 phase=active at=(62.67,159.00)
+00083    3.9521 legacy.changed pinch.scale=3.39 drag=nil
+00084    4.0011 spatial.changed finger=1 phase=active at=(77.33,181.33)
+00085    4.0013 spatial.changed finger=0 phase=active at=(62.67,158.67)
+00086    4.0014 legacy.changed pinch.scale=3.46 drag=nil
+00087    4.0678 spatial.changed finger=0 phase=active at=(62.67,158.33)
+00088    4.0678 spatial.changed finger=1 phase=active at=(77.33,181.67)
+00089    4.0679 legacy.changed pinch.scale=3.53 drag=nil
+00090    4.1011 spatial.ended finger=1 phase=ended at=(77.33,181.67)
+00091    4.1012 spatial.ended finger=0 phase=ended at=(62.67,158.33)
+00092    4.1012 spatial.end
+00093    4.1027 legacy.ended pinch.scale=3.53 drag=nil
+00094    4.4336 mark 2
+00095    4.7514 spatial.changed finger=1 phase=active at=(133.67,331.33)
+00096    4.7515 spatial.changed finger=0 phase=active at=(6.33,8.67)
+00097    4.7689 spatial.changed finger=0 phase=active at=(6.33,8.33)
+00098    4.7689 spatial.changed finger=1 phase=active at=(133.67,331.67)
+00099    4.8003 spatial.changed finger=1 phase=active at=(134.00,332.33)
+00100    4.8004 spatial.changed finger=0 phase=active at=(6.00,7.67)
+00101    4.8170 spatial.changed finger=0 phase=active at=(5.67,6.67)
+00102    4.8171 spatial.changed finger=1 phase=active at=(134.33,333.33)
+00103    4.8171 legacy.changed pinch.scale=1.01 drag=nil
+00104    4.8335 spatial.changed finger=1 phase=active at=(134.67,334.00)
+00105    4.8335 spatial.changed finger=0 phase=active at=(5.33,6.00)
+00106    4.8336 legacy.changed pinch.scale=1.02 drag=nil
+00107    4.8503 spatial.changed finger=1 phase=active at=(135.00,335.00)
+00108    4.8503 spatial.changed finger=0 phase=active at=(5.00,5.00)
+00109    4.8503 legacy.changed pinch.scale=1.02 drag=nil
+00110    4.9003 spatial.changed finger=1 phase=active at=(133.33,330.67)
+00111    4.9004 spatial.changed finger=0 phase=active at=(6.67,9.33)
+00112    4.9004 legacy.changed pinch.scale=1.00 drag=nil
+00113    4.9169 spatial.changed finger=1 phase=active at=(131.33,325.67)
+00114    4.9170 spatial.changed finger=0 phase=active at=(8.67,14.33)
+00115    4.9170 legacy.changed pinch.scale=0.96 drag=nil
+00116    4.9339 spatial.changed finger=1 phase=active at=(129.33,320.00)
+00117    4.9339 spatial.changed finger=0 phase=active at=(10.67,20.00)
+00118    4.9340 legacy.changed pinch.scale=0.93 drag=nil
+00119    4.9503 spatial.changed finger=0 phase=active at=(15.33,32.33)
+00120    4.9504 spatial.changed finger=1 phase=active at=(124.67,307.67)
+00121    4.9504 legacy.changed pinch.scale=0.85 drag=nil
+00122    4.9844 spatial.changed finger=1 phase=active at=(122.33,301.67)
+00123    4.9845 spatial.changed finger=0 phase=active at=(17.67,38.33)
+00124    4.9845 legacy.changed pinch.scale=0.82 drag=nil
+00125    5.0009 spatial.changed finger=1 phase=active at=(120.00,295.33)
+00126    5.0009 spatial.changed finger=0 phase=active at=(20.00,44.67)
+00127    5.0010 legacy.changed pinch.scale=0.78 drag=nil
+00128    5.0179 spatial.changed finger=1 phase=active at=(117.67,289.00)
+00129    5.0179 spatial.changed finger=0 phase=active at=(22.33,51.00)
+00130    5.0180 legacy.changed pinch.scale=0.74 drag=nil
+00131    5.0343 spatial.changed finger=0 phase=active at=(24.67,57.33)
+00132    5.0344 spatial.changed finger=1 phase=active at=(115.33,282.67)
+00133    5.0345 legacy.changed pinch.scale=0.70 drag=nil
+00134    5.0511 spatial.changed finger=1 phase=active at=(113.00,276.33)
+00135    5.0512 spatial.changed finger=0 phase=active at=(27.00,63.67)
+00136    5.0513 legacy.changed pinch.scale=0.66 drag=nil
+00137    5.0676 spatial.changed finger=1 phase=active at=(110.67,270.67)
+00138    5.0677 spatial.changed finger=0 phase=active at=(29.33,69.33)
+00139    5.0677 legacy.changed pinch.scale=0.63 drag=nil
+00140    5.0846 spatial.changed finger=1 phase=active at=(108.67,265.00)
+00141    5.0846 spatial.changed finger=0 phase=active at=(31.33,75.00)
+00142    5.0847 legacy.changed pinch.scale=0.59 drag=nil
+00143    5.1008 spatial.changed finger=1 phase=active at=(106.67,259.67)
+00144    5.1008 spatial.changed finger=0 phase=active at=(33.33,80.33)
+00145    5.1009 legacy.changed pinch.scale=0.56 drag=nil
+00146    5.1183 spatial.changed finger=1 phase=active at=(105.00,255.33)
+00147    5.1184 spatial.changed finger=0 phase=active at=(35.00,84.67)
+00148    5.1186 legacy.changed pinch.scale=0.53 drag=nil
+00149    5.1346 spatial.changed finger=0 phase=active at=(36.00,88.00)
+00150    5.1347 spatial.changed finger=1 phase=active at=(104.00,252.00)
+00151    5.1349 legacy.changed pinch.scale=0.51 drag=nil
+00152    5.1363 spatial.ended finger=1 phase=ended at=(104.00,252.00)
+00153    5.1363 spatial.ended finger=0 phase=ended at=(36.00,88.00)
+00154    5.1363 spatial.end
+00155    5.1380 legacy.ended pinch.scale=0.51 drag=nil
+00156    5.4503 mark 3
+00157    5.7407 spatial.changed finger=0 phase=active at=(25.00,185.00)
+00158    5.7407 spatial.changed finger=1 phase=active at=(115.00,155.00)
+00159    5.7411 spatial.changed finger=1 phase=active at=(115.00,170.00)
+00160    5.7411 spatial.changed finger=0 phase=active at=(25.00,170.00)
+00161    5.7411 legacy.changed pinch.scale=0.95 drag=nil
+00162    5.7670 spatial.changed finger=0 phase=active at=(25.00,168.67)
+00163    5.7670 spatial.changed finger=1 phase=active at=(115.00,171.33)
+00164    5.7670 legacy.changed pinch.scale=0.95 drag=nil
+00165    5.7836 spatial.changed finger=1 phase=active at=(114.67,173.00)
+00166    5.7837 spatial.changed finger=0 phase=active at=(25.33,167.00)
+00167    5.7837 legacy.changed pinch.scale=0.94 drag=nil
+00168    5.8004 spatial.changed finger=0 phase=active at=(25.33,165.33)
+00169    5.8005 spatial.changed finger=1 phase=active at=(114.67,174.67)
+00170    5.8005 legacy.changed pinch.scale=0.95 drag=nil
+00171    5.8170 spatial.changed finger=1 phase=active at=(114.33,176.33)
+00172    5.8170 spatial.changed finger=0 phase=active at=(25.67,163.67)
+00173    5.8170 legacy.changed pinch.scale=0.94 drag=nil
+00174    5.8338 spatial.changed finger=0 phase=active at=(25.67,162.00)
+00175    5.8338 spatial.changed finger=1 phase=active at=(114.33,178.00)
+00176    5.8338 legacy.changed pinch.scale=0.95 drag=nil
+00177    5.8503 spatial.changed finger=1 phase=active at=(114.00,179.00)
+00178    5.8504 spatial.changed finger=0 phase=active at=(26.00,161.00)
+00179    5.8504 legacy.changed pinch.scale=0.95 drag=nil
+00180    5.8670 spatial.changed finger=0 phase=active at=(26.00,160.67)
+00181    5.8670 spatial.changed finger=1 phase=active at=(114.00,179.33)
+00182    5.8670 legacy.changed pinch.scale=0.95 drag=nil
+00183    5.8836 spatial.changed finger=1 phase=active at=(113.67,180.67)
+00184    5.8837 spatial.changed finger=0 phase=active at=(26.33,159.33)
+00185    5.8837 legacy.changed pinch.scale=0.95 drag=nil
+00186    5.9004 spatial.changed finger=0 phase=active at=(27.00,158.00)
+00187    5.9004 spatial.changed finger=1 phase=active at=(113.00,182.00)
+00188    5.9004 legacy.changed pinch.scale=0.94 drag=nil
+00189    5.9170 spatial.changed finger=1 phase=active at=(112.67,183.67)
+00190    5.9171 spatial.changed finger=0 phase=active at=(27.33,156.33)
+00191    5.9171 legacy.changed pinch.scale=0.94 drag=nil
+00192    5.9337 spatial.changed finger=0 phase=active at=(28.00,154.67)
+00193    5.9337 spatial.changed finger=1 phase=active at=(112.00,185.33)
+00194    5.9337 legacy.changed pinch.scale=0.94 drag=nil
+00195    5.9504 spatial.changed finger=1 phase=active at=(111.67,187.00)
+00196    5.9504 spatial.changed finger=0 phase=active at=(28.33,153.00)
+00197    5.9504 legacy.changed pinch.scale=0.95 drag=nil
+00198    5.9670 spatial.changed finger=0 phase=active at=(28.67,152.00)
+00199    5.9671 spatial.changed finger=1 phase=active at=(111.33,188.00)
+00200    5.9671 legacy.changed pinch.scale=0.95 drag=nil
+00201    5.9841 spatial.changed finger=1 phase=active at=(111.00,188.33)
+00202    5.9841 spatial.changed finger=0 phase=active at=(29.00,151.67)
+00203    5.9842 legacy.changed pinch.scale=0.95 drag=nil
+00204    6.0009 spatial.changed finger=0 phase=active at=(29.67,150.67)
+00205    6.0010 spatial.changed finger=1 phase=active at=(110.33,189.33)
+00206    6.0010 legacy.changed pinch.scale=0.94 drag=nil
+00207    6.0175 spatial.changed finger=1 phase=active at=(109.67,190.67)
+00208    6.0175 spatial.changed finger=0 phase=active at=(30.33,149.33)
+00209    6.0176 legacy.changed pinch.scale=0.94 drag=nil
+00210    6.0337 spatial.changed finger=0 phase=active at=(31.33,147.67)
+00211    6.0337 spatial.changed finger=1 phase=active at=(108.67,192.33)
+00212    6.0338 legacy.changed pinch.scale=0.94 drag=nil
+00213    6.0503 spatial.changed finger=1 phase=active at=(108.00,193.67)
+00214    6.0504 spatial.changed finger=0 phase=active at=(32.00,146.33)
+00215    6.0504 legacy.changed pinch.scale=0.94 drag=nil
+00216    6.0671 spatial.changed finger=0 phase=active at=(33.00,145.00)
+00217    6.0672 spatial.changed finger=1 phase=active at=(107.00,195.00)
+00218    6.0672 legacy.changed pinch.scale=0.94 drag=nil
+00219    6.0837 spatial.changed finger=1 phase=active at=(106.67,196.33)
+00220    6.0838 spatial.changed finger=0 phase=active at=(33.33,143.67)
+00221    6.0838 legacy.changed pinch.scale=0.95 drag=nil
+00222    6.1003 spatial.changed finger=0 phase=active at=(33.67,143.67)
+00223    6.1004 spatial.changed finger=1 phase=active at=(106.33,196.33)
+00224    6.1004 legacy.changed pinch.scale=0.95 drag=nil
+00225    6.1170 spatial.changed finger=1 phase=active at=(105.67,197.33)
+00226    6.1171 spatial.changed finger=0 phase=active at=(34.33,142.67)
+00227    6.1171 legacy.changed pinch.scale=0.95 drag=nil
+00228    6.1336 spatial.changed finger=0 phase=active at=(35.67,141.33)
+00229    6.1337 spatial.changed finger=1 phase=active at=(104.33,198.67)
+00230    6.1337 legacy.changed pinch.scale=0.94 drag=nil
+00231    6.1504 spatial.changed finger=1 phase=active at=(103.33,200.00)
+00232    6.1504 spatial.changed finger=0 phase=active at=(36.67,140.00)
+00233    6.1504 legacy.changed pinch.scale=0.95 drag=nil
+00234    6.1671 spatial.changed finger=0 phase=active at=(37.67,139.00)
+00235    6.1671 spatial.changed finger=1 phase=active at=(102.33,201.00)
+00236    6.1671 legacy.changed pinch.scale=0.94 drag=nil
+00237    6.1837 spatial.changed finger=1 phase=active at=(101.00,202.33)
+00238    6.1837 spatial.changed finger=0 phase=active at=(39.00,137.67)
+00239    6.1837 legacy.changed pinch.scale=0.94 drag=nil
+00240    6.2003 spatial.changed finger=0 phase=active at=(39.67,136.67)
+00241    6.2004 spatial.changed finger=1 phase=active at=(100.33,203.33)
+00242    6.2004 legacy.changed pinch.scale=0.95 drag=nil
+00243    6.2170 spatial.changed finger=1 phase=active at=(100.00,203.33)
+00244    6.2171 spatial.changed finger=0 phase=active at=(40.00,136.67)
+00245    6.2171 legacy.changed pinch.scale=0.95 drag=nil
+00246    6.3337 spatial.ended finger=0 phase=ended at=(40.00,136.67)
+00247    6.3337 spatial.ended finger=1 phase=ended at=(100.00,203.33)
+00248    6.3337 spatial.end
+00249    6.3344 legacy.ended pinch.scale=0.95 drag=nil
+00250    6.6670 mark 4
+00251    6.9565 spatial.changed finger=0 phase=active at=(70.00,335.00)
+00252    6.9565 spatial.changed finger=1 phase=active at=(70.00,5.00)
+00253    7.0337 spatial.ended finger=1 phase=ended at=(70.00,5.00)
+00254    7.0337 spatial.ended finger=0 phase=ended at=(70.00,335.00)
+00255    7.0337 spatial.end
+00256    7.3669 mark 5
+00257    7.7753 spatial.changed finger=1 phase=active at=(42.00,136.00)
+00258    7.8669 legacy.changed pinch=nil drag.start=(42.00,136.00) drag.at=(42.00,136.00) drag.move=(0.00,0.00)
+00259    7.9170 spatial.changed finger=1 phase=active at=(46.33,141.33)
+00260    7.9170 legacy.changed pinch=nil drag.start=(42.00,136.00) drag.at=(46.33,141.33) drag.move=(4.33,5.33)
+00261    7.9337 spatial.changed finger=1 phase=active at=(51.67,147.67)
+00262    7.9337 legacy.changed pinch=nil drag.start=(42.00,136.00) drag.at=(51.67,147.67) drag.move=(9.67,11.67)
+00263    7.9503 spatial.changed finger=1 phase=active at=(57.33,154.67)
+00264    7.9503 legacy.changed pinch=nil drag.start=(42.00,136.00) drag.at=(57.33,154.67) drag.move=(15.33,18.67)
+00265    7.9670 spatial.changed finger=1 phase=active at=(63.33,161.67)
+00266    7.9670 legacy.changed pinch=nil drag.start=(42.00,136.00) drag.at=(63.33,161.67) drag.move=(21.33,25.67)
+00267    7.9835 spatial.changed finger=1 phase=active at=(69.33,169.00)
+00268    7.9835 legacy.changed pinch=nil drag.start=(42.00,136.00) drag.at=(69.33,169.00) drag.move=(27.33,33.00)
+00269    8.0013 spatial.changed finger=1 phase=active at=(75.33,176.33)
+00270    8.0015 legacy.changed pinch=nil drag.start=(42.00,136.00) drag.at=(75.33,176.33) drag.move=(33.33,40.33)
+00271    8.0177 spatial.changed finger=1 phase=active at=(81.33,183.67)
+00272    8.0178 legacy.changed pinch=nil drag.start=(42.00,136.00) drag.at=(81.33,183.67) drag.move=(39.33,47.67)
+00273    8.0337 spatial.changed finger=1 phase=active at=(86.67,190.33)
+00274    8.0337 legacy.changed pinch=nil drag.start=(42.00,136.00) drag.at=(86.67,190.33) drag.move=(44.67,54.33)
+00275    8.0503 spatial.changed finger=1 phase=active at=(92.00,196.67)
+00276    8.0503 legacy.changed pinch=nil drag.start=(42.00,136.00) drag.at=(92.00,196.67) drag.move=(50.00,60.67)
+00277    8.0670 spatial.changed finger=1 phase=active at=(96.33,202.00)
+00278    8.0670 legacy.changed pinch=nil drag.start=(42.00,136.00) drag.at=(96.33,202.00) drag.move=(54.33,66.00)
+00279    8.0836 spatial.changed finger=1 phase=active at=(98.00,204.00)
+00280    8.0836 legacy.changed pinch=nil drag.start=(42.00,136.00) drag.at=(98.00,204.00) drag.move=(56.00,68.00)
+00281    8.0838 spatial.ended finger=1 phase=ended at=(98.00,204.00)
+00282    8.0838 spatial.end
+00283    8.0845 legacy.ended pinch=nil drag.start=(42.00,136.00) drag.at=(98.00,204.00) drag.move=(56.00,68.00)
+00284    8.4336 mark 6

@@ -1,6 +1,6 @@
 import Foundation
 import Testing
-import ZTronDSPCore
+@testable import ZTronDSPCore
 import ZTronDSPTesting
 
 private enum GateThresholdKey: SettableDSPEnvironmentKey {

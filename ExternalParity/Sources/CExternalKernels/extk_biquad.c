@@ -5,28 +5,21 @@
 #include <stdlib.h>
 #include <string.h>
 
+/* snippet:begin biquad-vdsp */
 #include "ztd_kernels.h" /* ztd_flush_state, ztd_flush_state_double: the toolkit's state hygiene (RT-6) */
+/* vDSP's declarations carry no `nonblocking` attribute, so clang rejects a call to them from a
+   non-blocking function. ztd_vdsp.h, a public header of ZTronDSP, is the audited allow-list:
+   it re-declares with the attribute the entry points ZTronDSP's own kernels call, among them
+   the five this kernel calls (vDSP_biquad and vDSP_biquadm, their coefficient setters, the
+   reset of vDSP_biquadm), each with the audit that holds the claim. The allocation audit of
+   this suite runs all five once more, in this kernel. */
+#include "ztd_vdsp.h"
+/* snippet:end biquad-vdsp */
 
 /* The biquad cascade of the external parity suite (EXT-4): a kernel of the caller's own on the
    ABI of ztd_kernel.h. Everything a plan calls on the analysis thread is ZTD_NONBLOCKING, and
    this target turns function-effect warnings into errors, so an allocation or a call to a
    function that may block does not build (RT-1, RT-7 layer 1). */
-
-/* vDSP's declarations carry no `nonblocking` attribute, so clang rejects a call to them from a
-   non-blocking function. The five entry points this kernel calls there are re-declared with the
-   attribute. That is a claim of this file: given a setup created beforehand, none allocates,
-   locks or blocks. The allocation audit of the suite runs all five and checks the claim. */
-#pragma clang assume_nonnull begin
-extern void vDSP_biquad(const struct vDSP_biquad_SetupStruct *__Setup, float *__Delay, const float *__X,
-                        vDSP_Stride __IX, float *__Y, vDSP_Stride __IY, vDSP_Length __N) ZTD_NONBLOCKING;
-extern void vDSP_biquad_SetCoefficientsDouble(vDSP_biquad_Setup __setup, const double *__coeffs,
-                                              vDSP_Length __start_sec, vDSP_Length __nsec) ZTD_NONBLOCKING;
-extern void vDSP_biquadm(vDSP_biquadm_Setup __Setup, const float * __nonnull * __nonnull __X, vDSP_Stride __IX,
-                         float * __nonnull * __nonnull __Y, vDSP_Stride __IY, vDSP_Length __N) ZTD_NONBLOCKING;
-extern void vDSP_biquadm_SetCoefficientsDouble(vDSP_biquadm_Setup __setup, const double *__coeffs, vDSP_Length __start_sec,
-                                               vDSP_Length __start_chn, vDSP_Length __nsec, vDSP_Length __nchn) ZTD_NONBLOCKING;
-extern void vDSP_biquadm_ResetState(vDSP_biquadm_Setup __setup) ZTD_NONBLOCKING;
-#pragma clang assume_nonnull end
 
 /* Every product and every sum of the two loops written here is rounded on its own, in the order
    written. */
@@ -209,12 +202,17 @@ static uint32_t extk_biquad_process_double(void *state, const float *const *in, 
     return frames;
 }
 
+/* snippet:begin biquad-command */
+/* The values of the description, as the engine sends them at a block boundary: `count` doubles
+   at `values`, memory the engine owns. The coefficients are replaced; the memory is kept. A
+   command of another kind or count, or with no payload, is not for this kernel. */
 static void extk_biquad_command_double(void *state, const ztd_command_t *command) ZTD_NONBLOCKING {
     extk_biquad_t *biquad = (extk_biquad_t *)state;
     if (!command || command->kind != ZTD_COMMAND_SET_VALUES || !command->values) return;
     if (command->count != 5 * biquad->sections) return;
     memcpy(biquad->coefficients, command->values, (size_t)5 * biquad->sections * sizeof(double));
 }
+/* snippet:end biquad-command */
 
 static void extk_biquad_reset_double(void *state) ZTD_NONBLOCKING {
     extk_biquad_t *biquad = (extk_biquad_t *)state;
