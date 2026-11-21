@@ -18,8 +18,9 @@ public protocol AnalysisNode: AnyObject {
 
 /// A sample-domain stage written in Swift (§5.11.1): it processes a block in place.
 ///
-/// Created on the control context; `process` and `reset` run on the analysis thread under
-/// RT-2. The block keeps its frame count: a processor does not change the rate.
+/// Created on the control context, where it may allocate; `process` and `reset` run on the
+/// analysis thread under RT-2 and do not allocate. The block keeps its frame count: a
+/// processor does not change the rate.
 public protocol SampleProcessor: AnyObject {
     /// The delay the processor adds, in frames.
     var latencyFrames: Int { get }
@@ -89,7 +90,7 @@ class FrameDelivery {
 /// at once; it may do so no times, once, or several times per input. The storage is reused
 /// for the next frame: `emit` first, then write again.
 ///
-/// Analysis thread; allocation-free.
+/// Analysis thread; it does not allocate.
 public struct FrameWriter {
     /// The shape of the frames this writer takes.
     public let format: FrameFormat

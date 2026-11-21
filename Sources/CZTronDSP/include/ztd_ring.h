@@ -18,8 +18,10 @@ extern "C" {
    page when the ring is created, so the I/O thread never takes a first-touch fault (RT-9).
    --------------------------------------------------------------------------------------------- */
 
+/* A ring: opaque, created by ztd_ring_create and freed by ztd_ring_destroy. */
 typedef struct ztd_ring ztd_ring_t;
 
+/* How a ring's storage is laid out, chosen when it is created. */
 typedef enum ztd_ring_storage {
     ZTD_RING_STORAGE_AUTOMATIC = 0, /* mirrored when the system grants it, else plain */
     ZTD_RING_STORAGE_PLAIN = 1,     /* never mirrored: the fall-back, forced (for tests) */
@@ -40,6 +42,8 @@ void ztd_ring_destroy(ztd_ring_t *ring);
 /* Every function below takes a NULL ring, or NULL buffers, as "nothing to do": it returns 0,
    false or NULL. */
 
+/* The channel count, the capacity in frames, and whether the storage is mirrored: fixed when the
+   ring is created. Any thread; none allocates. */
 uint32_t ztd_ring_channels(const ztd_ring_t *ring) ZTD_NONBLOCKING;
 uint32_t ztd_ring_capacity(const ztd_ring_t *ring) ZTD_NONBLOCKING;
 bool ztd_ring_is_mirrored(const ztd_ring_t *ring) ZTD_NONBLOCKING;

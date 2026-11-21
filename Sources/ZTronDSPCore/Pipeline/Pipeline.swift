@@ -1,4 +1,6 @@
 /// A run of stages as a description: what the result builder and the fluent spelling produce.
+///
+/// Conformers are immutable values, usable on any thread; building one allocates its list.
 public protocol PipelineContent: Hashable, Sendable {
     /// The stages, in order.
     var stages: [StageDescription] { get }
@@ -7,13 +9,18 @@ public protocol PipelineContent: Hashable, Sendable {
 /// A block made only of sequence stages. It has no domain of its own and takes the domain of
 /// the place where it is used: samples at the top of a pipeline, a novelty curve after an
 /// onset-strength step (§5.8.2).
+///
+/// An immutable value, usable on any thread; building one allocates its list.
 public struct SequenceChain: PipelineContent, SequenceStage {
+    /// The stages, in order.
     public let stages: [StageDescription]
 
+    /// A chain of these stages; without any, an empty chain that contributes nothing.
     public init(stages: [StageDescription] = []) {
         self.stages = stages
     }
 
+    /// The chain's stages, which the pipeline that holds it splices in.
     public var stageDescriptions: [StageDescription] { stages }
 
     /// Never called: a chain is spliced into the pipeline that holds it.
@@ -40,8 +47,10 @@ public struct SequenceChain: PipelineContent, SequenceStage {
 /// // a == b
 /// ```
 ///
-/// An immutable value, usable on any thread.
+/// An immutable value, usable on any thread. Building one, in either spelling, allocates its
+/// list of descriptions.
 public struct Pipeline<Input: SignalDomain, Output: SignalDomain>: PipelineContent, PipelineStage {
+    /// The stages, in order.
     public let stages: [StageDescription]
 
     /// A pipeline over `stages`, taken on trust: the types say what the caller says. This is
@@ -52,6 +61,7 @@ public struct Pipeline<Input: SignalDomain, Output: SignalDomain>: PipelineConte
         self.stages = stages
     }
 
+    /// The pipeline's stages, which a pipeline that holds it splices in.
     public var stageDescriptions: [StageDescription] { stages }
 
     /// Never called: a pipeline is spliced into the pipeline that holds it.
@@ -61,58 +71,68 @@ public struct Pipeline<Input: SignalDomain, Output: SignalDomain>: PipelineConte
 }
 
 extension Pipeline where Input == Samples, Output == Samples {
-    /// An empty pipeline on samples: where the fluent spelling starts.
+    /// An empty pipeline on samples: where the fluent spelling starts. Usable on any thread; it
+    /// does not allocate.
     public init() {
         self.init(unchecked: [])
     }
 
-    /// A pipeline of sequence stages only, on samples.
+    /// A pipeline of sequence stages only, on samples. Runs the block where it is called, on any
+    /// thread, and allocates the stages.
     public init(@PipelineBuilder _ content: () -> SequenceChain) {
         self.init(unchecked: content().stages)
     }
 }
 
 extension Pipeline {
-    /// A pipeline from a block of stages.
+    /// A pipeline from a block of stages. Runs the block where it is called, on any thread, and
+    /// allocates the stages.
     public init(@PipelineBuilder _ content: () -> Pipeline<Input, Output>) {
         self.init(unchecked: content().stages)
     }
 
     // MARK: The appending core of the fluent spelling (WP-303)
 
-    /// The pipeline followed by a self-typed stage. Compiles only where the stage consumes
-    /// this pipeline's output domain.
+    /// The pipeline followed by a self-typed stage. Compiles only where the stage consumes this
+    /// pipeline's output domain. Usable on any thread; allocates the pipeline it returns.
     public func appending<S: PipelineStage>(_ stage: S) -> Pipeline<Input, S.Output> where S.Input == Output {
         Pipeline<Input, S.Output>(unchecked: stages + stage.stageDescriptions)
     }
 
-    /// The pipeline followed by a sequence stage. Compiles only on a sampled sequence (O-1).
+    /// The pipeline followed by a sequence stage. Compiles only on a sampled sequence (O-1). Usable
+    /// on any thread; allocates the pipeline it returns.
     public func appending<S: SequenceStage>(_ stage: S) -> Pipeline<Input, Output> where Output: SampledSequence {
         Pipeline(unchecked: stages + stage.stageDescriptions)
     }
 
     /// The pipeline followed by a step of a family, producing `NewOutput`. For the author of a
-    /// family: constrain the extension that calls this to the domains the step may follow.
+    /// family: constrain the extension that calls this to the domains the step may follow. Usable
+    /// on any thread; allocates the pipeline it returns.
     public func appending<NewOutput: SignalDomain>(
         _ description: StageDescription, producing output: NewOutput.Type = NewOutput.self
     ) -> Pipeline<Input, NewOutput> {
         Pipeline<Input, NewOutput>(unchecked: stages + [description])
     }
 
-    /// The domain the pipeline consumes and the one it produces, as run-time tags.
+    /// The domain the pipeline consumes, as a run-time tag. Usable on any thread; it does not
+    /// allocate.
     public var inputTag: DomainTag { Input.tag }
+    /// The domain the pipeline produces, as a run-time tag. Usable on any thread; it does not
+    /// allocate.
     public var outputTag: DomainTag { Output.tag }
 
     // MARK: Parameters (ANI-2)
 
-    /// Every continuous value of every stage, in order: what an animation interpolates.
+    /// Every continuous value of every stage, in order: what an animation interpolates. Usable on
+    /// any thread; it allocates the vector.
     public var parameters: ParameterVector {
         ParameterVector(stages.flatMap(\.parameters))
     }
 
-    /// The pipeline with its continuous values replaced. A vector of another length belongs
-    /// to another topology and leaves the pipeline unchanged. Passing the pipeline's own
-    /// vector returns an equal pipeline.
+    /// The pipeline with its continuous values replaced. A vector of another length belongs to
+    /// another topology and leaves the pipeline unchanged. Passing the pipeline's own vector
+    /// returns an equal pipeline. Usable on any thread; it allocates the pipeline it returns,
+    /// unless that is this one.
     public func replacingParameters(_ vector: ParameterVector) -> Pipeline<Input, Output> {
         guard vector.count == parameters.count, !vector.isReplacement else { return self }
         var remaining = vector.values[...]

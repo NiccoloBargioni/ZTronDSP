@@ -5,9 +5,9 @@ extension DSP {
     /// The analog angular frequency, in radians per second, that the bilinear transform at
     /// `sampleRate` maps onto `hertz`: `2·fs·tan(π·f/fs)`.
     ///
-    /// The bilinear transform compresses the whole analog axis into `0 … fs/2`; designing
-    /// the analog filter at the pre-warped frequency puts the digital filter's edge exactly
-    /// where it was asked for (§6.3.2). Usable on any thread; allocation-free.
+    /// The bilinear transform compresses the whole analog axis into `0 … fs/2`; designing the
+    /// analog filter at the pre-warped frequency puts the digital filter's edge exactly where it
+    /// was asked for (§6.3.2). Usable on any thread; it allocates only the error it throws.
     ///
     /// - Throws: `DSPError.invalidParameter` unless `0 ≤ hertz < sampleRate / 2` and the
     ///   sample rate is positive and finite.

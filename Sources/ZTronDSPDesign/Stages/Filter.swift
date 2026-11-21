@@ -27,7 +27,7 @@ import ZTronDSPCore
 /// continuous values of the elements are the stage's (ANI-2).
 ///
 /// An immutable value, usable on any thread. The system is resolved when the stage is
-/// lowered: control context.
+/// lowered, which allocates: control context.
 public struct Filter: SequenceStage {
     enum System: Hashable, Sendable {
         case iir(IIRSystem)
@@ -45,21 +45,26 @@ public struct Filter: SequenceStage {
 
     /// Runs an IIR system. Usable on any thread.
     ///
-    /// - Parameter isActive: `true`, `false`, `.active`, `.bypassed`, or a SwiftUI
-    ///   `Binding<Bool>`.
+    /// - Parameters:
+    ///   - system: The system, resolved against the environment when the plan is compiled.
+    ///   - isActive: `true`, `false`, `.active`, `.bypassed`, or a SwiftUI
+    ///     `Binding<Bool>`.
     public init(_ system: IIRSystem, isActive: some ActivationSource = .active) {
         self.init(system: .iir(system), activation: isActive.stageActivation)
     }
 
     /// Runs an FIR system. Usable on any thread.
     ///
-    /// - Parameter isActive: `true`, `false`, `.active`, `.bypassed`, or a SwiftUI
-    ///   `Binding<Bool>`.
+    /// - Parameters:
+    ///   - system: The system, resolved against the environment when the plan is compiled.
+    ///   - isActive: `true`, `false`, `.active`, `.bypassed`, or a SwiftUI
+    ///     `Binding<Bool>`.
     public init(_ system: FIRSystem, isActive: some ActivationSource = .active) {
         self.init(system: .fir(system), activation: isActive.stageActivation)
     }
 
-    /// The continuous values of the system's elements, in order (ANI-2). Usable on any thread.
+    /// The continuous values of the system's elements, in order (ANI-2). Usable on any thread; it
+    /// may allocate.
     public var parameters: [Double] {
         switch system {
         case .iir(let system): system.parameters
@@ -67,8 +72,8 @@ public struct Filter: SequenceStage {
         }
     }
 
-    /// The stage with the continuous values of its system replaced. Passing its own values
-    /// returns it unchanged. Usable on any thread.
+    /// The stage with the continuous values of its system replaced. Passing its own values returns
+    /// it unchanged. Usable on any thread; it may allocate.
     public func replacingParameters(_ values: ArraySlice<Double>) -> Filter {
         switch system {
         case .iir(let system): Filter(system: .iir(system.replacingParameters(values)), activation: activation)

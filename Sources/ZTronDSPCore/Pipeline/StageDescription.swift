@@ -6,7 +6,7 @@
 /// when they describe the same stage with the same values; a value that carries a closure
 /// compares by what it produces.
 ///
-/// An immutable value, usable on any thread.
+/// An immutable value, usable on any thread. Describing a stage allocates.
 public struct StageDescription: Hashable, Sendable {
     /// The stage's name, as errors and paths show it.
     public let name: String
@@ -71,10 +71,22 @@ public struct StageDescription: Hashable, Sendable {
     }
 
     /// What kind of structure the description is.
+    ///
+    /// A value, usable on any thread; it does not allocate.
     public enum Kind: Hashable, Sendable {
-        case stage, tap, group, environmentReader, emit
+        /// A stage that lowers itself.
+        case stage
+        /// A side branch, `Tap`.
+        case tap
+        /// A named run of stages, `Group`.
+        case group
+        /// Stages built from the environment at their position, `EnvironmentReader`.
+        case environmentReader
+        /// A sink, `Emit`.
+        case emit
     }
 
+    /// Which of the five kinds of structure the description is.
     public var kind: Kind {
         switch content {
         case .stage: .stage
@@ -88,7 +100,8 @@ public struct StageDescription: Hashable, Sendable {
     // MARK: Parameters (ANI-2)
 
     /// The continuous values of the stage and of everything nested in it, in order. An
-    /// `EnvironmentReader` contributes none: its stages exist only per environment.
+    /// `EnvironmentReader` contributes none: its stages exist only per environment. Usable on any
+    /// thread; it may allocate.
     public var parameters: [Double] {
         switch content {
         case .stage(let erased): erased.base.parameters

@@ -47,9 +47,11 @@ import ZTronDSPCore
 ///   attached.
 ///
 /// The step keeps the domain, so switched off it is bypassed (ACT-3): the spectrum passes
-/// unchanged, as it arrives; a constant `false` leaves no trace of the step, its latency
-/// included (ACT-4). Inside `HPSS` the recipe is bypassed as a whole, with its latency kept.
-/// An immutable value, usable on any thread; `lower(_:)` runs on the control context.
+/// unchanged, as it arrives; a constant `false` leaves no trace of the step, its latency included
+/// (ACT-4). Inside `HPSS` the recipe is bypassed as a whole, with its latency kept. An immutable
+/// value, usable on any thread. Its mask and median strategies are kept boxed (`AnyStrategy`):
+/// creating one, and reading `mask` or `median`, allocate only for a strategy larger than three
+/// words, which no stock one is. `lower(_:)` runs on the control context and may allocate.
 public struct HarmonicPercussive: ContextDependentStep {
     /// The component that is kept.
     public let component: HarmonicPercussiveComponent
@@ -63,11 +65,17 @@ public struct HarmonicPercussive: ContextDependentStep {
     public let percussiveMargin: Double
     /// The least median that counts as a value.
     public let floor: Double
+    /// Which frames the time median is taken over: `.causal` unless told otherwise; `.centered`
+    /// declares its look-ahead as latency.
     public let alignment: FrameAlignment
     let maskBox: AnyStrategy
     let medianBox: AnyStrategy
+    /// The step's switch: off, the spectrum passes unchanged (ACT-3).
     public let activation: StageActivation
 
+    /// The `component` of a spectrum, by medians over `timeKernel` frames and `frequencyKernel`
+    /// bins and the masks of `mask`. Nothing is checked here: `lower(_:)` checks the kernels, the
+    /// margins, the floor, the mask and the median strategy when the plan is compiled.
     public init(
         select component: HarmonicPercussiveComponent, timeKernel: Int = 31, frequencyKernel: Int = 31, mask: some MaskStrategy = .soft(power: 2),
         harmonicMargin: Double = 1, percussiveMargin: Double = 1, alignment: FrameAlignment = .causal,
@@ -96,6 +104,7 @@ public struct HarmonicPercussive: ContextDependentStep {
         (values == .complex && axis == .linear) || values == .magnitude ? .spectrum(axis: axis, values: values) : nil
     }
 
+    /// The step with its typing rule, ``rule``.
     public var stageDescription: StageDescription { StageDescription(self, rule: HarmonicPercussive.rule) }
 
     /// Frames a centred median waits for after the one it describes.
@@ -138,6 +147,9 @@ public struct HarmonicPercussive: ContextDependentStep {
         let implementation: Implementation
     }
 
+    /// Checks the values, makes both median filters once, so that a strategy that cannot filter a
+    /// live frame is refused here (GPU-1), and emits the node with its look-ahead as latency.
+    /// Control context; allocates.
     public func lower(_ context: inout LoweringContext) throws(DSPError) {
         let environment = context.environment
         guard let bins = environment.frequencyAxis?.rowCount, bins >= 1, let featureRate = environment.featureRate, featureRate > 0 else {
@@ -179,6 +191,7 @@ public struct HarmonicPercussive: ContextDependentStep {
 
 extension PipelineBuilder {
     /// On the complex spectrum of an STFT: the mask applied, the phase kept.
+    /// Runs where the pipeline is described, on any thread, and allocates.
     public static func buildPartialBlock<I>(
         accumulated: Pipeline<I, Spectrum<LinearFrequency, ComplexValues>>, next: HarmonicPercussive
     ) -> Pipeline<I, Spectrum<LinearFrequency, ComplexValues>> {
@@ -186,6 +199,7 @@ extension PipelineBuilder {
     }
 
     /// On magnitudes, on any axis: the component's magnitudes.
+    /// Runs where the pipeline is described, on any thread, and allocates.
     public static func buildPartialBlock<I, Axis>(
         accumulated: Pipeline<I, Spectrum<Axis, MagnitudeValues>>, next: HarmonicPercussive
     ) -> Pipeline<I, Spectrum<Axis, MagnitudeValues>> {
@@ -195,6 +209,7 @@ extension PipelineBuilder {
 
 extension Pipeline {
     /// One component of the complex spectrum, its phase kept: see ``HarmonicPercussive``.
+    /// Usable on any thread; allocates the pipeline it returns.
     public func harmonicPercussive(
         select component: HarmonicPercussiveComponent, timeKernel: Int = 31, frequencyKernel: Int = 31, mask: some MaskStrategy = .soft(power: 2),
         harmonicMargin: Double = 1, percussiveMargin: Double = 1, alignment: FrameAlignment = .causal,
@@ -206,6 +221,7 @@ extension Pipeline {
     }
 
     /// One component of the magnitudes: see ``HarmonicPercussive``.
+    /// Usable on any thread; allocates the pipeline it returns.
     public func harmonicPercussive<Axis>(
         select component: HarmonicPercussiveComponent, timeKernel: Int = 31, frequencyKernel: Int = 31, mask: some MaskStrategy = .soft(power: 2),
         harmonicMargin: Double = 1, percussiveMargin: Double = 1, alignment: FrameAlignment = .causal,

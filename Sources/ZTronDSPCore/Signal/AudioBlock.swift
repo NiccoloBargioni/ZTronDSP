@@ -85,9 +85,10 @@ public struct AudioBlock {
 
 /// Owned storage for a block: `channelCount` aligned channels of `capacity` frames.
 ///
-/// Threading: create and release it on the control context. `block(frameCount:)` and the
-/// pointers allocate nothing. One thread at a time.
+/// Threading: create and release it on the control context; creating one allocates its
+/// storage. `block(frameCount:)` and the pointers do not allocate. One thread at a time.
 public final class AudioBuffer {
+    /// The number of channels.
     public let channelCount: Int
     /// Frames each channel can hold.
     public let capacity: Int

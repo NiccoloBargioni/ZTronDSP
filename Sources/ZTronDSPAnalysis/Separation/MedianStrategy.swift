@@ -3,6 +3,8 @@ import ZTronDSPCore
 import ZTronDSPMetal
 
 /// The direction a median is taken along (§6.10).
+///
+/// A value, usable on any thread; it does not allocate.
 public enum MedianAxis: Hashable, Sendable {
     /// Across frames: the same bin of neighbouring frames. What stays is what lasts: the
     /// harmonic part.
@@ -24,9 +26,9 @@ public enum MedianAxis: Hashable, Sendable {
 /// - Along **frequency** the filter keeps nothing: `process` writes, for every bin, the median
 ///   of the `kernel` bins centred on it, the edges of the frame reflected the same way.
 ///
-/// Threading: a filter is created and released on the control context or in background work.
-/// `process` and `reset` allocate nothing, take no lock and belong to one thread at a time
-/// (the analysis thread, RT-2). A filter is not `Sendable`.
+/// Threading: a filter is created and released on the control context or in the background,
+/// which allocates. `process` and `reset` do not allocate, take no lock and belong to one
+/// thread at a time (the analysis thread, RT-2). A filter is not `Sendable`.
 public protocol MedianFilter: AnyObject {
     /// One frame in, its medians out. `frame` and `medians` hold as many values as the filter
     /// was made for, and may be the same buffer. A value that is not a number makes the
@@ -52,15 +54,19 @@ public protocol MedianFilter: AnyObject {
 /// over the frames.
 ///
 /// A strategy is a description: an immutable value, usable on any thread, and part of the
-/// description of the stage that holds it.
+/// description of the stage that holds it; the stock ones do not allocate. Making a filter
+/// and filtering a spectrogram allocate.
 public protocol MedianStrategy: Hashable, Sendable {
     /// The filter a live step runs over frames of `binCount` values, along `axis`. Control
     /// context: it allocates, once per plan that needs it.
     ///
     /// - Parameters:
     ///   - kernel: how many values a median is taken over: odd, from 1 up.
+    ///   - binCount: values per frame.
+    ///   - axis: the direction the median is taken along.
     ///   - implementation: what the environment asks for (§7.4): `.automatic` follows
     ///     `crossovers`.
+    ///   - crossovers: the measured crossovers of the engine (§7.4).
     /// - Throws: `DSPError.invalidParameter` for a kernel or a number of bins the strategy
     ///   cannot filter; `DSPError.unsupportedConfiguration` when the strategy filters whole
     ///   spectrograms only.
@@ -70,13 +76,17 @@ public protocol MedianStrategy: Hashable, Sendable {
 
     /// The median filter of a whole spectrogram, offline: every value replaced by the median
     /// of the `kernel` values centred on it along `axis`, the edges reflected with the edge
-    /// value repeated (§6.1). Background work: it blocks and allocates.
+    /// value repeated (§6.1). In the background: it blocks and allocates.
     ///
     /// The default runs the strategy's own filters over the frames.
     ///
     /// - Parameters:
     ///   - values: `rowCount` values per frame, frame after frame, as a `FeedSnapshot` holds
     ///     them.
+    ///   - rowCount: values per frame.
+    ///   - kernel: how many values a median is taken over: odd, from 1 up.
+    ///   - axis: the direction the median is taken along.
+    ///   - crossovers: the measured crossovers a strategy that chooses by size follows (§7.4).
     ///   - checkpoint: the checkpoint of the background work this call is part of, when it is.
     /// - Returns: as many values, in the same order.
     /// - Throws: `DSPError.invalidParameter` for values that do not fill whole frames or a
@@ -89,6 +99,9 @@ public protocol MedianStrategy: Hashable, Sendable {
 }
 
 extension MedianStrategy {
+    /// The default: the strategy's own filters, made for `.automatic`, run over the frames one
+    /// after the other. As the requirement says, it runs in the background, blocks and allocates:
+    /// never on the analysis thread.
     public func filter(
         _ values: [Float], rowCount: Int, kernel: Int, along axis: MedianAxis, crossovers: CrossoverTable = .shipped,
         checkpoint: BackgroundWork.Checkpoint? = nil
@@ -107,10 +120,14 @@ extension MedianStrategy {
 ///
 /// It is what a live step runs, and the oracle and fall-back of the GPU median (GPU-3).
 ///
-/// An immutable value, usable on any thread.
+/// An immutable value, usable on any thread; it does not allocate. Its filters allocate once,
+/// when they are made.
 public struct SelectionNetworkMedian: MedianStrategy {
+    /// The selection network; there is nothing to set.
     public init() {}
 
+    /// A filter along time over the frames it stores, or along frequency over shifted copies
+    /// of the frame, on the lanes `implementation` and `crossovers` choose.
     public func makeFilter(
         kernel: Int, binCount: Int, along axis: MedianAxis, implementation: Implementation, crossovers: CrossoverTable
     ) throws(DSPError) -> any MedianFilter {
@@ -127,7 +144,8 @@ public struct SelectionNetworkMedian: MedianStrategy {
 /// is attached. Where there is no Metal device it is `DSPError.backendUnavailable` (GPU-4).
 /// Its result is that of the CPU lanes, value for value.
 ///
-/// An immutable value, usable on any thread.
+/// An immutable value, usable on any thread; it does not allocate. Filtering a spectrogram
+/// allocates and blocks on the GPU, in the background.
 public struct MetalMedian: MedianStrategy {
     /// Where the device comes from. `absent` stands for a system without a GPU, for tests.
     enum Device: Hashable, Sendable {
@@ -137,6 +155,7 @@ public struct MetalMedian: MedianStrategy {
 
     let device: Device
 
+    /// The GPU median on the shared Metal device.
     public init() {
         device = .shared
     }
@@ -154,6 +173,8 @@ public struct MetalMedian: MedianStrategy {
         }
     }
 
+    /// Throws `DSPError.unsupportedConfiguration`: a live frame is filtered on the CPU (GPU-1),
+    /// so a live step declared with this strategy is refused.
     public func makeFilter(
         kernel: Int, binCount: Int, along axis: MedianAxis, implementation: Implementation, crossovers: CrossoverTable
     ) throws(DSPError) -> any MedianFilter {
@@ -161,6 +182,8 @@ public struct MetalMedian: MedianStrategy {
             reason: "the GPU median filters whole spectrograms offline: a live frame is filtered on the CPU (GPU-1). Declare the step with .selectionNetwork or .automatic")
     }
 
+    /// The spectrogram copied to the device, filtered there and copied back; the call blocks
+    /// until the result is there. `DSPError.backendUnavailable` without a device (GPU-4).
     public func filter(
         _ values: [Float], rowCount: Int, kernel: Int, along axis: MedianAxis, crossovers: CrossoverTable = .shipped,
         checkpoint: BackgroundWork.Checkpoint? = nil
@@ -175,10 +198,12 @@ public struct MetalMedian: MedianStrategy {
 /// `CrossoverTable.medianGPU`, counted as kernel × bins × frames, and the CPU lanes below it,
 /// and wherever there is no Metal device or the device cannot take the work (GPU-3, GPU-4).
 ///
-/// An immutable value, usable on any thread.
+/// An immutable value, usable on any thread; it does not allocate. Filtering a spectrogram
+/// allocates, in the background.
 public struct AutomaticMedian: MedianStrategy {
     let metal: MetalMedian
 
+    /// The choice by size, with the shared Metal device for the GPU side.
     public init() {
         metal = MetalMedian()
     }
@@ -194,12 +219,15 @@ public struct AutomaticMedian: MedianStrategy {
         return crossovers.implementation(for: .median, size: overflow ? Int.max : size) == .metal ? .metal : .native
     }
 
+    /// The filter of the CPU lanes, always: a live frame is filtered there (GPU-1).
     public func makeFilter(
         kernel: Int, binCount: Int, along axis: MedianAxis, implementation: Implementation, crossovers: CrossoverTable
     ) throws(DSPError) -> any MedianFilter {
         try SelectionNetworkMedian().makeFilter(kernel: kernel, binCount: binCount, along: axis, implementation: implementation, crossovers: crossovers)
     }
 
+    /// On the GPU from the size the crossover names on, falling back to the CPU lanes where
+    /// there is no device or it cannot take the work; on the CPU lanes below that size.
     public func filter(
         _ values: [Float], rowCount: Int, kernel: Int, along axis: MedianAxis, crossovers: CrossoverTable = .shipped,
         checkpoint: BackgroundWork.Checkpoint? = nil
@@ -221,17 +249,20 @@ public struct AutomaticMedian: MedianStrategy {
 }
 
 extension MedianStrategy where Self == SelectionNetworkMedian {
-    /// The selection network on CPU lanes: the default of a live step.
+    /// The selection network on CPU lanes: the default of a live step. Usable on any thread; it
+    /// does not allocate.
     public static var selectionNetwork: SelectionNetworkMedian { SelectionNetworkMedian() }
 }
 
 extension MedianStrategy where Self == MetalMedian {
-    /// The selection network on the GPU: whole spectrograms, offline.
+    /// The selection network on the GPU: whole spectrograms, offline. Usable on any thread; it does
+    /// not allocate, and touches no device.
     public static var metal: MetalMedian { MetalMedian() }
 }
 
 extension MedianStrategy where Self == AutomaticMedian {
-    /// By size, from the measured crossovers: the default of the offline separation.
+    /// By size, from the measured crossovers: the default of the offline separation. Usable on any
+    /// thread; it does not allocate, and touches no device.
     public static var automatic: AutomaticMedian { AutomaticMedian() }
 }
 

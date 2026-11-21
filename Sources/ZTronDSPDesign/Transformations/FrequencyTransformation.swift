@@ -5,7 +5,7 @@ import ZTronDSPCore
 /// response that is wanted (§6.3.2). It acts on the zeros and the poles, never on
 /// coefficients. Frequencies are angular, in radians per second.
 ///
-/// An immutable value, usable on any thread.
+/// An immutable value, usable on any thread; it does not allocate.
 public enum FrequencyTransformation: Hashable, Sendable {
     /// Low-pass with its edge at `cutoff`: `s → s / cutoff`. Oracle: `lp2lp_zpk`.
     case lowPass(cutoff: Double)

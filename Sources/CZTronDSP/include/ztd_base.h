@@ -19,6 +19,8 @@ extern "C" {
 /* The version of the kernel ABI (§5.11.1). It changes only by change request. */
 #define ZTD_ABI_VERSION 1u
 
+/* ZTD_ABI_VERSION as the library was built with it, for a kernel that checks it at run time.
+   Any thread; does not allocate. */
 uint32_t ztd_abi_version(void) ZTD_NONBLOCKING;
 
 /* Which implementation of a primitive a kernel is bound to when it is created (§7.4, SEL-3).

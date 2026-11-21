@@ -16,8 +16,9 @@ import ZTronDSPCore
 /// }
 /// ```
 ///
-/// An immutable value, usable on any thread; `measure` runs on the thread `search` is called
-/// on, which is background work.
+/// An immutable value, usable on any thread; creating one does not allocate (it keeps the
+/// closure it is given), and `measure` runs on the thread `search` is called on, which is
+/// background work.
 public struct CalibrationCandidate: Sendable {
     /// The kind of implementation: `.native`, `.accelerate` or `.metal`.
     public let implementation: Implementation
@@ -25,8 +26,13 @@ public struct CalibrationCandidate: Sendable {
     public let label: String
     let measure: @Sendable (_ size: Int, _ time: (() -> Void) -> Double) -> Double
 
-    /// - Parameter measure: returns the nanoseconds one call takes at `size`; a value that is
-    ///   not a positive number says that the implementation could not be measured there.
+    /// A candidate of the kind `implementation`, named `label`, timed by `measure`.
+    ///
+    /// - Parameters:
+    ///   - implementation: the kind of implementation: `.native`, `.accelerate` or `.metal`.
+    ///   - label: what the implementation is, in a few words; it names the curve.
+    ///   - measure: returns the nanoseconds one call takes at `size`; a value that is not a
+    ///     positive number says that the implementation could not be measured there.
     public init(
         _ implementation: Implementation, label: String, measure: @escaping @Sendable (_ size: Int, _ time: (() -> Void) -> Double) -> Double
     ) {
@@ -46,6 +52,10 @@ public struct CalibrationCandidate: Sendable {
 ///
 /// A wrong crossover costs speed, never correctness: the implementations of one primitive
 /// agree bit for bit, or within 10⁻⁶ for reductions (SEL-6).
+///
+/// Plain functions. `crossover` runs on any thread and does not allocate. `search` blocks the
+/// thread it is called on, which is background work, and allocates; so do `measure` and
+/// `report`, on the background executor.
 public enum Calibration {
     // MARK: The search (WP-611a)
 

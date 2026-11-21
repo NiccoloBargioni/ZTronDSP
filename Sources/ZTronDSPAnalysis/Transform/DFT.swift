@@ -5,7 +5,8 @@ extension DSP {
     /// The DFT of a real signal in double precision, one-sided: bins `0 … N / 2`, unscaled,
     /// `X[k] = Σ x[n]·e^(−j2πkn/N)` (§6.1).
     ///
-    /// A one-shot computation: synchronous, it runs where it is called and allocates (§9.2).
+    /// A one-shot computation: synchronous, it runs where it is called, on any thread, and
+    /// allocates (§9.2).
     ///
     /// - Throws: `DSPError.invalidParameter` when the length is not a transform length; the
     ///   reason names the nearest lengths that are. `DSP.nextFastLength` and `zeroPadded`
@@ -28,6 +29,9 @@ extension DSP {
     /// The real signal whose one-sided spectrum is given: the exact inverse of ``realDFT(_:)``.
     /// `N / 2 + 1` bins give `N` samples. The imaginary parts of the first and the last bin
     /// are not read.
+    ///
+    /// A one-shot computation: synchronous, it runs where it is called, on any thread, and
+    /// allocates (§9.2).
     ///
     /// - Throws: `DSPError.invalidParameter` when the two arrays differ in length, or when
     ///   `2·(bins − 1)` is not a transform length.

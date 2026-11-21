@@ -16,6 +16,7 @@ extern "C" {
    threads that are under audit: an audit is opened and closed by one thread and sees that
    thread's events and nothing else. */
 
+/* What one audited thread did between `begin` and `end`. A value. */
 typedef struct ztdt_alloc_counts {
     uint64_t allocations;    /* malloc, calloc, valloc, and the allocating half of realloc */
     uint64_t deallocations;  /* free, and the freeing half of realloc */
@@ -48,6 +49,7 @@ void ztdt_force_reallocation(size_t first, size_t second);
    environment: what the tests of RT-6 use to show that a kernel leaves it alone. */
 uint64_t ztdt_floating_point_environment(void);
 
+/* How many audits may be open at once, on different threads. */
 #define ZTDT_ALLOC_MAX_AUDITS 64
 
 #ifdef __cplusplus

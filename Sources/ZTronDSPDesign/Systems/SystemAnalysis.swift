@@ -1,7 +1,8 @@
 import Accelerate   // for the C maths library only: no LAPACK is called outside LinearAlgebra/ (LA-1)
 import ZTronDSPCore
 
-/// Whether the impulse response of a system ends (§6.3.8).
+/// Whether the impulse response of a system ends (§6.3.8). A value, usable on any thread; it
+/// does not allocate.
 public enum SystemKind: Hashable, Sendable {
     /// A digital system whose poles all lie at the origin: its impulse response ends.
     case finiteImpulseResponse
@@ -13,8 +14,9 @@ public enum SystemKind: Hashable, Sendable {
 /// zero and every pole that was *found* from coefficients, its condition number with respect
 /// to them, `κ(r) = Σ|aₖ|·|r|ᵏ / (|r|·|p′(r)|)`. Such a root is wrong by about `κ·ε`.
 ///
-/// A root that was placed, designed, or read from a second-order section in closed form has
-/// no entry: it is known to rounding. An immutable value, usable on any thread.
+/// A root that was placed, designed, or read from a second-order section in closed form has no
+/// entry: it is known to rounding. An immutable value, usable on any thread; reading it does not
+/// allocate, but for `largest`, which gathers the conditions.
 public struct RootConditions: Hashable, Sendable {
     /// For each zero of the analysis, in its order: the condition number, or `nil` for a zero
     /// that was not found from coefficients. Usable on any thread.
@@ -23,9 +25,9 @@ public struct RootConditions: Hashable, Sendable {
     /// that was not found from coefficients. Usable on any thread.
     public let poles: [Double?]
 
-    /// The largest condition number among the roots that have one; `nil` when no root was
-    /// found from coefficients. A multiple root has the condition `.infinity`. Usable on any
-    /// thread.
+    /// The largest condition number among the roots that have one; `nil` when no root was found
+    /// from coefficients. A multiple root has the condition `.infinity`. Usable on any thread; it
+    /// allocates, to gather the conditions.
     public var largest: Double? {
         (zeros + poles).compactMap { $0 }.max()
     }
@@ -53,7 +55,8 @@ public struct RootConditions: Hashable, Sendable {
 /// for a digital system, radians per second for an analog one); the ones that take
 /// `Frequency` values resolve them against the report's sample rate.
 ///
-/// An immutable value, usable on any thread (BG-2).
+/// An immutable value, usable on any thread (BG-2). It is computed in the background, which
+/// allocates, and its responses allocate what they return.
 public struct SystemAnalysis: LTISystem, Hashable, Sendable {
     /// The plane the system is described in. Usable on any thread.
     public let domain: SystemDomain
@@ -427,10 +430,10 @@ extension LTISystem {
     /// stability and phase verdicts, the cascade or the taps it runs as, and the numerical
     /// figures of its realisation.
     ///
-    /// The work runs on `BackgroundWork`, never on the main thread and never on an audio
-    /// thread (BG-1); the caller suspends. It checks between its steps whether the calling
-    /// task was cancelled and then throws `DSPError.cancelled` (BG-3). What comes back is an
-    /// immutable value (BG-2).
+    /// The work runs on `BackgroundWork`, never on the main thread and never on an audio thread
+    /// (BG-1); the caller suspends. It checks between its steps whether the calling task was
+    /// cancelled and then throws `DSPError.cancelled` (BG-3). What comes back is an immutable value
+    /// (BG-2). It allocates, in the background.
     ///
     /// - Parameter sampleRate: The rate the frequencies of the system are resolved against,
     ///   in hertz. A representation that holds no frequency (`ZeroPoleGain`, sections,

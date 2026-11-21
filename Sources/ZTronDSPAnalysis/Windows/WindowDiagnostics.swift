@@ -24,7 +24,8 @@ enum WindowDiagnostics {
 }
 
 extension WindowAnalysis: CustomStringConvertible {
-    /// The report, one line per property: what a logged window writes (WIN-5).
+    /// The report, one line per property: what a logged window writes (WIN-5). Usable on any
+    /// thread; it allocates the lines.
     public var lines: [String] {
         func number(_ value: Double?) -> String { value.map { String(format: "%.6g", $0) } ?? "not defined" }
         func answer(_ value: Bool?) -> String { value.map { $0 ? "yes" : "no" } ?? "not examined" }
@@ -64,5 +65,6 @@ extension WindowAnalysis: CustomStringConvertible {
         return result
     }
 
+    /// The report as text: ``lines``, one per line. Usable on any thread; it allocates the text.
     public var description: String { lines.joined(separator: "\n") }
 }

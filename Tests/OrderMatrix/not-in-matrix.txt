@@ -1,0 +1,16 @@
+# The public stages that have no line in stages.txt, one per line: `Type | why it is not in the matrix`.
+#
+# Scripts/order-matrix.sh --check reads the public stages from the API digests (Docs/API): every
+# public type whose conformances reach StageValue. Each has a line in stages.txt, where the
+# compiler is asked where it may stand, or a line here. What stands here is a construct of the
+# core that processes nothing and takes its domains from what it holds (EXT-1: the core has no
+# processing stage); the stages it holds have their lines. A line that names no public stage fails.
+
+ActivatedStage | what `.active(_:)` returns for a self-typed stage: it has the domains of the stage it switches, which has its line
+ActivatedSequenceStage | what `.active(_:)` returns for a sequence stage: it keeps the domain of the stage it switches, which has its line
+EnvironmentReader | a generic container whose content is built from the environment at its position (§5.4): its domains are its content's
+Group | a generic container with the type of its content, switched as one (ACT-6): its domains are its content's
+Measuring | the measuring spelling of a self-typed step (OUT-1), generic over the step: it stands where its step stands, and the measuring spellings of the stock steps have their lines (`Level: measuring`, …)
+Pipeline | the pipeline itself: its input and output domains are its type arguments, and every cell of the matrix is one
+SequenceChain | a block of sequence stages: it keeps any sampled sequence, as each stage in it does, and those stages have their lines
+Tap | a side branch, generic over the domain it taps (O-15): the main line passes it unchanged, and its branch is checked from that domain as the main line is

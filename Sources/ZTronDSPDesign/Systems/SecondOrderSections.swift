@@ -16,9 +16,10 @@ import ZTronDSPCore
 /// Zeros, poles and gain are read from each section in closed form; no polynomial is
 /// expanded and no root finder runs (§6.3.8). A section always has two poles; a zero and a
 /// pole at the origin, which the pairing adds to fill a section, cancel when the cascade is
-/// read. An immutable value, usable on any thread.
+/// read. An immutable value, usable on any thread; its analysis allocates (see `LTISystem`).
 public struct SecondOrderSections: LTISystem, Hashable, Sendable {
-    /// One second-order section. An immutable value, usable on any thread.
+    /// One second-order section. An immutable value, usable on any thread; it does not
+    /// allocate.
     public struct Section: Hashable, Sendable {
         /// The numerator coefficient of `x[n]` (of `s²` for an analog section). Usable on any
         /// thread.
@@ -145,9 +146,9 @@ public struct SecondOrderSections: LTISystem, Hashable, Sendable {
         return ZeroPoleGain(zeros: roots.zeros, poles: roots.poles, gain: roots.gain, domain: domain)
     }
 
-    /// Digital: `1 − max|p|`. Analog: `−max Re p`. Read from the coefficients of each
-    /// section in closed form: a complex pole pair has the radius `√a2` and the real part
-    /// `−a1/2` exactly. Usable on any thread.
+    /// Digital: `1 − max|p|`. Analog: `−max Re p`. Read from the coefficients of each section in
+    /// closed form: a complex pole pair has the radius `√a2` and the real part `−a1/2` exactly.
+    /// Usable on any thread; it may allocate.
     public var stabilityMargin: Double {
         let extents = cascadeRoots().extents
         switch domain {

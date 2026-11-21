@@ -10,9 +10,10 @@
 /// end by its sign; a filter is not required to agree with the oracle on such input (NUM-1
 /// keeps it out of every spectrum).
 ///
-/// Plain functions: any thread; they allocate. Not for the analysis thread.
+/// Plain functions, usable on any thread but the analysis thread: `reflected(_:count:)` does
+/// not allocate, and the others allocate as they copy and sort.
 public enum MedianOracle {
-    /// The direction a median is taken along.
+    /// The direction a median is taken along: a value, usable on any thread; it does not allocate.
     public enum Axis: Hashable, Sendable {
         /// Across frames: the same bin of the frames before and after.
         case time
@@ -44,6 +45,7 @@ public enum MedianOracle {
     ///   - values: `rowCount` values per frame, frame after frame.
     ///   - rowCount: values per frame: the bins.
     ///   - kernel: how many values a median is taken over: odd, at least 1.
+    ///   - axis: `.time` across frames, `.frequency` across bins.
     /// - Returns: as many values, in the same order; nothing for values that do not fill whole
     ///   frames, a row count below 1, or a kernel that is even or below 1.
     public static func filter(_ values: [Float], rowCount: Int, kernel: Int, along axis: Axis) -> [Float] {

@@ -39,14 +39,24 @@ import ZTronDSPCore
 /// - `window` and `hop` have to satisfy the overlap-add condition of `InverseSTFT` (O-17).
 ///
 /// A pipeline that holds the recipe equals one that holds its expansion, wrapped in a `Group`
-/// when it carries a switch. An immutable value, usable on any thread.
+/// when it carries a switch. An immutable value, usable on any thread; creating one allocates
+/// its expansion.
 public struct HPSS: Recipe {
+    /// Audio samples.
     public typealias Input = Samples
+    /// One channel of samples: the component.
     public typealias Output = Samples
 
+    /// What the recipe stands for: the analysis, the separation and the matched synthesis, in a
+    /// `Group` when it carries a switch.
     public let expansion: Pipeline<Samples, Samples>
+    /// The recipe's switch: off, the recipe is bypassed as a whole, or suspends what follows when
+    /// it reduces the channels (ACT-3).
     public let activation: StageActivation
 
+    /// The `component` of the signal, separated as ``HarmonicPercussive`` separates it, from
+    /// frames of `frame` samples every `hop` samples under `window`. The values are checked when
+    /// the pipeline is compiled (O-17).
     public init(
         select component: HarmonicPercussiveComponent, frame: Int = 2_048, hop: Int = 512, window: Window = .hann, timeKernel: Int = 31,
         frequencyKernel: Int = 31, mask: some MaskStrategy = .soft(power: 2), harmonicMargin: Double = 1, percussiveMargin: Double = 1,
@@ -70,6 +80,7 @@ public struct HPSS: Recipe {
 
 extension Pipeline where Output == Samples {
     /// One component of the signal, resynthesised: see ``HPSS``.
+    /// Usable on any thread; allocates the pipeline it returns.
     public func hpss(
         select component: HarmonicPercussiveComponent, frame: Int = 2_048, hop: Int = 512, window: Window = .hann, timeKernel: Int = 31,
         frequencyKernel: Int = 31, mask: some MaskStrategy = .soft(power: 2), harmonicMargin: Double = 1, percussiveMargin: Double = 1,

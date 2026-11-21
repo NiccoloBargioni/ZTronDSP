@@ -35,7 +35,9 @@ import ZTronDSPCore
 /// engine on its control context. `prepare` opens the file on the background executor.
 /// `stop` waits until the reader thread has ended, which takes as long as one read, and for
 /// five seconds at most: a reader that is stuck in a read longer than that is left to end by
-/// itself, and the source has to be prepared again before it starts.
+/// itself, and the source has to be prepared again before it starts. `prepare`, `start` and
+/// `connect(to:)` may allocate, and so may the reader thread, which reads through
+/// AVFoundation; nothing of the source runs on the analysis thread.
 public final class FileSource: PushSampleSource {
     /// One run of the reader thread, and what passes between it and the control side: the
     /// reader, while no thread reads it, and the frames the thread wrote.
@@ -68,6 +70,7 @@ public final class FileSource: PushSampleSource {
     /// A source that reads the file at `url`.
     ///
     /// - Parameters:
+    ///   - url: the file; it is opened when the source is prepared.
     ///   - pacing: `.realTime`, the default, delivers the file at the speed it plays at;
     ///     `.asFastAsPossible` as fast as the pipeline takes it.
     ///   - sampleRate: the rate to deliver. `nil`, the default, is the file's own.

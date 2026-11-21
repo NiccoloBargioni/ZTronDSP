@@ -5,7 +5,7 @@ import ZTronDSPCore
 /// answer to one question (§5.3): framing steps, and the steps that keep a history of
 /// frames, take it where they are declared.
 ///
-/// An immutable value, usable on any thread.
+/// An immutable value, usable on any thread; it does not allocate.
 public enum FrameAlignment: Hashable, Sendable {
     /// The frame ends at the newest sample. No latency is added; the frame's time is the time
     /// of its last sample. Frame `k` holds samples `k·hop ..< k·hop + frame`.
@@ -31,10 +31,13 @@ public enum FrameAlignment: Hashable, Sendable {
 /// The factor is the same for every bin: bin 0 and the Nyquist bin, which have no mirror
 /// image, therefore read twice their one-sided share under `.amplitude` and `.power`.
 ///
-/// An immutable value, usable on any thread.
+/// An immutable value, usable on any thread; it does not allocate.
 public enum WindowNormalization: Hashable, Sendable {
+    /// No factor: the DFT of the windowed frame as it is.
     case none
+    /// `2 / Σw`: a full-scale sine at a bin centre reads 0 dBFS.
     case amplitude
+    /// `√(2 / (M·Σw²))`: the squared magnitudes add up to the mean square under the window.
     case power
 
     /// The factor for a window given by its samples and a transform of `transformLength`
@@ -74,11 +77,15 @@ public enum WindowNormalization: Hashable, Sendable {
 /// ```
 ///
 /// Like a `Frequency`, a range is resolved against the environment when the plan is compiled
-/// (ENV-2): construction never fails. An immutable value, usable on any thread.
+/// (ENV-2): construction never fails. An immutable value, usable on any thread; it does not
+/// allocate, but for ``description``.
 public struct FrequencyRange: Hashable, Sendable, CustomStringConvertible {
+    /// The lower bound, in the unit it was stated in.
     public let lowerBound: Frequency
+    /// The upper bound, in the unit it was stated in.
     public let upperBound: Frequency
 
+    /// The band from `lowerBound` to `upperBound`, checked when it is resolved.
     public init(from lowerBound: Frequency, to upperBound: Frequency) {
         self.lowerBound = lowerBound
         self.upperBound = upperBound
@@ -102,5 +109,6 @@ public struct FrequencyRange: Hashable, Sendable, CustomStringConvertible {
         return low ... high
     }
 
+    /// The two bounds as `Frequency` writes them, joined by an ellipsis.
     public var description: String { "\(lowerBound) … \(upperBound)" }
 }

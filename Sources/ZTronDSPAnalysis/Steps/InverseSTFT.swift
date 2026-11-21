@@ -30,10 +30,14 @@ import ZTronDSPCore
 /// - With a constant-overlap-add window the reconstruction is exact to the round-off of the
 ///   transform (SNR ≥ 100 dB). §6.13 gives the report.
 ///
-/// Switched off, it suspends the rest of its branch (ACT-3). An immutable value, usable on
-/// any thread; `lower(_:)` runs on the control context.
+/// Switched off, it suspends the rest of its branch (ACT-3). An immutable value, usable on any
+/// thread. Its backend is kept boxed (`AnyStrategy`): creating one, and reading `backend`, allocate
+/// only for a backend larger than three words, which the stock one is not. `lower(_:)` runs on the
+/// control context and may allocate.
 public struct InverseSTFT: PipelineStage {
+    /// The complex linear-frequency spectrum of an `STFT`.
     public typealias Input = Spectrum<LinearFrequency, ComplexValues>
+    /// One channel of samples, in blocks of one hop.
     public typealias Output = Samples
 
     /// The window of the analysis, applied again by the synthesis.
@@ -43,11 +47,15 @@ public struct InverseSTFT: PipelineStage {
     /// The alignment of the analysis.
     public let alignment: FrameAlignment
     let backendBox: AnyStrategy
+    /// The step's switch: off, it suspends the rest of its branch (ACT-3).
     public let activation: StageActivation
     /// False only for the round trip of an inversion report, which measures what a window
     /// that fails the overlap-add condition loses instead of refusing it (INV-3).
     let enforcesOverlapAdd: Bool
 
+    /// The synthesis for an analysis with `window`, `normalization` and `alignment`, by the
+    /// transform of `backend`. Nothing is checked here: `lower(_:)` checks the frames at the
+    /// step's position and the overlap-add condition when the plan is compiled (O-17).
     public init(
         window: Window = .hann, normalization: WindowNormalization = .none, alignment: FrameAlignment = .causal,
         backend: some FFTBackend = .vDSP, isActive: some ActivationSource = .active
@@ -82,6 +90,9 @@ public struct InverseSTFT: PipelineStage {
         return (total, total - analysis)
     }
 
+    /// Checks the spectral scope at the step's position, the transform length, the backend and
+    /// the non-zero overlap-add condition (O-17, WIN-3), and emits the node with its delay as
+    /// latency. Control context; allocates.
     public func lower(_ context: inout LoweringContext) throws(DSPError) {
         let environment = context.environment
         let rate = environment.sampleRate
@@ -125,6 +136,7 @@ public struct InverseSTFT: PipelineStage {
 
 extension Pipeline where Output == Spectrum<LinearFrequency, ComplexValues> {
     /// Back to samples by overlap-add: see ``InverseSTFT``.
+    /// Usable on any thread; allocates the pipeline it returns.
     public func inverseSTFT(
         window: Window = .hann, normalization: WindowNormalization = .none, alignment: FrameAlignment = .causal,
         backend: some FFTBackend = .vDSP, isActive: some ActivationSource = .active
@@ -135,7 +147,8 @@ extension Pipeline where Output == Spectrum<LinearFrequency, ComplexValues> {
 
 extension STFT {
     /// The synthesis that undoes this analysis: an `InverseSTFT` with its window, its
-    /// normalisation, its alignment and its backend (INV-1).
+    /// normalisation, its alignment and its backend (INV-1). Usable on any thread; it does not
+    /// allocate.
     public var inverse: InverseSTFT {
         InverseSTFT(window: window, normalization: normalization, alignment: alignment, backendBox: backendBox, activation: .active)
     }

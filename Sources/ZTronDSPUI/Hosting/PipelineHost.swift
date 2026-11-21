@@ -363,8 +363,8 @@ extension View {
     /// (an invalid order, a sink another attachment writes) leaves the view as it was and is
     /// logged.
     ///
-    /// Threading: main actor, like every view modifier. Attaching and updating suspend off
-    /// the main thread.
+    /// Threading: main actor, like every view modifier; it may allocate, for the state of the
+    /// attachment it keeps. Attaching and updating suspend off the main thread.
     public func pipeline<Output: SignalDomain>(_ pipeline: Pipeline<Samples, Output>, on source: any SampleSource) -> some View {
         PipelineHost(content: self, pipeline: pipeline, source: source)
     }

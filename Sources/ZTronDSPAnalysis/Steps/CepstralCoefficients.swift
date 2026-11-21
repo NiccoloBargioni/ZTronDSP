@@ -15,15 +15,20 @@ import ZTronDSPCore
 /// no setup is created to find out (E-09). Downstream the rows are plain positions.
 ///
 /// Switched off, it suspends the rest of its branch (ACT-3). An immutable value, usable on
-/// any thread.
+/// any thread; `lower(_:)` runs on the control context and may allocate.
 public struct CepstralCoefficients: PipelineStage {
+    /// A mel spectrum in decibels (O-10).
     public typealias Input = Spectrum<MelFrequency, DecibelValues>
+    /// The coefficients, one per row.
     public typealias Output = MelCepstrum
 
     /// Coefficients kept, from the first on.
     public let count: Int
+    /// The step's switch: off, it suspends the rest of its branch (ACT-3).
     public let activation: StageActivation
 
+    /// Keeps the first `count` coefficients: between 1 and the band count, which `lower(_:)`
+    /// checks when the plan is compiled.
     public init(count: Int = 13, isActive: some ActivationSource = .active) {
         self.count = count
         self.activation = isActive.stageActivation
@@ -34,6 +39,8 @@ public struct CepstralCoefficients: PipelineStage {
         let count: Int
     }
 
+    /// Checks the count against the bands at the step's position and emits the transform: the
+    /// vDSP DCT at a band count it documents, the basis otherwise. Control context; may allocate.
     public func lower(_ context: inout LoweringContext) throws(DSPError) {
         guard let bands = context.environment.frequencyAxis?.rowCount, bands >= 1 else {
             throw DSPError.unsupportedConfiguration(
@@ -62,20 +69,27 @@ public struct CepstralCoefficients: PipelineStage {
 /// downstream the rows are plain positions.
 ///
 /// Switched off, it suspends the rest of its branch (ACT-3). An immutable value, usable on
-/// any thread.
+/// any thread; `lower(_:)` runs on the control context and may allocate.
 public struct InverseCepstralCoefficients: PipelineStage {
+    /// Mel-frequency cepstral coefficients.
     public typealias Input = MelCepstrum
+    /// A mel spectrum in decibels.
     public typealias Output = Spectrum<MelFrequency, DecibelValues>
 
     /// Bands of the spectrum produced.
     public let bands: Int
+    /// The step's switch: off, it suspends the rest of its branch (ACT-3).
     public let activation: StageActivation
 
+    /// A spectrum of `bands` bands: at least as many as the coefficients and at most 65 536, which
+    /// `lower(_:)` checks when the plan is compiled.
     public init(bands: Int, isActive: some ActivationSource = .active) {
         self.bands = bands
         self.activation = isActive.stageActivation
     }
 
+    /// Checks the band count against the coefficients at the step's position and emits the
+    /// transposed basis. Control context; may allocate.
     public func lower(_ context: inout LoweringContext) throws(DSPError) {
         guard let count = context.environment.frequencyAxis?.rowCount, count >= 1 else {
             throw DSPError.unsupportedConfiguration(
@@ -95,13 +109,14 @@ public struct InverseCepstralCoefficients: PipelineStage {
 }
 
 extension CepstralCoefficients {
-    /// The step that undoes this one where it can be undone: with as many bands as
-    /// coefficients (INV-1).
+    /// The step that undoes this one where it can be undone: with as many bands as coefficients
+    /// (INV-1). Usable on any thread; it does not allocate.
     public var inverse: InverseCepstralCoefficients { InverseCepstralCoefficients(bands: count) }
 }
 
 extension Pipeline where Output == Spectrum<MelFrequency, DecibelValues> {
     /// The mel-frequency cepstral coefficients of each frame: see ``CepstralCoefficients``.
+    /// Usable on any thread; allocates the pipeline it returns.
     public func cepstralCoefficients(count: Int = 13, isActive: some ActivationSource = .active) -> Pipeline<Input, MelCepstrum> {
         appending(CepstralCoefficients(count: count, isActive: isActive))
     }
@@ -109,6 +124,7 @@ extension Pipeline where Output == Spectrum<MelFrequency, DecibelValues> {
 
 extension Pipeline where Output == MelCepstrum {
     /// The coefficients back to a mel spectrum in decibels: see ``InverseCepstralCoefficients``.
+    /// Usable on any thread; allocates the pipeline it returns.
     public func inverseCepstralCoefficients(bands: Int, isActive: some ActivationSource = .active) -> Pipeline<Input, Spectrum<MelFrequency, DecibelValues>> {
         appending(InverseCepstralCoefficients(bands: bands, isActive: isActive))
     }

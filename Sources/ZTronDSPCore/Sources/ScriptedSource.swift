@@ -10,11 +10,17 @@ import Foundation
 /// the script goes on in the new one. A failure reports `.failed` and then delivers silence
 /// until the engine stops asking.
 ///
-/// Threading: as a pull source, with one deliberate exception. Events and failures are sent
-/// from `render`, which allocates. That is what makes them arrive at an exact place in the
-/// stream, and it is why this type is a test double and not a pattern for a source.
+/// Threading: as a pull source. `prepare`, `start` and `stop` run on the control context;
+/// `render` runs on the analysis thread, or on the offline thread with the default
+/// `.asFastAsPossible` pacing; `format` may be read on any thread. With two deliberate
+/// exceptions to RT-2: `render` sends events and failures, which allocates, and at a format
+/// change it takes the lock that guards `format`. That is what makes them arrive at an exact
+/// place in the stream, and it is why this type is a test double and not a pattern for a
+/// source.
 public final class ScriptedSource: PullSampleSource, @unchecked Sendable {
     /// One step of a script.
+    ///
+    /// A value, usable on any thread; it does not allocate.
     public enum Step: Sendable {
         /// A batch of samples, one array per channel, all of one length.
         case samples([[Float]])
@@ -26,8 +32,12 @@ public final class ScriptedSource: PullSampleSource, @unchecked Sendable {
         case failure(DSPError)
     }
 
+    /// How the engine paces the script: `.asFastAsPossible` unless told otherwise.
     public let pacing: Pacing
+    /// The format the script is in now: the initial one, then that of the last format change
+    /// `render` reached. It takes a lock; any thread.
     public var format: SignalFormat { current.get() }
+    /// The events and the format changes of the script, as `render` reaches them.
     public var events: AsyncStream<SourceEvent> { channel.stream }
 
     private let initialFormat: SignalFormat
@@ -44,7 +54,8 @@ public final class ScriptedSource: PullSampleSource, @unchecked Sendable {
     private var failed = false
     private let renders: OpaquePointer?
 
-    /// A source that follows `steps` and then ends.
+    /// A source that follows `steps` and then ends. Any thread but the analysis thread; it
+    /// allocates.
     public init(format: SignalFormat, pacing: Pacing = .asFastAsPossible, _ steps: [Step]) {
         self.initialFormat = format
         self.pacing = pacing
@@ -57,8 +68,8 @@ public final class ScriptedSource: PullSampleSource, @unchecked Sendable {
         self.renders = ztd_atomic_create(0)
     }
 
-    /// A source that delivers `samples` on one channel in batches of the given sizes, the last
-    /// size repeating until the samples run out.
+    /// A source that delivers `samples` on one channel in batches of the given sizes, the last size
+    /// repeating until the samples run out. Any thread but the analysis thread; it allocates.
     public convenience init(_ samples: [Float], sampleRate: Double, batchSizes: [Int], pacing: Pacing = .asFastAsPossible) {
         var steps: [Step] = []
         var position = 0
@@ -82,6 +93,7 @@ public final class ScriptedSource: PullSampleSource, @unchecked Sendable {
         renders.map { Int(truncatingIfNeeded: ztd_atomic_load($0)) } ?? 0
     }
 
+    /// Checks the initial format and rewinds the script to its first step. Control context.
     public func prepare() async throws(DSPError) {
         guard initialFormat.isValid else {
             throw .invalidParameter(stage: .none, parameter: "format", reason: "\(initialFormat) is not a signal format")
@@ -92,10 +104,15 @@ public final class ScriptedSource: PullSampleSource, @unchecked Sendable {
         failed = false
     }
 
+    /// Does nothing: the engine's requests drive the script.
     public func start() throws(DSPError) {}
 
+    /// Does nothing.
     public func stop() {}
 
+    /// Delivers the next batch, or the part of it that fits; sends the events it passes, ends the
+    /// stream at a format change, and delivers silence after a failure. See the threading note
+    /// of the type for what it allocates and locks.
     public func render(into block: inout AudioBlock) -> Int {
         if let renders { _ = ztd_atomic_add(renders, 1) }
         if failed {

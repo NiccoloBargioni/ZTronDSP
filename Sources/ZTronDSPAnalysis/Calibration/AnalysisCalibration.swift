@@ -19,7 +19,8 @@ import ZTronDSPMetal
 /// (`CrossoverTable.convolutionFFTFactor`). `modelSize(signalLength:kernelLength:)` is the
 /// quotient of the two sides: the FFT method is used where it exceeds the factor.
 ///
-/// An immutable value, usable on any thread, and `Codable`, so an app can keep it.
+/// An immutable value, usable on any thread, and `Codable`, so an app can keep it; creating
+/// or decoding one allocates its arrays.
 public struct ConvolutionCrossover: Hashable, Sendable, Codable {
     /// Samples of the signal every convolution of the measurement was given.
     public let signalLength: Int
@@ -75,7 +76,8 @@ public struct ConvolutionCrossover: Hashable, Sendable, Codable {
 /// The crossovers of the analysis target as measured on a device, together with the
 /// measurements they were read from (SEL-5): what `Calibration.analysisReport()` returns.
 ///
-/// An immutable value, usable on any thread, and `Codable`, so an app can keep it.
+/// An immutable value, usable on any thread, and `Codable`, so an app can keep it; creating
+/// or decoding one allocates its arrays.
 public struct AnalysisCalibrationReport: Hashable, Sendable, Codable {
     /// The table: the one the measurements started from, with `melDense` and `medianGPU`
     /// replaced by their measured crossovers where two implementations were measured, and
@@ -87,7 +89,12 @@ public struct AnalysisCalibrationReport: Hashable, Sendable, Codable {
     /// The one-shot convolution.
     public let convolution: ConvolutionCrossover
 
-    /// - Parameter base: the table the entries that were not measured are taken from.
+    /// A report from its measurements: the table is `base` with what was measured replaced.
+    ///
+    /// - Parameters:
+    ///   - measurements: the mel projection and the median of a spectrogram.
+    ///   - convolution: the one-shot convolution.
+    ///   - base: the table the entries that were not measured are taken from.
     public init(measurements: [CrossoverMeasurement], convolution: ConvolutionCrossover, startingFrom base: CrossoverTable = .shipped) {
         self.measurements = measurements
         self.convolution = convolution
@@ -119,9 +126,10 @@ extension Calibration {
     /// let engine = DSPEngine(crossovers: table)
     /// ```
     ///
-    /// Runs on the background executor (BG-1) for a second or two; the caller may be on any
-    /// thread but the analysis thread, and should not run audio it cares about meanwhile: the
-    /// measurement loads a processor core and the GPU. The table is an immutable value (BG-2).
+    /// Runs on the background executor (BG-1) for a second or two, and allocates; the caller
+    /// may be on any thread but the analysis thread, and should not run audio it cares about
+    /// meanwhile: the measurement loads a processor core and the GPU. The table is an
+    /// immutable value (BG-2).
     /// Where there is no Metal device the median keeps the value of `base`.
     ///
     /// - Throws: `cancelled` when the calling task was cancelled (BG-3).
@@ -131,7 +139,8 @@ extension Calibration {
 
     /// The same measurement with the curves the table was read from, for inspection.
     ///
-    /// Threading and errors as ``measureAnalysis(startingFrom:)``.
+    /// Runs on the background executor (BG-1) and allocates; the caller may be on any thread but
+    /// the analysis thread, and the errors are those of ``measureAnalysis(startingFrom:)``.
     public static func analysisReport(startingFrom base: CrossoverTable = .shipped) async throws(DSPError) -> AnalysisCalibrationReport {
         try await BackgroundWork.run { checkpoint throws(DSPError) -> AnalysisCalibrationReport in
             try measureAnalysisStock(

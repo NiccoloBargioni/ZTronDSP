@@ -31,7 +31,8 @@ import ZTronDSPMetal
 /// change of appearance costs one draw and uploads nothing (§8.4). As every component, the
 /// view draws only while the scene phase it reads is `.active`: a host that is not a SwiftUI
 /// scene has to hand the phase of its scene down with `.environment(\.scenePhase, …)`, as
-/// ``HeatmapView`` describes.
+/// ``HeatmapView`` describes. Main actor, like every view; its renderer allocates its texture
+/// when the surface is made, and again only when the feed's history changes (V-6).
 public struct WaveformView: View, Equatable {
     private let input: ComponentInput<WaveformFeed>
 

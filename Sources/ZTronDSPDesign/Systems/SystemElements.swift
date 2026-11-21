@@ -6,7 +6,8 @@ import ZTronDSPCore
 /// What the elements of both system builders have in common (§6.3.7): whether they depend on
 /// the sample rate, and their continuous values.
 ///
-/// Conformers are immutable values, usable on any thread.
+/// Conformers are immutable values, usable on any thread; `parameters` may allocate the list
+/// it returns, and resolving an element allocates (``IIRSystemElement``, ``FIRSystemElement``).
 public protocol SystemElement: Hashable, Sendable {
     /// True when the element depends on the sample rate it is resolved at: it states a
     /// frequency in hertz, as a MIDI note or in mels. An element that is fixed in the `z`
@@ -19,17 +20,17 @@ public protocol SystemElement: Hashable, Sendable {
     /// `animatableValue`, gains in decibels. The default is no values. Usable on any thread.
     var parameters: [Double] { get }
 
-    /// The element with its continuous values replaced; `values` holds as many as
-    /// `parameters`. Usable on any thread.
+    /// The element with its continuous values replaced; `values` holds as many as `parameters`.
+    /// Usable on any thread; it may allocate.
     func replacingParameters(_ values: ArraySlice<Double>) -> Self
 }
 
 extension SystemElement {
     /// The default: the element is taken to depend on the sample rate. Usable on any thread.
     public var dependsOnSampleRate: Bool { true }
-    /// The default: no continuous values. Usable on any thread.
+    /// The default: no continuous values. Usable on any thread. It does not allocate.
     public var parameters: [Double] { [] }
-    /// The default: nothing to replace. Usable on any thread.
+    /// The default: nothing to replace. Usable on any thread. It does not allocate.
     public func replacingParameters(_ values: ArraySlice<Double>) -> Self { self }
 }
 
@@ -153,7 +154,7 @@ enum RootLocation: Hashable, Sendable {
 /// when a pipeline that runs it is compiled (REAL-2). In an `FIRSystem` only a pole at the
 /// origin is accepted: it is a delay of one sample.
 ///
-/// An immutable value, usable on any thread.
+/// An immutable value, usable on any thread; resolving it at a sample rate allocates.
 public struct Pole: IIRSystemElement, FIRSystemElement {
     let location: RootLocation
 
@@ -188,7 +189,8 @@ public struct Pole: IIRSystemElement, FIRSystemElement {
     /// True for a pole whose frequency is stated in hertz, as a note or in mels. Usable on
     /// any thread.
     public var dependsOnSampleRate: Bool { location.dependsOnSampleRate }
-    /// The frequency of a pole given by radius and frequency. Usable on any thread.
+    /// The frequency of a pole given by radius and frequency. Usable on any thread; it may
+    /// allocate.
     public var parameters: [Double] { location.parameters }
     /// The pole at another frequency. Usable on any thread.
     public func replacingParameters(_ values: ArraySlice<Double>) -> Pole { Pole(location: location.replacingParameters(values)) }
@@ -206,7 +208,7 @@ public struct Pole: IIRSystemElement, FIRSystemElement {
 /// `Zero(onUnitCircleAt: .hertz(50))` removes 50 Hz entirely: the pair `e^{±j·2π·50/fs}`.
 /// A zero at 0 Hz or at the Nyquist frequency is real and stands alone.
 ///
-/// An immutable value, usable on any thread.
+/// An immutable value, usable on any thread; resolving it at a sample rate allocates.
 public struct Zero: IIRSystemElement, FIRSystemElement {
     let location: RootLocation
 
@@ -245,7 +247,7 @@ public struct Zero: IIRSystemElement, FIRSystemElement {
     /// True for a zero whose frequency is stated in hertz, as a note or in mels. Usable on
     /// any thread.
     public var dependsOnSampleRate: Bool { location.dependsOnSampleRate }
-    /// The frequency of a zero given by its frequency. Usable on any thread.
+    /// The frequency of a zero given by its frequency. Usable on any thread; it may allocate.
     public var parameters: [Double] { location.parameters }
     /// The zero at another frequency. Usable on any thread.
     public func replacingParameters(_ values: ArraySlice<Double>) -> Zero { Zero(location: location.replacingParameters(values)) }
@@ -264,7 +266,7 @@ public struct Zero: IIRSystemElement, FIRSystemElement {
 /// Each list holds one to three numbers; `a[0]` is not zero and is normalised to 1. The
 /// zeros and the poles are read in closed form: no root finder runs (§6.3.8).
 ///
-/// An immutable value, usable on any thread.
+/// An immutable value, usable on any thread; resolving it at a sample rate allocates.
 public struct Section: IIRSystemElement, FIRSystemElement {
     /// The numerator coefficients, lowest delay first. Usable on any thread.
     public let b: [Double]
@@ -327,7 +329,7 @@ public struct Section: IIRSystemElement, FIRSystemElement {
 /// equation reports that condition for every root that came from one. Prefer zeros, poles
 /// and sections where the system is known that way.
 ///
-/// An immutable value, usable on any thread.
+/// An immutable value, usable on any thread; resolving it at a sample rate allocates.
 public struct DifferenceEquation: IIRSystemElement, FIRSystemElement, ConditionedSystemElement {
     /// The coefficients of the input, lowest delay first. Usable on any thread.
     public let b: [Double]
@@ -337,7 +339,8 @@ public struct DifferenceEquation: IIRSystemElement, FIRSystemElement, Conditione
     /// thread.
     public let rootFinder: AnyStrategy
 
-    /// Usable on any thread.
+    /// Usable on any thread; it allocates only to box a root finder larger than three words, which
+    /// the stock one is not.
     public init(b: [Double], a: [Double] = [1], rootFinder: some PolynomialRootFinder = .companionQR) {
         self.b = b
         self.a = a
@@ -394,7 +397,7 @@ public struct DifferenceEquation: IIRSystemElement, FIRSystemElement, Conditione
 
 /// Caller-supplied FIR coefficients (§6.3.3): `y[n] = Σ taps[k]·x[n − k]`.
 ///
-/// An immutable value, usable on any thread.
+/// An immutable value, usable on any thread; resolving it at a sample rate allocates.
 public struct Taps: FIRSystemElement {
     /// The coefficients, lowest delay first. Usable on any thread.
     public let values: [Double]
@@ -435,7 +438,8 @@ public struct Taps: FIRSystemElement {
 /// not fitted. A fit that leaves much of the axis out is ill-conditioned and is solved by the
 /// fall-back of the method (§6.3.3); its taps then follow the minimum-norm solution.
 ///
-/// Oracle: `scipy.signal.firls`. An immutable value, usable on any thread.
+/// Oracle: `scipy.signal.firls`. An immutable value, usable on any thread; resolving it at a
+/// sample rate allocates.
 public struct LeastSquares: FIRSystemElement {
     /// The number of taps: odd. Usable on any thread.
     public let length: Int
@@ -479,9 +483,9 @@ public struct LeastSquares: FIRSystemElement {
 
     /// True when a band edge is stated in hertz, as a note or in mels. Usable on any thread.
     public var dependsOnSampleRate: Bool { bands.contains { !$0.dependsOnSampleRate } }
-    /// The band edges. Usable on any thread.
+    /// The band edges. Usable on any thread; it may allocate.
     public var parameters: [Double] { bands.map(\.animatableValue) }
-    /// The fit with other band edges. Usable on any thread.
+    /// The fit with other band edges. Usable on any thread; it may allocate.
     public func replacingParameters(_ values: ArraySlice<Double>) -> LeastSquares {
         guard values.count == bands.count else { return self }
         return LeastSquares(length: length, bands: zip(bands, values).map { $0.replacing(animatableValue: $1) }, desired: desired, weights: weights)

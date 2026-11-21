@@ -168,7 +168,9 @@ extension Pipeline where Input == Samples, Output == Samples {
         try runOffline([samples], format, blockSize, crossovers).samples.first ?? []
     }
 
-    /// Runs the pipeline on a signal of several channels, one array per channel.
+    /// Runs the pipeline on a signal of several channels, one array per channel. As the
+    /// single-channel `process`, it runs synchronously on the caller's thread and compiles a plan,
+    /// so it allocates: not for the analysis thread.
     public func process(
         channels: [[Float]], format: SignalFormat, blockSize: Int = 512, crossovers: CrossoverTable = .shipped
     ) throws(DSPError) -> [[Float]] {
@@ -177,8 +179,9 @@ extension Pipeline where Input == Samples, Output == Samples {
 }
 
 extension Pipeline where Input == Samples, Output: RealVectorDomain {
-    /// Runs the pipeline on `samples` and returns the frames at the end of its main line, one
-    /// array per frame.
+    /// Runs the pipeline on `samples` and returns the frames at the end of its main line, one array
+    /// per frame. As the `process` of samples, it runs synchronously on the caller's thread and
+    /// compiles a plan, so it allocates: not for the analysis thread.
     public func process(
         _ samples: [Float], format: SignalFormat, blockSize: Int = 512, crossovers: CrossoverTable = .shipped
     ) throws(DSPError) -> [[Float]] {
@@ -187,7 +190,9 @@ extension Pipeline where Input == Samples, Output: RealVectorDomain {
 }
 
 extension Pipeline where Input == Samples, Output: ScalarValuedDomain {
-    /// Runs the pipeline on `samples` and returns the values at the end of its main line.
+    /// Runs the pipeline on `samples` and returns the values at the end of its main line. As the
+    /// `process` of samples, it runs synchronously on the caller's thread and compiles a plan, so
+    /// it allocates: not for the analysis thread.
     public func process(
         _ samples: [Float], format: SignalFormat, blockSize: Int = 512, crossovers: CrossoverTable = .shipped
     ) throws(DSPError) -> [ScalarFrame] {
@@ -196,7 +201,9 @@ extension Pipeline where Input == Samples, Output: ScalarValuedDomain {
 }
 
 extension Pipeline where Input == Samples {
-    /// Runs the pipeline on `samples` for the sake of its sinks, whatever its output domain.
+    /// Runs the pipeline on `samples` for the sake of its sinks, whatever its output domain. As
+    /// `process`, it runs synchronously on the caller's thread and compiles a plan, so it
+    /// allocates: not for the analysis thread.
     public func run(
         on samples: [Float], format: SignalFormat, blockSize: Int = 512, crossovers: CrossoverTable = .shipped
     ) throws(DSPError) {

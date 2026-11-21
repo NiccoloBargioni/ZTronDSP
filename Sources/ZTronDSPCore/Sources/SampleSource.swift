@@ -32,6 +32,10 @@ public protocol SampleSource: AnyObject, Sendable {
 
 /// A source clocked by something else: hardware, a reader thread. It writes into the ring the
 /// engine hands it and never waits for the engine (RT-8).
+///
+/// Threading as for every source: `connect` too runs on the control context, where it may
+/// allocate. The source then writes into the ring from its own thread (the I/O thread, for
+/// hardware), and `RingWriter.write` does not allocate.
 public protocol PushSampleSource: SampleSource {
     /// Gives the source the ring it writes into. Called on the control context after
     /// `prepare()` and again after every format change, with a ring of the new format; from
@@ -40,6 +44,10 @@ public protocol PushSampleSource: SampleSource {
 }
 
 /// A source clocked by the engine.
+///
+/// Threading as for every source, and `pacing` is read on the control context. `render` runs
+/// on the analysis thread, or on the offline thread of an `.asFastAsPossible` source, and does
+/// not allocate (RT-2).
 public protocol PullSampleSource: SampleSource {
     /// Whether the engine asks for a block once per block duration or as fast as it can
     /// process them.
@@ -59,6 +67,8 @@ public protocol PullSampleSource: SampleSource {
 }
 
 /// How the engine paces a pull source.
+///
+/// A value, usable on any thread; it does not allocate.
 public enum Pacing: Hashable, Sendable {
     /// One block per block duration, on the analysis thread.
     case realTime
@@ -68,6 +78,8 @@ public enum Pacing: Hashable, Sendable {
 }
 
 /// What happened to a source (§4.4, CAP-8).
+///
+/// A value, usable on any thread; it does not allocate.
 public enum SourceEvent: Sendable, Hashable {
     /// The source delivers another format from now on. The engine re-plans (ATT-4).
     case formatChanged(SignalFormat)
@@ -88,6 +100,8 @@ public enum SourceEvent: Sendable, Hashable {
 }
 
 /// What changed about the input route (MIC-4).
+///
+/// A value, usable on any thread; it does not allocate.
 public enum RouteChange: Hashable, Sendable {
     /// The selected input disappeared; the source fell back to the system's choice.
     case inputLost
@@ -103,7 +117,8 @@ public enum RouteChange: Hashable, Sendable {
 /// out its stream as `events`.
 ///
 /// Threading: `send` may be called from any thread that is allowed to allocate and lock; it is
-/// not for the audio I/O thread or the analysis thread.
+/// not for the audio I/O thread or the analysis thread. Creating a channel allocates its
+/// stream, and `send` may allocate.
 public final class SourceEventChannel: Sendable {
     /// The stream a source returns from `events`.
     public let stream: AsyncStream<SourceEvent>

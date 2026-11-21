@@ -15,6 +15,8 @@ extension FeedSnapshot: MATLABExportable {
     /// against their index, because an image has evenly spaced rows; their values are in the
     /// script as `row_values`.
     ///
+    /// Runs in the background (BG-1, MAT-6), from any context, and allocates the text it returns.
+    ///
     /// - Throws: `DSPError.exportTooLarge` for more than four million values (MAT-4);
     ///   `DSPError.cancelled`.
     public func matlabScript() async throws(DSPError) -> String {
@@ -92,8 +94,10 @@ extension FeedSnapshot: MATLABExportable {
 /// let script = try await ScalarTrack(pitch, rate: 93.75).matlabScript()
 /// ```
 ///
-/// An immutable value, usable on any thread.
+/// An immutable value, usable on any thread; creating one allocates its arrays, and
+/// `matlabScript()` runs in the background.
 public struct ScalarTrack: Hashable, Sendable, MATLABExportable {
+    /// The frames, in order.
     public let frames: [ScalarFrame]
     /// The time of each frame, in seconds.
     public let times: [Double]
@@ -147,9 +151,10 @@ public struct ScalarTrack: Hashable, Sendable, MATLABExportable {
 }
 
 extension InversionReport: MATLABExportable {
-    /// The report as a MATLAB script: the original, the reconstruction and their difference,
-    /// and the spectrum of the difference (INV-4). Without a measured round trip the script
-    /// holds the figures of the report and plots nothing.
+    /// The report as a MATLAB script: the original, the reconstruction and their difference, and
+    /// the spectrum of the difference (INV-4). Without a measured round trip the script holds the
+    /// figures of the report and plots nothing. The work runs on the background executor (BG-1,
+    /// MAT-6), from any context, and allocates.
     ///
     /// - Throws: `DSPError.exportTooLarge` for more than four million values (MAT-4);
     ///   `DSPError.cancelled`.

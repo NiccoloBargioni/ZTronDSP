@@ -4,10 +4,13 @@ import ZTronDSPCore
 /// A colour as a display shows it: red, green and blue as sRGB-encoded values in 0 … 1 (the
 /// values a colour picker shows, divided by 255), not linear light.
 ///
-/// An immutable value, usable on any thread.
+/// An immutable value, usable on any thread; it does not allocate.
 public struct DisplayColor: Hashable, Sendable {
+    /// Red, sRGB-encoded, in 0 … 1.
     public let red: Double
+    /// Green, sRGB-encoded, in 0 … 1.
     public let green: Double
+    /// Blue, sRGB-encoded, in 0 … 1.
     public let blue: Double
 
     /// Components outside 0 … 1 are clamped; a component that is not a number counts as 0.
@@ -59,8 +62,9 @@ public struct DisplayColor: Hashable, Sendable {
 /// Pass a stock value (`.viridis`, `.magma`, `.inferno`, `.turbo`, `.grayscale`), stops of
 /// your own (`.stops([…])`), or a conformer written outside the package.
 ///
-/// Conformers are immutable values, usable on any thread. `color(at:)` is called on the main
-/// thread or on the background executor, never on the analysis thread.
+/// Conformers are immutable values, usable on any thread; in the stock ones `color(at:)` does
+/// not allocate once their tables are built. It is called on the main thread or on the
+/// background executor, never on the analysis thread.
 public protocol ColorMap: Hashable, Sendable {
     /// The colour for `position`, 0 at the low end of the value range and 1 at the high end.
     /// Positions outside 0 … 1 do not occur.
@@ -85,7 +89,8 @@ extension ColorMap {
 /// A colour map given as a list of colours at evenly spaced positions, linear in between:
 /// the perceptually uniform maps of matplotlib, which are published as 256 colours each.
 ///
-/// An immutable value, usable on any thread.
+/// An immutable value, usable on any thread; creating one allocates its table, and
+/// `color(at:)` does not allocate.
 public struct ListedColorMap: ColorMap {
     /// What the map is called.
     public let name: String
@@ -129,6 +134,7 @@ public struct ListedColorMap: ColorMap {
     /// The number of colours listed.
     public var count: Int { entries.count / 3 }
 
+    /// The colour at `position`, linear between the two listed colours either side of it.
     public func color(at position: Double) -> DisplayColor {
         let scaled = DisplayColor.unit(position) * Double(count - 1)
         let lower = min(Int(scaled), count - 2)
@@ -145,14 +151,18 @@ public struct ListedColorMap: ColorMap {
 /// channel. It differs from the 256-entry table of the same name by a few hundredths in the
 /// middle and by up to an eighth at the dark ends.
 ///
-/// An immutable value, usable on any thread.
+/// An immutable value, usable on any thread; it does not allocate once its coefficients are
+/// built, on first use.
 public struct TurboColorMap: ColorMap {
+    /// Turbo; there is nothing to set.
     public init() {}
 
     static let red: [Double] = [0.13572138, 4.61539260, -42.66032258, 132.13108234, -152.94239396, 59.28637943]
     static let green: [Double] = [0.09140261, 2.19418839, 4.84296658, -14.18503333, 4.27729857, 2.82956604]
     static let blue: [Double] = [0.10667330, 12.64194608, -60.58204836, 110.36276771, -89.90310912, 27.34824973]
 
+    /// The three polynomials at `position`, clamped to 0 … 1 first; the components they give are
+    /// clamped as well.
     public func color(at position: Double) -> DisplayColor {
         let x = DisplayColor.unit(position)
         return DisplayColor(red: Self.evaluate(Self.red, x), green: Self.evaluate(Self.green, x), blue: Self.evaluate(Self.blue, x))
@@ -168,36 +178,42 @@ public struct TurboColorMap: ColorMap {
 
 /// Black at the low end, white at the high end, grey in proportion between.
 ///
-/// An immutable value, usable on any thread.
+/// An immutable value, usable on any thread; it does not allocate.
 public struct GrayscaleColorMap: ColorMap {
+    /// The grey ramp; there is nothing to set.
     public init() {}
 
+    /// `position` in all three components, clamped to 0 … 1; a position that is not a number
+    /// gives black.
     public func color(at position: Double) -> DisplayColor {
         DisplayColor(red: position, green: position, blue: position)
     }
 }
 
 extension ColorMap where Self == ListedColorMap {
-    /// Viridis: dark violet through green to yellow (matplotlib's default).
+    /// Viridis: dark violet through green to yellow (matplotlib's default). Usable on any thread;
+    /// the first read builds the table, which allocates once.
     public static var viridis: ListedColorMap { ColorMapTables.viridis }
-    /// Magma: black through purple and orange to pale yellow.
+    /// Magma: black through purple and orange to pale yellow. Usable on any thread; the first read
+    /// builds the table, which allocates once.
     public static var magma: ListedColorMap { ColorMapTables.magma }
-    /// Inferno: black through red and orange to pale yellow.
+    /// Inferno: black through red and orange to pale yellow. Usable on any thread; the first read
+    /// builds the table, which allocates once.
     public static var inferno: ListedColorMap { ColorMapTables.inferno }
 
-    /// A map through colours of your own, evenly spaced from the low end of the value range
-    /// to the high end and linear in between.
+    /// A map through colours of your own, evenly spaced from the low end of the value range to the
+    /// high end and linear in between. Usable on any thread; allocates the table of the map.
     public static func stops(_ colors: [DisplayColor]) -> ListedColorMap {
         ListedColorMap(name: "stops", colors: colors)
     }
 }
 
 extension ColorMap where Self == TurboColorMap {
-    /// Turbo, in its polynomial form.
+    /// Turbo, in its polynomial form. Usable on any thread; it does not allocate.
     public static var turbo: TurboColorMap { TurboColorMap() }
 }
 
 extension ColorMap where Self == GrayscaleColorMap {
-    /// Black to white.
+    /// Black to white. Usable on any thread; it does not allocate.
     public static var grayscale: GrayscaleColorMap { GrayscaleColorMap() }
 }

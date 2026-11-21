@@ -341,7 +341,7 @@ replaces. Field by field: `Docs/Process/templates/ledger-row.md`.
 | ID | Package | Deps | Lenses | Tag | Status | Implementer | Verifier A | Verifier B | Time (min) | Revision | Report A | Report B | Fix cycles | Currency check | Stability note | Backlog |
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 | WP-901a | Facade: umbrella exports; the public API equals §4–§8 by the API digest | all | A, T |  | Verifying | Implementer M9-api (agent) |  |  |  |  |  |  |  | n/a | n/a | CR-031 and CR-032 are Proposed: the owner decides each item (impl-WP-901a-909.md) |
-| WP-901b | Documentation: landing page; every public symbol documented with its threading contract; the order matrix covers every public stage | 901a | A, T |  | Blocked-on-deps |  |  |  |  |  |  |  |  | n/a | n/a |  |
+| WP-901b | Documentation: landing page; every public symbol documented with its threading contract; the order matrix covers every public stage | 901a | A, T |  | Verifying | Implementer M9-docs (agent) |  |  |  |  |  |  |  | n/a | n/a |  |
 | WP-902 | Coverage closure: one package per target below its gate (`WP-902a`, `WP-902b`, …) | all | T, A |  | Blocked-on-deps |  |  |  |  |  |  |  |  | n/a | n/a |  |
 | WP-903a | The budgets of §5.7 on the reference devices; baselines committed; a device run | 324 | R, T |  | Blocked-on-deps |  |  |  |  |  |  |  |  | n/a | n/a |  |
 | WP-903b | The budgets of §10.4 on the reference devices; a device run | 541, 809b | R, V |  | Blocked-on-deps |  |  |  |  |  |  |  |  | n/a | n/a |  |

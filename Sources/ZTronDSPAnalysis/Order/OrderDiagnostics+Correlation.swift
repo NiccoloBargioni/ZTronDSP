@@ -6,6 +6,9 @@ import ZTronDSPCore
 // sequence stages; `Autocorrelation` is a family of its own.
 
 extension PipelineBuilder {
+    /// Catches `Autocorrelation` after a domain it does not take, with a message that names what it
+    /// needs (ORD-4). Never called, being unavailable: no context runs it, and it allocates
+    /// nothing.
     @available(*, unavailable, message: "Autocorrelation needs a sampled sequence: samples, a novelty curve or a scalar track. It frames the sequence itself and cannot follow a spectrum or any other frame of bins: put it where the signal is still a sequence, or in a Tap that starts there.")
     public static func buildPartialBlock<I, O>(accumulated: Pipeline<I, O>, next: Autocorrelation) -> Pipeline<I, O> { accumulated }
 }

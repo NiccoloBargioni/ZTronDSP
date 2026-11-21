@@ -16,8 +16,9 @@ import Foundation
 /// attachments of one engine; it is prepared once, started with the first that starts and
 /// stopped with the last that stops, and all of them see the same blocks (ATT-6).
 ///
-/// Threading: every method may be called from any thread except the analysis thread. `attach`
-/// suspends while the source is prepared and the plan compiled, both off the main thread.
+/// Threading: every method may be called from any thread except the analysis thread, and may
+/// allocate. `attach` suspends while the source is prepared and the plan compiled, both off
+/// the main thread.
 public final class DSPEngine: Sendable {
     /// The engine an app uses unless it needs more than one.
     public static let shared = DSPEngine()
@@ -81,9 +82,9 @@ public final class DSPEngine: Sendable {
 ///
 /// A session that is released without being detached detaches itself.
 ///
-/// Threading: every member may be used from any thread except the analysis thread.
-/// `start()`, `stop()` and `detach()` wait for the engine's control context, which is busy
-/// for as long as a plan takes to compile.
+/// Threading: every member may be used from any thread except the analysis thread, and may
+/// allocate. `start()`, `stop()` and `detach()` wait for the engine's control context, which
+/// is busy for as long as a plan takes to compile.
 public final class PipelineSession: Sendable, Identifiable {
     let core: SessionCore
 

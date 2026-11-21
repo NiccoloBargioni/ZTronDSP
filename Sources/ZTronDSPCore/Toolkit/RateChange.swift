@@ -34,7 +34,7 @@ public func upsampled<Element: AdditiveArithmetic>(_ samples: [Element], by fact
 /// blocks. Reads `count` samples, keeps those at positions `phase`, `phase + factor`, …, and
 /// returns how many it wrote and the phase to pass for the next block.
 ///
-/// `destination` needs room for `(count + factor − 1) / factor` samples. Allocation-free;
+/// `destination` needs room for `(count + factor − 1) / factor` samples. Does not allocate;
 /// callable on the analysis thread.
 @inlinable
 public func subsample(
@@ -52,7 +52,7 @@ public func subsample(
 }
 
 /// The pointer form of ``upsampled(_:by:)``: writes `count · factor` samples. Source and
-/// destination must not overlap. Allocation-free; callable on the analysis thread.
+/// destination must not overlap. Does not allocate; callable on the analysis thread.
 @inlinable
 public func upsample(_ source: UnsafePointer<Float>, count: Int, by factor: Int, into destination: UnsafeMutablePointer<Float>) {
     let factor = max(factor, 1)

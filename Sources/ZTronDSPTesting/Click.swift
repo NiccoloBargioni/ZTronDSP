@@ -3,6 +3,9 @@
 /// A full-scale 1 kHz sine at 48 kHz runs through a change. The largest sample-to-sample
 /// difference of the output, during the change and for one block after it, must not exceed
 /// 1.5 times the largest such difference in steady state on either side of the change.
+///
+/// Plain functions, usable on any thread: `largestStep` and `measure` do not allocate, and
+/// `probeSignal` allocates the signal it returns.
 public enum Click {
     /// The largest absolute difference between neighbouring samples of `samples[range]`.
     public static func largestStep(_ samples: [Float], in range: Range<Int>) -> Float {
@@ -17,6 +20,8 @@ public enum Click {
     }
 
     /// The figures of one CLICK-1 measurement.
+    ///
+    /// An immutable value, usable on any thread; it does not allocate, but for ``description``.
     public struct Measurement: Sendable, Equatable, CustomStringConvertible {
         /// The largest step in steady state before the change.
         public let before: Float
@@ -32,6 +37,7 @@ public enum Click {
         /// True when CLICK-1 holds.
         public var passes: Bool { ratio <= 1.5 }
 
+        /// The three steps and their ratio against the limit of 1.5, in words.
         public var description: String {
             "largest step \(during) during the change against \(before) before and \(after) after (ratio \(ratio); the limit is 1.5)"
         }

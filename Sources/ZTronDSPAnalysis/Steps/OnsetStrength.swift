@@ -31,7 +31,7 @@ import ZTronDSPCore
 ///   above it (rounded down), with the edges reflected.
 ///
 /// Switched off, it suspends the rest of its branch (ACT-3). An immutable value, usable on any
-/// thread; `lower(_:)` runs on the control context.
+/// thread; `lower(_:)` runs on the control context and may allocate.
 public struct OnsetStrength: ContextDependentStep {
     /// Frames between a spectrum and the one it is compared with.
     public let lag: Int
@@ -39,8 +39,12 @@ public struct OnsetStrength: ContextDependentStep {
     public let maxSize: Int
     /// What the values of the spectrum are raised to, in decibels.
     public let floor: Double
+    /// The step's switch: off, it suspends the rest of its branch (ACT-3).
     public let activation: StageActivation
 
+    /// The onset strength against the spectrum `lag` frames back, under a maximum filter of
+    /// `maxSize` bands, with the values raised to `floor` first. Nothing is checked here:
+    /// `lower(_:)` checks the values when the plan is compiled.
     public init(lag: Int = 1, maxSize: Int = 1, floor: Double = -80, isActive: some ActivationSource = .active) {
         self.lag = lag
         self.maxSize = maxSize
@@ -53,6 +57,7 @@ public struct OnsetStrength: ContextDependentStep {
         values == .decibel ? .novelty : nil
     }
 
+    /// The step with its typing rule, ``rule``.
     public var stageDescription: StageDescription { StageDescription(self, rule: OnsetStrength.rule) }
 
     /// The longest lag the step keeps frames for.
@@ -66,6 +71,9 @@ public struct OnsetStrength: ContextDependentStep {
         let floor: Float
     }
 
+    /// Checks the values against the spectra at the step's position (a lag from 1 to 4 096, a
+    /// filter of 1 band up to all of them, a finite floor) and emits the node. Control context;
+    /// may allocate.
     public func lower(_ context: inout LoweringContext) throws(DSPError) {
         let environment = context.environment
         guard let bands = environment.frequencyAxis?.rowCount, bands >= 1, let featureRate = environment.featureRate, featureRate > 0 else {
@@ -90,6 +98,8 @@ public struct OnsetStrength: ContextDependentStep {
 // MARK: The typing rule (tier 1)
 
 extension PipelineBuilder {
+    /// `OnsetStrength` follows a spectrum in decibels, on any axis, and gives a novelty curve
+    /// (O-9). Runs where the pipeline is described, on any thread, and allocates.
     public static func buildPartialBlock<I, Axis>(
         accumulated: Pipeline<I, Spectrum<Axis, DecibelValues>>, next: OnsetStrength
     ) -> Pipeline<I, Novelty> {
@@ -99,6 +109,7 @@ extension PipelineBuilder {
 
 extension Pipeline {
     /// The onset strength of the spectrum in decibels, as a novelty curve: see ``OnsetStrength``.
+    /// Usable on any thread; allocates the pipeline it returns.
     public func onsetStrength<Axis>(
         lag: Int = 1, maxSize: Int = 1, floor: Double = -80, isActive: some ActivationSource = .active
     ) -> Pipeline<Input, Novelty> where Output == Spectrum<Axis, DecibelValues> {

@@ -50,20 +50,22 @@ extension EnvironmentValues {
     /// 48 000 where no session is published (ENV-4).
     ///
     /// Read it with `@Environment(\.dspSampleRate)`, on the main actor. It changes only when
-    /// the session's format changes, never at data rate (V-7).
+    /// the session's format changes, never at data rate (V-7). Reading it does not allocate.
     public var dspSampleRate: Double { dspSourceEnvironment.sampleRate }
 
     /// Half the sample rate at the source: the highest frequency the signal can hold (ENV-4).
-    /// Read it with `@Environment(\.dspNyquistFrequency)`, on the main actor.
+    /// Read it with `@Environment(\.dspNyquistFrequency)`, on the main actor; reading it does
+    /// not allocate.
     public var dspNyquistFrequency: Double { dspSourceEnvironment.sampleRate / 2 }
 
     /// Channels at the source of the published session; 1 where none is published (ENV-4).
-    /// Read it with `@Environment(\.dspChannelCount)`, on the main actor.
+    /// Read it with `@Environment(\.dspChannelCount)`, on the main actor; reading it does not
+    /// allocate.
     public var dspChannelCount: Int { dspSourceEnvironment.channelCount }
 
     /// The delay of the published session's whole main line, in seconds; it changes only
     /// when a plan of another topology takes over (ENV-4, REAL-5). Read it with
-    /// `@Environment(\.dspLatency)`, on the main actor.
+    /// `@Environment(\.dspLatency)`, on the main actor; reading it does not allocate.
     public var dspLatency: TimeInterval { dspSourceEnvironment.latency }
 }
 
@@ -143,7 +145,8 @@ extension View {
     /// its topology changes, so the bridge cannot cause view updates at data rate (V-7).
     /// `nil` publishes the reference environment: 48 kHz, mono, no latency.
     ///
-    /// Threading: main actor, like every view modifier.
+    /// Threading: main actor, like every view modifier; it may allocate, for the state with
+    /// which it follows the session.
     public func dspEnvironment(_ session: PipelineSession?) -> some View {
         modifier(DSPEnvironmentBridge(session: session))
     }
@@ -151,7 +154,8 @@ extension View {
     /// The engine on which the views inside this one keep the pipelines they host:
     /// `DSPEngine.shared` unless this modifier says otherwise (VC-3).
     ///
-    /// Threading: main actor, like every view modifier.
+    /// Threading: main actor, like every view modifier; it stores a reference, and may
+    /// allocate as SwiftUI does for any environment value.
     public func dspEngine(_ engine: DSPEngine) -> some View {
         environment(\.dspEngine, engine)
     }

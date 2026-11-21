@@ -3,17 +3,20 @@ import Foundation
 /// Where a reader of a feed stands: which columns it has already taken. A reader keeps one
 /// and passes it to every `read`; a fresh cursor starts at the oldest column the feed holds.
 ///
-/// A plain value. Each reader has its own.
+/// A plain value, usable on any thread; it does not allocate. Each reader has its own.
 public struct FeedCursor: Sendable, Hashable {
     // Moved only by the column store of this file, as a `read` takes columns (IMM-1).
     fileprivate(set) var layout: UInt64 = 0
     fileprivate(set) var epoch: UInt64 = 0
     fileprivate(set) var column: UInt64 = 0
 
+    /// A cursor that has taken nothing: the next `read` starts at the oldest column.
     public init() {}
 }
 
 /// What one `read` of a feed brought.
+///
+/// An immutable value, usable on any thread; it does not allocate.
 public struct FeedRead: Sendable, Hashable {
     /// True when what the reader took before no longer belongs to the feed's history: the
     /// feed was attached anew, cleared for a changed branch, or trimmed. A renderer clears its
@@ -34,6 +37,8 @@ public struct FeedRead: Sendable, Hashable {
 
 /// A handle on a liveness observation. The observation ends when the handle is cancelled or
 /// released.
+///
+/// Cancel or release it on any thread; cancelling takes a lock briefly and does not allocate.
 public final class FeedObservation: Sendable {
     private let onCancel: @Sendable () -> Void
 

@@ -5,7 +5,8 @@
 /// the others that a stage can raise take it as a trailing argument that defaults to `nil`,
 /// and the plan compiler fills it in (``inStage(_:)``), so a stage never has to.
 ///
-/// Errors are immutable values and may cross threads.
+/// Errors are immutable values, usable on any thread, and may cross threads. Creating one may
+/// allocate, for the strings and the path it carries; ``description`` allocates the message.
 public enum DSPError: Error, Hashable, Sendable {
     /// A value a stage or a function was given cannot be used.
     case invalidParameter(stage: StagePath, parameter: String, reason: String)
@@ -38,7 +39,8 @@ public enum DSPError: Error, Hashable, Sendable {
 }
 
 extension DSPError {
-    /// The path of the stage that raised the error, when a stage did.
+    /// The path of the stage that raised the error, when a stage did. Usable on any thread; it does
+    /// not allocate.
     public var stage: StagePath? {
         switch self {
         case .invalidParameter(let stage, _, _), .invalidStageOrder(let stage, _):
@@ -53,8 +55,8 @@ extension DSPError {
         }
     }
 
-    /// The same error, attributed to `path` unless it already names a stage. Errors that no
-    /// stage can raise are returned unchanged.
+    /// The same error, attributed to `path` unless it already names a stage. Errors that no stage
+    /// can raise are returned unchanged. Usable on any thread; it does not allocate.
     public func inStage(_ path: StagePath) -> DSPError {
         guard stage == nil, !path.isEmpty else { return self }
         switch self {
@@ -80,6 +82,9 @@ extension DSPError {
 }
 
 extension DSPError: CustomStringConvertible {
+    /// The message in English, ending with the stage's path when the error has one:
+    /// `Invalid parameter cutoff: … (at Group[0] › LowPass[1])`. Usable on any thread; it
+    /// allocates the text.
     public var description: String {
         let location = stage.map { " (at \($0))" } ?? ""
         switch self {

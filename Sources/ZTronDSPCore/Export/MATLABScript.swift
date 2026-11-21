@@ -3,8 +3,10 @@ import Foundation
 /// Anything that exports as a MATLAB script (§6.14, MAT-1). The script defines its data as
 /// variables and then plots them; it is text, and the app decides where it goes (MAT-5).
 ///
-/// `matlabScript()` runs in the background (BG-1, MAT-6): never on the main thread.
+/// `matlabScript()` runs in the background (BG-1, MAT-6): never on the main thread. It
+/// allocates the text it returns.
 public protocol MATLABExportable: Sendable {
+    /// The script that defines the value's data and plots it, as text.
     func matlabScript() async throws(DSPError) -> String
 }
 
@@ -24,6 +26,7 @@ public struct MATLABScript: Hashable, Sendable {
     /// The most elements one variable may hold (MAT-4).
     public static let elementLimit = 4_000_000
 
+    /// An empty script.
     public init() {
         lines = []
     }
@@ -177,13 +180,17 @@ public struct MATLABScript: Hashable, Sendable {
         adding("subplot(\(rows), \(columns), \(index));")
     }
 
+    /// `xlabel('…')`, with `text` quoted for MATLAB.
     public func xlabel(_ text: String) -> MATLABScript { adding("xlabel(\(Self.quoted(text)));") }
+    /// `ylabel('…')`, with `text` quoted for MATLAB.
     public func ylabel(_ text: String) -> MATLABScript { adding("ylabel(\(Self.quoted(text)));") }
+    /// `title('…')`, with `text` quoted for MATLAB.
     public func title(_ text: String) -> MATLABScript { adding("title(\(Self.quoted(text)));") }
     /// `grid on` or `grid off`.
     public func grid(_ on: Bool = true) -> MATLABScript { adding(on ? "grid on;" : "grid off;") }
     /// `hold on` or `hold off`.
     public func hold(_ on: Bool = true) -> MATLABScript { adding(on ? "hold on;" : "hold off;") }
+    /// `colorbar`.
     public func colorbar() -> MATLABScript { adding("colorbar;") }
     /// `axis` with a keyword: `equal`, `tight`, `square`, `xy`, `ij`.
     public func axis(_ keyword: String) -> MATLABScript {

@@ -2,7 +2,11 @@ import Darwin
 import Foundation
 
 /// One measured workload: nanoseconds per iteration over a number of samples.
+///
+/// An immutable value, usable on any thread, and `Codable`, so a report can be kept; it does
+/// not allocate, but to be encoded or decoded.
 public struct BenchmarkResult: Codable, Sendable, Equatable {
+    /// The workload's name, the key a baseline matches it by.
     public let name: String
     /// Calls of the workload per sample.
     public let iterations: Int
@@ -11,9 +15,13 @@ public struct BenchmarkResult: Codable, Sendable, Equatable {
     /// Nanoseconds per iteration. The minimum is the figure a regression check compares: it
     /// is the least disturbed by whatever else the machine was doing.
     public let minimum: Double
+    /// Nanoseconds per iteration: the median of the samples.
     public let median: Double
+    /// Nanoseconds per iteration: the mean of the samples.
     public let mean: Double
 
+    /// A result from its figures, as they were measured elsewhere; `Benchmark.measure` makes one
+    /// by timing a workload.
     public init(name: String, iterations: Int, samples: Int, minimum: Double, median: Double, mean: Double) {
         self.name = name
         self.iterations = iterations
@@ -25,26 +33,40 @@ public struct BenchmarkResult: Codable, Sendable, Equatable {
 }
 
 /// A workload that got slower than its baseline allows.
+///
+/// An immutable value, usable on any thread; it does not allocate, but for ``description``.
 public struct BenchmarkRegression: Sendable, Equatable, CustomStringConvertible {
+    /// The workload's name.
     public let name: String
+    /// The baseline's minimum, in nanoseconds per iteration.
     public let baseline: Double
+    /// The minimum measured now, in nanoseconds per iteration.
     public let measured: Double
     /// `measured / baseline`.
     public var ratio: Double { measured / baseline }
 
+    /// The measured minimum against the baseline's, with their ratio, in words.
     public var description: String {
         String(format: "%@: %.1f ns against a baseline of %.1f ns (×%.3f)", name, measured, baseline, ratio)
     }
 }
 
 /// A set of results, as it is written to disk and committed as a baseline.
+///
+/// An immutable value, usable on any thread, and `Codable`; each of its operations allocates,
+/// creating one included.
 public struct BenchmarkReport: Codable, Sendable, Equatable {
+    /// The results, sorted by name.
     public let results: [BenchmarkResult]
 
+    /// A report of `results`, sorted by name so that a baseline diffs cleanly.
     public init(results: [BenchmarkResult]) {
         self.results = results.sorted { $0.name < $1.name }
     }
 
+    /// Decodes a report from the JSON that ``encoded()`` writes.
+    ///
+    /// - Throws: the decoder's error for data that does not hold such a report.
     public init(data: Data) throws {
         self = try JSONDecoder().decode(BenchmarkReport.self, from: data)
     }
@@ -77,6 +99,10 @@ public struct BenchmarkReport: Codable, Sendable, Equatable {
 }
 
 /// The benchmark harness (WP-006): warm-up, repeated samples, `mach_absolute_time`.
+///
+/// Plain functions, called on the test's own thread: any thread. `measure` allocates its
+/// timings, `isRecording` reads the environment, which allocates, and `record` allocates the
+/// report it writes, under a lock; `ticks`, `nanoseconds` and `blackHole` do not allocate.
 public enum Benchmark {
     private static let timebase: mach_timebase_info_data_t = {
         var info = mach_timebase_info_data_t()
@@ -103,9 +129,11 @@ public enum Benchmark {
     /// Times `body`.
     ///
     /// - Parameters:
+    ///   - name: the workload's name, the key a baseline matches the result by.
     ///   - warmUp: untimed samples run first, so caches and branch predictors are settled.
     ///   - samples: timed samples; each runs `body` `iterations` times.
     ///   - iterations: calls per sample; choose it so one sample lasts well above the timer's resolution.
+    ///   - body: the workload, called `iterations` times per sample.
     public static func measure(
         _ name: String, warmUp: Int = 3, samples: Int = 21, iterations: Int = 1_000, _ body: () -> Void
     ) -> BenchmarkResult {

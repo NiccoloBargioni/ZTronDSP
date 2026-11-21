@@ -1,6 +1,7 @@
 #!/bin/bash
-# Self-test of Scripts/order-matrix.sh (WP-328): with a fixture world of three domains and three
-# stages, type-checked without the package's modules.
+# Self-test of Scripts/order-matrix.sh (WP-328, WP-901b): with a fixture world of three domains
+# and three stages, type-checked without the package's modules, whose public stages are read from
+# the fixture digests under Tests/Fixtures/OrderMatrix/digests.
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
 . "$ROOT/Scripts/tests/lib.sh"
 F="$ROOT/Tests/Fixtures/OrderMatrix"
@@ -17,9 +18,10 @@ fi
 TEMPLATE='func cell{cell}() {{ after({domain}.self, {stage}) }}'
 matrix() {
     "$M" --no-modules --imports "" --prelude "$S/prelude.swift" --template "$TEMPLATE" --stages "$S/stages.txt" --domains "$F/domains.txt" \
-        --swift "$S/Matrix.swift" --document "$S/Matrix.md" --sources "$F/sources" "$@"
+        --swift "$S/Matrix.swift" --document "$S/Matrix.md" --digests "$S/digests" --not-in-matrix "$S/not-in-matrix.txt" "$@"
 }
-cp "$F/prelude.swift" "$S/prelude.swift"; cp "$F/stages.txt" "$S/stages.txt"
+cp "$F/prelude.swift" "$S/prelude.swift"; cp "$F/stages.txt" "$S/stages.txt"; cp "$F/not-in-matrix.txt" "$S/not-in-matrix.txt"
+cp -R "$F/digests" "$S/digests"
 
 expect_status 0 "the matrix of the fixture is generated" matrix
 expect_contains "… and counted" "3 stages on 3 domains, 6 cells accepted"
@@ -38,16 +40,42 @@ expect_contains "… and says what to do" "is not what the compiler says today: 
 if grep -q '"100",  // OnA' "$S/Matrix.swift"; then pass "… and the check writes nothing"; else fail "… and the check writes nothing"; fi
 cp "$F/prelude.swift" "$S/prelude.swift"
 
-# The list against the code.
+# The lists against the public stages of the digests.
 printf 'Gone | Everywhere()\n' >> "$S/stages.txt"
-expect_status 1 "a line that names no public stage fails" matrix --check
-expect_contains "… by name" "Gone has a line"
+expect_status 1 "a seeded stale line, one that names no public stage, fails" matrix --check
+expect_contains "… by name" "Gone has a line in"
+expect_contains "… and says where the stages are read from" "is not a public stage of the digests in"
 grep -v '^OnAB' "$F/stages.txt" > "$S/stages.txt"
-expect_status 1 "a public stage without a line fails" matrix --check
-expect_contains "… by name, with its file" "OnAB (Tests/Fixtures/OrderMatrix/sources/Stages.swift) is a public stage with no line"
-expect_lacks "a public type that is no stage, and a stage that is not public, are not asked for" "NotAStage"
-expect_lacks "… neither of them" "Internal"
-expect_status 0 "without the scan the list is taken as it is" matrix --no-scan
+expect_status 1 "a seeded missing stage, a public stage without a line, fails" matrix --check
+expect_contains "… by name, with its module" "OnAB (FixtureStages) is a public stage with no line in"
+expect_lacks "a public type that is no stage is not asked for" "NotAStage"
+expect_lacks "… nor a protocol of the stages" "PipelineStage ("
+expect_lacks "… nor a stage that says why it is not in the matrix" "Wrapper ("
+grep -v '^Everywhere' "$F/stages.txt" > "$S/stages.txt"
+expect_status 1 "a stage through a protocol that refines another (a recipe) is asked for too" matrix --check
+expect_contains "… by name" "Everywhere (FixtureStages) is a public stage with no line in"
+cp "$F/stages.txt" "$S/stages.txt"
+printf 'conformance            Family : FixtureCore.StageValue\nconformance            ByFamily : Family\nswift.protocol         Family : protocol Family : StageValue\nswift.struct           ByFamily : struct ByFamily\n' >> "$S/digests/FixtureStages.txt"
+expect_status 1 "a stage through a protocol of its own module that adopts StageValue is asked for" matrix --check
+expect_contains "… by name" "ByFamily (FixtureStages) is a public stage with no line in"
+expect_lacks "… and its protocol is not" "FAIL: Family ("
+rm -r "$S/digests"; cp -R "$F/digests" "$S/digests"
+printf 'Vanished | a reason that no longer holds\n' >> "$S/not-in-matrix.txt"
+expect_status 1 "a stale line of not-in-matrix.txt fails" matrix --check
+expect_contains "… by name" "Vanished has a line in"
+cp "$F/not-in-matrix.txt" "$S/not-in-matrix.txt"
+printf 'OnA | listed twice\n' >> "$S/not-in-matrix.txt"
+expect_status 1 "a stage with a line in both lists fails" matrix --check
+expect_contains "… by name" "OnA has a line in"
+grep -v '^Wrapper' "$F/not-in-matrix.txt" > "$S/not-in-matrix.txt"
+expect_status 1 "a stage left out of the matrix needs its line in not-in-matrix.txt" matrix --check
+expect_contains "… by name" "Wrapper (FixtureCore) is a public stage with no line in"
+printf 'Wrapper\n' >> "$S/not-in-matrix.txt"
+expect_status 2 "a line of not-in-matrix.txt without its reason is refused" matrix --check
+expect_contains "… as a line that is not \`name | text\`" "a line is \`name | text\`"
+cp "$F/not-in-matrix.txt" "$S/not-in-matrix.txt"
+expect_status 0 "without the scan the list is taken as it is" matrix --no-scan --not-in-matrix "$S/none.txt" --digests "$S/none"
+expect_status 2 "a folder of digests that does not exist is refused" matrix --check --digests "$S/none"
 cp "$F/stages.txt" "$S/stages.txt"
 
 printf 'Broken | OnA(nonsense: 1)\n' >> "$S/stages.txt"

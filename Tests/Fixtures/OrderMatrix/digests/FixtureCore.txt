@@ -1,0 +1,15 @@
+# FixtureCore — public API digest (VIS-3).
+# A fixture of Scripts/tests/test-order-matrix.sh, in the format Scripts/api-digest.sh writes:
+# the protocols of a stage, and a container that takes its domains from its content.
+
+conformance            PipelineStage : StageValue
+conformance            Recipe : PipelineStage
+conformance            SequenceStage : StageValue
+conformance            StageValue : Swift.Hashable
+conformance            Wrapper : PipelineStage
+conformance            Wrapper : StageValue
+swift.protocol         PipelineStage : protocol PipelineStage : StageValue
+swift.protocol         Recipe : protocol Recipe : PipelineStage
+swift.protocol         SequenceStage : protocol SequenceStage : StageValue
+swift.protocol         StageValue : protocol StageValue : Hashable, Sendable
+swift.struct           Wrapper : struct Wrapper<Content>

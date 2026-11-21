@@ -18,8 +18,11 @@ import Foundation
 /// is detached, because the stream may be attached again; it ends when the consuming task is
 /// cancelled, or when `finish()` is called.
 ///
-/// Threading: `write` belongs to the analysis thread. Everything else is for any other thread.
+/// Threading: `write` belongs to the analysis thread and does not allocate. Everything else is
+/// for any other thread: creating and claiming the stream allocate, and each frame the consumer
+/// takes is a copy that allocates.
 public final class FeatureStream<Domain: SignalDomain>: FeatureSink, AsyncSequence, @unchecked Sendable {
+    /// The frames the sequence delivers: owned copies.
     public typealias Element = FeatureFrame
 
     /// Frames the stream holds for a consumer that lags.
@@ -120,11 +123,15 @@ public final class FeatureStream<Domain: SignalDomain>: FeatureSink, AsyncSequen
 
     // MARK: FeatureSink
 
+    /// Allocates the storage for `capacity` frames of the domain's shape at the stream's
+    /// position. Control context.
     public func claim(axis: FeedAxis?, environment: DSPEnvironment) throws(DSPError) {
         try claim(axis: axis, environment: environment, domain: Domain.tag,
                   format: Domain.tag.frameKind == .scalar ? .scalar : .real(count: axis?.rowCount ?? 0))
     }
 
+    /// Copies `frame` into the next slot, over the oldest when the consumer lags. Analysis
+    /// thread; does not allocate, lock or wake anyone.
     public func write(_ frame: FrameView) {
         guard let storage = writing, let started, let completed else { return }
         let number = ztd_atomic_load(completed)
@@ -164,6 +171,7 @@ public final class FeatureStream<Domain: SignalDomain>: FeatureSink, AsyncSequen
         if let attention { ztd_atomic_store(attention, 1) }
     }
 
+    /// Stops taking frames and wakes a waiting consumer. Control context.
     public func release() {
         writing = nil
         wake()
@@ -172,6 +180,8 @@ public final class FeatureStream<Domain: SignalDomain>: FeatureSink, AsyncSequen
     // MARK: Consumer
 
     /// Takes the frames of the stream one after another. For one consuming task.
+    ///
+    /// Use it on the consuming task, on any thread; each frame it returns is a copy and allocates.
     public struct Iterator: AsyncIteratorProtocol {
         let stream: FeatureStream<Domain>
 

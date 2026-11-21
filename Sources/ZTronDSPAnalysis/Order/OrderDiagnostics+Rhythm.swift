@@ -5,17 +5,27 @@ import ZTronDSPCore
 // see `OrderDiagnostics.swift` for how the catch-alls work.
 
 extension PipelineBuilder {
+    /// Catches a block that begins with `OnsetStrength`, with a message that says how to begin it
+    /// (ORD-3, ORD-4). Never called, being unavailable: no context runs it, and it allocates
+    /// nothing.
     @available(*, unavailable, message: "A block cannot begin with OnsetStrength: its domains depend on the stage before it. Begin the block with the stage it follows, or write the branch fluently, as .tap { $0.onsetStrength() }.")
     public static func buildPartialBlock(first: OnsetStrength) -> Pipeline<Spectrum<MelFrequency, DecibelValues>, Novelty> {
         Pipeline(unchecked: [])
     }
 
+    /// Catches `OnsetStrength` after a domain it does not take, with a message that names what it
+    /// needs (ORD-4). Never called, being unavailable: no context runs it, and it allocates
+    /// nothing.
     @available(*, unavailable, message: "OnsetStrength needs a spectrum in decibels: put Decibels() before it, after Magnitude() or Power() and, by custom, MelScale(). What it sums are rises of level, and samples, complex bins, magnitudes and powers are not levels.")
     public static func buildPartialBlock<I, O>(accumulated: Pipeline<I, O>, next: OnsetStrength) -> Pipeline<I, O> { accumulated }
 
+    /// Catches `OnsetStrength` after sequence stages alone, with a message that names what it needs
+    /// (ORD-4). Never called, being unavailable: no context runs it, and it allocates nothing.
     @available(*, unavailable, message: "OnsetStrength needs a spectrum in decibels: put Decibels() before it, after Magnitude() or Power() and, by custom, MelScale(). What it sums are rises of level, and samples, complex bins, magnitudes and powers are not levels.")
     public static func buildPartialBlock(accumulated: SequenceChain, next: OnsetStrength) -> SequenceChain { accumulated }
 
+    /// Catches `Tempogram` after a domain it does not take, with a message that names what it needs
+    /// (ORD-4). Never called, being unavailable: no context runs it, and it allocates nothing.
     @available(*, unavailable, message: "Tempogram needs a novelty curve: put OnsetStrength() before it, after a spectrum in decibels. Sequence stages may stand between the two; samples, spectra and scalar tracks are not onset strengths.")
     public static func buildPartialBlock<I, O>(accumulated: Pipeline<I, O>, next: Tempogram) -> Pipeline<I, O> { accumulated }
 

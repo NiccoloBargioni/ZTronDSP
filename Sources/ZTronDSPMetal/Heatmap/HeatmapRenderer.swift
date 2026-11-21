@@ -64,7 +64,10 @@ public final class HeatmapRenderer {
     /// A renderer for `feed`, showing it with the viridis map over −90 … 0, on a linear axis,
     /// the whole history across the width.
     ///
-    /// - Parameter probe: counts uploads and draws for the stability tests (§8.4).
+    /// - Parameters:
+    ///   - context: the device the renderer draws with.
+    ///   - feed: the heat-map feed it shows.
+    ///   - probe: counts uploads and draws for the stability tests (§8.4).
     /// - Throws: `unsupportedConfiguration` when the feed's rows and history do not fit a
     ///   texture of the device; `resourceAllocationFailed` when there is no memory.
     public init(context: MetalContext, feed: HeatmapFeed, probe: RenderProbe? = nil) throws(DSPError) {

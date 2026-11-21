@@ -1,8 +1,8 @@
 """The order matrix (WP-328; ORD-2; CI gate 3 of §10.3): every public stage on every domain.
 
     order_matrix.py [--check] [--stages FILE] [--domains FILE] [--swift FILE] [--document FILE]
-                    [--sources DIR]… [--no-scan] [--imports TEXT] [--prelude FILE] [--template TEXT]
-                    [--no-modules] [--jobs N]
+                    [--digests DIR] [--not-in-matrix FILE] [--no-scan] [--imports TEXT]
+                    [--prelude FILE] [--template TEXT] [--no-modules] [--jobs N]
 
 Tier 1 of the order rules is the type system: a stage compiles only after a domain it takes.
 Tier 2 is the `DomainRule` every stage description carries, which runs for every pipeline,
@@ -15,8 +15,16 @@ the stage after a pipeline that ends in the domain, and writes what the compiler
   - to `Docs/OrderMatrix.md`, for people.
 
 `--check` writes nothing: it fails when the committed files are not what the compiler says
-today, when a public stage of a processing target has no line in the list, or when a line
-names a stage that does not exist. A stage package regenerates the matrix (STG-1).
+today, when a public stage has no line in the list, or when a line names a stage that does not
+exist. A stage package regenerates the matrix (STG-1).
+
+THE PUBLIC STAGES are read from the API digests (`Docs/API`, which CI gate 4 holds equal to the
+build): every public type, of any module, whose conformance lines reach `StageValue`, the
+protocol every stage, step and recipe adopts, directly or through a protocol that refines it
+(`PipelineStage`, `SequenceStage`, `Recipe`, `ContextDependentStep`, …). Each has a line in the
+list of stages, or one in `Tests/OrderMatrix/not-in-matrix.txt`, `Type | why it is not in the
+matrix` (a generic container that takes its domains from its content, say); a line of either
+file that names no public stage fails, and so does a stage that has a line in both.
 
 A line of the stage list is `Type | expression`: the expression makes one stage of that type
 with any valid arguments. A second spelling of a stage gets a line of its own, named
@@ -34,8 +42,9 @@ import sys
 import tempfile
 
 ROOT = os.path.normpath(os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", ".."))
-DEFAULT_SOURCES = ("Sources/ZTronDSPDesign", "Sources/ZTronDSPAnalysis")
-STAGE_PROTOCOLS = ("SequenceStage", "PipelineStage", "Recipe", "ContextDependentStep")
+DEFAULT_DIGESTS = os.path.join("Docs", "API")
+ROOT_PROTOCOL = "StageValue"
+TYPE_KINDS = ("swift.struct", "swift.class", "swift.enum", "swift.actor")
 DEFAULT_IMPORTS = "import ZTronDSP\nimport SwiftUI"
 DEFAULT_TEMPLATE = "func cell{cell}(_ upstream: Pipeline<Samples, {domain}>) -> some PipelineContent {{ Pipeline {{ upstream; {stage} }} }}"
 PROBE_TEMPLATE = "let probe{cell} = {stage}"
@@ -45,7 +54,7 @@ class Refused(Exception):
     pass
 
 
-def read_list(path, what):
+def read_list(path, what, allow_empty=False):
     if not os.path.isfile(path):
         raise Refused("there is no %s at %s" % (what, os.path.relpath(path, ROOT)))
     entries = []
@@ -60,7 +69,7 @@ def read_list(path, what):
             if not name or not text:
                 raise Refused("%s:%d: a line is `name | text`" % (os.path.relpath(path, ROOT), number))
             entries.append((name, text))
-    if not entries:
+    if not entries and not allow_empty:
         raise Refused("%s is empty" % os.path.relpath(path, ROOT))
     names = [name for name, _ in entries]
     doubles = sorted({name for name in names if names.count(name) > 1})
@@ -69,25 +78,51 @@ def read_list(path, what):
     return entries
 
 
-def public_stages(folders):
-    """The public stage types declared under the folders: {name: path}."""
-    pattern = re.compile(r"^public struct ([A-Za-z0-9_]+)(?:<[^>]*>)?\s*:\s*([^{]*)\{", re.MULTILINE)
-    found = {}
-    for folder in folders:
-        base = folder if os.path.isabs(folder) else os.path.join(ROOT, folder)
-        for directory, names, files in os.walk(base):
-            names.sort()
-            for name in sorted(files):
-                if not name.endswith(".swift"):
-                    continue
-                path = os.path.join(directory, name)
-                with open(path, encoding="utf-8") as handle:
-                    text = handle.read()
-                for match in pattern.finditer(text):
-                    conformances = re.split(r"[,\s]+", match.group(2).split(" where ")[0])
-                    if any(protocol in conformances for protocol in STAGE_PROTOCOLS):
-                        found[match.group(1)] = os.path.relpath(path, ROOT)
-    return found
+def public_stages(folder):
+    """{type name: module} of the public types whose conformance lines in the digests under
+    `folder` reach StageValue, directly or through the protocols that refine it."""
+    base = folder if os.path.isabs(folder) else os.path.join(ROOT, folder)
+    if not os.path.isdir(base):
+        raise Refused("there is no folder of digests at %s" % os.path.relpath(base, ROOT))
+    files = sorted(name for name in os.listdir(base) if name.endswith(".txt"))
+    if not files:
+        raise Refused("%s holds no digest" % os.path.relpath(base, ROOT))
+    modules = {name[:-len(".txt")] for name in files}
+
+    def plain(name):
+        # A digest names a type of another module with that module's name in front:
+        # `ZTronDSPCore.StageValue`, `ZTronDSPDesign.Decimate`.
+        first, _, rest = name.partition(".")
+        return rest if rest and (first in modules or first in ("Swift", "SwiftUI", "SwiftUICore", "Foundation")) else name
+
+    declared, protocols, edges = {}, set(), {}
+    for name in files:
+        module = name[:-len(".txt")]
+        with open(os.path.join(base, name), encoding="utf-8") as handle:
+            for raw in handle:
+                kind, _, rest = raw.strip().partition(" ")
+                rest = rest.strip()
+                if kind in ("conformance", "inheritance"):
+                    source, _, target = rest.partition(" : ")
+                    edges.setdefault(plain(source.strip()), set()).add(plain(target.strip()))
+                elif kind in TYPE_KINDS:
+                    declared[rest.split(" : ", 1)[0].strip()] = module
+                elif kind == "swift.protocol":
+                    protocols.add(rest.split(" : ", 1)[0].strip())
+
+    def reaches_root(name):
+        seen, todo = set(), [name]
+        while todo:
+            current = todo.pop()
+            for target in edges.get(current, ()):
+                if target == ROOT_PROTOCOL:
+                    return True
+                if target not in seen:
+                    seen.add(target)
+                    todo.append(target)
+        return False
+
+    return {name: module for name, module in declared.items() if name not in protocols and reaches_root(name)}
 
 
 def compiler_flags(modules):
@@ -176,6 +211,7 @@ def swift_text(stages, domains, rows):
         "    private static func descriptions(_ stage: some PipelineStage) -> [StageDescription] { stage.stageDescriptions }",
         "    private static func descriptions(_ stage: some SequenceStage) -> [StageDescription] { stage.stageDescriptions }",
         "    private static func descriptions(_ stage: some ContextDependentStep) -> [StageDescription] { [stage.stageDescription] }",
+        "    private static func descriptions<Target>(_ stage: Emit<Target>) -> [StageDescription] { [stage.stageDescription] }",
         "}",
         "",
     ]
@@ -208,7 +244,9 @@ def main(arguments):
     domains_path = os.path.join(ROOT, "Tests", "OrderMatrix", "domains.txt")
     swift_path = os.path.join(ROOT, "Tests", "ZTronDSPTests", "OrderMatrixGenerated.swift")
     document_path = os.path.join(ROOT, "Docs", "OrderMatrix.md")
-    sources, scan, imports, prelude, template, modules = [], True, DEFAULT_IMPORTS, None, DEFAULT_TEMPLATE, True
+    digests_path = os.path.join(ROOT, DEFAULT_DIGESTS)
+    left_out_path = os.path.join(ROOT, "Tests", "OrderMatrix", "not-in-matrix.txt")
+    scan, imports, prelude, template, modules = True, DEFAULT_IMPORTS, None, DEFAULT_TEMPLATE, True
     jobs = os.cpu_count() or 4
     rest = list(arguments)
     try:
@@ -220,7 +258,8 @@ def main(arguments):
                 scan = False
             elif option == "--no-modules":
                 modules = False
-            elif option in ("--stages", "--domains", "--swift", "--document", "--sources", "--imports", "--prelude", "--template", "--jobs") and rest:
+            elif option in ("--stages", "--domains", "--swift", "--document", "--digests", "--not-in-matrix", "--imports", "--prelude",
+                            "--template", "--jobs") and rest:
                 value = rest.pop(0)
                 if option == "--stages":
                     stages_path = value
@@ -230,8 +269,10 @@ def main(arguments):
                     swift_path = value
                 elif option == "--document":
                     document_path = value
-                elif option == "--sources":
-                    sources.append(value)
+                elif option == "--digests":
+                    digests_path = value
+                elif option == "--not-in-matrix":
+                    left_out_path = value
                 elif option == "--imports":
                     imports = value
                 elif option == "--prelude":
@@ -251,13 +292,21 @@ def main(arguments):
         domains = read_list(domains_path, "list of domains")
         problems = []
         if scan:
-            declared = public_stages(sources or DEFAULT_SOURCES)
+            declared = public_stages(digests_path)
+            left_out = read_list(left_out_path, "list of the stages left out of the matrix", allow_empty=True)
             listed = {name.split(":", 1)[0].strip() for name, _ in stages}
-            for name in sorted(set(declared) - listed):
-                problems.append("%s (%s) is a public stage with no line in %s" % (name, declared[name], os.path.relpath(stages_path, ROOT)))
+            exempt = {name for name, _ in left_out}
+            stages_file, left_out_file = os.path.relpath(stages_path, ROOT), os.path.relpath(left_out_path, ROOT)
+            where = os.path.relpath(digests_path if os.path.isabs(digests_path) else os.path.join(ROOT, digests_path), ROOT)
+            for name in sorted(set(declared) - listed - exempt):
+                problems.append("%s (%s) is a public stage with no line in %s, and none in %s that says why it is not in the matrix" % (
+                    name, declared[name], stages_file, left_out_file))
             for name in sorted(listed - set(declared)):
-                problems.append("%s has a line in %s and is not a public stage of %s" % (
-                    name, os.path.relpath(stages_path, ROOT), ", ".join(sources or DEFAULT_SOURCES)))
+                problems.append("%s has a line in %s and is not a public stage of the digests in %s" % (name, stages_file, where))
+            for name in sorted(exempt - set(declared)):
+                problems.append("%s has a line in %s and is not a public stage of the digests in %s" % (name, left_out_file, where))
+            for name in sorted(listed & exempt):
+                problems.append("%s has a line in %s and one in %s: it is in the matrix, or it says why not" % (name, stages_file, left_out_file))
 
         with tempfile.TemporaryDirectory(prefix="ztd-order-matrix.") as scratch:
             rows = verdicts(stages, domains, compiler_flags(modules), imports, prelude, template, jobs, scratch)

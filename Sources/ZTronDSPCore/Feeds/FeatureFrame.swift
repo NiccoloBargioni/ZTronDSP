@@ -20,6 +20,8 @@ public struct FeatureFrame: Sendable, Hashable {
     /// Channels of a block of samples; 1 otherwise.
     public let channelCount: Int
 
+    /// A frame from its parts, as ``init(_:)`` makes it from a view; the values are the caller's
+    /// arrays.
     public init(kind: DomainTag.FrameKind, index: Int, time: Double, values: [Float] = [], secondary: [Float] = [],
                 scalar: ScalarFrame = .none, channelCount: Int = 1) {
         self.kind = kind

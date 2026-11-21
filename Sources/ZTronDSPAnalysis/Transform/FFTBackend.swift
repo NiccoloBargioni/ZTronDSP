@@ -9,7 +9,8 @@ import ZTronDSPCore
 /// ```
 ///
 /// A backend is a description: an immutable value, usable on any thread, and part of the
-/// description of the stage that holds it. The work is done by the plans it makes.
+/// description of the stage that holds it; the stock one does not allocate. The work is done
+/// by the plans it makes, and making one allocates.
 public protocol FFTBackend: Hashable, Sendable {
     /// Whether the backend transforms frames of `length` points. The answer is arithmetic:
     /// no setup is created to find out (E-09). Any thread.
@@ -32,7 +33,7 @@ public protocol FFTBackend: Hashable, Sendable {
 /// bins, so `inverse(forward(x))` is `x`. Whatever factor a library applies is absorbed here.
 ///
 /// Threading: a plan is created and released on the control context. `forward` and `inverse`
-/// allocate nothing and take no lock; they belong to one thread at a time (the analysis
+/// do not allocate and take no lock; they belong to one thread at a time (the analysis
 /// thread). A plan is not `Sendable`.
 public protocol FFTPlan: AnyObject {
     /// The transform length, `N`.
@@ -50,28 +51,33 @@ public protocol FFTPlan: AnyObject {
 }
 
 extension FFTPlan {
-    /// Bins of a spectrum: `length / 2 + 1`.
+    /// Bins of a spectrum: `length / 2 + 1`. Usable on any thread; it does not allocate.
     public var binCount: Int { length / 2 + 1 }
 }
 
 /// The vDSP discrete Fourier transform (§6.4.1, §7.2 row 1). The length is a power of two, or
 /// `f·2ⁿ` with `f` of 3, 5 or 15, and `n ≥ 4` in every case; the rule is applied by arithmetic.
 ///
-/// An immutable value, usable on any thread.
+/// An immutable value, usable on any thread; it does not allocate. `makePlan` runs on the
+/// control context and allocates.
 public struct VDSPFFTBackend: FFTBackend {
+    /// The vDSP transform; there is nothing to set.
     public init() {}
 
+    /// True for a power of two, or `f·2ⁿ` with `f` of 3, 5 or 15, `n ≥ 4` in every case: by
+    /// arithmetic (E-09).
     public func supports(length: Int) -> Bool {
         DSP.isFastLength(length)
     }
 
+    /// The vDSP setups of `length` points, forward and inverse, with their work buffers.
     public func makePlan(length: Int) throws(DSPError) -> any FFTPlan {
         try VDSPFFTPlan(length: length)
     }
 }
 
 extension FFTBackend where Self == VDSPFFTBackend {
-    /// The vDSP transform, the default.
+    /// The vDSP transform, the default. Usable on any thread; it does not allocate.
     public static var vDSP: VDSPFFTBackend { VDSPFFTBackend() }
 }
 

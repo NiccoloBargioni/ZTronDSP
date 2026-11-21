@@ -3,16 +3,24 @@ import Foundation
 /// The stress-fixture library behind the numerical-stability tests (NUMS-2, WP-016). Every
 /// fixture states the hazard it carries, and where one exists the condition number, so a
 /// stability note can cite it and a stress test can fail when a mitigation is removed.
+///
+/// Constants and plain functions, usable on any thread: a constant is built on its first read,
+/// which allocates, and each function allocates the samples it returns.
 public enum StressFixture {
     // MARK: Polynomials
 
     /// A polynomial with known roots, given by the coefficients a root finder would receive.
+    ///
+    /// An immutable value, usable on any thread; it does not allocate.
     public struct PolynomialCase: Sendable {
+        /// The case's name, as a test reports it.
         public let name: String
         /// Coefficients, highest power first, rounded to double precision from the exact
         /// expansion of the roots. The rounding is part of the hazard.
         public let coefficients: [Double]
+        /// The real parts of the roots, each root as often as its multiplicity.
         public let rootsReal: [Double]
+        /// The imaginary parts, root for root with `rootsReal`.
         public let rootsImaginary: [Double]
         /// The largest finite condition number of a root with respect to the coefficients,
         /// κ(r) = Σ |aₖ|·|r|ᵏ / (|r|·|p′(r)|) (specification §6.3.8). Multiple roots have an
@@ -22,8 +30,10 @@ public enum StressFixture {
         public let multiplicity: Int
         /// The accuracy a root finder working from these coefficients can be held to.
         public let achievableAccuracy: Double
+        /// What makes the case hard, in words a stability note can cite.
         public let hazard: String
 
+        /// The degree: one less than the number of coefficients.
         public var degree: Int { coefficients.count - 1 }
     }
 
@@ -44,13 +54,27 @@ public enum StressFixture {
     // MARK: Filters at the edges of the band
 
     /// A filter whose poles crowd z = 1 (cutoff near 0 Hz) or whose edge sits just below Nyquist.
+    ///
+    /// An immutable value, usable on any thread; it does not allocate.
     public struct FilterCase: Sendable {
-        public enum Response: Sendable { case lowPass, highPass }
+        /// Which side of the cutoff passes: a value, usable on any thread; it does not allocate.
+        public enum Response: Sendable {
+            /// The band below the cutoff passes.
+            case lowPass
+            /// The band above the cutoff passes.
+            case highPass
+        }
+        /// The case's name: response, cutoff, sample rate and order.
         public let name: String
+        /// Low-pass or high-pass.
         public let response: Response
+        /// The sample rate, in hertz.
         public let sampleRate: Double
+        /// The cutoff, in hertz.
         public let cutoff: Double
+        /// The order of the filter.
         public let order: Int
+        /// What makes the case hard, in words a stability note can cite.
         public let hazard: String
 
         /// The distance of a Butterworth pole pair from z = 1 at this cutoff, about
@@ -83,9 +107,15 @@ public enum StressFixture {
     // MARK: Signals
 
     /// A signal that probes one numerical or real-time hazard.
+    ///
+    /// An immutable value, usable on any thread; it does not allocate: it keeps the samples it is
+    /// given.
     public struct SignalCase: Sendable {
+        /// The fixture's name, as a test reports it.
         public let name: String
+        /// The signal.
         public let samples: [Float]
+        /// What the signal probes, in words a stability note can cite.
         public let hazard: String
     }
 

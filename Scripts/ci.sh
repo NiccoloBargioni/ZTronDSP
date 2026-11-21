@@ -23,7 +23,9 @@
 #      application in Release (Examples/ZTronDSPGallery/gallery.sh app, derived data of its own)
 #   2  Scripts/lint-bans.sh, all four parts; Scripts/check-dependency-graph.sh (DEP-1…DEP-3)
 #   3  Scripts/compile-fixtures.sh and the order matrix (Scripts/order-matrix.sh --check, WP-328)
-#   4  Scripts/api-digest.sh --check
+#   4  Scripts/api-digest.sh --check; Scripts/docs.sh --audit, on the same build (WP-901b): every
+#      public symbol documented with its threading contract (VIS-2), the catalogs' code compiled.
+#      The documentation build (Scripts/docs.sh --build) is no gate: a step of the release checklist
 #   5  Tests in Debug on the simulator matrix, and on each of its simulators the gallery's hosted
 #      suites (gallery.sh hosted), which fail on the words "recorded a known issue"; the
 #      allocation-audit tests once more in Release (CR-002); the Thread Sanitizer run
@@ -69,7 +71,7 @@ AUDIT_FILTERS="$ROOT/Scripts/ci/allocation-audit-filters.txt"
 PRODUCTION_SCHEMES="ZTronDSP ZTronDSPUI"
 
 # Number 0 is not a gate: the nightly job, which the loop below runs as it runs a gate.
-GATE_NAMES=("the gallery's UI tests (not a gate)" "build" "lint and dependency graph" "compile fixtures and order matrix" "API digest" "tests" "coverage" "golden vectors" "benchmarks" "external parity")
+GATE_NAMES=("the gallery's UI tests (not a gate)" "build" "lint and dependency graph" "compile fixtures and order matrix" "API digest and documentation" "tests" "coverage" "golden vectors" "benchmarks" "external parity")
 
 gates=(); keep_going=0; strict=0; runtimes=(); matrix=0; tsan=0; tsan_only=0; nightly=0
 while [ $# -gt 0 ]; do
@@ -280,6 +282,7 @@ gate_3() {
 gate_4() {
     ensure_build || { failed "the build whose public API is compared"; return; }
     run "the API digest equals the build; stage initialisers; public references only" "$ROOT/Scripts/api-digest.sh" --check
+    run "every public symbol documented with its threading contract (VIS-2)" "$ROOT/Scripts/docs.sh" --audit
 }
 
 gate_5() {

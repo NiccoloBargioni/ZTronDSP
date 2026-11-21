@@ -17,6 +17,9 @@ import ZTronDSPCore
 /// Threading: a target is a GPU resource and belongs to whoever made it: one thread at a time.
 /// It is not `Sendable`; the main thread uses one for a view's tests, background work makes
 /// its own.
+///
+/// Creating one allocates its texture, and each of ``renderPass(clearColor:)`` and
+/// ``readPixels()`` allocates what it returns.
 public final class OffscreenTarget {
     /// The texture that is drawn into: a render target that can also be sampled and read.
     public let texture: any MTLTexture
@@ -25,7 +28,10 @@ public final class OffscreenTarget {
     /// Pixels down.
     public let height: Int
 
+    /// A target of `width × height` pixels, made on the device of `context`.
+    ///
     /// - Parameters:
+    ///   - context: the device the texture is made on.
     ///   - width: pixels across; at least 1 and at most what the device allows.
     ///   - height: pixels down.
     ///   - pixelFormat: `.rgba8Unorm` (the default) or `.bgra8Unorm`, the two formats whose
@@ -90,9 +96,9 @@ extension PixelImage {
 }
 
 extension MetalContext {
-    /// Waits until everything committed to the context's queue so far has run: an empty
-    /// command buffer goes through the queue behind it. Blocks; for tests and background work,
-    /// never for the main thread of an app or the analysis thread.
+    /// Waits until everything committed to the context's queue so far has run: an empty command
+    /// buffer goes through the queue behind it. Blocks; for tests and background work, never for
+    /// the main thread of an app or the analysis thread. It allocates a command buffer.
     public func waitUntilIdle() {
         guard let commands = try? MetalResources.commands(on: commandQueue) else { return }
         commands.commit()

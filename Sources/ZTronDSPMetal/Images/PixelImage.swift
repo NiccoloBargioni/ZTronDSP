@@ -8,7 +8,9 @@ import ZTronDSPCore
 /// Pixels are stored row by row from the top, four bytes each: red, green, blue, alpha, with
 /// the colour premultiplied by alpha as the renderers write it.
 ///
-/// An immutable value, usable on any thread.
+/// An immutable value, usable on any thread. Creating one from its bytes, reading a pixel and
+/// comparing two images do not allocate; decoding a PNG, drawing a `CGImage` into one and
+/// making a `CGImage` of one allocate.
 public struct PixelImage: Hashable, Sendable {
     /// Pixels across.
     public let width: Int

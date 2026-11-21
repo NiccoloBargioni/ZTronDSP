@@ -26,7 +26,8 @@ extension SystemAnalysis: MATLABExportable {
     /// no date and no machine name, so equal analyses give equal text (MAT-4). The package
     /// writes no file: what comes back is text (MAT-5).
     ///
-    /// The work runs on `BackgroundWork` (BG-1, MAT-6) and can be cancelled (BG-3).
+    /// The call may be made from any context; the work runs on `BackgroundWork` (BG-1, MAT-6) and
+    /// can be cancelled (BG-3). It allocates, in the background.
     ///
     /// - Throws: `DSPError.cancelled`; `DSPError.exportTooLarge` cannot occur for the sizes
     ///   above.

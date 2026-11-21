@@ -14,7 +14,7 @@ import ZTronDSPCore
 ///
 /// Threading: called on the control context and on the source's own queue, one call at a
 /// time, never on the main thread, the audio I/O thread or the analysis thread. Calls may
-/// block while the system reconfigures audio.
+/// block while the system reconfigures audio, and may allocate.
 public protocol AudioSessionControlling: AnyObject, Sendable {
     /// The session's category.
     var category: AVAudioSession.Category { get }

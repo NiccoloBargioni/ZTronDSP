@@ -15,16 +15,23 @@ import ZTronDSPCore
 /// the number of pairs per second.
 ///
 /// A multichannel signal is reduced by `channels`. Switched off, it suspends the rest of its
-/// branch (ACT-3). An immutable value, usable on any thread.
+/// branch (ACT-3). An immutable value, usable on any thread; `lower(_:)` runs on the control
+/// context and may allocate.
 public struct Waveform: PipelineStage {
+    /// Audio samples.
     public typealias Input = Samples
+    /// (minimum, maximum) pairs.
     public typealias Output = Envelope
 
     /// The time one pair covers, in seconds.
     public let resolution: TimeInterval
+    /// How a signal of several channels is reduced (MIC-6): the mixdown unless told otherwise.
     public let channels: ChannelPolicy
+    /// The step's switch: off, it suspends the rest of its branch (ACT-3).
     public let activation: StageActivation
 
+    /// Pairs over stretches of `resolution` seconds. Nothing is checked here: `lower(_:)` requires
+    /// a positive, finite resolution of at most 2²⁸ samples when the plan is compiled.
     public init(resolution: TimeInterval = 0.005, channels: ChannelPolicy = .mixdown, isActive: some ActivationSource = .active) {
         self.resolution = resolution
         self.channels = channels
@@ -36,6 +43,8 @@ public struct Waveform: PipelineStage {
         let channel: Int?
     }
 
+    /// Checks the resolution against the sample rate at the step's position and emits the node,
+    /// sized for the pairs one block completes. Control context; may allocate.
     public func lower(_ context: inout LoweringContext) throws(DSPError) {
         let rate = context.environment.sampleRate
         guard rate > 0, rate.isFinite else { throw context.invalid("sampleRate", "a waveform needs a sample rate, and there is none here") }
@@ -59,6 +68,7 @@ public struct Waveform: PipelineStage {
 
 extension Pipeline where Output == Samples {
     /// The envelope of the signal: see ``Waveform``.
+    /// Usable on any thread; allocates the pipeline it returns.
     public func waveform(
         resolution: TimeInterval = 0.005, channels: ChannelPolicy = .mixdown, isActive: some ActivationSource = .active
     ) -> Pipeline<Input, Envelope> {

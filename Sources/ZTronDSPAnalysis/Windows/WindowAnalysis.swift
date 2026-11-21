@@ -20,10 +20,13 @@ import ZTronDSPCore
 /// smoothness is reported up to the fourth derivative, because finite differences amplify
 /// round-off beyond that.
 ///
-/// An immutable value, usable on any thread. It is produced in the background (BG-1).
+/// An immutable value, usable on any thread. It is produced in the background (BG-1), which
+/// allocates.
 public struct WindowAnalysis: Hashable, Sendable {
     /// What the window's function does far outside the frame (a window itself is zero there,
     /// whatever its function returns: WIN-2).
+    ///
+    /// A value, usable on any thread; it does not allocate.
     public enum TailLimit: Hashable, Sendable {
         /// It tends to 0: the function is a window in its own right.
         case zero
@@ -37,6 +40,8 @@ public struct WindowAnalysis: Hashable, Sendable {
 
     /// A jump of the window between two neighbouring samples that does not shrink as the grid
     /// is refined.
+    ///
+    /// An immutable value, usable on any thread; it does not allocate.
     public struct Discontinuity: Hashable, Sendable {
         /// Where, as a fraction of the frame: 0 is its start, 1 its end.
         public let position: Double
@@ -163,13 +168,16 @@ extension Window {
     /// continuity and smoothness, whether it can be integrated, what its spectrum looks like,
     /// and, for a `hop`, whether frames that overlap add up.
     ///
-    /// The work runs on the background executor (BG-1): the call may be made from any context,
-    /// the main actor included, and can be cancelled (BG-3).
+    /// The work runs on the background executor (BG-1) and allocates: the call may be made
+    /// from any context, the main actor included, and can be cancelled (BG-3).
     ///
-    /// - Parameter tail: the function behind a custom window, to be followed outside the
-    ///   frame. A `Window` does not hand its closure back, so the questions about the whole
-    ///   line (`tailLimit`, integrability on the line) are answered for a custom window only
-    ///   when the closure is given here as well; without it they are `nil`.
+    /// - Parameters:
+    ///   - frame: samples of the frame the window is examined on, at least 1.
+    ///   - hop: the hop the overlap-add questions are asked for; `nil` leaves them out.
+    ///   - tail: the function behind a custom window, to be followed outside the frame. A
+    ///     `Window` does not hand its closure back, so the questions about the whole line
+    ///     (`tailLimit`, integrability on the line) are answered for a custom window only
+    ///     when the closure is given here as well; without it they are `nil`.
     /// - Throws: `DSPError.invalidParameter` for a frame or hop that holds nothing and for a
     ///   window that cannot be sampled (WIN-3); `DSPError.cancelled`.
     public func analysis(frame: Int, hop: Int? = nil, tail: (@Sendable (Double) -> Double)? = nil) async throws(DSPError) -> WindowAnalysis {

@@ -4,6 +4,8 @@ import Testing
 import ZTronDSPCore
 
 /// What one thread asked of the heap during an audited region.
+///
+/// An immutable value, usable on any thread; it does not allocate, but for ``description``.
 public struct AllocationCounts: Sendable, Equatable, CustomStringConvertible {
     /// Calls that allocate: `malloc`, `calloc`, the allocating half of `realloc`.
     public let allocations: Int
@@ -12,18 +14,22 @@ public struct AllocationCounts: Sendable, Equatable, CustomStringConvertible {
     /// Bytes requested by the allocations.
     public let bytes: Int
 
+    /// Counts given figure by figure, as an audit reports them.
     public init(allocations: Int, deallocations: Int, bytes: Int) {
         self.allocations = allocations
         self.deallocations = deallocations
         self.bytes = bytes
     }
 
+    /// The counts in words: the allocations with their bytes, then the deallocations.
     public var description: String {
         "\(allocations) allocation(s) of \(bytes) byte(s), \(deallocations) deallocation(s)"
     }
 }
 
 /// Why an allocation audit could not run. An audit that cannot run is a failure, never a pass.
+///
+/// A value, usable on any thread; it does not allocate.
 public enum AllocationAuditError: Error, Sendable, Equatable {
     /// The `malloc_logger` hook is not firing, so a count of zero would mean nothing.
     case hookNotLive
@@ -39,6 +45,9 @@ public enum AllocationAuditError: Error, Sendable, Equatable {
 ///
 /// The closure is synchronous and cannot throw on purpose: an audit belongs to one thread,
 /// a suspension point could resume on another, and an error path allocates.
+///
+/// Callable on any thread: the thread it audits is the caller's. Outside `body` it does not
+/// allocate.
 public func countAllocations(_ body: () -> Void) throws(AllocationAuditError) -> AllocationCounts {
     guard ztdt_alloc_hook_is_live() else { throw .hookNotLive }
     let token = ztdt_alloc_audit_begin()
@@ -57,6 +66,9 @@ public func countAllocations(_ body: () -> Void) throws(AllocationAuditError) ->
 /// over a range allocates on every iteration (measured on Swift 6.4, change request CR-002),
 /// so the loop of the test itself would fail the audit. The audit is meant to pass in Debug
 /// and in Release.
+///
+/// Callable on any thread: the thread it audits is the caller's. Outside `body` it
+/// allocates only to record an issue.
 ///
 /// - Returns: the counts, so a test can assert further on them.
 @discardableResult
@@ -92,6 +104,9 @@ public func expectNoAllocations(
 }
 
 /// Where an allocation audit can run.
+///
+/// ``isUnderThreadSanitizer`` may be read on any thread: its first read looks the symbol up,
+/// once, and may allocate; later reads do not allocate.
 public enum AllocationAudit {
     /// True when the process runs under the Thread Sanitizer, whose allocator hides the heap
     /// from the probe: `expectNoAllocations` then runs its body and audits nothing.
@@ -101,12 +116,16 @@ public enum AllocationAudit {
 /// Performs exactly one allocation and one deallocation of `byteCount` bytes that no optimiser
 /// can remove. Use it as the control case of an audit: a test that expects this to be counted
 /// fails loudly if the probe ever stops working.
+///
+/// Callable on any thread; it allocates, by design.
 public func forceAllocation(byteCount: Int = 64) {
     ztdt_force_allocation(byteCount)
 }
 
 /// `calloc`, `realloc`, `free`: two allocations (of `first` and of `second` bytes) and two
 /// deallocations that no optimiser can remove.
+///
+/// Callable on any thread; it allocates, by design.
 public func forceReallocation(from first: Int, to second: Int) {
     ztdt_force_reallocation(first, second)
 }
@@ -114,6 +133,8 @@ public func forceReallocation(from first: Int, to second: Int) {
 /// A digest of the calling thread's floating-point environment: rounding mode, exception flags
 /// and masks, flush-to-zero. Equal digests mean an unchanged environment (RT-6: a kernel
 /// never touches it).
+///
+/// Callable on any thread, the analysis thread included; it does not allocate.
 public func floatingPointEnvironmentDigest() -> UInt64 {
     ztdt_floating_point_environment()
 }
@@ -134,6 +155,8 @@ public final class ThreadAllocationAudit: @unchecked Sendable {
     private let deallocations: OpaquePointer?
     private let bytes: OpaquePointer?
 
+    /// An audit not yet opened, ready for `begin()` on the thread it audits. Creating one
+    /// allocates its four atomic cells.
     public init() {
         state = ztd_atomic_create(0)
         allocations = ztd_atomic_create(0)
@@ -204,10 +227,13 @@ public final class ThreadAllocationAudit: @unchecked Sendable {
 /// first block, in an optimised build and a process of its own.
 ///
 /// - Parameters:
+///   - pipeline: the pipeline under audit, from samples to whatever it ends in.
 ///   - format: the signal the pipeline is compiled for; mono at 48 kHz by default.
 ///   - blockSize: frames per block.
 ///   - blocks: blocks that run inside the audit.
 ///   - crossovers: the table the plan binds its implementations by.
+///   - comment: put in front of an issue; evaluated only when one is recorded.
+///   - sourceLocation: where an issue is recorded; the caller's line by default.
 /// - Returns: what the calling thread asked of the heap inside the audit.
 /// - Throws: what compiling the pipeline throws; an audit that cannot run is recorded as an
 ///   issue, as by `expectNoAllocations`.

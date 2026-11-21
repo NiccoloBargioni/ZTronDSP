@@ -10,10 +10,12 @@ import Darwin
 /// start of the stream as in its steady state. Where the sum is below the floor the output is
 /// zero (NUM-1).
 ///
-/// Threading: create and release on the control context. `add` and `reset` are allocation-free
-/// and belong to one thread at a time (the analysis thread).
+/// Threading: create and release on the control context; creating one allocates its buffers.
+/// `add` and `reset` do not allocate and belong to one thread at a time (the analysis thread).
 public final class OverlapAdder {
+    /// The length of each frame.
     public let frameSize: Int
+    /// The samples between the starts of consecutive frames.
     public let hopSize: Int
     /// Window sums below this give a zero output sample.
     public let floor: Float

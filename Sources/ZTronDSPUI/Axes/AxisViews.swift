@@ -261,7 +261,8 @@ struct TimeAxisContent: View {
 /// what it is. The axis is redrawn only when the scale, the range, the feed's axis or its
 /// size changes, never when data arrives.
 ///
-/// Threading: main actor, like every view.
+/// Threading: main actor, like every view; creating one does not allocate, and laying out its
+/// labels allocates.
 public struct FrequencyAxisView: View, Equatable {
     private let feed: HeatmapFeed
 
@@ -289,7 +290,8 @@ public struct FrequencyAxisView: View, Equatable {
 /// other rows. A feed whose rows turn out to be something else is labelled as what it is
 /// (VC-5). Redrawn only when the feed's axis, the vertical range or its size changes.
 ///
-/// Threading: main actor, like every view.
+/// Threading: main actor, like every view; creating one does not allocate, and laying out its
+/// labels allocates.
 public struct PitchClassAxisView: View, Equatable {
     private let feed: HeatmapFeed
 
@@ -317,7 +319,8 @@ public struct PitchClassAxisView: View, Equatable {
 /// something else is labelled as what it is. Redrawn only when the feed's axis, the range or
 /// its size changes.
 ///
-/// Threading: main actor, like every view.
+/// Threading: main actor, like every view; creating one does not allocate, and laying out its
+/// labels allocates.
 public struct TempoAxisView: View, Equatable {
     private let feed: HeatmapFeed
 
@@ -346,7 +349,8 @@ public struct TempoAxisView: View, Equatable {
 /// pipeline writes the feed. Redrawn only when the span, the feed's rate or history, or its
 /// size changes.
 ///
-/// Threading: main actor, like every view.
+/// Threading: main actor, like every view; creating one does not allocate, and laying out its
+/// labels allocates.
 public struct TimeAxisView: View, Equatable {
     private let feed: FeedReference
 

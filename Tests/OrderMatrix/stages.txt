@@ -3,8 +3,9 @@
 # Scripts/order-matrix.sh type-checks each expression after a pipeline that ends in each domain
 # of domains.txt (ORD-2). Any valid arguments will do: what is asked is where the stage may
 # stand, not what it computes. A package that adds a stage adds its line here (STG-1); a public
-# stage of a processing target without a line fails the check. A second spelling of a stage
-# (its measuring one, say) gets a line named `Type: what is different`.
+# stage of the API digests without a line here, or in not-in-matrix.txt with the reason it is
+# not in the matrix, fails the check. A second spelling of a stage (its measuring one, say) gets
+# a line named `Type: what is different`.
 
 # ZTronDSPDesign: sequence stages (O-1…O-3)
 Gain | Gain(.decibels(-6))
@@ -65,3 +66,10 @@ OnsetStrength | OnsetStrength()
 Tempogram | Tempogram()
 HarmonicPercussive | HarmonicPercussive(select: .harmonic)
 HPSS | HPSS(select: .harmonic)
+
+# ZTronDSPCore: the step that hands frames to a sink (O-11), one line per kind of sink
+Emit | Emit(to: HeatmapFeed())
+Emit: to a waveform feed | Emit(to: WaveformFeed())
+Emit: to a scalar binding | Emit(to: Binding<Float>.constant(0))
+Emit: to a vector binding | Emit(to: Binding<[Float]>.constant([]))
+Emit: to a feature stream | Emit(to: FeatureStream<Chroma>())

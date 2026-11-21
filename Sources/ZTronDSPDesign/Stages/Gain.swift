@@ -19,7 +19,8 @@ import ZTronDSPCore
 /// scalar track there is one channel. The amount, in decibels, is the stage's continuous
 /// value (ANI-2).
 ///
-/// An immutable value, usable on any thread.
+/// An immutable value, usable on any thread; `lower(_:)` runs on the control context and may
+/// allocate.
 public struct Gain: SequenceStage {
     enum Amount: Hashable, Sendable {
         case every(Amplification)
@@ -63,11 +64,11 @@ public struct Gain: SequenceStage {
         }
     }
 
-    /// The amounts in decibels (ANI-2). Usable on any thread.
+    /// The amounts in decibels (ANI-2). Usable on any thread; it may allocate.
     public var parameters: [Double] { amounts.map(\.animatableValue) }
 
-    /// The stage with its amounts replaced. Passing its own values returns it unchanged.
-    /// Usable on any thread.
+    /// The stage with its amounts replaced. Passing its own values returns it unchanged. Usable on
+    /// any thread; it may allocate.
     public func replacingParameters(_ values: ArraySlice<Double>) -> Gain {
         let current = amounts
         guard values.count == current.count else { return self }

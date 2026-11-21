@@ -25,10 +25,10 @@ extension FeedSnapshot {
     ///   - frequencyScale: how the frequency axis is laid out, for rows evenly spaced in
     ///     hertz; other rows are drawn bin for bin (VC-5).
     ///
-    /// Threading: the work runs on the background executor (BG-1): never on the main thread,
-    /// never on the analysis thread. The caller may be on any of them but the analysis thread
-    /// and suspends meanwhile. The image is an immutable value (BG-2). Cancelling the calling
-    /// task stops the work between its steps (BG-3).
+    /// Threading: the work runs on the background executor (BG-1) and allocates: never on the
+    /// main thread, never on the analysis thread. The caller may be on any of them but the
+    /// analysis thread and suspends meanwhile. The image is an immutable value (BG-2).
+    /// Cancelling the calling task stops the work between its steps (BG-3).
     ///
     /// - Throws: `invalidParameter` for a size no texture has; `unsupportedConfiguration` for a
     ///   snapshot too large for a texture of the device; `backendUnavailable` where there is no

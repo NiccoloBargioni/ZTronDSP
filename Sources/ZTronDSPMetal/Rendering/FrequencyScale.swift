@@ -13,9 +13,9 @@ import ZTronDSPCore
 /// Pass `.linear`, `.logarithmic`, `.mel`, or a conformer of your own. A conformer's position
 /// grows with the frequency, and its two functions invert each other.
 ///
-/// Conformers are immutable values, usable on any thread. The functions are called on the
-/// main thread or on the background executor when a scale is set, a few thousand times, never
-/// on the analysis thread.
+/// Conformers are immutable values, usable on any thread; the stock ones do not allocate. The
+/// functions are called on the main thread or on the background executor when a scale is set,
+/// a few thousand times, never on the analysis thread.
 public protocol FrequencyScale: Hashable, Sendable {
     /// Where `hertz` sits on the axis, in the scale's own unit. Grows with the frequency.
     func position(of hertz: Double) -> Double
@@ -24,15 +24,22 @@ public protocol FrequencyScale: Hashable, Sendable {
 }
 
 /// Frequencies evenly spaced in hertz.
+///
+/// An immutable value, usable on any thread; it does not allocate.
 public struct LinearFrequencyScale: FrequencyScale {
+    /// The linear scale; there is nothing to set.
     public init() {}
 
+    /// `hertz` itself.
     public func position(of hertz: Double) -> Double { hertz }
+    /// `position` itself, in hertz.
     public func frequency(at position: Double) -> Double { position }
 }
 
 /// Frequencies evenly spaced in octaves. An axis cannot reach 0 Hz that way, so it starts at
 /// `lowestFrequency`: frequencies below it sit at its position.
+///
+/// An immutable value, usable on any thread; it does not allocate.
 public struct LogarithmicFrequencyScale: FrequencyScale {
     /// Where the axis starts, in hertz.
     public let lowestFrequency: Double
@@ -45,44 +52,51 @@ public struct LogarithmicFrequencyScale: FrequencyScale {
 
     /// The position in octaves above 1 Hz.
     public func position(of hertz: Double) -> Double { log2(max(hertz, lowestFrequency)) }
+    /// `2^position` hertz: the inverse of `position(of:)` from `lowestFrequency` up.
     public func frequency(at position: Double) -> Double { exp2(position) }
 }
 
 /// Frequencies evenly spaced in mels, by a mel formula of the core (§6.11).
+///
+/// An immutable value, usable on any thread; with a stock formula it does not allocate.
 public struct MelFrequencyScale<Formula: MelFormula>: FrequencyScale {
     /// The formula that turns hertz into mels and back.
     public let formula: Formula
 
+    /// The scale of `formula`.
     public init(formula: Formula) {
         self.formula = formula
     }
 
+    /// The mel value of `hertz`; a negative frequency counts as 0 Hz.
     public func position(of hertz: Double) -> Double { formula.mel(fromHertz: max(hertz, 0)) }
+    /// The frequency, in hertz, whose mel value is `position`.
     public func frequency(at position: Double) -> Double { formula.hertz(fromMel: position) }
 }
 
 extension FrequencyScale where Self == LinearFrequencyScale {
-    /// Evenly spaced in hertz. The default.
+    /// Evenly spaced in hertz. The default. Usable on any thread; it does not allocate.
     public static var linear: LinearFrequencyScale { LinearFrequencyScale() }
 }
 
 extension FrequencyScale where Self == LogarithmicFrequencyScale {
-    /// Evenly spaced in octaves, from 20 Hz.
+    /// Evenly spaced in octaves, from 20 Hz. Usable on any thread; it does not allocate.
     public static var logarithmic: LogarithmicFrequencyScale { LogarithmicFrequencyScale() }
 
-    /// Evenly spaced in octaves, from `lowestFrequency`.
+    /// Evenly spaced in octaves, from `lowestFrequency`. Usable on any thread; it does not
+    /// allocate.
     public static func logarithmic(from lowestFrequency: Double) -> LogarithmicFrequencyScale {
         LogarithmicFrequencyScale(lowestFrequency: lowestFrequency)
     }
 }
 
 extension FrequencyScale where Self == MelFrequencyScale<SlaneyMelFormula> {
-    /// Evenly spaced in mels, by Slaney's formula.
+    /// Evenly spaced in mels, by Slaney's formula. Usable on any thread; it does not allocate.
     public static var mel: MelFrequencyScale<SlaneyMelFormula> { MelFrequencyScale(formula: SlaneyMelFormula()) }
 }
 
 extension FrequencyScale {
-    /// Evenly spaced in mels, by `formula`.
+    /// Evenly spaced in mels, by `formula`. Usable on any thread; it does not allocate.
     public static func mel<Formula: MelFormula>(_ formula: Formula) -> MelFrequencyScale<Formula> where Self == MelFrequencyScale<Formula> {
         MelFrequencyScale(formula: formula)
     }
@@ -90,6 +104,8 @@ extension FrequencyScale {
 
 /// How a heat map fills the space between two rows (§8.1): the pitch classes of a chromagram
 /// are cells with hard edges, the bins of a spectrogram blend into one another.
+///
+/// A value, usable on any thread; it does not allocate.
 public enum RowInterpolation: Hashable, Sendable {
     /// Linear between neighbouring rows. The default.
     case linear

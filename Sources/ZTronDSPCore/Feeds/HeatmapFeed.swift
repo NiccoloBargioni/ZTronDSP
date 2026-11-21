@@ -19,9 +19,11 @@ public final class HeatmapFeed: Sendable {
 
     /// A feed that keeps the newest `history` columns.
     ///
-    /// - Parameter minimumHistory: the columns the feed may be cut down to when the system is
-    ///   critically short of memory (MEM-1). The default, `nil`, means `history`: such a feed
-    ///   is never trimmed.
+    /// - Parameters:
+    ///   - history: the columns the feed keeps.
+    ///   - minimumHistory: the columns the feed may be cut down to when the system is
+    ///     critically short of memory (MEM-1). The default, `nil`, means `history`: such a feed
+    ///     is never trimmed.
     public init(history: Int = 512, minimumHistory: Int? = nil) {
         store = ColumnStore(history: history, minimumHistory: minimumHistory)
     }

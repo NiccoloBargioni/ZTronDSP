@@ -4,7 +4,8 @@ import ZTronDSPCore
 /// name. A response stage takes its design as its first argument, an IIR `FilterFamily` or
 /// an FIR `FIRDesignMethod`, and resolves to the one or to the other.
 ///
-/// An immutable value, usable on any thread.
+/// An immutable value, usable on any thread; it does not allocate: it keeps the design it is
+/// given.
 public enum FilterDesign: Hashable, Sendable {
     /// An IIR filter: zeros, poles and gain, run as second-order sections.
     case iir(IIRDesign)

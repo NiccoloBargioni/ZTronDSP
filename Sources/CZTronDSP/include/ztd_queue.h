@@ -44,6 +44,9 @@ uint64_t ztd_command_queue_overflows(const ztd_command_queue_t *queue) ZTD_NONBL
    The same, for pointers: the retire list, and small events travelling back to the control side. */
 typedef struct ztd_pointer_queue ztd_pointer_queue_t;
 
+/* Creates a queue that holds `capacity` pointers rounded up to a power of two, from 2 to 2^30
+   (NULL when memory cannot be had), and frees one (NULL is allowed). Control context: both
+   allocate or free. */
 ztd_pointer_queue_t *ztd_pointer_queue_create(uint32_t capacity);
 void ztd_pointer_queue_destroy(ztd_pointer_queue_t *queue);
 /* Producer. False when the queue is full; the pointer was not queued. NULL cannot be queued. */

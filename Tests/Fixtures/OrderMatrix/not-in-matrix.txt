@@ -1,0 +1,2 @@
+# the stages of the fixture that are not in its matrix
+Wrapper | a container: it takes its domains from its content

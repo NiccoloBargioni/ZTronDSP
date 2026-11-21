@@ -3,6 +3,9 @@ import ZTronDSPCore
 
 /// Marks the measuring spelling of `SpectralCentroid`: the spectrum it measures passes on
 /// (OUT-1).
+///
+/// A type with no values: it exists as a type argument only, on any thread, and does not
+/// allocate.
 public enum MeasuredSpectrum {}
 
 /// The spectral centroid, `C = Σ fₖ·mₖ / Σ mₖ` over the bins of a linear-frequency axis inside
@@ -24,19 +27,26 @@ public enum MeasuredSpectrum {}
 /// `Tap { SpectralCentroid(…); Emit(to: binding) }`, written fluently where it begins a branch.
 ///
 /// Switched off, the transforming spelling suspends the rest of its branch; the measuring one
-/// stops measuring and the spectrum passes (ACT-3). An immutable value, usable on any thread.
+/// stops measuring and the spectrum passes (ACT-3). An immutable value, usable on any thread;
+/// `lower(_:)` runs on the control context and may allocate.
 public struct SpectralCentroid<Continuation>: ContextDependentStep {
     /// The band the centroid is taken over; `nil` for 0 Hz to the Nyquist frequency.
     public let range: FrequencyRange?
     /// The least sum of weights that is divided by.
     public let floor: Double
+    /// The step's switch: off, the transforming spelling suspends the rest of its branch and the
+    /// measuring one stops measuring (ACT-3).
     public let activation: StageActivation
     let measuring: StageDescription?
 
+    /// The step with its typing rule; for the measuring spelling, the tap that measures (OUT-1).
     public var stageDescription: StageDescription {
         measuring ?? StageDescription(self, rule: SpectralCentroidRule.rule)
     }
 
+    /// Checks the floor and the range against the spectra at the step's position (no higher than
+    /// the Nyquist frequency, a bin inside it) and emits the node. The measuring spelling is
+    /// lowered as its tap: called on it, this throws. Control context; may allocate.
     public func lower(_ context: inout LoweringContext) throws(DSPError) {
         guard measuring == nil else { throw context.structuralStage() }
         let environment = context.environment
@@ -86,7 +96,7 @@ enum SpectralCentroidRule {
 
 extension SpectralCentroid where Continuation == Scalar {
     /// The transforming spelling: the chain goes on with the centroid in hertz, one value per
-    /// frame.
+    /// frame. Usable on any thread; it does not allocate.
     public init(range: FrequencyRange? = nil, floor: Double = 1e-10, isActive: some ActivationSource = .active) {
         self.range = range
         self.floor = floor
@@ -94,14 +104,15 @@ extension SpectralCentroid where Continuation == Scalar {
         self.measuring = nil
     }
 
-    /// From magnitudes or powers on a linear-frequency axis to a scalar.
+    /// From magnitudes or powers on a linear-frequency axis to a scalar. Usable on any thread; the
+    /// first read builds the rule, which allocates once.
     public static var rule: DomainRule { SpectralCentroidRule.rule }
 }
 
 extension SpectralCentroid where Continuation == MeasuredSpectrum {
     /// The measuring spelling (OUT-1): the centroid goes to `binding`, a `Binding<Float>` or a
-    /// `Binding<ScalarFrame>`, on the main thread and at the result rate; the spectrum passes
-    /// on unchanged.
+    /// `Binding<ScalarFrame>`, on the main thread and at the result rate; the spectrum passes on
+    /// unchanged. Usable on any thread; it allocates the description of its measuring branch.
     public init(range: FrequencyRange? = nil, floor: Double = 1e-10, to binding: some ScalarResultTarget, isActive: some ActivationSource = .active) {
         self.range = range
         self.floor = floor
@@ -111,12 +122,16 @@ extension SpectralCentroid where Continuation == MeasuredSpectrum {
 }
 
 extension PipelineBuilder {
+    /// The transforming spelling follows magnitudes or powers on a linear-frequency axis and gives
+    /// a scalar track (O-8). Runs where the pipeline is described, on any thread, and allocates.
     public static func buildPartialBlock<I, Values: LinearValued>(
         accumulated: Pipeline<I, Spectrum<LinearFrequency, Values>>, next: SpectralCentroid<Scalar>
     ) -> Pipeline<I, Scalar> {
         accumulated.appending(next.stageDescription)
     }
 
+    /// The measuring spelling follows magnitudes or powers on a linear-frequency axis, which pass
+    /// on (O-8, OUT-1). Runs where the pipeline is described, on any thread, and allocates.
     public static func buildPartialBlock<I, Values: LinearValued>(
         accumulated: Pipeline<I, Spectrum<LinearFrequency, Values>>, next: SpectralCentroid<MeasuredSpectrum>
     ) -> Pipeline<I, Spectrum<LinearFrequency, Values>> {
@@ -126,6 +141,7 @@ extension PipelineBuilder {
 
 extension Pipeline {
     /// The spectral centroid, as a scalar track: see ``SpectralCentroid``.
+    /// Usable on any thread; allocates the pipeline it returns.
     public func spectralCentroid<Values: LinearValued>(
         range: FrequencyRange? = nil, floor: Double = 1e-10, isActive: some ActivationSource = .active
     ) -> Pipeline<Input, Scalar> where Output == Spectrum<LinearFrequency, Values> {
@@ -134,6 +150,7 @@ extension Pipeline {
 
     /// The spectral centroid, delivered to a binding; the spectrum passes on: see
     /// ``SpectralCentroid``.
+    /// Usable on any thread; allocates the pipeline it returns.
     public func spectralCentroid<Values: LinearValued>(
         range: FrequencyRange? = nil, floor: Double = 1e-10, to binding: some ScalarResultTarget, isActive: some ActivationSource = .active
     ) -> Pipeline<Input, Output> where Output == Spectrum<LinearFrequency, Values> {

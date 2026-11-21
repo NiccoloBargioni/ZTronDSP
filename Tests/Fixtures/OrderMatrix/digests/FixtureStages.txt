@@ -1,0 +1,15 @@
+# FixtureStages — public API digest (VIS-3).
+# A fixture of Scripts/tests/test-order-matrix.sh: three stages, one of them through a protocol
+# that refines another, a public type that is no stage, and a conformance added to the core's type.
+
+conformance            Everywhere : FixtureCore.Recipe
+conformance            FixtureCore.Wrapper : Swift.Sendable
+conformance            NotAStage : Swift.Hashable
+conformance            OnA : FixtureCore.SequenceStage
+conformance            OnAB : FixtureCore.PipelineStage
+conformance            OnAB : Swift.Sendable
+swift.init             OnA.init() : init()
+swift.struct           Everywhere : struct Everywhere<T> where T : Sendable
+swift.struct           NotAStage : struct NotAStage
+swift.struct           OnA : struct OnA
+swift.struct           OnAB : struct OnAB

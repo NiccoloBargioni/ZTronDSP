@@ -17,7 +17,7 @@ import ZTronDSPCore
 /// output the signal and the kernel can give, whatever the output itself is (§7.5, rows 8 and
 /// 10). The crossovers are those of the `CrossoverTable` in force (§7.4).
 ///
-/// An immutable value, usable on any thread.
+/// An immutable value, usable on any thread; it does not allocate.
 public enum ConvolutionStrategy: Hashable, Sendable, CaseIterable {
     /// The sum of products.
     case direct
@@ -58,7 +58,8 @@ public enum ConvolutionStrategy: Hashable, Sendable, CaseIterable {
 /// are cross-faded over 10 ms (§5.5.4). A kernel that is the single tap 1 is no stage at all
 /// (F4).
 ///
-/// An immutable value, usable on any thread. `lower(_:)` runs on the control context.
+/// An immutable value, usable on any thread. `lower(_:)` runs on the control context and may
+/// allocate.
 public struct Convolve: SequenceStage {
     /// The taps, lowest delay first. Usable on any thread.
     public let kernel: [Float]
@@ -130,7 +131,8 @@ public struct Convolve: SequenceStage {
 }
 
 extension Pipeline where Output: SampledSequence {
-    /// The pipeline followed by a convolution with `kernel`. See ``Convolve``. Usable on any thread.
+    /// The pipeline followed by a convolution with `kernel`. See ``Convolve``. Usable on any
+    /// thread; allocates the pipeline it returns.
     public func convolve(
         kernel: [Float], strategy: ConvolutionStrategy = .automatic, isActive: some ActivationSource = .active
     ) -> Pipeline<Input, Output> {

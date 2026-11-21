@@ -5,7 +5,8 @@ extension DSP {
     /// `n ≥ 4` (§6.4.1). The answer is arithmetic. A transform setup is never created to find
     /// out: doing so crashes for some lengths (E-09).
     ///
-    /// The same rule admits a length for the DCT behind the cepstral coefficients (§6.6).
+    /// The same rule admits a length for the DCT behind the cepstral coefficients (§6.6). Usable on
+    /// any thread, the analysis thread included; it does not allocate.
     public static func isFastLength(_ length: Int) -> Bool {
         guard length >= 16 else { return false }
         let twos = length.trailingZeroBitCount
@@ -14,7 +15,9 @@ extension DSP {
         return odd == 1 || odd == 3 || odd == 5 || odd == 15
     }
 
-    /// The smallest fast length at or above `length`; 16 for anything smaller.
+    /// The smallest fast length at or above `length`; 16 for anything smaller. Usable on any
+    /// thread; it may allocate (the list of factors it tries), so it is a design-time call, not one
+    /// for the analysis thread.
     public static func nextFastLength(_ length: Int) -> Int {
         guard length > 16 else { return 16 }
         // The candidates are f · 2ⁿ for the four factors: take the smallest that reaches `length`.
@@ -31,7 +34,9 @@ extension DSP {
         return best
     }
 
-    /// The largest fast length at or below `length`, or `nil` below 16.
+    /// The largest fast length at or below `length`, or `nil` below 16. Usable on any thread; it
+    /// may allocate (the list of factors it tries), so it is a design-time call, not one for the
+    /// analysis thread.
     public static func previousFastLength(_ length: Int) -> Int? {
         guard length >= 16 else { return nil }
         var best = 16
@@ -46,6 +51,7 @@ extension DSP {
 }
 
 /// Where the zeros go when a frame is padded (§6.12).
+/// A value, usable on any thread; it does not allocate.
 public enum ZeroPadding: Hashable, Sendable {
     /// After the samples.
     case trailing
@@ -66,7 +72,7 @@ public func zeroPadded<Element: AdditiveArithmetic>(_ samples: [Element], to cou
 
 /// Copies `count` samples into `destination` and fills the rest of its `paddedCount` elements
 /// with zeros. `paddedCount` below `count` copies only what fits. Source and destination must
-/// not overlap. Allocation-free; callable on the analysis thread.
+/// not overlap. Does not allocate; callable on the analysis thread.
 @inlinable
 public func zeroPad(
     _ source: UnsafePointer<Float>, count: Int, into destination: UnsafeMutablePointer<Float>, paddedCount: Int,

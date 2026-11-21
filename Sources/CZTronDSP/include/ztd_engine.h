@@ -52,6 +52,8 @@ uint32_t ztd_copy_finite(const float *in, float *out, uint32_t frames) ZTD_NONBL
    non-blocking: the thread parks between turns, never inside one. */
 typedef struct ztd_parker ztd_parker_t;
 
+/* Creates a parker (NULL when memory cannot be had) and frees one (NULL is allowed). Control
+   context: both allocate or free. */
 ztd_parker_t *ztd_parker_create(void);
 void ztd_parker_destroy(ztd_parker_t *parker);
 /* Blocks until `ztd_parker_unpark` is called, or returns at once when it already was since the

@@ -78,6 +78,7 @@ uint64_t ztd_sink_tap_discarded_frames(const ztd_sink_tap_t *tap) ZTD_NONBLOCKIN
 
 #ifdef __OBJC__
 
+/* The framework's class, named so that the functions below can take it without importing AVFAudio. */
 @class AVAudioSinkNode;
 
 /* The shape of a sink node's receiver block (AVAudioSinkNodeReceiverBlock, spelled without the

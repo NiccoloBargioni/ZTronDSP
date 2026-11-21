@@ -48,7 +48,7 @@ extension AppearanceSetting: Equatable {
 /// same axis for each of the three; the three names exist so that code reads as what it
 /// shows. `time` names the horizontal axis.
 ///
-/// An immutable value, usable on any thread.
+/// An immutable value, usable on any thread; it does not allocate.
 public enum DSPAxis: Hashable, Sendable {
     /// The vertical axis of a spectrogram: frequencies, on the scale the view uses.
     case frequency

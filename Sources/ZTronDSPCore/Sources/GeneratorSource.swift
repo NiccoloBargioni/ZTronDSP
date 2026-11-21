@@ -9,11 +9,14 @@ import Foundation
 /// let mock = try await engine.attach(analysis, to: GeneratorSource(.sine(frequency: .hertz(440))))
 /// ```
 ///
-/// Threading: `render` runs on the thread the engine paces the source on; `prepare` runs on the
-/// control context while the source is not running, and starts the signal over.
+/// Threading: `render` runs on the thread the engine paces the source on and does not
+/// allocate; `prepare` runs on the control context while the source is not running, and
+/// starts the signal over. Creating a generator allocates its state.
 public final class GeneratorSource: PullSampleSource, @unchecked Sendable {
     /// What a generator computes. Every signal is the same on all channels, except noise,
     /// which is independent per channel.
+    ///
+    /// A value, usable on any thread; making one may allocate (a mel frequency, a closure).
     public struct Signal: Sendable {
         enum Kind: Sendable {
             case sine(frequency: Frequency, amplitude: Float, phase: Double)
@@ -82,8 +85,11 @@ public final class GeneratorSource: PullSampleSource, @unchecked Sendable {
         }
     }
 
+    /// How the engine paces the generator: `.realTime` unless told otherwise.
     public let pacing: Pacing
+    /// The sample rate and the channel count the generator was made with.
     public let format: SignalFormat
+    /// The source's events; a generator sends none.
     public var events: AsyncStream<SourceEvent> { channel.stream }
 
     private let signal: Signal
@@ -112,6 +118,9 @@ public final class GeneratorSource: PullSampleSource, @unchecked Sendable {
     /// A generator of `signal`.
     ///
     /// - Parameters:
+    ///   - signal: what the generator computes.
+    ///   - sampleRate: samples per second, 48 kHz unless told otherwise.
+    ///   - channelCount: the channels, all alike except for noise; one unless told otherwise.
     ///   - duration: how long the signal lasts; `nil` for a signal without an end.
     ///   - pacing: `.realTime` behaves like a microphone; `.asFastAsPossible` is for analysis
     ///     and tests, and wants a `duration`.
@@ -139,6 +148,8 @@ public final class GeneratorSource: PullSampleSource, @unchecked Sendable {
     /// The most channels a generator delivers.
     public static let maximumChannelCount = 1_024
 
+    /// Checks the format, the duration and the signal's parameters, resolves its frequencies
+    /// against the sample rate, and starts the signal over. Control context.
     public func prepare() async throws(DSPError) {
         guard format.isValid, format.channelCount <= GeneratorSource.maximumChannelCount, format.sampleRate <= 1e9 else {
             throw .invalidParameter(stage: .none, parameter: "format", reason: "\(format) is not a signal format a generator can deliver")
@@ -219,10 +230,14 @@ public final class GeneratorSource: PullSampleSource, @unchecked Sendable {
         }
     }
 
+    /// Does nothing: the engine's requests drive the generator.
     public func start() throws(DSPError) {}
 
+    /// Does nothing.
     public func stop() {}
 
+    /// Computes the next frames, as many as fit, until the duration is reached. Does not
+    /// allocate; the closure of a `.function` signal is bound by RT-2.
     public func render(into block: inout AudioBlock) -> Int {
         let frames = min(block.capacity, frameLimit - position)
         guard frames > 0 else {

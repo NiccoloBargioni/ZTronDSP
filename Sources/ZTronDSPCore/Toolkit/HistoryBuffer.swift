@@ -5,8 +5,9 @@ import Darwin
 /// Every sample is stored twice, `count` positions apart, so the window never wraps and
 /// reading it copies nothing. Samples may be appended in batches of any size.
 ///
-/// Threading: create and release on the control context. `append`, `window` and `reset` are
-/// allocation-free and belong to one thread at a time (the analysis thread).
+/// Threading: create and release on the control context; creating one allocates its storage.
+/// `append`, `window` and `reset` do not allocate and belong to one thread at a time (the
+/// analysis thread).
 public final class HistoryBuffer {
     /// The window length.
     public let count: Int

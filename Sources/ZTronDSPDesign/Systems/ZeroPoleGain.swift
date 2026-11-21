@@ -11,7 +11,8 @@ import ZTronDSPCore
 ///
 /// Construction never fails. A system with real coefficients has zeros and poles that are
 /// real or come in conjugate pairs; the conversions that need this (to coefficients, to
-/// sections) check it and throw. An immutable value, usable on any thread.
+/// sections) check it and throw. An immutable value, usable on any thread; its analysis
+/// allocates (see `LTISystem`).
 public struct ZeroPoleGain: LTISystem, Hashable, Sendable {
     /// The zeros, with their multiplicity. Usable on any thread.
     public let zeros: [Complex]

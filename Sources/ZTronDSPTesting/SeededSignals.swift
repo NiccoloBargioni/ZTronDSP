@@ -2,13 +2,18 @@ import Foundation
 
 /// A small, fast, reproducible random number generator (SplitMix64). Tests are seeded and
 /// deterministic: the same seed gives the same signal on every run and every machine.
+///
+/// A value, usable on any thread, where each copy draws a sequence of its own; it does not
+/// allocate.
 public struct SeededGenerator: RandomNumberGenerator, Sendable {
     @usableFromInline var state: UInt64
 
+    /// A generator whose sequence is fixed by `seed`.
     public init(seed: UInt64) {
         state = seed
     }
 
+    /// The next 64 bits of the sequence: one SplitMix64 step.
     @inlinable
     public mutating func next() -> UInt64 {
         state &+= 0x9E37_79B9_7F4A_7C15
@@ -34,6 +39,8 @@ public struct SeededGenerator: RandomNumberGenerator, Sendable {
 }
 
 /// Deterministic test signals. Every function returns a new array of `Float` samples.
+///
+/// Plain functions, usable on any thread; each allocates the samples it returns.
 public enum TestSignal {
     /// `amplitude · sin(2π·frequency·n / sampleRate + phase)`.
     public static func sine(

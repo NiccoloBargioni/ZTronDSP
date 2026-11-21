@@ -5,7 +5,7 @@ import ZTronDSPCore
 /// What a Metal device can do, as far as the package cares (WP-601). The figures are read from
 /// the device or measured on it when a ``MetalContext`` is created; nothing is assumed.
 ///
-/// An immutable value, usable on any thread.
+/// An immutable value, usable on any thread; it does not allocate.
 public struct MetalCapabilities: Hashable, Sendable {
     /// The device's name, as Metal reports it.
     public let deviceName: String
@@ -40,8 +40,8 @@ public struct MetalCapabilities: Hashable, Sendable {
 /// ```
 ///
 /// Threading: a context is immutable and `Sendable`; its device, queue, library and pipeline
-/// states may be used from any thread. Creating one compiles shaders and draws once: not for
-/// the main thread, never for the analysis thread.
+/// states may be used from any thread. Creating one allocates, compiles shaders and draws
+/// once: not for the main thread, never for the analysis thread.
 public final class MetalContext: Sendable {
     /// The GPU.
     public let device: any MTLDevice

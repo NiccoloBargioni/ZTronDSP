@@ -6,7 +6,8 @@
 /// protects a pipeline whose types were not known when the app was compiled (ORD-5).
 ///
 /// Two rules are equal when their names are equal: give a rule of your own a name of its own.
-/// An immutable value, usable on any thread.
+/// An immutable value, usable on any thread. Creating one may allocate, for its name and its
+/// closure.
 public struct DomainRule: Hashable, Sendable {
     /// What identifies the rule, and what an error calls it.
     public let name: String
@@ -24,7 +25,9 @@ public struct DomainRule: Hashable, Sendable {
         transform(input)
     }
 
+    /// True when the names are equal.
     public static func == (lhs: DomainRule, rhs: DomainRule) -> Bool { lhs.name == rhs.name }
+    /// Hashes the name.
     public func hash(into hasher: inout Hasher) { hasher.combine(name) }
 
     // MARK: Stock rules

@@ -13,7 +13,7 @@
 /// stopped by the engine as the attachments to this source come and go.
 ///
 /// Threading: an immutable description plus the format the engine resolves for it; usable on
-/// any thread.
+/// any thread. Creating one allocates.
 public final class ProcessedSource: SampleSource, @unchecked Sendable {
     /// The source whose samples the pipeline processes.
     public let upstream: any SampleSource
@@ -70,7 +70,8 @@ public final class ProcessedSource: SampleSource, @unchecked Sendable {
 }
 
 extension SampleSource {
-    /// A source whose samples are this source's samples after `pipeline` (SRC-2).
+    /// A source whose samples are this source's samples after `pipeline` (SRC-2). Usable on any
+    /// thread; it allocates the source it returns.
     public func processed(by pipeline: Pipeline<Samples, Samples>) -> ProcessedSource {
         ProcessedSource(upstream: self, stages: pipeline.stages)
     }

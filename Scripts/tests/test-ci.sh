@@ -26,7 +26,7 @@ standin() {   # <path> <name in the log> : a script that logs its call and exits
     printf '#!/bin/bash\necho "%s $*" >> "$STUB_LOG"\nexit "${%s:-0}"\n' "$2" "$variable" > "$1"
     chmod +x "$1"
 }
-for tool in lint-bans check-dependency-graph compile-fixtures api-digest coverage-gate golden benchmarks external-parity order-matrix; do
+for tool in lint-bans check-dependency-graph compile-fixtures api-digest docs coverage-gate golden benchmarks external-parity order-matrix; do
     standin "$S/Scripts/$tool.sh" "$tool"
 done
 cat > "$S/bin/xc" <<'EOS'
@@ -104,7 +104,7 @@ not_logged() { if grep -q -F -- "$2" "$STUB_LOG"; then fail "$1 (the log holds: 
 ci 0 "with every tool succeeding, no gate fails" "$CI"
 expect_contains "… and every gate reports" "ci: gate 9  external parity                      passed"
 order="$(sed -E 's/ .*//' "$STUB_LOG" | awk '!seen[$0]++' | tr '\n' ' ')"
-if [ "$order" = "xc xcodebuild gallery lint-bans check-dependency-graph compile-fixtures order-matrix api-digest coverage-gate golden benchmarks external-parity " ]; then
+if [ "$order" = "xc xcodebuild gallery lint-bans check-dependency-graph compile-fixtures order-matrix api-digest docs coverage-gate golden benchmarks external-parity " ]; then
     pass "the gates run in the order of §10.3"
 else
     fail "the gates run in the order of §10.3" "$order"
@@ -118,11 +118,13 @@ logged "gate 5 runs the tests in Debug with coverage and a result bundle" "xc te
 logged "… and the gallery's hosted suites, in Debug, in derived data of their own" "gallery hosted [config=Debug device= derived=ci-gallery]"
 not_logged "the UI tests are not a gate" "gallery ui"
 logged "gate 4 checks the digest" "api-digest --check"
+logged "… and the documentation of every public symbol (WP-901b)" "docs --audit"
+not_logged "… but builds no documentation: that is no gate" "docs --build"
 logged "gate 7 checks the manifest" "golden --check"
 logged "gate 8 checks the benchmarks" "benchmarks --check"
 
 for case in "1:STUB_XCODEBUILD:build" "1:STUB_XC_BUILD:build" "1:STUB_GALLERY_APP:build" "5:STUB_GALLERY_HOSTED:tests" "2:STUB_LINT_BANS:lint and dependency graph" "2:STUB_CHECK_DEPENDENCY_GRAPH:lint and dependency graph" \
-            "3:STUB_COMPILE_FIXTURES:compile fixtures and order matrix" "3:STUB_ORDER_MATRIX:compile fixtures and order matrix" "4:STUB_API_DIGEST:API digest" \
+            "3:STUB_COMPILE_FIXTURES:compile fixtures and order matrix" "3:STUB_ORDER_MATRIX:compile fixtures and order matrix" "4:STUB_API_DIGEST:API digest and documentation" "4:STUB_DOCS:API digest and documentation" \
             "5:STUB_XC_TEST_ONLY:tests" "6:STUB_COVERAGE_GATE:coverage" "7:STUB_GOLDEN:golden vectors" "8:STUB_BENCHMARKS:benchmarks" "9:STUB_EXTERNAL_PARITY:external parity"; do
     gate="${case%%:*}"; rest="${case#*:}"; variable="${rest%%:*}"; name="${rest#*:}"
     ci 1 "a failure of ${variable#STUB_} fails gate $gate" env "$variable=1" "$CI"
@@ -268,6 +270,11 @@ expect_contains "… and is named" "Compiles.swift: it is filed as invalid and c
 copy; printf 'swift.func             removed() : func removed()\n' >> "$COPY/Docs/API/ZTronDSPCore.txt"
 expect_status 1 "gate 4: a seeded difference between the API and its digest fails" "$COPY/Scripts/ci.sh" --gate 4
 expect_contains "… and the module is named" "the public API of ZTronDSPCore differs from its committed digest"
+
+copy; printf '\npublic func seededBare() {}\n' >> "$COPY/Sources/ZTronDSPCore/Placeholder.swift"
+expect_status 1 "gate 4: a seeded public declaration without a documentation comment fails" "$COPY/Scripts/ci.sh" --gate 4
+expect_contains "… and is named, by the audit of the documentation" "Sources/ZTronDSPCore/Placeholder.swift:"
+expect_contains "… as the sources show it" '[source] `public func seededBare() {}`'
 
 # The fixture reports describe the fixture tree, so the copy gets that tree's sources: the
 # gate reads coverage:ignore marks, and which targets hold code, from the tree it stands in.

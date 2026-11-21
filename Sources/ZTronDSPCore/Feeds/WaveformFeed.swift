@@ -10,14 +10,17 @@
 /// arrived since they last looked.
 ///
 /// Threading: every member here is for any thread except the analysis thread, and none of
-/// them blocks the writer.
+/// them blocks the writer. Creating a feed allocates, and so does `snapshot()`, for the copy
+/// it returns.
 public final class WaveformFeed: Sendable {
     let store: ColumnStore
 
     /// A feed that keeps the newest `history` pairs.
     ///
-    /// - Parameter minimumHistory: the pairs the feed may be cut down to when the system is
-    ///   critically short of memory (MEM-1). The default, `nil`, means `history`.
+    /// - Parameters:
+    ///   - history: the pairs the feed keeps.
+    ///   - minimumHistory: the pairs the feed may be cut down to when the system is
+    ///     critically short of memory (MEM-1). The default, `nil`, means `history`.
     public init(history: Int = 2_048, minimumHistory: Int? = nil) {
         store = ColumnStore(history: history, minimumHistory: minimumHistory)
     }

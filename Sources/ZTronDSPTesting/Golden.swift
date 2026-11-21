@@ -2,14 +2,24 @@ import Foundation
 
 /// Why a golden-vector file could not be used. A malformed file is rejected, never read
 /// partially.
+///
+/// A value, usable on any thread; it does not allocate, but for ``description``.
 public enum GoldenError: Error, Sendable, Equatable, CustomStringConvertible {
+    /// No `<name>.json` in the folder of the bundle that was searched.
     case notFound(name: String)
+    /// The file, or a raw file it names, cannot be read.
     case unreadable(file: String)
+    /// The file does not have the form it should; `reason` says where.
     case malformed(file: String, reason: String)
+    /// No case of that name; `file` holds the name of the generator that wrote the file.
     case missingCase(file: String, name: String)
+    /// The case has no value under `key`.
     case missingValue(case: String, key: String)
+    /// The entry under `key` is not of the kind `expected` names; for a parameter, a missing one
+    /// as well.
     case wrongKind(case: String, key: String, expected: String)
 
+    /// The error in words, naming the file or the case and the entry.
     public var description: String {
         switch self {
         case .notFound(let name): "golden file \(name) is not in the bundle"
@@ -23,8 +33,13 @@ public enum GoldenError: Error, Sendable, Equatable, CustomStringConvertible {
 }
 
 /// One value of a golden case.
+///
+/// An immutable value, usable on any thread; it does not allocate: it keeps the arrays it is
+/// given.
 public enum GoldenValue: Sendable, Equatable {
+    /// A vector of reals, written inline as a JSON array.
     case real([Double])
+    /// A vector of complex values, written inline as `{"re": […], "im": […]}`.
     case complex(real: [Double], imaginary: [Double])
     /// A raw little-endian Float32 file beside the JSON.
     case floats([Float], shape: [Int])
@@ -33,17 +48,29 @@ public enum GoldenValue: Sendable, Equatable {
 }
 
 /// A parameter the generator recorded for a case.
+///
+/// An immutable value, usable on any thread; it does not allocate.
 public enum GoldenParameter: Sendable, Equatable {
+    /// A JSON number.
     case number(Double)
+    /// A JSON string.
     case string(String)
+    /// A JSON `true` or `false`.
     case bool(Bool)
+    /// A JSON array of numbers.
     case numbers([Double])
 }
 
 /// One case of a golden file: the arguments the oracle was called with and what it returned.
+///
+/// An immutable value, usable on any thread. An accessor allocates when it has to build what it
+/// returns (another precision, or a list from one number); otherwise it does not allocate.
 public struct GoldenCase: Sendable {
+    /// The case's name, unique in its file.
     public let name: String
+    /// The parameters the generator recorded, by name.
     public let parameters: [String: GoldenParameter]
+    /// What the oracle returned, by key.
     public let values: [String: GoldenValue]
 
     /// A real vector, whatever its storage.
@@ -83,6 +110,9 @@ public struct GoldenCase: Sendable {
         }
     }
 
+    /// A number parameter.
+    ///
+    /// - Throws: `GoldenError.wrongKind` when the parameter is missing or is not a number.
     public func number(_ parameter: String) throws(GoldenError) -> Double {
         guard case .number(let value)? = parameters[parameter] else {
             throw .wrongKind(case: name, key: parameter, expected: "a number parameter")
@@ -90,6 +120,10 @@ public struct GoldenCase: Sendable {
         return value
     }
 
+    /// A number parameter that is a whole number of magnitude below 9·10¹⁵.
+    ///
+    /// - Throws: `GoldenError.wrongKind` when the parameter is missing, is not a number, or is not
+    ///   such a whole number.
     public func integer(_ parameter: String) throws(GoldenError) -> Int {
         let value = try number(parameter)
         guard value == value.rounded(), abs(value) < 9e15 else {
@@ -98,6 +132,9 @@ public struct GoldenCase: Sendable {
         return Int(value)
     }
 
+    /// A string parameter.
+    ///
+    /// - Throws: `GoldenError.wrongKind` when the parameter is missing or is not a string.
     public func string(_ parameter: String) throws(GoldenError) -> String {
         guard case .string(let value)? = parameters[parameter] else {
             throw .wrongKind(case: name, key: parameter, expected: "a string parameter")
@@ -105,6 +142,9 @@ public struct GoldenCase: Sendable {
         return value
     }
 
+    /// A list of numbers; a single number reads as a list of one.
+    ///
+    /// - Throws: `GoldenError.wrongKind` when the parameter is missing or is neither.
     public func numbers(_ parameter: String) throws(GoldenError) -> [Double] {
         switch parameters[parameter] {
         case .numbers(let values)?: return values
@@ -124,10 +164,15 @@ public struct GoldenCase: Sendable {
 /// The format is JSON: `{"generator", "oracle": {library: version}, "cases": [{"name",
 /// "parameters", "values"}]}`. A value is an array of numbers, `{"re": […], "im": […]}`, or
 /// `{"raw": "<file>.f32|.f64", "shape": […]}` naming a little-endian raw file beside the JSON.
+///
+/// An immutable value, usable on any thread; loading one reads the file, synchronously, and
+/// allocates.
 public struct GoldenFile: Sendable {
+    /// The name of the generator that wrote the file.
     public let generator: String
     /// The libraries that produced the vectors, with their versions.
     public let oracle: [String: String]
+    /// The cases, in the order of the file.
     public let cases: [GoldenCase]
 
     /// Loads `<name>.json` from the `Golden` folder of a test bundle.
@@ -138,6 +183,10 @@ public struct GoldenFile: Sendable {
         try self.init(contentsOf: url)
     }
 
+    /// Loads the file at `url`, and the raw files it names from the same folder.
+    ///
+    /// - Throws: `GoldenError.unreadable` for a file that cannot be read, `GoldenError.malformed`
+    ///   for one that does not have the form above.
     public init(contentsOf url: URL) throws(GoldenError) {
         let file = url.lastPathComponent
         guard let data = try? Data(contentsOf: url) else { throw .unreadable(file: file) }

@@ -4,6 +4,8 @@ import Foundation
 ///
 /// `.automatic` follows the crossover table. A forced choice applies to the primitives that
 /// have that implementation; the rest stay automatic.
+///
+/// A value, usable on any thread; it does not allocate.
 public enum Implementation: String, Hashable, Sendable, Codable, CaseIterable {
     /// Decide by size, from the measured crossovers. The default.
     case automatic
@@ -16,6 +18,7 @@ public enum Implementation: String, Hashable, Sendable, Codable, CaseIterable {
 }
 
 /// The precision an IIR cascade runs in (REAL-3). A settable environment key.
+/// A value, usable on any thread; it does not allocate.
 public enum BiquadPrecision: String, Hashable, Sendable, Codable, CaseIterable {
     /// Float32 state and coefficients, on `vDSP_biquad`.
     case single
@@ -26,6 +29,7 @@ public enum BiquadPrecision: String, Hashable, Sendable, Codable, CaseIterable {
 }
 
 /// The primitives that exist in more than one implementation (§7.4).
+/// A value, usable on any thread; it does not allocate.
 public enum Primitive: String, Hashable, Sendable, Codable, CaseIterable {
     /// Scale, add, subtract, multiply, clip. Decided by the vector's length.
     case elementwise
@@ -52,6 +56,8 @@ public enum Primitive: String, Hashable, Sendable, Codable, CaseIterable {
 /// `Codable`, so an app can keep one measured on its own device and pass it to the engine.
 ///
 /// A wrong crossover costs speed, never correctness (SEL-6).
+///
+/// Usable on any thread; creating or reading a table does not allocate.
 public struct CrossoverTable: Hashable, Sendable, Codable {
     /// Vector length from which element-wise operations use vDSP.
     public let elementwise: Int
@@ -77,6 +83,8 @@ public struct CrossoverTable: Hashable, Sendable, Codable {
     /// The highest degree whose roots are found in closed form.
     public let polynomialClosedForm: Int
 
+    /// A table with the given crossovers; each one left out has the figure the package ships
+    /// (``shipped``).
     public init(
         elementwise: Int = Vector.Crossover.elementwise, reductionSIMD: Int = Vector.Crossover.reductionSIMD,
         reductionAccelerate: Int = Vector.Crossover.reductionAccelerate, laneExchange: Int = 1_024,

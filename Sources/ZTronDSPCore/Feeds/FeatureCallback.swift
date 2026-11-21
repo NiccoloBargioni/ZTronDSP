@@ -6,6 +6,9 @@
 /// valid for the call. To take frames on another thread at leisure, use a `FeatureStream`.
 ///
 /// Like every sink it has one writer (ATT-5).
+///
+/// Create it on any thread except the analysis thread; creating one allocates. `write` does
+/// not allocate of its own: what it costs is the closure's.
 public final class FeatureCallback<Domain: SignalDomain>: FeatureSink {
     private let body: @Sendable (FrameView) -> Void
 

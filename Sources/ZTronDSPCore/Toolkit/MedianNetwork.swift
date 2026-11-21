@@ -9,14 +9,19 @@
 /// The network is Batcher's merge exchange (Knuth, TAOCP vol. 3, algorithm 5.2.2M), which
 /// sorts any number of lanes, pruned to the exchanges the median lane depends on.
 ///
-/// An immutable value, usable on any thread. Building one is control-context work.
+/// An immutable value, usable on any thread. Building one is control-context work and
+/// allocates its list of exchanges.
 public struct MedianNetwork: Hashable, Sendable {
     /// One compare-exchange: afterwards lane `low` holds the smaller of the two values and
     /// lane `high` the larger.
+    /// An immutable value, usable on any thread; it does not allocate.
     public struct Exchange: Hashable, Sendable {
+        /// The lane that receives the smaller value.
         public let low: Int
+        /// The lane that receives the larger value.
         public let high: Int
 
+        /// The exchange of lanes `low` and `high`.
         public init(low: Int, high: Int) {
             self.low = low
             self.high = high

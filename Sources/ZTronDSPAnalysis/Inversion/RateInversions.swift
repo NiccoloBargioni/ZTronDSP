@@ -10,7 +10,8 @@ extension DSP {
     /// The inversion report of `upsampled(_:by:)`, which `subsampled(_:by:)` undoes (§6.13).
     /// There is no condition: every sample is kept, and the round trip is exact bit for bit.
     ///
-    /// The work runs on the background executor (BG-1) and can be cancelled (BG-3).
+    /// The call may be made from any context; the work runs on the background executor (BG-1),
+    /// allocates, and can be cancelled (BG-3).
     public static func inversionReport(ofUpsampling signal: [Float], by factor: Int, sampleRate: Double = 48_000) async throws(DSPError) -> InversionReport {
         guard factor >= 1 else { throw .invalidParameter(stage: .none, parameter: "factor", reason: "a factor is at least 1, not \(factor)") }
         return try await BackgroundWork.run { checkpoint throws(DSPError) in
@@ -32,7 +33,8 @@ extension DSP {
     /// windowed sinc; the first and last stretch of the signal, where that filter has no
     /// samples to work with, are left out.
     ///
-    /// The work runs on the background executor (BG-1) and can be cancelled (BG-3).
+    /// The call may be made from any context; the work runs on the background executor (BG-1),
+    /// allocates, and can be cancelled (BG-3).
     public static func inversionReport(
         ofSubsampling signal: [Float], by factor: Int, phase: Int = 0, sampleRate: Double = 48_000
     ) async throws(DSPError) -> InversionReport {

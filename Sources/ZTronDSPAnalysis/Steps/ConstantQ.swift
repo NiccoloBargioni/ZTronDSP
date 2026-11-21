@@ -33,11 +33,14 @@ import ZTronDSPCore
 /// - A multichannel signal is reduced by `channels` (MIC-6).
 /// - Equal `ConstantQ`s at one position, in different taps, are computed once (F5).
 ///
-/// The transform has no inverse here (§6.13). Switched off, it suspends the rest of its
-/// branch (ACT-3). An immutable value, usable on any thread; `lower(_:)` runs on the control
-/// context.
+/// The transform has no inverse here (§6.13). Switched off, it suspends the rest of its branch
+/// (ACT-3). An immutable value, usable on any thread. Its strategy is kept boxed (`AnyStrategy`):
+/// creating one, and reading `strategy`, allocate when the strategy is larger than three words, as
+/// the stock one is. `lower(_:)` runs on the control context and may allocate.
 public struct ConstantQ: PipelineStage {
+    /// Audio samples.
     public typealias Input = Samples
+    /// A complex spectrum on a constant-Q axis.
     public typealias Output = Spectrum<ConstantQFrequency, ComplexValues>
 
     /// The centre of the lowest bin, before tuning.
@@ -58,10 +61,15 @@ public struct ConstantQ: PipelineStage {
     public let window: Window
     /// The share of a kernel row's summed magnitude that may be dropped.
     public let sparsity: Double
+    /// How a signal of several channels is reduced (MIC-6): the mixdown unless told otherwise.
     public let channels: ChannelPolicy
     let strategyBox: AnyStrategy
+    /// The step's switch: off, it suspends the rest of its branch (ACT-3).
     public let activation: StageActivation
 
+    /// A transform of `octaves` octaves of `binsPerOctave` bins from `fmin`, one frame every `hop`
+    /// samples, computed by `strategy`. Nothing is checked here: `lower(_:)` checks the values
+    /// against the sample rate at the step's position when the plan is compiled (O-17).
     public init(
         fmin: Frequency = .midiNote(24), octaves: Int = 7, binsPerOctave: Int = 36, tuning: Double = 0, filterScale: Double = 1,
         gamma: Double = 0, hop: Int = 512, window: Window = .hann, sparsity: Double = 0.01,
@@ -87,6 +95,8 @@ public struct ConstantQ: PipelineStage {
         strategyBox.value(as: (any ConstantQStrategy).self) ?? MultirateSparseKernelStrategy()
     }
 
+    /// Checks the values (O-17) and the latency the strategy states, and emits the node the
+    /// strategy makes. Control context; may allocate.
     public func lower(_ context: inout LoweringContext) throws(DSPError) {
         context.emit(.analysis(try step(in: context)))
     }
@@ -144,6 +154,7 @@ public struct ConstantQ: PipelineStage {
 
 extension Pipeline where Output == Samples {
     /// The constant-Q transform of the signal: see ``ConstantQ``.
+    /// Usable on any thread; allocates the pipeline it returns.
     public func constantQ(
         fmin: Frequency = .midiNote(24), octaves: Int = 7, binsPerOctave: Int = 36, tuning: Double = 0, filterScale: Double = 1,
         gamma: Double = 0, hop: Int = 512, window: Window = .hann, sparsity: Double = 0.01,

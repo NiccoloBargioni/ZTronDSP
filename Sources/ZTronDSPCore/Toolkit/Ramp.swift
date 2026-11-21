@@ -3,7 +3,8 @@
 ///
 /// The ramp is linear and reaches its target exactly: the last step lands on the target
 /// itself, not on an accumulated sum. A value type whose state is state by nature (IMM-3):
-/// it lives inside a kernel or a node and is advanced by one thread. Allocation-free.
+/// it lives inside a kernel or a node and is advanced by one thread. Usable on any thread,
+/// the analysis thread included; it does not allocate.
 public struct Ramp: Sendable {
     @usableFromInline var current: Float
     @usableFromInline var goal: Float
@@ -99,7 +100,8 @@ public struct Ramp: Sendable {
 
 /// State hygiene (RT-6): sets to zero every value whose magnitude is below `threshold`, so no
 /// kernel or node leaves denormal state behind. Call it at the end of a block. The
-/// floating-point environment is not touched. Allocation-free.
+/// floating-point environment is not touched. Callable on any thread, the analysis thread
+/// included; it does not allocate.
 @inlinable
 public func flushSmallState(_ state: UnsafeMutablePointer<Float>, count: Int, threshold: Float = 1e-20) {
     var index = 0
@@ -110,7 +112,8 @@ public func flushSmallState(_ state: UnsafeMutablePointer<Float>, count: Int, th
     }
 }
 
-/// State hygiene (RT-6) for double-precision state.
+/// State hygiene (RT-6) for double-precision state. Callable on any thread, the analysis
+/// thread included; it does not allocate.
 @inlinable
 public func flushSmallState(_ state: UnsafeMutablePointer<Double>, count: Int, threshold: Double = 1e-20) {
     var index = 0

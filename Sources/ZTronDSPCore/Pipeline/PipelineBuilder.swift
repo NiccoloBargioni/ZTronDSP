@@ -13,6 +13,9 @@
 /// A step family adds its typing rule by extending this builder with an overload of
 /// `buildPartialBlock(accumulated:next:)` constrained on the accumulated output domain, and,
 /// for a readable diagnostic, a catch-all overload marked unavailable (ORD-1, ORD-4).
+///
+/// Its functions run where the pipeline is described, on any thread; each one allocates the
+/// description it builds.
 @resultBuilder
 public enum PipelineBuilder {
     // MARK: Every statement is a stage
@@ -39,7 +42,9 @@ public enum PipelineBuilder {
         Pipeline(unchecked: [first.stageDescription])
     }
 
-    /// Catches an `Emit` that opens a block with a sink that has no domain of its own, with a message that says what to write.
+    /// Catches an `Emit` that opens a block with a sink that has no domain of its own, with a
+    /// message that says what to write (ORD-4). Never called, being unavailable: no context runs
+    /// it, and it allocates nothing.
     @available(*, unavailable, message: "An Emit that opens a block needs a sink of one domain, a FeatureStream or a FeatureCallback: the block then starts in that domain. A HeatmapFeed, a WaveformFeed or a Binding takes what the stage before it delivers: write that stage first.")
     public static func buildPartialBlock<Target>(first: Emit<Target>) -> SequenceChain {
         SequenceChain()
@@ -58,14 +63,17 @@ public enum PipelineBuilder {
         accumulated.appending(next)
     }
 
-    /// Catches a `Tap` whose branch starts in another domain than the point it taps (O-15), with a message that says so.
+    /// Catches a `Tap` whose branch starts in another domain than the point it taps (O-15), with a
+    /// message that says so (ORD-4). Never called, being unavailable: no context runs it, and it
+    /// allocates nothing.
     @available(*, unavailable, message: "A Tap starts in the domain of the point it taps: this branch begins with a stage that takes another domain than the pipeline delivers here. Tap where the signal is what the branch needs, or begin the branch with a stage that takes what stands before the Tap.")
     public static func buildPartialBlock<I, M, D, B>(accumulated: Pipeline<I, M>, next: Tap<D, B>) -> Pipeline<I, M> {
         accumulated
     }
 
-    /// Catches a self-typed stage after a domain it does not take, with a message that says what decides it. A stock
-    /// stage brings a sentence of its own, which names what it needs (ORD-4).
+    /// Catches a self-typed stage after a domain it does not take, with a message that says what
+    /// decides it. A stock stage brings a sentence of its own, which names what it needs (ORD-4).
+    /// Never called, being unavailable: no context runs it, and it allocates nothing.
     @available(*, unavailable, message: "This stage takes another domain than the pipeline delivers at this point. The order of the stages decides what each one receives: put the stage that produces what it needs before it.")
     public static func buildPartialBlock<I, M, S: PipelineStage>(accumulated: Pipeline<I, M>, next: S) -> Pipeline<I, M> {
         accumulated
@@ -90,7 +98,9 @@ public enum PipelineBuilder {
         Pipeline(unchecked: accumulated.stages + [next.stageDescription])
     }
 
-    /// Catches an `Emit` after sequence stages alone whose sink does not take a sampled sequence, with a message that says which does.
+    /// Catches an `Emit` after sequence stages alone whose sink does not take a sampled sequence,
+    /// with a message that says which does (ORD-4). Never called, being unavailable: no context
+    /// runs it, and it allocates nothing.
     @available(*, unavailable, message: "Emit needs a sink that can hold the frames before it: after sequence stages alone the block carries a sampled sequence, which a FeatureStream or a FeatureCallback of samples, of a novelty curve or of a scalar track takes. A HeatmapFeed or a Binding<[Float]> takes real vectors, a WaveformFeed takes an envelope, a Binding<Float> or Binding<ScalarFrame> takes a scalar or a novelty value: put the stage that produces them before the Emit.")
     public static func buildPartialBlock<Target>(accumulated: SequenceChain, next: Emit<Target>) -> SequenceChain {
         accumulated
@@ -123,13 +133,17 @@ public enum PipelineBuilder {
         accumulated.appending(next.stageDescription)
     }
 
-    /// Catches an `Emit` whose sink cannot hold the frames before it, with a message that says which can.
+    /// Catches an `Emit` whose sink cannot hold the frames before it, with a message that says
+    /// which can (ORD-4). Never called, being unavailable: no context runs it, and it allocates
+    /// nothing.
     @available(*, unavailable, message: "Emit needs a sink that can hold the frames before it: a HeatmapFeed or a Binding<[Float]> takes real vectors (not a complex spectrum, not samples), a WaveformFeed takes an envelope, a Binding<Float> or Binding<ScalarFrame> takes a scalar or a novelty value, a FeatureStream or FeatureCallback takes its own domain.")
     public static func buildPartialBlock<I, O, Target>(accumulated: Pipeline<I, O>, next: Emit<Target>) -> Pipeline<I, O> {
         accumulated
     }
 
-    /// Catches a sequence stage after a domain that is not a sampled sequence, with a message that says why.
+    /// Catches a sequence stage after a domain that is not a sampled sequence, with a message that
+    /// says why (ORD-4). Never called, being unavailable: no context runs it, and it allocates
+    /// nothing.
     @available(*, unavailable, message: "A sequence stage (a gain, a filter, a smoother, a rate changer) runs on a sampled sequence: samples, a novelty curve or a scalar track. It cannot follow a spectrum or any other frame of bins; filtering each band along time is not part of this version.")
     public static func buildPartialBlock<I, O, S: SequenceStage>(accumulated: Pipeline<I, O>, next: S) -> Pipeline<I, O> {
         accumulated
@@ -147,7 +161,9 @@ public enum PipelineBuilder {
         component ?? Pipeline(unchecked: [])
     }
 
-    /// Catches a stage inside `if` without `else` that changes the domain (O-13), with a message that says why it cannot.
+    /// Catches a stage inside `if` without `else` that changes the domain (O-13), with a message
+    /// that says why it cannot (ORD-4). Never called, being unavailable: no context runs it, and it
+    /// allocates nothing.
     @available(*, unavailable, message: "A stage inside `if` without `else` keeps the domain: the pipeline must be valid without it. Give the `if` an `else` that ends in the same domain, or take the stage out of the condition.")
     public static func buildOptional<I, O>(_ component: Pipeline<I, O>?) -> Pipeline<I, O> {
         component ?? Pipeline(unchecked: [])
@@ -168,7 +184,8 @@ public enum PipelineBuilder {
         Pipeline(unchecked: components.flatMap(\.stages))
     }
 
-    /// Catches stages inside `for … in` that change the domain (O-13).
+    /// Catches stages inside `for … in` that change the domain (O-13), with a message that says why
+    /// (ORD-4). Never called, being unavailable: no context runs it, and it allocates nothing.
     @available(*, unavailable, message: "The stages inside `for … in` keep the domain: the loop may run any number of times, none included.")
     public static func buildArray<I, O>(_ components: [Pipeline<I, O>]) -> Pipeline<I, O> {
         Pipeline(unchecked: components.flatMap(\.stages))
@@ -180,7 +197,9 @@ public enum PipelineBuilder {
     /// `if #available`, on stages that keep the domain (O-13).
     public static func buildLimitedAvailability<D>(_ component: Pipeline<D, D>) -> Pipeline<D, D> { component }
 
-    /// Catches a stage inside `if #available` that changes the domain (O-13).
+    /// Catches a stage inside `if #available` that changes the domain (O-13), with a message that
+    /// says why (ORD-4). Never called, being unavailable: no context runs it, and it allocates
+    /// nothing.
     @available(*, unavailable, message: "A stage inside `if #available` keeps the domain: the pipeline must be valid where the stage is not available.")
     public static func buildLimitedAvailability<I, O>(_ component: Pipeline<I, O>) -> Pipeline<I, O> { component }
 }

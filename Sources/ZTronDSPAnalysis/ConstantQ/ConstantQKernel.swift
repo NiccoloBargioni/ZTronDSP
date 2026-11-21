@@ -340,8 +340,8 @@ public struct ConstantQKernel: Hashable, Sendable {
         (columns.min() ?? 0) ... (columns.max() ?? 0)
     }
 
-    /// The kernel as a dense matrix, row after row: `rowCount · columnCount` real parts and as
-    /// many imaginary parts, zero where an entry was dropped.
+    /// The kernel as a dense matrix, row after row: `rowCount · columnCount` real parts and as many
+    /// imaginary parts, zero where an entry was dropped. It allocates the two arrays it returns.
     public func dense() -> (real: [Float], imaginary: [Float]) {
         let bins = columnCount
         var denseReal = [Float](repeating: 0, count: rowCount * bins), denseImaginary = denseReal

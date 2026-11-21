@@ -4,7 +4,7 @@ import ZTronDSPCore
 ///
 /// A tag on every representation: it decides where the frequency axis lies (the imaginary
 /// axis or the unit circle) and which region is stable (the left half plane or the unit
-/// disc). An immutable value, usable on any thread.
+/// disc). An immutable value, usable on any thread; it does not allocate.
 public enum SystemDomain: Hashable, Sendable, CustomStringConvertible {
     /// Continuous time: a function of `s`. Frequencies are in radians per second.
     case analog
@@ -22,7 +22,7 @@ public enum SystemDomain: Hashable, Sendable, CustomStringConvertible {
 
 /// The unit a magnitude response is reported in.
 ///
-/// An immutable value, usable on any thread.
+/// An immutable value, usable on any thread; it does not allocate.
 public struct MagnitudeScale: Hashable, Sendable {
     enum Kind: Hashable, Sendable {
         case linear

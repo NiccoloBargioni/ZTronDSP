@@ -25,6 +25,7 @@
 
 #include "ztd_base.h"
 
+/* Re-declares a system function with ZTD_NONBLOCKING: one entry of the allow-list. */
 #define ZTD_ALLOW(declaration) extern declaration ZTD_NONBLOCKING
 
 /* memcpy, memmove and memset need no entry: clang knows them as builtins that do not block, and

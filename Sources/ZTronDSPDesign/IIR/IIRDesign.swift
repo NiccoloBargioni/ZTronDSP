@@ -27,7 +27,7 @@ import ZTronDSPCore
 public struct IIRDesign: Hashable, Sendable {
     /// Where a design lives, and with it the unit of its edges.
     ///
-    /// An immutable value, usable on any thread.
+    /// An immutable value, usable on any thread; it does not allocate.
     public enum Domain: Hashable, Sendable {
         /// Continuous time. Edges are angular frequencies in radians per second.
         case analog

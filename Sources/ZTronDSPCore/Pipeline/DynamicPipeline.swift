@@ -9,7 +9,7 @@
 ///
 /// It attaches and updates like a typed pipeline, and equal stages give the same plan.
 ///
-/// An immutable value, usable on any thread: appending returns a new pipeline.
+/// An immutable value, usable on any thread: appending returns a new pipeline, and allocates.
 public struct DynamicPipeline: Hashable, Sendable {
     /// The stages, in order.
     public let stages: [StageDescription]

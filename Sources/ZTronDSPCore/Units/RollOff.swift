@@ -1,6 +1,8 @@
 import Foundation
 
 /// What to do when a slope is not a whole number of filter orders (§6.3.4).
+///
+/// A value, usable on any thread; it does not allocate.
 public enum RollOffRounding: Hashable, Sendable {
     /// Accept the slope only when it lies within `relativeTolerance` of a whole order;
     /// otherwise the request is an error. The default, with a tolerance of 2 %.
@@ -17,6 +19,7 @@ public enum RollOffRounding: Hashable, Sendable {
 ///
 /// What the slope means for a given design (exact, bounded or nominal) is stated in the table
 /// of §6.3.4 and in the documentation of each filter. An immutable value, usable on any thread.
+/// It does not allocate, except ``description`` and the error a conversion to an order throws.
 public struct RollOff: Hashable, Sendable, CustomStringConvertible {
     @usableFromInline
     enum Unit: Hashable, Sendable {
@@ -40,8 +43,11 @@ public struct RollOff: Hashable, Sendable, CustomStringConvertible {
     /// The slope one filter order contributes, in decibels per decade.
     public static let decibelsPerDecadePerOrder = 20.0
 
+    /// A slope in decibels per octave.
     public static func decibelsPerOctave(_ slope: Double) -> RollOff { RollOff(unit: .decibelsPerOctave, value: slope) }
+    /// A slope in decibels per decade.
     public static func decibelsPerDecade(_ slope: Double) -> RollOff { RollOff(unit: .decibelsPerDecade, value: slope) }
+    /// The slope of a filter of this order: `order · 6.0206` dB per octave.
     public static func order(_ order: Int) -> RollOff { RollOff(unit: .order, value: Double(order)) }
 
     /// The slope in decibels per octave.
@@ -114,6 +120,7 @@ public struct RollOff: Hashable, Sendable, CustomStringConvertible {
         return Int(result)
     }
 
+    /// The slope as it was stated: `12.0 dB per octave`, `40.0 dB per decade` or `order 2`.
     public var description: String {
         switch unit {
         case .decibelsPerOctave: "\(value) dB per octave"

@@ -102,7 +102,10 @@ public final class WaveformRenderer {
     /// A renderer for `feed`, showing amplitudes −1 … 1 in white on a transparent background,
     /// the whole history across the width.
     ///
-    /// - Parameter probe: counts uploads and draws for the stability tests (§8.4).
+    /// - Parameters:
+    ///   - context: the device the renderer draws with.
+    ///   - feed: the waveform feed it shows.
+    ///   - probe: counts uploads and draws for the stability tests (§8.4).
     /// - Throws: `unsupportedConfiguration` when the feed's history does not fit a texture of
     ///   the device; `resourceAllocationFailed` when there is no memory.
     public init(context: MetalContext, feed: WaveformFeed, probe: RenderProbe? = nil) throws(DSPError) {

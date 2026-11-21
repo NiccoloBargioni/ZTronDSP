@@ -5,6 +5,8 @@ import Testing
 ///
 /// One value answers one question, so a test states its tolerance where it compares:
 /// `expectClose(output, reference, .deviationBelow(decibels: -100))`.
+///
+/// An immutable value, usable on any thread; it does not allocate, but for ``description``.
 public enum Tolerance: Sendable, Equatable, CustomStringConvertible {
     /// `|actual − expected| ≤ bound` for every element.
     case absolute(Double)
@@ -23,6 +25,7 @@ public enum Tolerance: Sendable, Equatable, CustomStringConvertible {
     /// "within −100 dB".
     case deviationBelow(decibels: Double)
 
+    /// The tolerance in words, as an issue quotes it.
     public var description: String {
         switch self {
         case .absolute(let bound): "absolute tolerance \(bound)"
@@ -34,9 +37,12 @@ public enum Tolerance: Sendable, Equatable, CustomStringConvertible {
     }
 }
 
-/// Why two sequences are not close. `nil` from ``Closeness/compare(_:_:_:)`` means they are.
+/// Why two sequences are not close. `nil` from ``Closeness/compare(_:_:_:)-(A,_,_)`` means
+/// they are.
+///
+/// An immutable value, usable on any thread; it does not allocate, but for ``description``.
 public struct ClosenessFailure: Sendable, Equatable, CustomStringConvertible {
-    /// What went wrong.
+    /// What went wrong: a value, usable on any thread; it does not allocate.
     public enum Reason: Sendable, Equatable {
         /// The sequences have different lengths.
         case countMismatch(actual: Int, expected: Int)
@@ -46,10 +52,13 @@ public struct ClosenessFailure: Sendable, Equatable, CustomStringConvertible {
         case nonFinite
     }
 
+    /// The kind of failure: the lengths, the tolerance or a non-finite value.
     public let reason: Reason
     /// Index of the worst element.
     public let index: Int
+    /// The worst element of `actual`, in double precision; NaN for a count mismatch.
     public let actual: Double
+    /// Its counterpart in `expected`; NaN for a count mismatch.
     public let expected: Double
     /// The deviation of the worst element, in the measure of the tolerance.
     public let deviation: Double
@@ -57,9 +66,13 @@ public struct ClosenessFailure: Sendable, Equatable, CustomStringConvertible {
     public let bound: Double
     /// How many elements are out of tolerance.
     public let failingCount: Int
+    /// The length of `expected`.
     public let count: Int
+    /// The tolerance the sequences were held to.
     public let tolerance: Tolerance
 
+    /// The failure in words, as an issue quotes it: the worst element and its deviation, or the
+    /// two lengths.
     public var description: String {
         switch reason {
         case .countMismatch(let actualCount, let expectedCount):
@@ -74,7 +87,11 @@ public struct ClosenessFailure: Sendable, Equatable, CustomStringConvertible {
     }
 }
 
-/// The comparison behind ``expectClose(_:_:_:_:sourceLocation:)-swift.func``, usable on its own.
+/// The comparison behind ``expectClose(_:_:_:_:sourceLocation:)-(A,_,_,_,_)``, usable on its
+/// own.
+///
+/// Plain functions, usable on any thread; they do not allocate beyond what iterating the two
+/// collections takes.
 public enum Closeness {
     /// Compares two sequences element by element. Returns `nil` when `actual` is within
     /// `tolerance` of `expected`, otherwise a description of the worst deviation.
@@ -152,7 +169,7 @@ public enum Closeness {
             deviation: worst.deviation, bound: worst.bound, failingCount: failing, count: count, tolerance: tolerance)
     }
 
-    /// The scalar form of ``compare(_:_:_:)``.
+    /// The scalar form of ``compare(_:_:_:)-(A,_,_)``.
     public static func compare<T: BinaryFloatingPoint, U: BinaryFloatingPoint>(
         _ actual: T, _ expected: U, _ tolerance: Tolerance
     ) -> ClosenessFailure? {
@@ -161,6 +178,9 @@ public enum Closeness {
 }
 
 /// Records an issue unless `actual` is within `tolerance` of `expected`.
+///
+/// Callable on any thread, from a test; it allocates to record an issue, and `comment` is
+/// evaluated on every call.
 ///
 /// - Returns: `true` when the values are close, so a test can stop early on a failure.
 @discardableResult
@@ -174,6 +194,9 @@ public func expectClose<T: BinaryFloatingPoint, U: BinaryFloatingPoint>(
 
 /// Records an issue unless every element of `actual` is within `tolerance` of its counterpart
 /// in `expected`. The issue names the worst element and counts the others.
+///
+/// Callable on any thread, from a test; it allocates to record an issue, and `comment` is
+/// evaluated on every call.
 ///
 /// - Returns: `true` when the sequences are close.
 @discardableResult

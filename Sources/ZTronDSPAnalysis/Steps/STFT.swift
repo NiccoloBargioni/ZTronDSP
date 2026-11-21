@@ -23,25 +23,37 @@ import ZTronDSPCore
 /// - A multichannel signal is reduced by `channels` (MIC-6).
 /// - Equal `STFT`s at one position, in different taps, are computed once (F5).
 ///
-/// Switched off, it suspends the rest of its branch (ACT-3). An immutable value, usable on
-/// any thread; `lower(_:)` runs on the control context.
+/// Switched off, it suspends the rest of its branch (ACT-3). An immutable value, usable on any
+/// thread. Its backend is kept boxed (`AnyStrategy`): creating one, and reading `backend`, allocate
+/// only for a backend larger than three words, which the stock one is not. `lower(_:)` runs on the
+/// control context and may allocate.
 public struct STFT: PipelineStage {
+    /// Audio samples.
     public typealias Input = Samples
+    /// A one-sided complex spectrum on a linear-frequency axis.
     public typealias Output = Spectrum<LinearFrequency, ComplexValues>
 
     /// Samples per frame.
     public let frame: Int
     /// Samples between the starts of two frames.
     public let hop: Int
+    /// The window each frame is multiplied by.
     public let window: Window
     /// The transform length when it is longer than the frame.
     public let paddedTo: Int?
+    /// How the window scales the spectra: `.none`, `.amplitude` or `.power`.
     public let normalization: WindowNormalization
+    /// What a frame's time is that of: its last sample when causal, its centre when centred.
     public let alignment: FrameAlignment
+    /// How a signal of several channels is reduced (MIC-6): the mixdown unless told otherwise.
     public let channels: ChannelPolicy
     let backendBox: AnyStrategy
+    /// The step's switch: off, it suspends the rest of its branch (ACT-3).
     public let activation: StageActivation
 
+    /// Frames of `frame` samples every `hop` samples under `window`, transformed at `paddedTo`
+    /// points when it is given, by the transform of `backend`. Nothing is checked here:
+    /// `lower(_:)` checks the values when the plan is compiled (O-17, WIN-3).
     public init(
         frame: Int, hop: Int, window: Window = .hann, paddedTo: Int? = nil, normalization: WindowNormalization = .none,
         alignment: FrameAlignment = .causal, channels: ChannelPolicy = .mixdown, backend: some FFTBackend = .vDSP,
@@ -64,6 +76,8 @@ public struct STFT: PipelineStage {
     /// The transform length: the frame, or what it is padded to.
     public var transformLength: Int { paddedTo ?? frame }
 
+    /// Checks the values (O-17, WIN-3) and emits the node; a logged window writes its analysis
+    /// when the node is made (WIN-5). Control context; allocates.
     public func lower(_ context: inout LoweringContext) throws(DSPError) {
         context.emit(.analysis(try step(in: context)))
     }
@@ -123,6 +137,7 @@ public struct STFT: PipelineStage {
 
 extension Pipeline where Output == Samples {
     /// The short-time Fourier transform of the signal: see ``STFT``.
+    /// Usable on any thread; allocates the pipeline it returns.
     public func stft(
         frame: Int, hop: Int, window: Window = .hann, paddedTo: Int? = nil, normalization: WindowNormalization = .none,
         alignment: FrameAlignment = .causal, channels: ChannelPolicy = .mixdown, backend: some FFTBackend = .vDSP,

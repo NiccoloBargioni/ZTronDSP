@@ -5,7 +5,8 @@ import Foundation
 /// decibels (§6.1). Amplitude decibels are 20·log₁₀; conversions to decibels clamp at a floor
 /// instead of returning −∞.
 ///
-/// An immutable value, usable on any thread.
+/// An immutable value, usable on any thread. It does not allocate; only ``description``
+/// allocates, for the string it returns.
 public struct Amplification: Hashable, Sendable, CustomStringConvertible {
     @usableFromInline
     enum Unit: Hashable, Sendable {
@@ -77,6 +78,7 @@ public struct Amplification: Hashable, Sendable, CustomStringConvertible {
         }
     }
 
+    /// The amount as it was stated: `×0.5` or `-6.0 dB`.
     public var description: String {
         switch unit {
         case .linear: "×\(value)"
@@ -86,32 +88,37 @@ public struct Amplification: Hashable, Sendable, CustomStringConvertible {
 }
 
 extension DSP {
-    /// The floor of every conversion to decibels unless another is given: −160 dB.
+    /// The floor of every conversion to decibels unless another is given: −160 dB. A constant, read
+    /// on any thread; it does not allocate.
     public static let decibelFloor: Double = -160
 
     // MARK: Scalars
 
-    /// `20·log₁₀(|amplitude| / reference)`, clamped at `floor`. Zero, and a reference that is
-    /// not positive, give the floor; no NaN and no infinity is returned (NUM-1).
+    /// `20·log₁₀(|amplitude| / reference)`, clamped at `floor`. Zero, and a reference that is not
+    /// positive, give the floor; no NaN and no infinity is returned (NUM-1). Usable on any thread,
+    /// the analysis thread included; it does not allocate.
     public static func decibels(fromAmplitude amplitude: Double, reference: Double = 1, floor: Double = decibelFloor) -> Double {
         let magnitude = abs(amplitude)
         guard reference > 0, magnitude > 0, magnitude.isFinite else { return magnitude == .infinity && reference > 0 ? .greatestFiniteMagnitude : floor }
         return max(20 * log10(magnitude / reference), floor)
     }
 
-    /// `10·log₁₀(power / reference)`, clamped at `floor`. Zero, a negative power, and a
-    /// reference that is not positive, give the floor.
+    /// `10·log₁₀(power / reference)`, clamped at `floor`. Zero, a negative power, and a reference
+    /// that is not positive, give the floor. Usable on any thread, the analysis thread included; it
+    /// does not allocate.
     public static func decibels(fromPower power: Double, reference: Double = 1, floor: Double = decibelFloor) -> Double {
         guard reference > 0, power > 0, power.isFinite else { return power == .infinity && reference > 0 ? .greatestFiniteMagnitude : floor }
         return max(10 * log10(power / reference), floor)
     }
 
-    /// `reference · 10^(decibels / 20)`.
+    /// `reference · 10^(decibels / 20)`. Usable on any thread, the analysis thread included; it
+    /// does not allocate.
     public static func amplitude(fromDecibels decibels: Double, reference: Double = 1) -> Double {
         reference * pow(10, decibels / 20)
     }
 
-    /// `reference · 10^(decibels / 10)`.
+    /// `reference · 10^(decibels / 10)`. Usable on any thread, the analysis thread included; it
+    /// does not allocate.
     public static func power(fromDecibels decibels: Double, reference: Double = 1) -> Double {
         reference * pow(10, decibels / 10)
     }
@@ -166,14 +173,16 @@ extension DSP {
         vDSP_vclip(values, 1, &lowest, &highest, values, 1, length)
     }
 
-    /// Decibels to amplitudes: `reference · 10^(dB / 20)`. Allocation-free.
+    /// Decibels to amplitudes: `reference · 10^(dB / 20)`. Allocation-free. Usable on any thread,
+    /// the analysis thread included.
     public static func amplitude(
         fromDecibels decibels: UnsafePointer<Float>, into result: UnsafeMutablePointer<Float>, count: Int, reference: Float = 1
     ) {
         exponentiate(decibels, result, count, divisor: 20, reference: reference)
     }
 
-    /// Decibels to powers: `reference · 10^(dB / 10)`. Allocation-free.
+    /// Decibels to powers: `reference · 10^(dB / 10)`. Allocation-free. Usable on any thread, the
+    /// analysis thread included.
     public static func power(
         fromDecibels decibels: UnsafePointer<Float>, into result: UnsafeMutablePointer<Float>, count: Int, reference: Float = 1
     ) {
@@ -196,7 +205,8 @@ extension DSP {
         }
     }
 
-    /// Amplitudes to decibels, as a new array.
+    /// Amplitudes to decibels, as a new array. Usable on any thread; allocates the array it
+    /// returns.
     public static func decibels(fromAmplitude amplitude: [Float], reference: Float = 1, floor: Float = Float(decibelFloor)) -> [Float] {
         var result = [Float](repeating: 0, count: amplitude.count)
         amplitude.withUnsafeBufferPointer { source in
@@ -208,7 +218,7 @@ extension DSP {
         return result
     }
 
-    /// Powers to decibels, as a new array.
+    /// Powers to decibels, as a new array. Usable on any thread; allocates the array it returns.
     public static func decibels(fromPower power: [Float], reference: Float = 1, floor: Float = Float(decibelFloor)) -> [Float] {
         var result = [Float](repeating: 0, count: power.count)
         power.withUnsafeBufferPointer { source in
@@ -220,7 +230,8 @@ extension DSP {
         return result
     }
 
-    /// Decibels to amplitudes, as a new array.
+    /// Decibels to amplitudes, as a new array. Usable on any thread; allocates the array it
+    /// returns.
     public static func amplitude(fromDecibels decibels: [Float], reference: Float = 1) -> [Float] {
         var result = [Float](repeating: 0, count: decibels.count)
         decibels.withUnsafeBufferPointer { source in
@@ -232,7 +243,7 @@ extension DSP {
         return result
     }
 
-    /// Decibels to powers, as a new array.
+    /// Decibels to powers, as a new array. Usable on any thread; allocates the array it returns.
     public static func power(fromDecibels decibels: [Float], reference: Float = 1) -> [Float] {
         var result = [Float](repeating: 0, count: decibels.count)
         decibels.withUnsafeBufferPointer { source in

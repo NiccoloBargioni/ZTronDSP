@@ -42,17 +42,17 @@ public protocol FIRDesignMethod: Hashable, Sendable {
         _ response: FilterResponse, length: Int, transition: Double?, attenuation: Amplification?, sampleRate: Double
     ) throws(DSPError) -> [Double]
 
-    /// The number of taps at which the method expects to reach `attenuation` with transition
-    /// bands `transition` hertz wide: where the search for a length starts. The default is
-    /// Kaiser's estimate. Usable on any thread; allocation-free.
+    /// The number of taps at which the method expects to reach `attenuation` with transition bands
+    /// `transition` hertz wide: where the search for a length starts. The default is Kaiser's
+    /// estimate. Usable on any thread; it allocates only the error it throws.
     ///
     /// - Throws: `DSPError.invalidParameter` when the values admit no estimate.
     func estimatedLength(transition: Double, attenuation: Amplification, sampleRate: Double) throws(DSPError) -> Int
 }
 
 extension FIRDesignMethod {
-    /// Kaiser's estimate (Kaiser 1974, as `scipy.signal.kaiserord`). Usable on any thread;
-    /// allocation-free.
+    /// Kaiser's estimate (Kaiser 1974, as `scipy.signal.kaiserord`). Usable on any thread; it
+    /// allocates only the error it throws.
     public func estimatedLength(transition: Double, attenuation: Amplification, sampleRate: Double) throws(DSPError) -> Int {
         try WindowedSincMethod.kaiserEstimate(attenuation: attenuation, transition: transition, sampleRate: sampleRate).length
     }
@@ -71,7 +71,8 @@ extension FIRDesignMethod {
 /// A filter with an even number of taps is zero at the Nyquist frequency, so an even length
 /// is rejected for a high-pass and for a band-stop.
 ///
-/// Oracle: `scipy.signal.firwin`. An immutable value, usable on any thread.
+/// Oracle: `scipy.signal.firwin`. An immutable value, usable on any thread; creating one does
+/// not allocate, and designing with it allocates the taps.
 public struct WindowedSincMethod: FIRDesignMethod {
     /// The window, or `nil` for a Kaiser window whose β the method chooses. A window is used
     /// in its symmetric form whatever form it was given in. Usable on any thread.
@@ -222,7 +223,8 @@ public struct WindowedSincMethod: FIRDesignMethod {
 /// not positive definite, or their estimated reciprocal condition number (`dpocon`) is below
 /// 10⁻¹⁰, the fit is redone by a singular value decomposition (`dgelsd`).
 ///
-/// Oracle: `scipy.signal.firls`. An immutable value, usable on any thread.
+/// Oracle: `scipy.signal.firls`. An immutable value, usable on any thread; creating one does
+/// not allocate, and designing with it allocates the taps.
 public struct LeastSquaresMethod: FIRDesignMethod {
     /// The weight of the error in the stop bands, relative to a weight of 1 in the pass bands
     /// and in the transition bands. Usable on any thread.
@@ -233,12 +235,12 @@ public struct LeastSquaresMethod: FIRDesignMethod {
         self.stopbandWeight = stopbandWeight
     }
 
-    /// The length at which the fit expects to be `attenuation` down at the edges of its stop
-    /// bands. The straight line across a transition band leaves a corner at each end of it, and
-    /// the error of a least-squares fit at a corner falls only as one over the length:
-    /// `δ ≈ 1 / (π²·Δ·M)` for `2M + 1` taps and a transition band `Δ` wide in units of the
-    /// Nyquist frequency. A scheme with a narrow transition band or a deep stop band is beyond
-    /// this method; the windowed sinc reaches it. Usable on any thread; allocation-free.
+    /// The length at which the fit expects to be `attenuation` down at the edges of its stop bands.
+    /// The straight line across a transition band leaves a corner at each end of it, and the error
+    /// of a least-squares fit at a corner falls only as one over the length: `δ ≈ 1 / (π²·Δ·M)` for
+    /// `2M + 1` taps and a transition band `Δ` wide in units of the Nyquist frequency. A scheme
+    /// with a narrow transition band or a deep stop band is beyond this method; the windowed sinc
+    /// reaches it. Usable on any thread; it allocates only the error it throws.
     public func estimatedLength(transition: Double, attenuation: Amplification, sampleRate: Double) throws(DSPError) -> Int {
         let decibels = try AnalogPrototype.decibels(attenuation, parameter: "attenuation")
         let width = try FIRDesign.normalizedWidth(transition, sampleRate: sampleRate)
@@ -289,8 +291,8 @@ public struct LeastSquaresMethod: FIRDesignMethod {
 }
 
 extension FIRDesignMethod where Self == WindowedSincMethod {
-    /// The ideal response truncated by `window`, or, without one, by a Kaiser window whose β
-    /// the method chooses (see ``WindowedSincMethod``). Usable on any thread.
+    /// The ideal response truncated by `window`, or, without one, by a Kaiser window whose β the
+    /// method chooses (see ``WindowedSincMethod``). Usable on any thread. It does not allocate.
     public static func windowedSinc(window: Window? = nil) -> WindowedSincMethod { WindowedSincMethod(window: window) }
 }
 
@@ -299,8 +301,8 @@ extension FIRDesignMethod where Self == LeastSquaresMethod {
     /// any thread.
     public static var leastSquares: LeastSquaresMethod { LeastSquaresMethod() }
 
-    /// A least-squares fit with linear transition bands in which an error in a stop band
-    /// counts `stopbandWeight` times an error elsewhere. Usable on any thread.
+    /// A least-squares fit with linear transition bands in which an error in a stop band counts
+    /// `stopbandWeight` times an error elsewhere. Usable on any thread. It does not allocate.
     public static func leastSquares(stopbandWeight: Double) -> LeastSquaresMethod {
         LeastSquaresMethod(stopbandWeight: stopbandWeight)
     }

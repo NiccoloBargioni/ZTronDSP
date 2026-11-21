@@ -24,18 +24,25 @@ import ZTronDSPCore
 /// - Downstream, the environment and the feeds describe a mel axis by the band centres in
 ///   hertz, so a view labels the rows without knowing how they were produced.
 ///
-/// Converting to the mel scale is not the same as displaying a linear spectrogram on a mel
-/// axis, which moves pixels and changes no data. Going back from mel bands to linear bins is
-/// lossy and is not offered (D-10). Switched off, the step suspends the rest of its branch
-/// (ACT-3). An immutable value, usable on any thread.
+/// Converting to the mel scale is not the same as displaying a linear spectrogram on a mel axis,
+/// which moves pixels and changes no data. Going back from mel bands to linear bins is lossy and is
+/// not offered (D-10). Switched off, the step suspends the rest of its branch (ACT-3). An immutable
+/// value, usable on any thread. Its formula and its normalisation are kept boxed (`AnyStrategy`):
+/// creating one, and reading `formula` or `normalization`, allocate only for one larger than three
+/// words, which no stock one is. `lower(_:)` runs on the control context and may allocate.
 public struct MelScale: ContextDependentStep {
+    /// Bands of the mel axis produced.
     public let bands: Int
     /// The band the mel bands span; `nil` for 0 Hz to the Nyquist frequency.
     public let range: FrequencyRange?
     let formulaBox: AnyStrategy
     let normalizationBox: AnyStrategy
+    /// The step's switch: off, it suspends the rest of its branch (ACT-3).
     public let activation: StageActivation
 
+    /// `bands` mel bands across `range` under `formula` and `normalization`. Nothing is checked
+    /// here: `lower(_:)` checks the range and the bands against the spectra at the step's
+    /// position when the plan is compiled (O-18).
     public init(
         bands: Int, range: FrequencyRange? = nil, formula: some MelFormula = .slaney, normalization: some MelNormalization = .slaney,
         isActive: some ActivationSource = .active
@@ -58,6 +65,7 @@ public struct MelScale: ContextDependentStep {
         axis == .linear && (values == .magnitude || values == .power) ? .spectrum(axis: .mel, values: values) : nil
     }
 
+    /// The step with its typing rule, ``rule``.
     public var stageDescription: StageDescription { StageDescription(self, rule: MelScale.rule) }
 
     struct Key: Hashable, Sendable {
@@ -92,6 +100,9 @@ public struct MelScale: ContextDependentStep {
         return bank
     }
 
+    /// Builds the filter bank for the spectra at the step's position, which checks the range and
+    /// that every band covers a bin (O-18), and emits the banded or the dense projection,
+    /// whichever the crossover chooses. Control context; allocates.
     public func lower(_ context: inout LoweringContext) throws(DSPError) {
         let environment = context.environment
         guard case .linearFrequency(let bins, let nyquist)? = environment.frequencyAxis, bins >= 2, nyquist > 0 else {
@@ -112,6 +123,8 @@ public struct MelScale: ContextDependentStep {
 }
 
 extension PipelineBuilder {
+    /// `MelScale` follows magnitudes or powers on a linear-frequency axis and keeps the kind of
+    /// value (O-5). Runs where the pipeline is described, on any thread, and allocates.
     public static func buildPartialBlock<I, Values: LinearValued>(
         accumulated: Pipeline<I, Spectrum<LinearFrequency, Values>>, next: MelScale
     ) -> Pipeline<I, Spectrum<MelFrequency, Values>> {
@@ -121,6 +134,7 @@ extension PipelineBuilder {
 
 extension Pipeline {
     /// The magnitudes or powers on a mel axis: see ``MelScale``.
+    /// Usable on any thread; allocates the pipeline it returns.
     public func melScale<Values: LinearValued>(
         bands: Int, range: FrequencyRange? = nil, formula: some MelFormula = .slaney, normalization: some MelNormalization = .slaney,
         isActive: some ActivationSource = .active

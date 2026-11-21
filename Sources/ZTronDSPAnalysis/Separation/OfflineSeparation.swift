@@ -15,18 +15,27 @@ extension DSP {
     /// `HarmonicPercussive(alignment: .centered)` gives frame by frame, with the frames at the
     /// end of the spectrogram that a stream would still be waiting for.
     ///
-    /// The work runs on the background executor (BG-1): the call may be made from any context,
-    /// the main actor included, and can be cancelled (BG-3).
+    /// The work runs on the background executor (BG-1) and allocates: the call may be made
+    /// from any context, the main actor included, and can be cancelled (BG-3).
     ///
     /// - Parameters:
     ///   - magnitudes: `binCount` values per frame, frame after frame, as a `FeedSnapshot`
     ///     holds them; not negative.
+    ///   - binCount: values per frame: the bins of the spectrogram.
+    ///   - timeKernel: frames the median along time is taken over: odd.
+    ///   - frequencyKernel: bins the median along frequency is taken over: odd.
+    ///   - mask: how the medians become masks, as for ``HarmonicPercussive``.
+    ///   - harmonicMargin: how much the harmonic median has to exceed the percussive one by: at
+    ///     least 1.
+    ///   - percussiveMargin: how much the percussive median has to exceed the harmonic one by:
+    ///     at least 1.
+    ///   - floor: the least median that counts as a value.
     ///   - median: `.automatic`, the default, follows `crossovers`: the CPU lanes below
     ///     `medianGPU`, counted as kernel × bins × frames, the GPU from there on, and the CPU
     ///     wherever there is no Metal device (GPU-1, GPU-4). `.selectionNetwork` is the CPU
     ///     whatever the size; `.metal` is the GPU, and `backendUnavailable` without a device.
     ///     The result is the same value for value (GPU-3).
-    ///   - mask, harmonicMargin, percussiveMargin, floor: as for ``HarmonicPercussive``.
+    ///   - crossovers: the measured crossovers `.automatic` follows (§7.4).
     /// - Returns: the two masks, each as long as `magnitudes` and in its order.
     /// - Throws: `DSPError.invalidParameter` for magnitudes that do not fill whole frames, a
     ///   kernel that is not odd, a margin below 1 or a mask that is none;
@@ -48,7 +57,8 @@ extension DSP {
     /// offline (§6.10): the magnitudes under the mask of the component. The three components
     /// add up to the magnitudes again.
     ///
-    /// The medians, the masks, the threading and the errors are those of
+    /// The work runs on the background executor (BG-1) and allocates, and the call may be made from
+    /// any context. The medians, the masks and the errors are those of
     /// ``harmonicPercussiveMasks(of:binCount:timeKernel:frequencyKernel:mask:harmonicMargin:percussiveMargin:floor:median:crossovers:)``.
     ///
     /// - Returns: as many values as `magnitudes`, in the same order.
@@ -69,7 +79,7 @@ extension DSP {
 /// The offline separation of a whole spectrogram (WP-612): the two medians, by whichever
 /// side the strategy and the table name, and the masks of the streaming node on top.
 ///
-/// Background work: everything here allocates and may block on the GPU.
+/// In the background: everything here allocates and may block on the GPU.
 struct OfflineSeparation {
     let magnitudes: [Float]
     let binCount: Int

@@ -11,14 +11,20 @@
 ///
 /// Switched off, a tap suspends its branch: nothing in it runs and its sinks receive nothing
 /// (ACT-3). Framing steps shared with other branches keep running for them (ACT-9).
+///
+/// An immutable value, usable on any thread; describing it allocates.
 public struct Tap<Domain: SignalDomain, BranchOutput: SignalDomain>: PipelineStage {
+    /// The domain tapped: the branch starts in it.
     public typealias Input = Domain
+    /// The same domain: the main line passes the tap unchanged.
     public typealias Output = Domain
 
     let branch: [StageDescription]
+    /// The tap's switch: off, it suspends its branch (ACT-3).
     public let activation: StageActivation
 
-    /// A branch from a block of stages.
+    /// A branch from a block of stages. Runs the block where it is called, on any thread, and
+    /// allocates the branch.
     public init(isActive: some ActivationSource = .active, @PipelineBuilder _ content: () -> Pipeline<Domain, BranchOutput>) {
         self.branch = content().stages
         self.activation = isActive.stageActivation
@@ -29,6 +35,7 @@ public struct Tap<Domain: SignalDomain, BranchOutput: SignalDomain>: PipelineSta
         self.activation = activation
     }
 
+    /// One description of kind `tap`, which holds the branch.
     public var stageDescriptions: [StageDescription] {
         [StageDescription(name: "Tap", rule: .any, activation: activation, content: .tap(branch))]
     }
@@ -40,17 +47,19 @@ public struct Tap<Domain: SignalDomain, BranchOutput: SignalDomain>: PipelineSta
 }
 
 extension Tap where Domain == Samples, BranchOutput == Samples {
-    /// A branch of sequence stages only. Such a block has no domain of its own; in a `Tap` it
-    /// is taken to tap samples. On another sampled sequence, write the branch fluently:
-    /// `.tap { $0.lowPass(…) }`.
+    /// A branch of sequence stages only. Such a block has no domain of its own; in a `Tap` it is
+    /// taken to tap samples. On another sampled sequence, write the branch fluently:
+    /// `.tap { $0.lowPass(…) }`. Runs the block where it is called, on any thread, and allocates
+    /// the branch.
     public init(isActive: some ActivationSource = .active, @PipelineBuilder _ content: () -> SequenceChain) {
         self.init(branch: content().stages, activation: isActive.stageActivation)
     }
 }
 
 extension Pipeline {
-    /// A side branch, written fluently: the closure receives an empty pipeline at this point
-    /// and returns the branch. The main line continues from the same point.
+    /// A side branch, written fluently: the closure receives an empty pipeline at this point and
+    /// returns the branch. The main line continues from the same point. Runs the closure where it
+    /// is called, on any thread, and allocates the pipeline it returns.
     public func tap<BranchOutput: SignalDomain>(
         isActive: some ActivationSource = .active,
         _ branch: (Pipeline<Output, Output>) -> Pipeline<Output, BranchOutput>
@@ -72,11 +81,15 @@ extension Pipeline {
 /// SwiftUI has a `Group` of its own. Inside a pipeline block the compiler tells the two
 /// apart; where it cannot (a group built on its own in a file that imports SwiftUI, then
 /// given a modifier), write `ZTronDSP.Group`.
+///
+/// An immutable value, usable on any thread; building one allocates.
 public struct Group<Content: PipelineContent>: StageValue {
     let content: Content
+    /// The switch of the stages inside, as one.
     public let activation: StageActivation
     let overrides: [EnvironmentOverride]
 
+    /// A group of the stages of `content` under one switch.
     public init(isActive: some ActivationSource = .active, @PipelineBuilder _ content: () -> Content) {
         self.content = content()
         self.activation = isActive.stageActivation
@@ -99,6 +112,7 @@ public struct Group<Content: PipelineContent>: StageValue {
         return Group(content: content, activation: activation, overrides: replaced)
     }
 
+    /// One description of kind `group`, which holds the content and its environment overrides.
     public var stageDescriptions: [StageDescription] {
         [StageDescription(name: "Group", rule: .any, activation: activation, content: .group(content.stages, overrides: overrides))]
     }
@@ -112,13 +126,16 @@ public struct Group<Content: PipelineContent>: StageValue {
 extension Group: SequenceStage where Content == SequenceChain {}
 
 extension Group: PipelineStage where Content: PipelineStage {
+    /// The content's input domain. A type alias: no context runs it, and it allocates nothing.
     public typealias Input = Content.Input
+    /// The content's output domain. A type alias: no context runs it, and it allocates nothing.
     public typealias Output = Content.Output
 }
 
 extension Pipeline {
     /// The pipeline with a settable environment key overridden for all of its stages (ENV-3).
-    /// Returns a new pipeline; this one is unchanged (IMM-5).
+    /// Returns a new pipeline; this one is unchanged (IMM-5). Usable on any thread; allocates the
+    /// pipeline it returns.
     public func environment<K: SettableDSPEnvironmentKey>(
         _ keyPath: KeyPath<DSPEnvironment.SettableKeys, K.Type>, _ value: K.Value
     ) -> Pipeline<Input, Output> {
@@ -147,13 +164,18 @@ extension Pipeline {
 /// The closure is a builder body with one return type, so its domains are known to the
 /// compiler whatever the environment holds. It runs on the control context when the plan is
 /// compiled, once per attachment and again after a format change.
+///
+/// The reader itself is an immutable value, usable on any thread; creating it allocates a box
+/// for the closure.
 public struct EnvironmentReader<Content: PipelineContent>: StageValue {
     let box: EnvironmentReaderBox
 
+    /// A reader whose content `content` builds from the environment at its position.
     public init(@PipelineBuilder _ content: @escaping @Sendable (DSPEnvironment) -> Content) {
         self.box = EnvironmentReaderBox { content($0).stages }
     }
 
+    /// One description of kind `environmentReader`; its content exists once it is resolved.
     public var stageDescriptions: [StageDescription] {
         [StageDescription(name: "EnvironmentReader", rule: .any, activation: .active, content: .reader(box))]
     }
@@ -167,7 +189,9 @@ public struct EnvironmentReader<Content: PipelineContent>: StageValue {
 extension EnvironmentReader: SequenceStage where Content == SequenceChain {}
 
 extension EnvironmentReader: PipelineStage where Content: PipelineStage {
+    /// The content's input domain. A type alias: no context runs it, and it allocates nothing.
     public typealias Input = Content.Input
+    /// The content's output domain. A type alias: no context runs it, and it allocates nothing.
     public typealias Output = Content.Output
 }
 
@@ -181,8 +205,11 @@ extension EnvironmentReader: PipelineStage where Content: PipelineStage {
 /// takes an envelope; a `Binding<Float>` or `Binding<ScalarFrame>` takes a scalar or a novelty
 /// value; a `FeatureStream`, a `FeatureCallback` or a sink of your own takes its own domain
 /// (O-11). Switched off, the frames pass and the sink receives nothing.
+///
+/// An immutable value, usable on any thread; describing it allocates.
 public struct Emit<Target>: StageValue {
     let sink: SinkDescription
+    /// The step's switch: off, the frames pass and the sink receives nothing.
     public let activation: StageActivation
 
     init(sink: SinkDescription, activation: StageActivation) {
@@ -202,13 +229,15 @@ public struct Emit<Target>: StageValue {
 }
 
 /// Marks an `Emit` that writes a scalar result binding.
+/// A type with no values, usable on any thread; it does not allocate.
 public enum ScalarBindingTarget {}
 /// Marks an `Emit` that writes a vector result binding.
+/// A type with no values, usable on any thread; it does not allocate.
 public enum VectorBindingTarget {}
 
 extension Emit where Target: FeatureSink {
-    /// Sends frames to a sink that takes one domain: a `FeatureStream`, a `FeatureCallback`,
-    /// or a `FeatureSink` of your own.
+    /// Sends frames to a sink that takes one domain: a `FeatureStream`, a `FeatureCallback`, or a
+    /// `FeatureSink` of your own. Usable on any thread; it allocates the description of its sink.
     public init(to sink: Target, isActive: some ActivationSource = .active) {
         let tag = Target.Domain.tag
         let rule = DomainRule.keeping("a sink of \(tag) frames") { $0 == tag }
@@ -223,6 +252,7 @@ extension Emit where Target: FeatureSink {
 extension Emit where Target == HeatmapFeed {
     /// Sends each frame to a heat-map feed as one column. Follows any domain whose frame is a
     /// vector of reals: a real-valued spectrum, a cepstrum, chroma, lags, a tempogram (O-11).
+    /// Usable on any thread; it may allocate, for the rule of its sink.
     public init(to feed: HeatmapFeed, isActive: some ActivationSource = .active) {
         let rule = DomainRule.keeping("a heat map of real vectors") { $0.isRealVector }
         self.init(sink: SinkDescription(target: .object(feed, identity: ObjectIdentifier(feed)), accepts: rule), activation: isActive.stageActivation)
@@ -230,7 +260,8 @@ extension Emit where Target == HeatmapFeed {
 }
 
 extension Emit where Target == WaveformFeed {
-    /// Sends each (minimum, maximum) pair to a waveform feed. Follows an envelope (O-11).
+    /// Sends each (minimum, maximum) pair to a waveform feed. Follows an envelope (O-11). Usable on
+    /// any thread; it may allocate, for the rule of its sink.
     public init(to feed: WaveformFeed, isActive: some ActivationSource = .active) {
         let rule = DomainRule.keeping("a waveform of envelope pairs") { $0 == .envelope }
         self.init(sink: SinkDescription(target: .object(feed, identity: ObjectIdentifier(feed)), accepts: rule), activation: isActive.stageActivation)
@@ -238,8 +269,9 @@ extension Emit where Target == WaveformFeed {
 }
 
 extension Emit where Target == ScalarBindingTarget {
-    /// Writes each scalar or novelty value to a `Binding<Float>` or a `Binding<ScalarFrame>`,
-    /// on the main thread, at the result rate, and only when the value changed (§5.10).
+    /// Writes each scalar or novelty value to a `Binding<Float>` or a `Binding<ScalarFrame>`, on
+    /// the main thread, at the result rate, and only when the value changed (§5.10). Usable on any
+    /// thread; it may allocate, for the rule of its sink.
     public init(to binding: some ScalarResultTarget, isActive: some ActivationSource = .active) {
         let rule = DomainRule.keeping("a binding of one value") { $0.isScalarValued }
         self.init(sink: SinkDescription(target: .result(binding.boundResult), accepts: rule), activation: isActive.stageActivation)
@@ -247,8 +279,9 @@ extension Emit where Target == ScalarBindingTarget {
 }
 
 extension Emit where Target == VectorBindingTarget {
-    /// Writes each real-vector frame to a `Binding<[Float]>`: a new array per delivery, on the
-    /// main thread, at the result rate. Meant for small frames such as chroma (OUT-5).
+    /// Writes each real-vector frame to a `Binding<[Float]>`: a new array per delivery, on the main
+    /// thread, at the result rate. Meant for small frames such as chroma (OUT-5). Usable on any
+    /// thread; it may allocate, for the rule of its sink.
     public init(to binding: some VectorResultTarget, isActive: some ActivationSource = .active) {
         let rule = DomainRule.keeping("a binding of a real vector") { $0.isRealVector }
         self.init(sink: SinkDescription(target: .result(binding.boundResult), accepts: rule), activation: isActive.stageActivation)
@@ -256,7 +289,8 @@ extension Emit where Target == VectorBindingTarget {
 }
 
 extension Pipeline {
-    /// Sends frames to a sink that takes this pipeline's output domain, and passes them on.
+    /// Sends frames to a sink that takes this pipeline's output domain, and passes them on. Usable
+    /// on any thread; allocates the pipeline it returns.
     public func emit<Sink: FeatureSink>(to sink: Sink, isActive: some ActivationSource = .active) -> Pipeline<Input, Output>
     where Sink.Domain == Output {
         appending(Emit<Sink>(to: sink, isActive: isActive).stageDescription)
@@ -264,45 +298,57 @@ extension Pipeline {
 }
 
 extension Pipeline where Output: ScalarValuedDomain {
-    /// Writes each value to a `Binding<Float>` or a `Binding<ScalarFrame>` and passes it on.
+    /// Writes each value to a `Binding<Float>` or a `Binding<ScalarFrame>` and passes it on. Usable
+    /// on any thread; allocates the pipeline it returns.
     public func emit(to binding: some ScalarResultTarget, isActive: some ActivationSource = .active) -> Pipeline<Input, Output> {
         appending(Emit<ScalarBindingTarget>(to: binding, isActive: isActive).stageDescription)
     }
 }
 
 extension Pipeline where Output: RealVectorDomain {
-    /// Sends each frame to a heat-map feed as one column, and passes it on.
+    /// Sends each frame to a heat-map feed as one column, and passes it on. Usable on any thread;
+    /// allocates the pipeline it returns.
     public func emit(to feed: HeatmapFeed, isActive: some ActivationSource = .active) -> Pipeline<Input, Output> {
         appending(Emit<HeatmapFeed>(to: feed, isActive: isActive).stageDescription)
     }
 
-    /// Writes each frame to a `Binding<[Float]>` and passes it on.
+    /// Writes each frame to a `Binding<[Float]>` and passes it on. Usable on any thread; allocates
+    /// the pipeline it returns.
     public func emit(to binding: some VectorResultTarget, isActive: some ActivationSource = .active) -> Pipeline<Input, Output> {
         appending(Emit<VectorBindingTarget>(to: binding, isActive: isActive).stageDescription)
     }
 }
 
 extension Pipeline where Output == Envelope {
-    /// Sends each (minimum, maximum) pair to a waveform feed, and passes the frame on.
+    /// Sends each (minimum, maximum) pair to a waveform feed, and passes the frame on. Usable on
+    /// any thread; allocates the pipeline it returns.
     public func emit(to feed: WaveformFeed, isActive: some ActivationSource = .active) -> Pipeline<Input, Output> {
         appending(Emit<WaveformFeed>(to: feed, isActive: isActive).stageDescription)
     }
 }
 
 extension Pipeline {
-    /// Catches a heat-map feed after a domain it cannot hold, with a message that says what it takes (ORD-4).
+    /// Catches a heat-map feed after a domain it cannot hold, with a message that says what it
+    /// takes (ORD-4). Never called, being unavailable: no context runs it, and it allocates
+    /// nothing.
     @available(*, unavailable, message: "A HeatmapFeed takes frames of real values: a spectrum of magnitudes, powers or decibels, chroma, a cepstrum, lags or a tempogram. The pipeline delivers something else at this point (a complex spectrum, samples or a single value): put the stage that produces real vectors before emit(to:).")
     public func emit(to feed: HeatmapFeed, isActive: some ActivationSource = .active) -> Pipeline<Input, Output> { self }
 
-    /// Catches a waveform feed after a domain it cannot hold, with a message that says what it takes (ORD-4).
+    /// Catches a waveform feed after a domain it cannot hold, with a message that says what it
+    /// takes (ORD-4). Never called, being unavailable: no context runs it, and it allocates
+    /// nothing.
     @available(*, unavailable, message: "A WaveformFeed takes an envelope, the (minimum, maximum) pairs a waveform step produces. The pipeline delivers something else at this point: put that step before emit(to:).")
     public func emit(to feed: WaveformFeed, isActive: some ActivationSource = .active) -> Pipeline<Input, Output> { self }
 
-    /// Catches a binding of one value after a domain that is not one value, with a message that says what it takes (ORD-4).
+    /// Catches a binding of one value after a domain that is not one value, with a message that
+    /// says what it takes (ORD-4). Never called, being unavailable: no context runs it, and it
+    /// allocates nothing.
     @available(*, unavailable, message: "A Binding<Float> or Binding<ScalarFrame> takes a scalar or a novelty value. The pipeline delivers something else at this point: put the step that reduces the signal to one value before emit(to:).")
     public func emit(to binding: some ScalarResultTarget, isActive: some ActivationSource = .active) -> Pipeline<Input, Output> { self }
 
-    /// Catches a binding of a vector after a domain that is not a real vector, with a message that says what it takes (ORD-4).
+    /// Catches a binding of a vector after a domain that is not a real vector, with a message that
+    /// says what it takes (ORD-4). Never called, being unavailable: no context runs it, and it
+    /// allocates nothing.
     @available(*, unavailable, message: "A Binding<[Float]> takes frames of real values: a spectrum of magnitudes, powers or decibels, chroma, a cepstrum. The pipeline delivers something else at this point (a complex spectrum, samples or a single value): put the stage that produces real vectors before emit(to:).")
     public func emit(to binding: some VectorResultTarget, isActive: some ActivationSource = .active) -> Pipeline<Input, Output> { self }
 }
@@ -315,8 +361,8 @@ extension StageDescription {
     /// and the signal the step measured passes on unchanged, so the chain continues from the
     /// domain it was in.
     ///
-    /// This is what a step family builds its `Step(…, to:)` spelling from; a self-typed step
-    /// uses ``Measuring``.
+    /// This is what a step family builds its `Step(…, to:)` spelling from; a self-typed step uses
+    /// ``Measuring``. Usable on any thread; it allocates the description.
     public static func measuring(
         _ step: [StageDescription], to binding: some ScalarResultTarget, isActive: some ActivationSource = .active
     ) -> StageDescription {
@@ -337,8 +383,12 @@ extension StageDescription {
 ///
 /// It equals `Tap { step; Emit(to: binding) }`, description for description. Stock steps
 /// offer the same thing as an initialiser, `Level(.rms, to: $level)`.
+///
+/// An immutable value, usable on any thread; describing it allocates.
 public struct Measuring<Step: PipelineStage>: PipelineStage where Step.Output: ScalarValuedDomain {
+    /// The measured step's input domain.
     public typealias Input = Step.Input
+    /// The same domain: the signal passes on unchanged.
     public typealias Output = Step.Input
 
     let description: StageDescription
@@ -348,13 +398,15 @@ public struct Measuring<Step: PipelineStage>: PipelineStage where Step.Output: S
     ///   - binding: written on the main thread, at the result rate (§5.10).
     ///   - isActive: switches the measurement off without touching the signal.
     ///
-    /// Describes; allocates as any value does. Any thread.
+    /// Usable on any thread; it allocates the description of the measuring tap.
     public init(_ step: Step, to binding: some ScalarResultTarget, isActive: some ActivationSource = .active) {
         description = .measuring(step.stageDescriptions, to: binding, isActive: isActive)
     }
 
+    /// The measurement's switch.
     public var activation: StageActivation { description.activation }
 
+    /// The one description of the measuring tap.
     public var stageDescriptions: [StageDescription] { [description] }
 
     /// Never called: the plan compiler lowers a tap from its description.

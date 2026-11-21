@@ -1,6 +1,8 @@
 import Foundation
 
 /// The state of a session (§4.5).
+///
+/// A value, usable on any thread; it does not allocate.
 public enum SessionState: Sendable, Hashable {
     /// Attached and not running: before the first `start()`, or after `stop()`.
     case idle
@@ -17,6 +19,8 @@ public enum SessionState: Sendable, Hashable {
 }
 
 /// Why a session compiled a new plan.
+///
+/// A value, usable on any thread; it does not allocate.
 public enum ReplanReason: Sendable, Hashable {
     /// The source delivers another format (ATT-4). Stage state was reset.
     case formatChanged
@@ -25,6 +29,8 @@ public enum ReplanReason: Sendable, Hashable {
 }
 
 /// How hard the system is pressed for memory (MEM-1).
+///
+/// A value, usable on any thread; it does not allocate.
 public enum MemoryPressureLevel: Sendable, Hashable {
     /// Plans waiting to be destroyed were destroyed.
     case warning
@@ -33,7 +39,10 @@ public enum MemoryPressureLevel: Sendable, Hashable {
 }
 
 /// What happens to a session while it lives (§4.5).
+///
+/// A value, usable on any thread; it does not allocate.
 public enum SessionEvent: Sendable, Hashable {
+    /// The session's state changed to this one.
     case stateChanged(SessionState)
     /// A new plan took over.
     case replanned(ReplanReason)
@@ -44,6 +53,7 @@ public enum SessionEvent: Sendable, Hashable {
     case overrun(droppedFrames: Int)
     /// Samples that were not finite arrived and were replaced by zeros (NUM-1).
     case nonFiniteInput(count: Int)
+    /// The system reported memory pressure, and the engine released what this level asks (MEM-1).
     case memoryPressure(MemoryPressureLevel)
 }
 

@@ -4,7 +4,7 @@ import ZTronDSPCore
 /// What a Savitzky–Golay filter does where its window reaches past the ends of the signal
 /// (§6.3.6). Every mode of etk4j's `SavitzkyGolayFilter.Mode` is here (Appendix A).
 ///
-/// An immutable value, usable on any thread.
+/// An immutable value, usable on any thread; it does not allocate.
 public enum SavitzkyGolayEdge: Hashable, Sendable {
     /// No padding: the values within half a window of an end are read off the polynomial
     /// fitted to the first, or the last, whole window.
@@ -51,7 +51,8 @@ extension DSP {
         return try SavitzkyGolayFit.weights(window: window, polynomialOrder: polynomialOrder, derivative: derivative, position: (window - 1) / 2).reversed()
     }
 
-    /// The widest Savitzky–Golay window that is designed. Usable on any thread.
+    /// The widest Savitzky–Golay window that is designed. A constant, usable on any thread; it
+    /// does not allocate.
     public static let savitzkyGolayMaximumWindow = 65_535
 
     /// A signal smoothed, or differentiated, by a Savitzky–Golay filter: the offline twin of

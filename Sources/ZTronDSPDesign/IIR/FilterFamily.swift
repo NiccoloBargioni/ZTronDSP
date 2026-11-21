@@ -41,13 +41,15 @@ extension FilterFamily {
     /// The family's order estimate; `nil` when it has none. Usable on any thread.
     public var orderStrategy: (any FilterOrderStrategy)? { nil }
 
-    /// The member of the family that a tolerance scheme selects. Usable on any thread.
+    /// The member of the family that a tolerance scheme selects. Usable on any thread. It does not
+    /// allocate.
     public func fitted(maximumLoss: Amplification, minimumAttenuation: Amplification) -> Self { self }
 }
 
 /// Butterworth: maximally flat magnitude, monotonic in both bands, no parameter but the
 /// order. An all-pole family: a roll-off is the exact asymptotic slope of its skirt
-/// (§6.3.4). An immutable value, usable on any thread.
+/// (§6.3.4). An immutable value, usable on any thread; creating one does not allocate, and
+/// designing with it allocates.
 public struct ButterworthFamily: FilterFamily {
     /// Usable on any thread.
     public init() {}
@@ -64,7 +66,7 @@ public struct ButterworthFamily: FilterFamily {
 
 /// Chebyshev type I: an equiripple pass band, a monotonic stop band. An all-pole family: a
 /// roll-off is the exact asymptotic slope of its skirt (§6.3.4). An immutable value, usable
-/// on any thread.
+/// on any thread; creating one does not allocate, and designing with it allocates.
 public struct Chebyshev1Family: FilterFamily {
     /// The peak-to-peak ripple of the pass band, as a number of decibels. Usable on any
     /// thread.
@@ -96,7 +98,7 @@ public struct Chebyshev1Family: FilterFamily {
 /// **A roll-off is nominal for this family** (§6.3.4): it selects the order whose all-pole
 /// counterpart has that slope. The real transition is steeper, and the stop band is bounded
 /// by `stopband`, not by a slope: it does not keep falling. An immutable value, usable on
-/// any thread.
+/// any thread; creating one does not allocate, and designing with it allocates.
 public struct Chebyshev2Family: FilterFamily {
     /// The least attenuation of the stop band, as a number of decibels. Usable on any
     /// thread.
@@ -127,7 +129,7 @@ public struct Chebyshev2Family: FilterFamily {
 /// **A roll-off is nominal for this family** (§6.3.4): it selects the order whose all-pole
 /// counterpart has that slope. The real transition is steeper, and the stop band is bounded
 /// by `stopband`, not by a slope: it does not keep falling. An immutable value, usable on
-/// any thread.
+/// any thread; creating one does not allocate, and designing with it allocates.
 public struct EllipticFamily: FilterFamily {
     /// The peak-to-peak ripple of the pass band, as a number of decibels. Usable on any
     /// thread.
@@ -159,7 +161,8 @@ public struct EllipticFamily: FilterFamily {
 
 /// Bessel (Thomson): maximally flat group delay. An all-pole family: a roll-off is the exact
 /// asymptotic slope of its skirt (§6.3.4). It has no order estimation, as in etk4j: a
-/// tolerance scheme is rejected. An immutable value, usable on any thread.
+/// tolerance scheme is rejected. An immutable value, usable on any thread; creating one does
+/// not allocate, and designing with it allocates.
 public struct BesselFamily: FilterFamily {
     /// How the prototype is scaled in frequency. Usable on any thread.
     public let normalization: BesselNormalization
@@ -182,25 +185,27 @@ extension FilterFamily where Self == ButterworthFamily {
 }
 
 extension FilterFamily where Self == Chebyshev1Family {
-    /// An equiripple pass band of `ripple` decibels. Usable on any thread.
+    /// An equiripple pass band of `ripple` decibels. Usable on any thread. It does not allocate.
     public static func chebyshev1(ripple: Amplification) -> Chebyshev1Family { Chebyshev1Family(ripple: ripple) }
 }
 
 extension FilterFamily where Self == Chebyshev2Family {
-    /// An equiripple stop band at least `stopband` decibels down. Usable on any thread.
+    /// An equiripple stop band at least `stopband` decibels down. Usable on any thread. It does not
+    /// allocate.
     public static func chebyshev2(stopband: Amplification) -> Chebyshev2Family { Chebyshev2Family(stopband: stopband) }
 }
 
 extension FilterFamily where Self == EllipticFamily {
-    /// Equiripple in both bands: `ripple` decibels in the pass band, at least `stopband`
-    /// decibels down in the stop band. Usable on any thread.
+    /// Equiripple in both bands: `ripple` decibels in the pass band, at least `stopband` decibels
+    /// down in the stop band. Usable on any thread. It does not allocate.
     public static func elliptic(ripple: Amplification, stopband: Amplification) -> EllipticFamily {
         EllipticFamily(ripple: ripple, stopband: stopband)
     }
 }
 
 extension FilterFamily where Self == BesselFamily {
-    /// Maximally flat group delay, in the given normalisation. Usable on any thread.
+    /// Maximally flat group delay, in the given normalisation. Usable on any thread. It does not
+    /// allocate.
     public static func bessel(normalization: BesselNormalization = .phase) -> BesselFamily {
         BesselFamily(normalization: normalization)
     }

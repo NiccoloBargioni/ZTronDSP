@@ -1,16 +1,23 @@
 import Foundation
 
 /// A key of the pipeline environment (§5.4): a type that names a value and gives its default.
+///
+/// Usable on any thread: a stage reads its keys while its plan is compiled, on the control
+/// context. Reading the default of a built-in key does not allocate.
 public protocol DSPEnvironmentKey {
+    /// The type of the key's value.
     associatedtype Value: Sendable
+    /// The value when nothing sets the key and the framework derives none.
     static var defaultValue: Value { get }
 }
 
 /// A key the app may set, with `.environment(_:_:)` on a pipeline or a `Group`, or with
-/// ``DSPEnvironment/setting(_:to:)``. Three built-in keys are settable; every other built-in
-/// key is derived from the source and the stages and has no setter (ENV-3). Keys an app
-/// defines are settable by adopting this protocol. The value is `Hashable` because an override
-/// is part of a pipeline's description and descriptions compare (API-1).
+/// ``DSPEnvironment/setting(_:to:)-(K.Type,_)``. Three built-in keys are settable; every other
+/// built-in key is derived from the source and the stages and has no setter (ENV-3). Keys an
+/// app defines are settable by adopting this protocol. The value is `Hashable` because an
+/// override is part of a pipeline's description and descriptions compare (API-1).
+///
+/// Usable on any thread, like every key. An override is stored boxed, which may allocate.
 public protocol SettableDSPEnvironmentKey: DSPEnvironmentKey where Value: Hashable {}
 
 protocol BuiltInDSPEnvironmentKey: DSPEnvironmentKey {
@@ -24,7 +31,8 @@ protocol BuiltInDSPEnvironmentKey: DSPEnvironmentKey {
 /// rewrites it for everything downstream, so the value a stage reads is the value at its own
 /// position. It is a value (IMM-5): every change returns a new environment.
 ///
-/// Usable on any thread.
+/// Usable on any thread. Reading a stored property does not allocate; looking a key up, and
+/// `setting(_:to:)`, may allocate.
 public struct DSPEnvironment: Hashable, Sendable {
     // Set only on a fresh copy, by the positional changes below, each of which returns it as a
     // new environment (IMM-5): no setter reaches outside the type (IMM-1).
@@ -127,10 +135,14 @@ public struct DSPEnvironment: Hashable, Sendable {
 
     /// The catalogue of settable keys, for the key-path spelling `.environment(\.implementation, .native)`.
     /// An app adds its own keys with an extension: `var gateThreshold: GateThresholdKey.Type { GateThresholdKey.self }`.
+    /// A value without state, usable on any thread; it does not allocate.
     public struct SettableKeys: Sendable {
         @usableFromInline init() {}
+        /// ``ImplementationKey``: which implementation primitives are bound to.
         public var implementation: ImplementationKey.Type { ImplementationKey.self }
+        /// ``BiquadPrecisionKey``: the precision IIR cascades run in.
         public var biquadPrecision: BiquadPrecisionKey.Type { BiquadPrecisionKey.self }
+        /// ``ResultRateKey``: how often bindings receive results.
         public var resultRate: ResultRateKey.Type { ResultRateKey.self }
     }
 
@@ -313,16 +325,25 @@ enum SourceKindKey: BuiltInDSPEnvironmentKey {
 }
 
 /// Which implementation primitives are bound to (§7.4). Settable.
+///
+/// A type with no values, usable on any thread; it does not allocate.
 public enum ImplementationKey: SettableDSPEnvironmentKey {
+    /// `.automatic`: by size, from the measured crossovers.
     public static var defaultValue: Implementation { .automatic }
 }
 
 /// The precision IIR cascades run in (REAL-3). Settable.
+///
+/// A type with no values, usable on any thread; it does not allocate.
 public enum BiquadPrecisionKey: SettableDSPEnvironmentKey {
+    /// `.automatic`: decided by measurement when the plan is compiled.
     public static var defaultValue: BiquadPrecision { .automatic }
 }
 
 /// How often bindings receive results, per second (OUT-2). Settable.
+///
+/// A type with no values, usable on any thread; it does not allocate.
 public enum ResultRateKey: SettableDSPEnvironmentKey {
+    /// 30 results per second.
     public static var defaultValue: Double { 30 }
 }

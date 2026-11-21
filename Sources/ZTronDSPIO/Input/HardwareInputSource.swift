@@ -175,8 +175,9 @@ public final class HardwareInputSource: PushSampleSource {
 // MARK: Inputs
 
 extension HardwareInputSource {
-    /// A source that records from `input`, or, without one, from whatever input iOS has
-    /// selected: the last external microphone connected, or the built-in one (MIC-1).
+    /// A source that records from `input`, or, without one, from whatever input iOS has selected:
+    /// the last external microphone connected, or the built-in one (MIC-1). Creating a source
+    /// configures no audio session and may be done on any thread; it allocates.
     ///
     /// - Parameters:
     ///   - input: an input from ``availableInputs(policy:)``. It becomes the session's
@@ -204,7 +205,8 @@ extension HardwareInputSource {
     /// activated and the user is not asked for permission. Bluetooth microphones are listed
     /// only under a policy that allows them (MIC-5).
     ///
-    /// May be called from any context; the work runs off the caller's thread.
+    /// May be called from any context; the work runs off the caller's thread. It allocates, on the
+    /// background executor.
     ///
     /// - Throws: `sessionConfigurationFailed`, as `prepare()` does.
     public static func availableInputs(policy: AudioSessionPolicy = .playAndRecord) async throws(DSPError) -> [AudioInput] {

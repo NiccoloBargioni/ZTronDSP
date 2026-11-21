@@ -11,10 +11,13 @@ import ZTronDSPDesign
 /// | `.same` | `N` | The middle of the full result, as long as the first input: its values from index `(K − 1) / 2` on (rounded down). |
 /// | `.valid` | `max(N, K) − min(N, K) + 1` | The values in which the shorter input lies wholly inside the longer one: no value rests on a sample that is not there. |
 ///
-/// An immutable value, usable on any thread.
+/// An immutable value, usable on any thread; it does not allocate.
 public enum ConvolutionMode: Hashable, Sendable, CaseIterable {
+    /// Every value in which the two inputs overlap: `N + K − 1` values.
     case full
+    /// The middle of the full result, as long as the first input.
     case same
+    /// The values in which the shorter input lies wholly inside the longer one.
     case valid
 }
 
@@ -26,10 +29,13 @@ extension DSP {
     /// let smoothed = try DSP.convolve(track, [0.25, 0.5, 0.25], mode: .same) // as long as track
     /// ```
     ///
-    /// A one-shot computation: synchronous, it runs where it is called and allocates (§9.2);
-    /// with a long input, call it off the main thread. For a stream, the stage is `Convolve`.
+    /// A one-shot computation: synchronous, it runs where it is called, on any thread, and
+    /// allocates (§9.2); with a long input, call it off the main thread. For a stream, the
+    /// stage is `Convolve`.
     ///
     /// - Parameters:
+    ///   - x: the signal, `N` values.
+    ///   - h: the kernel, `K` values.
     ///   - mode: which part of the result is returned; `.full` by default.
     ///   - strategy: `.direct` is `vDSP_conv`; `.fft` multiplies the spectra of the two inputs,
     ///     zero-padded to a fast length at or above `N + K − 1`; `.partitioned` runs the

@@ -4,10 +4,15 @@
 /// repeats its last value, or 0 before the first, with confidence 0. No step emits NaN.
 /// Unlike the other frames this one is a plain value, because it is what a
 /// `Binding<ScalarFrame>` holds; its index and time travel on the `FrameView` that carries it.
+///
+/// Usable on any thread, the analysis thread included; it does not allocate.
 public struct ScalarFrame: Hashable, Sendable {
+    /// The value.
     public let value: Float
+    /// How sure the step is of the value, in `0 … 1`: 0 when it has none and repeats its last one.
     public let confidence: Float
 
+    /// A value with its confidence, 1 unless told otherwise.
     @inlinable
     public init(value: Float, confidence: Float = 1) {
         self.value = value
@@ -20,13 +25,18 @@ public struct ScalarFrame: Hashable, Sendable {
 
 /// A vector of real numbers: a real-valued spectrum, a cepstrum, chroma, lags, a tempogram
 /// column. A borrowed view, valid for the call that delivers it; copy what must outlive it.
+///
+/// Usable on any thread for the length of that call, the analysis thread included; it does
+/// not allocate.
 public struct RealFrame {
+    /// The values.
     public let values: UnsafeBufferPointer<Float>
     /// The frame's position in its stream, from 0.
     public let index: Int
     /// The time the frame describes, in seconds since the session started.
     public let time: Double
 
+    /// A view of `values`: the frame at `index` in its stream, describing `time`.
     @inlinable
     public init(values: UnsafeBufferPointer<Float>, index: Int, time: Double) {
         self.values = values
@@ -34,17 +44,26 @@ public struct RealFrame {
         self.time = time
     }
 
+    /// The number of values.
     @inlinable public var count: Int { values.count }
 }
 
 /// A vector of complex numbers in split form: a complex spectrum. A borrowed view, valid for
 /// the call that delivers it.
+///
+/// Usable on any thread for the length of that call, the analysis thread included; it does
+/// not allocate.
 public struct ComplexFrame {
+    /// The real parts.
     public let real: UnsafeBufferPointer<Float>
+    /// The imaginary parts.
     public let imaginary: UnsafeBufferPointer<Float>
+    /// The frame's position in its stream, from 0.
     public let index: Int
+    /// The time the frame describes, in seconds since the session started.
     public let time: Double
 
+    /// A view of the split parts: the frame at `index` in its stream, describing `time`.
     @inlinable
     public init(real: UnsafeBufferPointer<Float>, imaginary: UnsafeBufferPointer<Float>, index: Int, time: Double) {
         self.real = real
@@ -59,12 +78,20 @@ public struct ComplexFrame {
 
 /// (min, max) pairs of a waveform, one pair per reduction bucket. A borrowed view, valid for
 /// the call that delivers it.
+///
+/// Usable on any thread for the length of that call, the analysis thread included; it does
+/// not allocate.
 public struct EnvelopeFrame {
+    /// The smallest sample of each bucket.
     public let minima: UnsafeBufferPointer<Float>
+    /// The largest sample of each bucket.
     public let maxima: UnsafeBufferPointer<Float>
+    /// The frame's position in its stream, from 0.
     public let index: Int
+    /// The time the frame describes, in seconds since the session started.
     public let time: Double
 
+    /// A view of the pairs: the frame at `index` in its stream, describing `time`.
     @inlinable
     public init(minima: UnsafeBufferPointer<Float>, maxima: UnsafeBufferPointer<Float>, index: Int, time: Double) {
         self.minima = minima
@@ -78,6 +105,8 @@ public struct EnvelopeFrame {
 }
 
 /// The shape of the frames a node writes: what the plan allocates its output storage for.
+///
+/// A value, usable on any thread; it does not allocate.
 public enum FrameFormat: Hashable, Sendable {
     /// Blocks of audio: `channelCount` channels of at most `maximumFrames` frames.
     case samples(channelCount: Int, maximumFrames: Int)
@@ -107,8 +136,10 @@ public enum FrameFormat: Hashable, Sendable {
 ///
 /// A frame is a borrowed view, valid for the call that delivers it, with its index and its
 /// time in seconds since the session started (§5.2). The typed accessors return `nil` when
-/// the frame is of another kind. Reading a frame allocates nothing.
+/// the frame is of another kind. Reading a frame allocates nothing; it may be read on any
+/// thread for the length of that call, the analysis thread included.
 public struct FrameView {
+    /// What the frame holds, which decides the accessor that returns it.
     public let kind: DomainTag.FrameKind
     /// The frame's position in its stream, from 0. For a block of samples: the index of its
     /// first sample.

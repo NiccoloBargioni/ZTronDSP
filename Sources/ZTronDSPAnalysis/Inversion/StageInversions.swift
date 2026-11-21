@@ -21,7 +21,8 @@ enum InversionRoundOff {
 
 extension STFT: InvertibleStage {
     /// The overlap-add conditions of the window and the hop (Griffin & Lim 1984): they do not
-    /// depend on the signal.
+    /// depend on the signal. As every requirement of an invertible stage, it runs in the
+    /// background, never on the analysis thread, and allocates.
     public func inversionConditions(in context: InversionContext) throws(DSPError) -> [InversionCondition] {
         guard frame >= 1, hop >= 1 else {
             throw .invalidParameter(stage: .none, parameter: "hop", reason: "a frame of \(frame) samples and a hop of \(hop) frame nothing")
@@ -47,9 +48,10 @@ extension STFT: InvertibleStage {
         ]
     }
 
-    /// The signal through the analysis and the synthesis. What a causal analysis cannot
-    /// recover, the samples its first window barely weighs, is left out, as is the end of the
-    /// signal that no complete frame covers.
+    /// The signal through the analysis and the synthesis. What a causal analysis cannot recover,
+    /// the samples its first window barely weighs, is left out, as is the end of the signal that no
+    /// complete frame covers. As every requirement of an invertible stage, it runs in the
+    /// background, never on the analysis thread, and it allocates and compiles plans.
     public func inversionRoundTrip(in context: InversionContext) throws(DSPError) -> InversionRoundTrip? {
         guard context.samples != nil else { return nil }
         let original = try context.samples()
@@ -68,10 +70,13 @@ extension STFT: InvertibleStage {
 // MARK: Cepstrum(.complex) ↔ InverseCepstrum (WP-539)
 
 extension Cepstrum: InvertibleStage {
+    /// The step that undoes `Cepstrum(.complex)` (INV-1); after the other two kinds there is no way
+    /// back, as the conditions say. Usable on any thread; it does not allocate.
     public var inverse: InverseCepstrum { InverseCepstrum() }
 
-    /// The phase must be kept; and, on the frames of the signal, the logarithm must be finite
-    /// and the phase unwrapped without ambiguity.
+    /// The phase must be kept; and, on the frames of the signal, the logarithm must be finite and
+    /// the phase unwrapped without ambiguity. As every requirement of an invertible stage, it runs
+    /// in the background, never on the analysis thread, and it allocates and compiles plans.
     public func inversionConditions(in context: InversionContext) throws(DSPError) -> [InversionCondition] {
         let keepsPhase = kind == .complex
         var conditions = [InversionCondition(
@@ -133,8 +138,9 @@ extension Cepstrum: InvertibleStage {
         return conditions
     }
 
-    /// The spectra through the cepstrum and back. A real or a power cepstrum has no way back:
-    /// there is nothing to measure.
+    /// The spectra through the cepstrum and back. A real or a power cepstrum has no way back: there
+    /// is nothing to measure. As every requirement of an invertible stage, it runs in the
+    /// background, never on the analysis thread, and it allocates and compiles plans.
     public func inversionRoundTrip(in context: InversionContext) throws(DSPError) -> InversionRoundTrip? {
         guard context.samples != nil, kind == .complex else { return nil }
         let original = try context.complexFrames()
@@ -146,9 +152,10 @@ extension Cepstrum: InvertibleStage {
 // MARK: CepstralCoefficients ↔ InverseCepstralCoefficients (WP-539)
 
 extension CepstralCoefficients: InvertibleStage {
-    /// Full rank: as many coefficients as the spectrum has bands. The bands are those of the
-    /// frames that reach the step, so the pipeline that produces them is needed: ask for the
-    /// report with `after:`.
+    /// Full rank: as many coefficients as the spectrum has bands. The bands are those of the frames
+    /// that reach the step, so the pipeline that produces them is needed: ask for the report with
+    /// `after:`. As every requirement of an invertible stage, it runs in the background, never on
+    /// the analysis thread, and it allocates and compiles plans.
     public func inversionConditions(in context: InversionContext) throws(DSPError) -> [InversionCondition] {
         let frames = try context.samples == nil ? context.probeFrames() : context.frames()
         guard let bands = frames.first?.count, bands >= 1 else {
@@ -180,7 +187,9 @@ extension CepstralCoefficients: InvertibleStage {
             predictedError: Swift.min(loss + InversionRoundOff.logarithm, 1))]
     }
 
-    /// The mel spectrum through the coefficients and back to as many bands as it had.
+    /// The mel spectrum through the coefficients and back to as many bands as it had. As every
+    /// requirement of an invertible stage, it runs in the background, never on the analysis thread,
+    /// and it allocates and compiles plans.
     public func inversionRoundTrip(in context: InversionContext) throws(DSPError) -> InversionRoundTrip? {
         guard context.samples != nil else { return nil }
         let original = try context.frames()
@@ -250,9 +259,9 @@ struct DecibelsInversion<Values: LinearValued>: InvertibleStage {
 }
 
 extension Decibels {
-    /// The step that undoes this one after magnitudes, or after powers: `InverseDecibels` of
-    /// that kind with this step's reference (INV-1). A `Decibels` follows either kind of
-    /// value, so its inverse is named for one of them.
+    /// The step that undoes this one after magnitudes, or after powers: `InverseDecibels` of that
+    /// kind with this step's reference (INV-1). A `Decibels` follows either kind of value, so its
+    /// inverse is named for one of them. Usable on any thread; it does not allocate.
     public func inverse<Values: LinearValued>(of values: LinearValueKind<Values>) -> InverseDecibels<Values> {
         InverseDecibels(values, reference: reference)
     }
@@ -261,9 +270,10 @@ extension Decibels {
     /// the values are magnitudes or powers (§6.13): the share of bins at the floor, which come
     /// back as the floor, and the error of the round trip on the frames of `samples`.
     ///
-    /// The work runs on the background executor (BG-1) and can be cancelled (BG-3). A
-    /// condition that fails is part of the report, not an error (INV-3). Without samples the
-    /// report holds no condition: the only one there is asks about the signal.
+    /// The call may be made from any context; the work runs on the background executor (BG-1) and
+    /// can be cancelled (BG-3). A condition that fails is part of the report, not an error (INV-3).
+    /// Without samples the report holds no condition: the only one there is asks about the signal.
+    /// It allocates, in the background.
     public func inversionReport<Axis, Values: LinearValued>(
         for samples: [Float]? = nil, sampleRate: Double = 48_000, after upstream: Pipeline<Samples, Spectrum<Axis, Values>>
     ) async throws(DSPError) -> InversionReport {

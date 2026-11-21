@@ -7,7 +7,8 @@ import ZTronDSPCore
 // (ACT-3).
 
 extension DSP {
-    /// The largest factor of a rate change. Usable on any thread.
+    /// The largest factor of a rate change. A constant, usable on any thread; it does not
+    /// allocate.
     public static let maximumRateChangeFactor = 4_096
 
     /// The low-pass of a rate change by an integer `factor` (§6.12): a Kaiser windowed sinc
@@ -96,7 +97,7 @@ extension DSP {
 /// suspends the rest of its branch (ACT-3).
 ///
 /// An immutable value, usable on any thread. The filter is designed when the stage is
-/// lowered: control context.
+/// lowered, which allocates: control context.
 public struct Decimate: SequenceStage {
     /// The factor the rate is divided by. Usable on any thread.
     public let factor: Int
@@ -139,7 +140,8 @@ public struct Decimate: SequenceStage {
 /// sizes. No latency. It has no continuous values. Switched off, it suspends the rest of its
 /// branch (ACT-3).
 ///
-/// An immutable value, usable on any thread.
+/// An immutable value, usable on any thread; `lower(_:)` runs on the control context and may
+/// allocate.
 public struct Subsample: SequenceStage {
     /// The factor the rate is divided by. Usable on any thread.
     public let factor: Int
@@ -148,10 +150,13 @@ public struct Subsample: SequenceStage {
     /// The stage's switch (§5.9). Usable on any thread.
     public let activation: StageActivation
 
-    /// Usable on any thread.
+    /// A subsampler that keeps every `factor`-th sample from `phase` on. Usable on any thread.
     ///
-    /// - Parameter isActive: `true`, `false`, `.active`, `.bypassed`, or a SwiftUI
-    ///   `Binding<Bool>`.
+    /// - Parameters:
+    ///   - factor: 1 … 4 096.
+    ///   - phase: The index of the first sample kept; taken modulo `factor`.
+    ///   - isActive: `true`, `false`, `.active`, `.bypassed`, or a SwiftUI
+    ///     `Binding<Bool>`.
     public init(by factor: Int, phase: Int = 0, isActive: some ActivationSource = .active) {
         self.factor = factor
         self.phase = phase
@@ -177,17 +182,20 @@ public struct Subsample: SequenceStage {
 /// `Subsample(by:)` with the same factor undoes it exactly. No latency. It has no continuous
 /// values. Switched off, it suspends the rest of its branch (ACT-3).
 ///
-/// An immutable value, usable on any thread.
+/// An immutable value, usable on any thread; `lower(_:)` runs on the control context and may
+/// allocate.
 public struct Upsample: SequenceStage {
     /// The factor the rate is multiplied by. Usable on any thread.
     public let factor: Int
     /// The stage's switch (§5.9). Usable on any thread.
     public let activation: StageActivation
 
-    /// Usable on any thread.
+    /// A zero-stuffer by `factor`. Usable on any thread.
     ///
-    /// - Parameter isActive: `true`, `false`, `.active`, `.bypassed`, or a SwiftUI
-    ///   `Binding<Bool>`.
+    /// - Parameters:
+    ///   - factor: 1 … 4 096.
+    ///   - isActive: `true`, `false`, `.active`, `.bypassed`, or a SwiftUI
+    ///     `Binding<Bool>`.
     public init(by factor: Int, isActive: some ActivationSource = .active) {
         self.factor = factor
         self.activation = isActive.stageActivation
@@ -219,7 +227,7 @@ public struct Upsample: SequenceStage {
 /// suspends the rest of its branch (ACT-3).
 ///
 /// An immutable value, usable on any thread. The filter is designed when the stage is
-/// lowered: control context.
+/// lowered, which allocates: control context.
 public struct Interpolate: SequenceStage {
     /// The factor the rate is multiplied by. Usable on any thread.
     public let factor: Int

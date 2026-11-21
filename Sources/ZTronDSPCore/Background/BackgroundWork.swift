@@ -13,11 +13,16 @@ import Dispatch
 ///     return try buildReport(poles)
 /// }
 /// ```
+///
+/// Starting a piece of work allocates (the task's continuation and the work's closure), and
+/// the work itself may allocate.
 public enum BackgroundWork {
     /// The queue all background work runs on: concurrent, utility quality of service.
     static let queue = DispatchQueue(label: "com.zombietron.ztrondsp.background", qos: .utility, attributes: .concurrent)
 
     /// What a piece of work asks, between its steps, whether it should go on.
+    /// Its members may be called on any thread, from inside the work; they take a lock briefly and
+    /// do not allocate.
     public struct Checkpoint: Sendable {
         let state: Locked<Bool>
 

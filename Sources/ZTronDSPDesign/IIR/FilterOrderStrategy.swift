@@ -2,7 +2,7 @@ import Accelerate   // for the C maths library only: no LAPACK is called outside
 import ZTronDSPCore
 
 /// The answer to a tolerance scheme: the smallest order that meets it and the response to
-/// design at that order. An immutable value, usable on any thread.
+/// design at that order. An immutable value, usable on any thread; it does not allocate.
 public struct FilterOrderEstimate: Hashable, Sendable {
     /// The minimum order of the prototype. A band-pass or band-stop filter has twice as many
     /// poles. Usable on any thread.
@@ -26,15 +26,19 @@ public struct FilterOrderEstimate: Hashable, Sendable {
 /// pass band ends at 1; ``minimumOrder(passband:stopband:maximumLoss:minimumAttenuation:domain:)``
 /// does the rest for all four responses and both domains, the same way for every family.
 ///
-/// Conformers are immutable values, usable on any thread. Design maths: control or
-/// background context.
+/// Conformers are immutable values, usable on any thread; the stock ones do not allocate, and
+/// ``minimumOrder(passband:stopband:maximumLoss:minimumAttenuation:domain:)`` allocates.
+/// Design maths: control or background context.
 public protocol FilterOrderStrategy: Hashable, Sendable {
     /// The order, not rounded, at which the prototype loses at most `maximumLoss` up to
     /// frequency 1 and attenuates by at least `minimumAttenuation` from `selectivity` on.
     /// Usable on any thread; allocation-free.
     ///
-    /// - Parameter selectivity: The stop-band edge as a multiple of the pass-band edge;
-    ///   greater than 1.
+    /// - Parameters:
+    ///   - selectivity: The stop-band edge as a multiple of the pass-band edge; greater than
+    ///     1.
+    ///   - maximumLoss: The most the pass band may lose, up to frequency 1.
+    ///   - minimumAttenuation: The least the stop band must attenuate, from `selectivity` on.
     /// - Throws: `DSPError.invalidParameter` when no order can meet the three values.
     func fractionalOrder(selectivity: Double, maximumLoss: Amplification, minimumAttenuation: Amplification) throws(DSPError) -> Double
 
@@ -249,7 +253,7 @@ enum FilterOrderMapping {
 /// Butterworth: `n = log((G_s − 1)/(G_p − 1)) / (2·log(selectivity))` with
 /// `G = 10^(dB/10)`. The natural frequency is the −3 dB point that puts the loss exactly on
 /// the pass-band edge. Oracle: `scipy.signal.buttord`. An immutable value, usable on any
-/// thread.
+/// thread; it does not allocate.
 public struct ButterworthOrderStrategy: FilterOrderStrategy {
     /// Usable on any thread.
     public init() {}
@@ -271,7 +275,7 @@ public struct ButterworthOrderStrategy: FilterOrderStrategy {
 
 /// Chebyshev type I: `n = acosh(√((G_s − 1)/(G_p − 1))) / acosh(selectivity)`. The natural
 /// frequency is the pass-band edge. Oracle: `scipy.signal.cheb1ord`. An immutable value,
-/// usable on any thread.
+/// usable on any thread; it does not allocate.
 public struct Chebyshev1OrderStrategy: FilterOrderStrategy {
     /// Usable on any thread.
     public init() {}
@@ -292,7 +296,8 @@ public struct Chebyshev1OrderStrategy: FilterOrderStrategy {
 
 /// Chebyshev type II: the order of type I; the natural frequency is the stop-band edge of
 /// the prototype, `cosh(acosh(√((G_s − 1)/(G_p − 1))) / n)` times the pass-band edge.
-/// Oracle: `scipy.signal.cheb2ord`. An immutable value, usable on any thread.
+/// Oracle: `scipy.signal.cheb2ord`. An immutable value, usable on any thread; it does not
+/// allocate.
 public struct Chebyshev2OrderStrategy: FilterOrderStrategy {
     /// Usable on any thread.
     public init() {}
@@ -315,7 +320,7 @@ public struct Chebyshev2OrderStrategy: FilterOrderStrategy {
 /// Elliptic: the degree equation solved for the order,
 /// `n = K(k²)·K′(k₁²) / (K′(k²)·K(k₁²))` with `k = 1/selectivity` and
 /// `k₁² = (G_p − 1)/(G_s − 1)`. The natural frequency is the pass-band edge. Oracle:
-/// `scipy.signal.ellipord`. An immutable value, usable on any thread.
+/// `scipy.signal.ellipord`. An immutable value, usable on any thread; it does not allocate.
 public struct EllipticOrderStrategy: FilterOrderStrategy {
     /// Usable on any thread.
     public init() {}

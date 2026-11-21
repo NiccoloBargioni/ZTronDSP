@@ -7,11 +7,12 @@ import ZTronDSPDesign
 
 extension Decimate: InvertibleStage {
     /// The stage that undoes this one: `Interpolate` by the same factor, with the same
-    /// low-pass (INV-1). Usable on any thread.
+    /// low-pass (INV-1). Usable on any thread; it does not allocate.
     public var inverse: Interpolate { Interpolate(by: factor, rejection: rejection, passband: passband) }
 
-    /// What the round trip through `Decimate` and `Interpolate` depends on (§6.13). Background
-    /// work: it designs the low-pass and transforms the signal.
+    /// What the round trip through `Decimate` and `Interpolate` depends on (§6.13). It runs in the
+    /// background with the report, never on the analysis thread, and allocates: it designs the
+    /// low-pass and transforms the signal.
     ///
     /// - **The sampling theorem**, tested on the signal: the share of its energy at or above
     ///   `f_s / 2M`, the Nyquist frequency after the stage. `Decimate` removes that share
@@ -87,7 +88,8 @@ extension Decimate: InvertibleStage {
     /// that much of the start and of the end of the signal is left out, since a signal that
     /// begins or ends is not band-limited there.
     ///
-    /// Background work. `nil` without a signal.
+    /// It runs in the background with the report, never on the analysis thread, and allocates.
+    /// `nil` without a signal.
     public func inversionRoundTrip(in context: InversionContext) throws(DSPError) -> InversionRoundTrip? {
         guard context.samples != nil else { return nil }
         let original = try context.samples()

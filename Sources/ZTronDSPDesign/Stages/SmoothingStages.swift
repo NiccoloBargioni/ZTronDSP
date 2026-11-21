@@ -30,7 +30,7 @@ import ZTronDSPCore
 /// continuous values.
 ///
 /// An immutable value, usable on any thread. The coefficients are designed when the stage is
-/// lowered: control context.
+/// lowered, which allocates: control context.
 public struct SavitzkyGolay: SequenceStage {
     /// The number of samples under the fit: odd. Usable on any thread.
     public let window: Int
@@ -43,10 +43,16 @@ public struct SavitzkyGolay: SequenceStage {
     /// The stage's switch (§5.9). Usable on any thread.
     public let activation: StageActivation
 
-    /// Usable on any thread.
+    /// A Savitzky–Golay filter of `window` samples and degree `polynomialOrder`. Usable on any
+    /// thread.
     ///
-    /// - Parameter isActive: `true`, `false`, `.active`, `.bypassed`, or a SwiftUI
-    ///   `Binding<Bool>`.
+    /// - Parameters:
+    ///   - window: The number of samples under the fit: odd.
+    ///   - polynomialOrder: The degree of the polynomial: below `window`.
+    ///   - derivative: 0, the default, smooths; `d` gives the `d`-th derivative.
+    ///   - edge: What a window holds past the ends of a signal; `.interpolate` by default.
+    ///   - isActive: `true`, `false`, `.active`, `.bypassed`, or a SwiftUI
+    ///     `Binding<Bool>`.
     public init(
         window: Int, polynomialOrder: Int, derivative: Int = 0, edge: SavitzkyGolayEdge = .interpolate,
         isActive: some ActivationSource = .active
@@ -87,9 +93,10 @@ public struct SavitzkyGolay: SequenceStage {
 /// The stage runs on any sampled sequence and keeps its domain; it adds no latency. Its
 /// values are structure: a change of `alpha` or `beta` starts a new tracker.
 ///
-/// An immutable value, usable on any thread.
+/// An immutable value, usable on any thread; `lower(_:)` runs on the control context and may
+/// allocate.
 public struct AlphaBeta: SequenceStage {
-    /// What the tracker puts out.
+    /// What the tracker puts out: a value, usable on any thread; it does not allocate.
     public enum Output: Hashable, Sendable {
         /// The tracked position: the smoothed signal.
         case position
@@ -110,10 +117,17 @@ public struct AlphaBeta: SequenceStage {
     /// The stage's switch (§5.9). Usable on any thread.
     public let activation: StageActivation
 
-    /// Usable on any thread.
+    /// A tracker with the gains `alpha` and `beta`, starting from `initialPosition` and
+    /// `initialVelocity`. Usable on any thread.
     ///
-    /// - Parameter isActive: `true`, `false`, `.active`, `.bypassed`, or a SwiftUI
-    ///   `Binding<Bool>`.
+    /// - Parameters:
+    ///   - alpha: The share of the prediction error that corrects the position.
+    ///   - beta: The share of the prediction error that corrects the velocity.
+    ///   - initialPosition: The position the tracker starts from; 0 by default.
+    ///   - initialVelocity: The velocity the tracker starts from; 0 by default.
+    ///   - output: `.position`, the default, or `.velocity`.
+    ///   - isActive: `true`, `false`, `.active`, `.bypassed`, or a SwiftUI
+    ///     `Binding<Bool>`.
     public init(
         alpha: Double, beta: Double, initialPosition: Double = 0, initialVelocity: Double = 0, output: Output = .position,
         isActive: some ActivationSource = .active
@@ -147,8 +161,14 @@ extension DSP {
     /// takes them, so that the two agree to rounding. Runs where it is called and allocates:
     /// not for the analysis thread.
     ///
-    /// - Parameter timeStep: The time between two samples, in seconds: one over the sample
-    ///   rate.
+    /// - Parameters:
+    ///   - samples: The signal to follow.
+    ///   - alpha: The share of the prediction error that corrects the position.
+    ///   - beta: The share of the prediction error that corrects the velocity.
+    ///   - timeStep: The time between two samples, in seconds: one over the sample rate.
+    ///   - initialPosition: The position the tracker starts from; 0 by default.
+    ///   - initialVelocity: The velocity the tracker starts from; 0 by default.
+    ///   - output: `.position`, the default, or `.velocity`.
     /// - Throws: `DSPError.invalidParameter` for a time step that is not positive and finite,
     ///   and for a value that is not finite.
     public static func alphaBeta(

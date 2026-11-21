@@ -19,14 +19,21 @@ import ZTronDSPCore
 /// `Binding<[Float]>` receives a new array of twelve values per delivery, at the result rate
 /// (OUT-5). The frames describe the signal a latency ago, that of the transform's longest
 /// atom: `gamma` above 0 shortens it. Switched off, the branch is suspended (ACT-3). An
-/// immutable value, usable on any thread.
+/// immutable value, usable on any thread; creating one allocates its expansion.
 public struct ChromaCQT: Recipe {
+    /// Audio samples.
     public typealias Input = Samples
+    /// The same samples: the analysis is a side branch.
     public typealias Output = Samples
 
+    /// What the recipe stands for: the tap of the transform, the magnitudes, the fold and the
+    /// sink.
     public let expansion: Pipeline<Samples, Samples>
+    /// The recipe's switch: off, the branch is suspended (ACT-3).
     public let activation: StageActivation
 
+    /// Chroma from the constant-Q transform of these arguments, folded under `normalization` and
+    /// `threshold`, into `feed`, which receives every frame.
     public init(
         fmin: Frequency = .midiNote(24), octaves: Int = 7, binsPerOctave: Int = 36, tuning: Double = 0, gamma: Double = 0, hop: Int = 512,
         normalization: some ChromaNormalization = .max, threshold: Double = 0, to feed: HeatmapFeed,
@@ -43,6 +50,8 @@ public struct ChromaCQT: Recipe {
         }
     }
 
+    /// The same chroma into `binding`, a `Binding<[Float]>` of twelve values, which receives a new
+    /// array per delivery, on the main thread and at the result rate (OUT-5).
     public init(
         fmin: Frequency = .midiNote(24), octaves: Int = 7, binsPerOctave: Int = 36, tuning: Double = 0, gamma: Double = 0, hop: Int = 512,
         normalization: some ChromaNormalization = .max, threshold: Double = 0, to binding: some VectorResultTarget,
@@ -62,6 +71,7 @@ public struct ChromaCQT: Recipe {
 
 extension Pipeline where Output == Samples {
     /// Chroma of the signal into a feed; the samples pass on: see ``ChromaCQT``.
+    /// Usable on any thread; allocates the pipeline it returns.
     public func chromaCQT(
         fmin: Frequency = .midiNote(24), octaves: Int = 7, binsPerOctave: Int = 36, tuning: Double = 0, gamma: Double = 0, hop: Int = 512,
         normalization: some ChromaNormalization = .max, threshold: Double = 0, to feed: HeatmapFeed,
@@ -73,6 +83,7 @@ extension Pipeline where Output == Samples {
     }
 
     /// Chroma of the signal into a binding; the samples pass on: see ``ChromaCQT``.
+    /// Usable on any thread; allocates the pipeline it returns.
     public func chromaCQT(
         fmin: Frequency = .midiNote(24), octaves: Int = 7, binsPerOctave: Int = 36, tuning: Double = 0, gamma: Double = 0, hop: Int = 512,
         normalization: some ChromaNormalization = .max, threshold: Double = 0, to binding: some VectorResultTarget,

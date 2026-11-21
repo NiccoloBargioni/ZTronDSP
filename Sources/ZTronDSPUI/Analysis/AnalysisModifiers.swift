@@ -38,7 +38,8 @@ extension View {
     /// framed: `ChromagramView(source:)` and `WaveformView(source:)` do not read this value.
     /// Not animatable: a frame is structure, and another one is applied at once (ANI-4).
     ///
-    /// Threading: main actor, like every view modifier; it stores one small value.
+    /// Threading: main actor, like every view modifier; it stores one small value, and may
+    /// allocate as SwiftUI does for any environment value.
     public func analysisFrame(_ frame: Int, hop: Int, window: Window = .hann) -> some View {
         environment(\.dspAnalysisFrame, AnalysisFrame(frame: frame, hop: hop, window: window))
     }
@@ -50,7 +51,8 @@ extension View {
     /// Not animatable: a number of bands is structure, and another one is applied at once
     /// (ANI-4).
     ///
-    /// Threading: main actor, like every view modifier; it stores one small value.
+    /// Threading: main actor, like every view modifier; it stores one small value, and may
+    /// allocate as SwiftUI does for any environment value.
     public func melBands(_ bands: Int) -> some View {
         environment(\.dspMelBands, bands)
     }
@@ -80,8 +82,9 @@ extension View {
     /// not finished by the time the next frame arrives, the newest frame wins (ANI-5). A
     /// pipeline the engine refuses is logged, and the component keeps what it ran before.
     ///
-    /// Threading: main actor, like every view modifier; it stores the pipeline, a value.
-    /// Attaching and updating suspend off the main thread.
+    /// Threading: main actor, like every view modifier; it stores the pipeline, a value, and
+    /// may allocate as SwiftUI does for any environment value. Attaching and updating suspend
+    /// off the main thread.
     public func processing(_ pipeline: Pipeline<Samples, Samples>) -> some View {
         environment(\.dspProcessing, pipeline)
     }
@@ -95,7 +98,8 @@ extension View {
     ///     .processing { HighPass(.butterworth, cutoff: .hertz(90), order: 4); Level(.rms, to: $level) }
     /// ```
     ///
-    /// Threading: main actor, like every view modifier. `content` is called once, at once.
+    /// Threading: main actor, like every view modifier. `content` is called once, at once,
+    /// and allocates the pipeline it describes.
     public func processing(@PipelineBuilder _ content: () -> Pipeline<Samples, Samples>) -> some View {
         processing(content())
     }
@@ -109,7 +113,8 @@ extension View {
     ///     .processing { HighPass(.butterworth, cutoff: .hertz(cutoff), order: 4) }
     /// ```
     ///
-    /// Threading: main actor, like every view modifier. `content` is called once, at once.
+    /// Threading: main actor, like every view modifier. `content` is called once, at once,
+    /// and allocates the pipeline it describes.
     public func processing(@PipelineBuilder _ content: () -> SequenceChain) -> some View {
         processing(Pipeline<Samples, Samples>(content))
     }

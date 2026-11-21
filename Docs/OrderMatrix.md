@@ -58,6 +58,11 @@ same table against the order rules that run when a pipeline is attached.
 | `Tempogram` | · | ✓ | · | · | · | · | · | · | · | · | · | · | · | · | · | · | · | · | · | · | · |
 | `HarmonicPercussive` | · | · | · | ✓ | ✓ | · | · | · | ✓ | · | · | · | ✓ | · | · | · | · | · | · | · | · |
 | `HPSS` | ✓ | · | · | · | · | · | · | · | · | · | · | · | · | · | · | · | · | · | · | · | · |
+| `Emit` | · | · | · | · | ✓ | ✓ | ✓ | · | ✓ | ✓ | ✓ | · | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | · |
+| `Emit: to a waveform feed` | · | · | · | · | · | · | · | · | · | · | · | · | · | · | · | · | · | · | · | · | ✓ |
+| `Emit: to a scalar binding` | · | ✓ | ✓ | · | · | · | · | · | · | · | · | · | · | · | · | · | · | · | · | · | · |
+| `Emit: to a vector binding` | · | · | · | · | ✓ | ✓ | ✓ | · | ✓ | ✓ | ✓ | · | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | · |
+| `Emit: to a feature stream` | · | · | · | · | · | · | · | · | · | · | · | · | · | · | · | · | · | ✓ | · | · | · |
 
 The domains, as Swift writes them:
 

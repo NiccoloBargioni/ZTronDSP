@@ -14,11 +14,12 @@ import Foundation
 /// others are computed by the package in double precision. A window is periodic by default,
 /// the form a transform wants; `.symmetric` gives the form a filter design wants.
 ///
-/// A window is a description: an immutable value, usable on any thread, sampled once when a
-/// plan is compiled or a filter designed. Sampling allocates; it is not for the analysis
-/// thread.
+/// A window is a description: an immutable value, usable on any thread, sampled once when a plan is
+/// compiled or a filter designed. Sampling allocates, and so do creating, comparing and hashing a
+/// custom window: none of that is for the analysis thread.
 public struct Window: Hashable, Sendable, CustomStringConvertible {
     /// How vDSP scales its Hann window.
+    /// A value, usable on any thread; it does not allocate.
     public enum HannScaling: Hashable, Sendable {
         /// Peak 1: `vDSP_HANN_DENORM`.
         case denormalized
@@ -112,8 +113,9 @@ public struct Window: Hashable, Sendable, CustomStringConvertible {
     /// evaluated once, in double precision, when the window is sampled. A window is zero
     /// outside the frame, whatever the closure returns there.
     ///
-    /// Two custom windows are equal when their closures agree at 65 probe points across the
-    /// frame and they share the periodic or symmetric choice (WIN-2).
+    /// Two custom windows are equal when their closures agree at 65 probe points across the frame
+    /// and they share the periodic or symmetric choice (WIN-2). Creating one evaluates the closure
+    /// at those points, which allocates, and comparing or hashing one allocates too.
     public static func custom(_ value: @escaping @Sendable (Double) -> Double) -> Window {
         Window(shape: .custom(CustomShape(value)))
     }
@@ -143,6 +145,8 @@ public struct Window: Hashable, Sendable, CustomStringConvertible {
         }
     }
 
+    /// The window as it is written in Swift, `kaiser(beta: 8.6)` or `hann.symmetric` for example; a
+    /// custom window is `custom`. It allocates the text it returns.
     public var description: String {
         let name: String
         switch shape {

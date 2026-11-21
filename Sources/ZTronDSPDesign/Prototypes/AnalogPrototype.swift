@@ -3,7 +3,7 @@ import ZTronDSPCore
 
 /// How a Bessel prototype is scaled in frequency (§6.3.2).
 ///
-/// An immutable value, usable on any thread.
+/// An immutable value, usable on any thread; it does not allocate.
 public enum BesselNormalization: Hashable, Sendable {
     /// The phase reaches the middle of its range at 1 rad/s, and the asymptotes of the
     /// magnitude are those of a Butterworth filter of the same order. The default, and
@@ -25,7 +25,7 @@ public enum BesselNormalization: Hashable, Sendable {
 /// its sign: `.decibels(1)` and `.decibels(-1)` both mean a ripple of 1 dB, and `.linear(0.01)`
 /// an attenuation of 40 dB.
 ///
-/// Pure functions returning immutable values. Design maths: they allocate, so they belong on
+/// Pure functions returning immutable values. Design maths: each allocates, so they belong on
 /// a control or background context, not on the analysis thread.
 public enum AnalogPrototype {
     /// The highest order a prototype is computed for. Usable on any thread.

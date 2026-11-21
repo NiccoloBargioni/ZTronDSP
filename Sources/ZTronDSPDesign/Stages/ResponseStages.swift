@@ -44,8 +44,9 @@ import ZTronDSPCore
 /// **In a system** (`IIRSystem { }`, `FIRSystem { }`) the same value is an element; there it
 /// must keep the default `isActive` (ACT-1).
 ///
-/// An immutable value, usable on any thread. Designing happens when the stage is resolved or
-/// lowered: control or background context.
+/// An immutable value, usable on any thread; creating one allocates, to keep its edges in a list.
+/// Designing, which allocates, happens when the stage is resolved or lowered: control or background
+/// context.
 public struct LowPass: SequenceStage, IIRSystemElement, FIRSystemElement {
     let core: ResponseCore
     /// The stage's switch (§5.9). Usable on any thread.
@@ -78,9 +79,15 @@ public struct LowPass: SequenceStage, IIRSystemElement, FIRSystemElement {
     /// roll-off is nominal: it selects the order whose all-pole counterpart has that slope.
     /// Usable on any thread.
     ///
-    /// - Parameter rounding: What to do with a slope that is not a whole number of orders:
-    ///   `.exact()` (the default) rejects it when the plan is compiled, `.nearest` rounds,
-    ///   `.up` takes the next order.
+    /// - Parameters:
+    ///   - family: `.butterworth`, `.chebyshev1(ripple:)`, `.chebyshev2(stopband:)`,
+    ///     `.elliptic(ripple:stopband:)`, `.bessel(normalization:)`, or a family of your own.
+    ///   - cutoff: The edge of the family's prototype.
+    ///   - rollOff: The slope that sets the order: 6.02 dB per octave for each order.
+    ///   - rounding: What to do with a slope that is not a whole number of orders:
+    ///     `.exact()` (the default) rejects it when the plan is compiled, `.nearest` rounds,
+    ///     `.up` takes the next order.
+    ///   - isActive: `true`, `false`, `.active`, `.bypassed`, or a SwiftUI `Binding<Bool>`.
     public init(
         _ family: some FilterFamily, cutoff: Frequency, rollOff: RollOff, rounding: RollOffRounding = .exact(),
         isActive: some ActivationSource = .active
@@ -164,11 +171,11 @@ public struct LowPass: SequenceStage, IIRSystemElement, FIRSystemElement {
     }
 
     /// The frequencies the stage states, each as its `animatableValue`, in the order of its
-    /// arguments (ANI-2). Usable on any thread.
+    /// arguments (ANI-2). Usable on any thread; it allocates the array it returns.
     public var parameters: [Double] { core.parameters }
 
-    /// The stage with its frequencies replaced. Passing its own values returns it unchanged.
-    /// Usable on any thread.
+    /// The stage with its frequencies replaced. Passing its own values returns it unchanged. Usable
+    /// on any thread; it allocates.
     public func replacingParameters(_ values: ArraySlice<Double>) -> LowPass {
         LowPass(core: core.replacingParameters(values), activation: activation)
     }
@@ -241,8 +248,9 @@ public struct LowPass: SequenceStage, IIRSystemElement, FIRSystemElement {
 /// **In a system** (`IIRSystem { }`, `FIRSystem { }`) the same value is an element; there it
 /// must keep the default `isActive` (ACT-1).
 ///
-/// An immutable value, usable on any thread. Designing happens when the stage is resolved or
-/// lowered: control or background context.
+/// An immutable value, usable on any thread; creating one allocates, to keep its edges in a list.
+/// Designing, which allocates, happens when the stage is resolved or lowered: control or background
+/// context.
 public struct HighPass: SequenceStage, IIRSystemElement, FIRSystemElement {
     let core: ResponseCore
     /// The stage's switch (§5.9). Usable on any thread.
@@ -273,9 +281,15 @@ public struct HighPass: SequenceStage, IIRSystemElement, FIRSystemElement {
     /// roll-off is nominal: it selects the order whose all-pole counterpart has that slope.
     /// Usable on any thread.
     ///
-    /// - Parameter rounding: What to do with a slope that is not a whole number of orders:
-    ///   `.exact()` (the default) rejects it when the plan is compiled, `.nearest` rounds,
-    ///   `.up` takes the next order.
+    /// - Parameters:
+    ///   - family: `.butterworth`, `.chebyshev1(ripple:)`, `.chebyshev2(stopband:)`,
+    ///     `.elliptic(ripple:stopband:)`, `.bessel(normalization:)`, or a family of your own.
+    ///   - cutoff: The edge of the family's prototype.
+    ///   - rollOff: The slope that sets the order: 6.02 dB per octave for each order.
+    ///   - rounding: What to do with a slope that is not a whole number of orders:
+    ///     `.exact()` (the default) rejects it when the plan is compiled, `.nearest` rounds,
+    ///     `.up` takes the next order.
+    ///   - isActive: `true`, `false`, `.active`, `.bypassed`, or a SwiftUI `Binding<Bool>`.
     public init(
         _ family: some FilterFamily, cutoff: Frequency, rollOff: RollOff, rounding: RollOffRounding = .exact(),
         isActive: some ActivationSource = .active
@@ -359,11 +373,11 @@ public struct HighPass: SequenceStage, IIRSystemElement, FIRSystemElement {
     }
 
     /// The frequencies the stage states, each as its `animatableValue`, in the order of its
-    /// arguments (ANI-2). Usable on any thread.
+    /// arguments (ANI-2). Usable on any thread; it allocates the array it returns.
     public var parameters: [Double] { core.parameters }
 
-    /// The stage with its frequencies replaced. Passing its own values returns it unchanged.
-    /// Usable on any thread.
+    /// The stage with its frequencies replaced. Passing its own values returns it unchanged. Usable
+    /// on any thread; it allocates.
     public func replacingParameters(_ values: ArraySlice<Double>) -> HighPass {
         HighPass(core: core.replacingParameters(values), activation: activation)
     }
@@ -440,8 +454,9 @@ public struct HighPass: SequenceStage, IIRSystemElement, FIRSystemElement {
 /// **In a system** (`IIRSystem { }`, `FIRSystem { }`) the same value is an element; there it
 /// must keep the default `isActive` (ACT-1).
 ///
-/// An immutable value, usable on any thread. Designing happens when the stage is resolved or
-/// lowered: control or background context.
+/// An immutable value, usable on any thread; creating one allocates, to keep its edges in a list.
+/// Designing, which allocates, happens when the stage is resolved or lowered: control or background
+/// context.
 public struct BandPass: SequenceStage, IIRSystemElement, FIRSystemElement {
     let core: ResponseCore
     /// The stage's switch (§5.9). Usable on any thread.
@@ -474,9 +489,17 @@ public struct BandPass: SequenceStage, IIRSystemElement, FIRSystemElement {
     /// filters the roll-off is nominal: it selects the order whose all-pole counterpart has
     /// that slope. Usable on any thread.
     ///
-    /// - Parameter rounding: What to do with a slope that is not a whole number of orders:
-    ///   `.exact()` (the default) rejects it when the plan is compiled, `.nearest` rounds,
-    ///   `.up` takes the next order.
+    /// - Parameters:
+    ///   - family: `.butterworth`, `.chebyshev1(ripple:)`, `.chebyshev2(stopband:)`,
+    ///     `.elliptic(ripple:stopband:)`, `.bessel(normalization:)`, or a family of your own.
+    ///   - from: The lower edge of the band.
+    ///   - to: The upper edge of the band.
+    ///   - rollOff: The slope that sets the order of the prototype: 6.02 dB per octave for each
+    ///     order.
+    ///   - rounding: What to do with a slope that is not a whole number of orders:
+    ///     `.exact()` (the default) rejects it when the plan is compiled, `.nearest` rounds,
+    ///     `.up` takes the next order.
+    ///   - isActive: `true`, `false`, `.active`, `.bypassed`, or a SwiftUI `Binding<Bool>`.
     public init(
         _ family: some FilterFamily, from: Frequency, to: Frequency, rollOff: RollOff, rounding: RollOffRounding = .exact(),
         isActive: some ActivationSource = .active
@@ -562,11 +585,11 @@ public struct BandPass: SequenceStage, IIRSystemElement, FIRSystemElement {
     }
 
     /// The frequencies the stage states, each as its `animatableValue`, in the order of its
-    /// arguments (ANI-2). Usable on any thread.
+    /// arguments (ANI-2). Usable on any thread; it allocates the array it returns.
     public var parameters: [Double] { core.parameters }
 
-    /// The stage with its frequencies replaced. Passing its own values returns it unchanged.
-    /// Usable on any thread.
+    /// The stage with its frequencies replaced. Passing its own values returns it unchanged. Usable
+    /// on any thread; it allocates.
     public func replacingParameters(_ values: ArraySlice<Double>) -> BandPass {
         BandPass(core: core.replacingParameters(values), activation: activation)
     }
@@ -644,8 +667,9 @@ public struct BandPass: SequenceStage, IIRSystemElement, FIRSystemElement {
 /// **In a system** (`IIRSystem { }`, `FIRSystem { }`) the same value is an element; there it
 /// must keep the default `isActive` (ACT-1).
 ///
-/// An immutable value, usable on any thread. Designing happens when the stage is resolved or
-/// lowered: control or background context.
+/// An immutable value, usable on any thread; creating one allocates, to keep its edges in a list.
+/// Designing, which allocates, happens when the stage is resolved or lowered: control or background
+/// context.
 public struct BandStop: SequenceStage, IIRSystemElement, FIRSystemElement {
     let core: ResponseCore
     /// The stage's switch (§5.9). Usable on any thread.
@@ -678,9 +702,17 @@ public struct BandStop: SequenceStage, IIRSystemElement, FIRSystemElement {
     /// filters the roll-off is nominal: it selects the order whose all-pole counterpart has
     /// that slope. Usable on any thread.
     ///
-    /// - Parameter rounding: What to do with a slope that is not a whole number of orders:
-    ///   `.exact()` (the default) rejects it when the plan is compiled, `.nearest` rounds,
-    ///   `.up` takes the next order.
+    /// - Parameters:
+    ///   - family: `.butterworth`, `.chebyshev1(ripple:)`, `.chebyshev2(stopband:)`,
+    ///     `.elliptic(ripple:stopband:)`, `.bessel(normalization:)`, or a family of your own.
+    ///   - from: The lower edge of the band.
+    ///   - to: The upper edge of the band.
+    ///   - rollOff: The slope that sets the order of the prototype: 6.02 dB per octave for each
+    ///     order.
+    ///   - rounding: What to do with a slope that is not a whole number of orders:
+    ///     `.exact()` (the default) rejects it when the plan is compiled, `.nearest` rounds,
+    ///     `.up` takes the next order.
+    ///   - isActive: `true`, `false`, `.active`, `.bypassed`, or a SwiftUI `Binding<Bool>`.
     public init(
         _ family: some FilterFamily, from: Frequency, to: Frequency, rollOff: RollOff, rounding: RollOffRounding = .exact(),
         isActive: some ActivationSource = .active
@@ -767,11 +799,11 @@ public struct BandStop: SequenceStage, IIRSystemElement, FIRSystemElement {
     }
 
     /// The frequencies the stage states, each as its `animatableValue`, in the order of its
-    /// arguments (ANI-2). Usable on any thread.
+    /// arguments (ANI-2). Usable on any thread; it allocates the array it returns.
     public var parameters: [Double] { core.parameters }
 
-    /// The stage with its frequencies replaced. Passing its own values returns it unchanged.
-    /// Usable on any thread.
+    /// The stage with its frequencies replaced. Passing its own values returns it unchanged. Usable
+    /// on any thread; it allocates.
     public func replacingParameters(_ values: ArraySlice<Double>) -> BandStop {
         BandStop(core: core.replacingParameters(values), activation: activation)
     }

@@ -21,9 +21,13 @@ import Accelerate
 public enum Vector {
     /// The shipped crossovers, as constants an inlined caller folds (§7.4). `CrossoverTable.shipped`
     /// is built from the same numbers.
+    /// Usable on any thread; reading them does not allocate.
     public enum Crossover {
+        /// The length from which the element-wise primitives use vDSP.
         @inlinable public static var elementwise: Int { 512 }
+        /// The length from which the native reductions use the 8-lane loop.
         @inlinable public static var reductionSIMD: Int { 16 }
+        /// The length from which the reductions use vDSP.
         @inlinable public static var reductionAccelerate: Int { 64 }
     }
 
@@ -107,7 +111,10 @@ public enum Vector {
     // MARK: Native
 
     /// Plain Swift loops: the fastest way to do a small thing (E-26).
+    /// Like every primitive here, each function may be called on any thread, the analysis thread
+    /// included, and does not allocate or lock.
     public enum Native {
+        /// `result[i] = source[i] · factor`, in a plain loop.
         #if ZTRONDSP_PERF_ANNOTATIONS
         @_noAllocation @_noLocks
         #endif
@@ -120,6 +127,7 @@ public enum Vector {
             }
         }
 
+        /// `result[i] = a[i] + b[i]`, in a plain loop.
         #if ZTRONDSP_PERF_ANNOTATIONS
         @_noAllocation @_noLocks
         #endif
@@ -132,6 +140,7 @@ public enum Vector {
             }
         }
 
+        /// `result[i] = a[i] − b[i]`, in a plain loop.
         #if ZTRONDSP_PERF_ANNOTATIONS
         @_noAllocation @_noLocks
         #endif
@@ -144,6 +153,7 @@ public enum Vector {
             }
         }
 
+        /// `result[i] = a[i] · b[i]`, in a plain loop.
         #if ZTRONDSP_PERF_ANNOTATIONS
         @_noAllocation @_noLocks
         #endif
@@ -156,6 +166,7 @@ public enum Vector {
             }
         }
 
+        /// `result[i] = min(max(source[i], low), high)`, in a plain loop. A NaN stays a NaN.
         #if ZTRONDSP_PERF_ANNOTATIONS
         @_noAllocation @_noLocks
         #endif
@@ -170,6 +181,7 @@ public enum Vector {
             }
         }
 
+        /// `Σ source[i]`, added in index order. Zero for an empty vector.
         #if ZTRONDSP_PERF_ANNOTATIONS
         @_noAllocation @_noLocks
         #endif
@@ -184,6 +196,7 @@ public enum Vector {
             return total
         }
 
+        /// `Σ a[i] · b[i]`, added in index order. Zero for empty vectors.
         #if ZTRONDSP_PERF_ANNOTATIONS
         @_noAllocation @_noLocks
         #endif
@@ -198,6 +211,7 @@ public enum Vector {
             return total
         }
 
+        /// `(Σ source[i]²) / count`, by the plain dot product. Zero for an empty vector.
         #if ZTRONDSP_PERF_ANNOTATIONS
         @_noAllocation @_noLocks
         #endif
@@ -207,6 +221,8 @@ public enum Vector {
             return dot(source, source, count: count) / Float(count)
         }
 
+        /// The smallest element, in a plain loop. Zero for an empty vector. The input must hold no
+        /// NaN (NUM-1).
         #if ZTRONDSP_PERF_ANNOTATIONS
         @_noAllocation @_noLocks
         #endif
@@ -222,6 +238,8 @@ public enum Vector {
             return best
         }
 
+        /// The largest element, in a plain loop. Zero for an empty vector. The input must hold no
+        /// NaN (NUM-1).
         #if ZTRONDSP_PERF_ANNOTATIONS
         @_noAllocation @_noLocks
         #endif
@@ -243,6 +261,9 @@ public enum Vector {
         // in an unoptimised build the generic SIMD operations box their operands on the heap,
         // and the hot path must stay allocation-free in Debug as well (CR-002).
 
+        /// `Σ source[i]` in eight running sums, added pairwise at the end, then the tail. Zero
+        /// for an
+        /// empty vector.
         #if ZTRONDSP_PERF_ANNOTATIONS
         @_noAllocation @_noLocks
         #endif
@@ -270,6 +291,9 @@ public enum Vector {
             return total
         }
 
+        /// `Σ a[i] · b[i]` in eight running sums, added pairwise at the end, then the tail. Zero
+        /// for
+        /// empty vectors.
         #if ZTRONDSP_PERF_ANNOTATIONS
         @_noAllocation @_noLocks
         #endif
@@ -297,6 +321,7 @@ public enum Vector {
             return total
         }
 
+        /// `(Σ source[i]²) / count`, by the 8-lane dot product. Zero for an empty vector.
         #if ZTRONDSP_PERF_ANNOTATIONS
         @_noAllocation @_noLocks
         #endif
@@ -306,6 +331,9 @@ public enum Vector {
             return dotSIMD(source, source, count: count) / Float(count)
         }
 
+        /// The smallest element, in eight running minima; below eight elements, the plain loop.
+        /// Zero
+        /// for an empty vector. The input must hold no NaN (NUM-1).
         #if ZTRONDSP_PERF_ANNOTATIONS
         @_noAllocation @_noLocks
         #endif
@@ -340,6 +368,8 @@ public enum Vector {
             return result
         }
 
+        /// The largest element, in eight running maxima; below eight elements, the plain loop. Zero
+        /// for an empty vector. The input must hold no NaN (NUM-1).
         #if ZTRONDSP_PERF_ANNOTATIONS
         @_noAllocation @_noLocks
         #endif
@@ -378,7 +408,11 @@ public enum Vector {
     // MARK: Accelerate
 
     /// vDSP: the fastest way to do a large thing.
+    ///
+    /// Each function may be called on any thread, the analysis thread included, and does not
+    /// allocate; a count of zero or less returns before vDSP is called.
     public enum Accelerated {
+        /// `result[i] = source[i] · factor`, by `vDSP_vsmul`.
         @inlinable
         public static func scale(_ source: UnsafePointer<Float>, by factor: Float, into result: UnsafeMutablePointer<Float>, count: Int) {
             guard count > 0 else { return }
@@ -386,12 +420,14 @@ public enum Vector {
             vDSP_vsmul(source, 1, &factor, result, 1, vDSP_Length(count))
         }
 
+        /// `result[i] = a[i] + b[i]`, by `vDSP_vadd`.
         @inlinable
         public static func add(_ a: UnsafePointer<Float>, _ b: UnsafePointer<Float>, into result: UnsafeMutablePointer<Float>, count: Int) {
             guard count > 0 else { return }
             vDSP_vadd(a, 1, b, 1, result, 1, vDSP_Length(count))
         }
 
+        /// `result[i] = a[i] − b[i]`, by `vDSP_vsub`.
         @inlinable
         public static func subtract(_ a: UnsafePointer<Float>, _ b: UnsafePointer<Float>, into result: UnsafeMutablePointer<Float>, count: Int) {
             guard count > 0 else { return }
@@ -399,12 +435,14 @@ public enum Vector {
             vDSP_vsub(b, 1, a, 1, result, 1, vDSP_Length(count))
         }
 
+        /// `result[i] = a[i] · b[i]`, by `vDSP_vmul`.
         @inlinable
         public static func multiply(_ a: UnsafePointer<Float>, _ b: UnsafePointer<Float>, into result: UnsafeMutablePointer<Float>, count: Int) {
             guard count > 0 else { return }
             vDSP_vmul(a, 1, b, 1, result, 1, vDSP_Length(count))
         }
 
+        /// `result[i] = min(max(source[i], low), high)`, by `vDSP_vclip`. A NaN stays a NaN.
         @inlinable
         public static func clip(_ source: UnsafePointer<Float>, low: Float, high: Float, into result: UnsafeMutablePointer<Float>, count: Int) {
             guard count > 0 else { return }
@@ -412,6 +450,7 @@ public enum Vector {
             vDSP_vclip(source, 1, &low, &high, result, 1, vDSP_Length(count))
         }
 
+        /// `Σ source[i]`, by `vDSP_sve`. Zero for an empty vector.
         @inlinable
         public static func sum(_ source: UnsafePointer<Float>, count: Int) -> Float {
             guard count > 0 else { return 0 }
@@ -420,6 +459,7 @@ public enum Vector {
             return result
         }
 
+        /// `Σ a[i] · b[i]`, by `vDSP_dotpr`. Zero for empty vectors.
         @inlinable
         public static func dot(_ a: UnsafePointer<Float>, _ b: UnsafePointer<Float>, count: Int) -> Float {
             guard count > 0 else { return 0 }
@@ -428,6 +468,7 @@ public enum Vector {
             return result
         }
 
+        /// `(Σ source[i]²) / count`, by `vDSP_measqv`. Zero for an empty vector.
         @inlinable
         public static func meanSquare(_ source: UnsafePointer<Float>, count: Int) -> Float {
             guard count > 0 else { return 0 }
@@ -436,6 +477,8 @@ public enum Vector {
             return result
         }
 
+        /// The smallest element, by `vDSP_minv`. Zero for an empty vector. The input must hold no
+        /// NaN (NUM-1).
         @inlinable
         public static func minimum(_ source: UnsafePointer<Float>, count: Int) -> Float {
             guard count > 0 else { return 0 }
@@ -444,6 +487,8 @@ public enum Vector {
             return result
         }
 
+        /// The largest element, by `vDSP_maxv`. Zero for an empty vector. The input must hold no
+        /// NaN (NUM-1).
         @inlinable
         public static func maximum(_ source: UnsafePointer<Float>, count: Int) -> Float {
             guard count > 0 else { return 0 }
@@ -459,11 +504,17 @@ public enum Vector {
     /// when its plan is compiled, so that its hot path holds the chosen functions and makes
     /// no size test (SEL-3). Create it on the control context; call its members on the
     /// analysis thread. An immutable value.
+    /// Neither creating one nor calling its members allocates: the bound closures capture nothing.
     public struct Bound: Sendable {
+        /// The shape of ``scale``: source, factor, result, count.
         public typealias Scale = @Sendable (_ source: UnsafePointer<Float>, _ factor: Float, _ result: UnsafeMutablePointer<Float>, _ count: Int) -> Void
+        /// The shape of the element-wise operations on two vectors: `a`, `b`, result, count.
         public typealias Binary = @Sendable (_ a: UnsafePointer<Float>, _ b: UnsafePointer<Float>, _ result: UnsafeMutablePointer<Float>, _ count: Int) -> Void
+        /// The shape of ``clip``: source, low, high, result, count.
         public typealias Clip = @Sendable (_ source: UnsafePointer<Float>, _ low: Float, _ high: Float, _ result: UnsafeMutablePointer<Float>, _ count: Int) -> Void
+        /// The shape of a reduction of one vector: source, count.
         public typealias Reduction = @Sendable (_ source: UnsafePointer<Float>, _ count: Int) -> Float
+        /// The shape of ``dot``: `a`, `b`, count.
         public typealias BinaryReduction = @Sendable (_ a: UnsafePointer<Float>, _ b: UnsafePointer<Float>, _ count: Int) -> Float
 
         /// The length the binding was made for.
@@ -475,20 +526,31 @@ public enum Vector {
         /// Whether the native reductions use the 8-lane loop.
         public let reductionUsesSIMD: Bool
 
+        /// `result[i] = source[i] · factor`, in the bound implementation.
         public let scale: Scale
+        /// `result[i] = a[i] + b[i]`, in the bound implementation.
         public let add: Binary
+        /// `result[i] = a[i] − b[i]`, in the bound implementation.
         public let subtract: Binary
+        /// `result[i] = a[i] · b[i]`, in the bound implementation.
         public let multiply: Binary
+        /// `result[i] = min(max(source[i], low), high)`, in the bound implementation.
         public let clip: Clip
+        /// `Σ source[i]`, in the bound implementation.
         public let sum: Reduction
+        /// `Σ a[i] · b[i]`, in the bound implementation.
         public let dot: BinaryReduction
+        /// `(Σ source[i]²) / count`, in the bound implementation.
         public let meanSquare: Reduction
+        /// The smallest element, in the bound implementation. The input must hold no NaN (NUM-1).
         public let minimum: Reduction
+        /// The largest element, in the bound implementation. The input must hold no NaN (NUM-1).
         public let maximum: Reduction
 
         /// Binds the primitives for vectors of `count` elements.
         ///
         /// - Parameters:
+        ///   - count: the length the primitives are bound for.
         ///   - implementation: `.automatic` follows `crossovers`; `.native` and `.accelerate`
         ///     are honoured; `.metal` has no implementation here and is treated as automatic.
         ///   - crossovers: the table to follow; the engine passes its own.

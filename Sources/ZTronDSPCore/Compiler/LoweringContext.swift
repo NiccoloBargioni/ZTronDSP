@@ -8,6 +8,9 @@ import Foundation
 /// positional environment, errors that carry the stage's path, latency accounting, and
 /// fusion for stages that emit stock specs. The compiler applies the stage's activation and
 /// checks its place in the order; a stage does neither.
+///
+/// A stage uses it inside `lower(_:)` only, on the control context; emitting a spec may
+/// allocate.
 public struct LoweringContext {
     private let position: IRPosition
     private var emitted: [KernelSpec] = []

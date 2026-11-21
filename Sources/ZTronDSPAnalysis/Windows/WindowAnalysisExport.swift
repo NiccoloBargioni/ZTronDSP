@@ -6,7 +6,8 @@ extension WindowAnalysis: MATLABExportable {
     /// the main lobe and the highest side lobe. Core MATLAB only, so it also runs in GNU
     /// Octave; equal analyses give equal text (MAT-2, MAT-4).
     ///
-    /// The work runs on the background executor (BG-1, MAT-6) and can be cancelled.
+    /// The call may be made from any context; the work runs on the background executor (BG-1,
+    /// MAT-6) and can be cancelled. It allocates, in the background.
     public func matlabScript() async throws(DSPError) -> String {
         let analysis = self
         return try await BackgroundWork.run { checkpoint throws(DSPError) in

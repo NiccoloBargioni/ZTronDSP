@@ -3,7 +3,8 @@ import ZTronDSPCore
 
 /// How the triangles of a mel filter bank are scaled (§6.11). A strategy (§5.3): pass
 /// `.slaney` or `.none`, or a conformer of your own. Conformers are immutable values, usable
-/// on any thread.
+/// on any thread; the stock ones do not allocate. `gain` is called where a bank is built,
+/// once per band.
 public protocol MelNormalization: Hashable, Sendable {
     /// The factor the triangle of one band is multiplied by, given the band's edges and its
     /// centre in hertz.
@@ -12,9 +13,13 @@ public protocol MelNormalization: Hashable, Sendable {
 
 /// Slaney's normalisation: each triangle is scaled by `2 / (upper edge − lower edge)`, which
 /// gives the continuous triangle unit area, so wide bands do not outweigh narrow ones.
+///
+/// An immutable value, usable on any thread; it does not allocate.
 public struct SlaneyMelNormalization: MelNormalization {
+    /// Slaney's normalisation; there is nothing to set.
     public init() {}
 
+    /// `2 / (upperEdge − lowerEdge)`.
     @inlinable
     public func gain(lowerEdge: Double, center: Double, upperEdge: Double) -> Double {
         2 / (upperEdge - lowerEdge)
@@ -22,20 +27,24 @@ public struct SlaneyMelNormalization: MelNormalization {
 }
 
 /// No normalisation: the peak of every triangle is 1.
+///
+/// An immutable value, usable on any thread; it does not allocate.
 public struct UnitPeakMelNormalization: MelNormalization {
+    /// The normalisation that leaves every peak at 1.
     public init() {}
 
+    /// 1, whatever the band.
     @inlinable
     public func gain(lowerEdge: Double, center: Double, upperEdge: Double) -> Double { 1 }
 }
 
 extension MelNormalization where Self == SlaneyMelNormalization {
-    /// Unit area per band, the default.
+    /// Unit area per band, the default. Usable on any thread; it does not allocate.
     public static var slaney: SlaneyMelNormalization { SlaneyMelNormalization() }
 }
 
 extension MelNormalization where Self == UnitPeakMelNormalization {
-    /// Unit peak per band.
+    /// Unit peak per band. Usable on any thread; it does not allocate.
     public static var none: UnitPeakMelNormalization { UnitPeakMelNormalization() }
 }
 
@@ -51,8 +60,12 @@ extension MelNormalization where Self == UnitPeakMelNormalization {
 /// usable on any thread; creating it allocates.
 public struct MelFilterBank: Hashable, Sendable {
     /// The weights of one band: bins `firstBin ..< firstBin + weights.count`.
+    ///
+    /// An immutable value, usable on any thread; it does not allocate.
     public struct Band: Hashable, Sendable {
+        /// The first bin with a weight.
         public let firstBin: Int
+        /// The weights that are not zero, from `firstBin` on.
         public let weights: [Float]
     }
 
@@ -62,6 +75,7 @@ public struct MelFilterBank: Hashable, Sendable {
     public let binWidth: Double
     /// The `bands + 2` edges, in hertz.
     public let edges: [Double]
+    /// The bands, lowest first.
     public let bands: [Band]
 
     /// - Parameters:
@@ -69,6 +83,8 @@ public struct MelFilterBank: Hashable, Sendable {
     ///   - binCount: bins of the spectrum, from 0 Hz to `nyquist`: at least 2.
     ///   - nyquist: the frequency of the last bin, in hertz.
     ///   - range: the band the edges span, in hertz; `nil` for 0 Hz to `nyquist`.
+    ///   - formula: the mel scale the edges are spaced on; `.slaney` by default.
+    ///   - normalization: how each triangle is scaled; `.slaney`, unit area, by default.
     /// - Throws: `DSPError.invalidParameter` for counts that hold nothing and for a range that
     ///   is empty or leaves 0 Hz … `nyquist`. A band that covers no bin is not an error here:
     ///   see ``firstEmptyBand``.
@@ -131,14 +147,16 @@ public struct MelFilterBank: Hashable, Sendable {
     /// How many bands.
     public var bandCount: Int { bands.count }
 
-    /// The centre of each band, in hertz: what the rows of a mel spectrum are (VC-5).
+    /// The centre of each band, in hertz: what the rows of a mel spectrum are (VC-5). It allocates
+    /// the array it returns.
     public var centers: [Double] { Array(edges.dropFirst().dropLast()) }
 
     /// The first band that has no bin with a weight, when there is one (O-18). Such a band
     /// would always read zero: the frame is too short for it.
     public var firstEmptyBand: Int? { bands.firstIndex { $0.weights.isEmpty } }
 
-    /// The weights as a dense matrix, band after band: `bandCount · binCount` values.
+    /// The weights as a dense matrix, band after band: `bandCount · binCount` values. It allocates
+    /// the array it returns.
     public func denseWeights() -> [Float] {
         var result = [Float](repeating: 0, count: bands.count * binCount)
         for (index, band) in bands.enumerated() {

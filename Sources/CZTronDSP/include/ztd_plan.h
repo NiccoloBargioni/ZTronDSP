@@ -19,6 +19,7 @@ extern "C" {
    commanded and reset on the analysis thread. One thread at a time.
    --------------------------------------------------------------------------------------------- */
 
+/* A plan: opaque, owned by whoever created it, destroyed with ztd_plan_destroy. */
 typedef struct ztd_plan ztd_plan_t;
 
 /* The state of a stage's activation switch (§5.9). */
@@ -73,6 +74,8 @@ bool ztd_plan_set_switch_preroll(ztd_plan_t *plan, uint32_t index, uint32_t fram
    destroyed exactly once, by `to` (WP-224, SWAP-1). The switch, if any, stays with its plan. */
 bool ztd_plan_transfer(ztd_plan_t *from, uint32_t from_index, ztd_plan_t *to, uint32_t to_index);
 
+/* The number of kernels, the channel count and the largest block (in frames) the plan was built
+   for. Any thread that owns the plan at that moment; none allocates. */
 uint32_t ztd_plan_count(const ztd_plan_t *plan) ZTD_NONBLOCKING;
 uint32_t ztd_plan_channels(const ztd_plan_t *plan) ZTD_NONBLOCKING;
 uint32_t ztd_plan_maximum_frames(const ztd_plan_t *plan) ZTD_NONBLOCKING;

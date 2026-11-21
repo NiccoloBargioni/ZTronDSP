@@ -4,8 +4,11 @@ import Foundation
 /// it against the environment's sample rate when the plan is compiled (ENV-2), so
 /// `.fractionOfNyquist(0.5)` means a different number of hertz at 44.1 kHz and at 48 kHz.
 ///
-/// Construction never fails; a value that makes no sense (negative, not finite) is reported
-/// as a typed error when the frequency is resolved. An immutable value, usable on any thread.
+/// Construction never fails; a value that makes no sense (negative, not finite) is reported as a
+/// typed error when the frequency is resolved. An immutable value, usable on any thread. Creating
+/// one does not allocate, except a mel frequency, which boxes its formula and may allocate;
+/// resolving one allocates only the error it throws, and the box of a mel formula larger than three
+/// words.
 public struct Frequency: Hashable, Sendable, CustomStringConvertible {
     @usableFromInline
     enum Unit: Hashable, Sendable {
@@ -123,7 +126,8 @@ public struct Frequency: Hashable, Sendable, CustomStringConvertible {
         return 69 + 12 * log2(hertz / 440)
     }
 
-    /// The frequency on the mel scale at `sampleRate`.
+    /// The frequency on the mel scale at `sampleRate`. For a mel value it boxes `formula` to
+    /// compare it with its own, which allocates for a formula larger than three words.
     public func mel(sampleRate: Double, formula: some MelFormula = .slaney) throws(DSPError) -> Double {
         if case .mel(let own) = unit, own == AnyStrategy(formula), value.isFinite, value >= 0 { return value }
         return formula.mel(fromHertz: try hertz(sampleRate: sampleRate))
@@ -166,6 +170,8 @@ public struct Frequency: Hashable, Sendable, CustomStringConvertible {
 
     @usableFromInline static let smallestAnimatableValue = 1e-9
 
+    /// The frequency as it was stated: `440.0 Hz`, `0.5 of Nyquist`, `MIDI note 69.0`. It allocates
+    /// the text it returns.
     public var description: String {
         switch unit {
         case .hertz: "\(value) Hz"

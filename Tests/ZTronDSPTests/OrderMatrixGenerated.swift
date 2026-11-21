@@ -83,6 +83,11 @@ enum OrderMatrix {
         ("Tempogram", descriptions(Tempogram())),
         ("HarmonicPercussive", descriptions(HarmonicPercussive(select: .harmonic))),
         ("HPSS", descriptions(HPSS(select: .harmonic))),
+        ("Emit", descriptions(Emit(to: HeatmapFeed()))),
+        ("Emit: to a waveform feed", descriptions(Emit(to: WaveformFeed()))),
+        ("Emit: to a scalar binding", descriptions(Emit(to: Binding<Float>.constant(0)))),
+        ("Emit: to a vector binding", descriptions(Emit(to: Binding<[Float]>.constant([])))),
+        ("Emit: to a feature stream", descriptions(Emit(to: FeatureStream<Chroma>()))),
     ]
 
     /// One line per stage, one character per domain: "1" where the stage compiles after it.
@@ -139,10 +144,16 @@ enum OrderMatrix {
         "010000000000000000000",  // Tempogram
         "000110001000100000000",  // HarmonicPercussive
         "100000000000000000000",  // HPSS
+        "000011101110111111110",  // Emit
+        "000000000000000000001",  // Emit: to a waveform feed
+        "011000000000000000000",  // Emit: to a scalar binding
+        "000011101110111111110",  // Emit: to a vector binding
+        "000000000000000001000",  // Emit: to a feature stream
     ]
 
     // What a stage contributes to a pipeline's description, whichever kind of stage it is.
     private static func descriptions(_ stage: some PipelineStage) -> [StageDescription] { stage.stageDescriptions }
     private static func descriptions(_ stage: some SequenceStage) -> [StageDescription] { stage.stageDescriptions }
     private static func descriptions(_ stage: some ContextDependentStep) -> [StageDescription] { [stage.stageDescription] }
+    private static func descriptions<Target>(_ stage: Emit<Target>) -> [StageDescription] { [stage.stageDescription] }
 }

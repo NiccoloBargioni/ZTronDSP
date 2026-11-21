@@ -45,6 +45,8 @@ typedef struct ztd_command {
     uint64_t sequence;    /* set by the queue; commands are applied in sequence order */
 } ztd_command_t;
 
+/* One stage of a signal chain as the plan runner calls it: its functions and its state. A value
+   copied into a plan when the plan is built; see "Threading" above for which function runs where. */
 typedef struct ztd_kernel {
     /* Processes `frames` frames of `channels` channels from `in` to `out` and returns the number
        of frames written. A kernel that keeps the rate returns `frames`; a rate changer returns

@@ -11,7 +11,7 @@
 /// }
 /// ```
 ///
-/// Control context: the functions are pure and allocate only the error they throw.
+/// Control context: the functions are pure; each allocates only the error it throws.
 public enum StageValidation {
     /// A frequency in hertz that lies strictly between 0 Hz and the Nyquist frequency at the
     /// stage's position (O-16, ENV-2). A filter edge at or beyond either end would not be the
@@ -19,9 +19,14 @@ public enum StageValidation {
     /// one.
     ///
     /// - Parameters:
+    ///   - frequency: the value to check, in the unit it was stated in.
+    ///   - parameter: the parameter's name, as the error states it.
+    ///   - context: the context of the stage being lowered, for the sample rate at its
+    ///     position and for its path.
     ///   - allowingZero: accept 0 Hz, for a parameter where it means something (the lower
     ///     end of a range).
     ///   - allowingNyquist: accept the Nyquist frequency itself (the upper end of a range).
+    /// - Returns: the frequency in hertz.
     public static func frequency(
         _ frequency: Frequency, named parameter: String, in context: LoweringContext, allowingZero: Bool = false,
         allowingNyquist: Bool = false

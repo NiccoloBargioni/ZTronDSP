@@ -75,7 +75,7 @@ extension SecondOrderSections {
 
     /// The precision the cascade should run in (REAL-3): `.double` when
     /// ``singleVersusDoubleDeviation()`` exceeds −100 dB, `.single` otherwise. Control or
-    /// background context.
+    /// background context. It allocates: it creates two kernels and runs them.
     public func recommendedPrecision() throws(DSPError) -> BiquadPrecision {
         try recommendedPrecision(accelerated: true, channelCount: 1, blockFrames: 512)
     }
@@ -86,8 +86,8 @@ extension SecondOrderSections {
     /// figures when the environment asks for `.automatic`, so a filter written outside the
     /// package that passes them picks the precision its stock twin picks (EXT-1).
     ///
-    /// Creates two kernels and runs them: control or background context, which is where a
-    /// stage's `lower(_:)` runs.
+    /// Creates two kernels and runs them: control or background context, which is where a stage's
+    /// `lower(_:)` runs. It allocates.
     ///
     /// - Parameters:
     ///   - accelerated: whether a plan runs a single-precision cascade on Accelerate at that

@@ -3,9 +3,11 @@
 ///
 /// A snapshot is consistent: every column in it is one the writer finished, in order, even
 /// when it was taken while the feed was being written. An immutable value, usable on any
-/// thread.
+/// thread. Taking or making one allocates its arrays.
 public struct FeedSnapshot: Sendable, Hashable {
     /// What kind of feed the snapshot was taken from.
+    ///
+    /// A value, usable on any thread; it does not allocate.
     public enum Content: Sendable, Hashable {
         /// A `HeatmapFeed`: columns of `rowCount` values.
         case heatmap
@@ -47,8 +49,8 @@ public struct FeedSnapshot: Sendable, Hashable {
         return values[(index * rowCount) ..< ((index + 1) * rowCount)]
     }
 
-    /// The values of one row across all columns, oldest first. Empty for a row that does not
-    /// exist.
+    /// The values of one row across all columns, oldest first. Empty for a row that does not exist.
+    /// It allocates the row it returns.
     public func row(_ index: Int) -> [Float] {
         guard index >= 0, index < rowCount else { return [] }
         return stride(from: index, to: values.count, by: rowCount).map { values[$0] }
@@ -75,9 +77,12 @@ public struct FeedSnapshot: Sendable, Hashable {
 /// minimum is the smaller of their minima, its maximum the larger of their maxima; a last
 /// pair without a partner is carried up alone.
 ///
-/// An immutable value, usable on any thread. Building it is linear in the number of pairs.
+/// An immutable value, usable on any thread. Building it is linear in the number of pairs and
+/// allocates its levels.
 public struct EnvelopePyramid: Sendable, Hashable {
     /// One level of the pyramid.
+    ///
+    /// An immutable value, usable on any thread; reading it does not allocate.
     public struct Level: Sendable, Hashable {
         /// The smallest sample under each pair.
         public let minima: [Float]

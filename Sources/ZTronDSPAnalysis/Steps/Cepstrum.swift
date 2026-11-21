@@ -2,6 +2,8 @@ import Foundation
 import ZTronDSPCore
 
 /// Which cepstrum `Cepstrum` computes (§6.6).
+///
+/// A value, usable on any thread; it does not allocate.
 public enum CepstrumKind: Hashable, Sendable {
     /// `IDFT(ln |X|)`: the real cepstrum.
     case real
@@ -85,17 +87,24 @@ enum CepstrumLayout: Hashable, Sendable {
 ///
 /// It follows the complex linear-frequency spectrum of an `STFT`. Downstream the axis is
 /// quefrency. Switched off, it suspends the rest of its branch (ACT-3). An immutable value,
-/// usable on any thread.
+/// usable on any thread; `lower(_:)` runs on the control context and may allocate.
 public struct Cepstrum: PipelineStage {
+    /// The complex linear-frequency spectrum of an `STFT`.
     public typealias Input = Spectrum<LinearFrequency, ComplexValues>
+    /// One value per quefrency, and two more after a complex cepstrum.
     public typealias Output = Quefrency
 
+    /// Which cepstrum: the real, the power or the complex one.
     public let kind: CepstrumKind
     /// What the argument of a logarithm is raised to: `|X|` for `.real` and `.complex`,
     /// `|X|²` for `.power`.
     public let floor: Double
+    /// The step's switch: off, it suspends the rest of its branch (ACT-3).
     public let activation: StageActivation
 
+    /// The cepstrum of `kind`, with the argument of every logarithm raised to `floor` first.
+    /// Nothing is checked here: `lower(_:)` requires a positive, finite floor when the plan is
+    /// compiled.
     public init(_ kind: CepstrumKind = .real, floor: Double = 1e-10, isActive: some ActivationSource = .active) {
         self.kind = kind
         self.floor = floor
@@ -117,6 +126,8 @@ public struct Cepstrum: PipelineStage {
         return try StageValidation.transformLength(2 * (bins - 1), named: "transform length", in: context)
     }
 
+    /// Checks the transform length of the spectra at the step's position and the floor, and
+    /// emits the node. Control context; may allocate.
     public func lower(_ context: inout LoweringContext) throws(DSPError) {
         let length = try Cepstrum.transformLength(in: context, stage: "Cepstrum")
         guard floor > 0, floor.isFinite else { throw context.invalid("floor", "the floor of a logarithm is positive and finite, not \(floor)") }
@@ -139,17 +150,24 @@ public struct Cepstrum: PipelineStage {
 /// floor of the cepstrum come back at the floor; the inversion report counts them.
 ///
 /// Downstream the axis is linear frequency again, so an `InverseSTFT` can follow. Switched
-/// off, it suspends the rest of its branch (ACT-3). An immutable value, usable on any thread.
+/// off, it suspends the rest of its branch (ACT-3). An immutable value, usable on any thread;
+/// `lower(_:)` runs on the control context and may allocate.
 public struct InverseCepstrum: PipelineStage {
+    /// A complex cepstrum, with the two values that follow it.
     public typealias Input = Quefrency
+    /// The complex linear-frequency spectrum the cepstrum came from.
     public typealias Output = Spectrum<LinearFrequency, ComplexValues>
 
+    /// The step's switch: off, it suspends the rest of its branch (ACT-3).
     public let activation: StageActivation
 
+    /// The inverse of `Cepstrum(.complex)`; there is nothing to set but the switch.
     public init(isActive: some ActivationSource = .active) {
         self.activation = isActive.stageActivation
     }
 
+    /// Checks that the frames at the step's position hold a complex cepstrum, and throws after
+    /// a real or a power one, then emits the node. Control context; may allocate.
     public func lower(_ context: inout LoweringContext) throws(DSPError) {
         guard case .quefrency(let count, let rate)? = context.environment.frequencyAxis, rate > 0 else {
             throw DSPError.unsupportedConfiguration(reason: "InverseCepstrum needs a cepstrum: there is no quefrency axis at this position", stage: context.path)
@@ -177,12 +195,16 @@ public struct InverseCepstrum: PipelineStage {
 /// A quefrency is taken without its sign, so the negative quefrencies of a complex cepstrum
 /// are treated as the positive ones. `.lowTime` and `.highTime` with one cutoff split a
 /// cepstrum in two parts that add up to it. Switched off, the cepstrum passes unchanged
-/// (ACT-3). An immutable value, usable on any thread.
+/// (ACT-3). An immutable value, usable on any thread; `lower(_:)` runs on the control context and
+/// may allocate.
 public struct Lifter: PipelineStage {
+    /// A cepstrum, of any of the three kinds.
     public typealias Input = Quefrency
+    /// The same cepstrum, weighted.
     public typealias Output = Quefrency
 
     /// The shape of the window over quefrency.
+    /// A value, usable on any thread; it does not allocate.
     public enum Shape: Hashable, Sendable {
         /// Keeps the quefrencies below the cutoff, in seconds: the spectral envelope.
         case lowTime(TimeInterval)
@@ -193,14 +215,20 @@ public struct Lifter: PipelineStage {
         case sinusoidal(Int)
     }
 
+    /// The window over quefrency.
     public let shape: Shape
+    /// The stage's switch: off, the cepstrum passes unchanged (ACT-3).
     public let activation: StageActivation
 
+    /// A lifter of `shape`. Nothing is checked here: `lower(_:)` requires a finite cutoff that is
+    /// not negative, or a sinusoidal length of at least 1, when the plan is compiled.
     public init(_ shape: Shape, isActive: some ActivationSource = .active) {
         self.shape = shape
         self.activation = isActive.stageActivation
     }
 
+    /// Checks the shape, weighs every value of the frames at the step's position (a value that is
+    /// not a quefrency keeps a weight of 1) and emits the node. Control context; allocates.
     public func lower(_ context: inout LoweringContext) throws(DSPError) {
         guard case .quefrency(let count, let rate)? = context.environment.frequencyAxis, count >= 1, rate > 0 else {
             throw DSPError.unsupportedConfiguration(reason: "Lifter needs a cepstrum: there is no quefrency axis at this position", stage: context.path)
@@ -249,19 +277,28 @@ public struct Lifter: PipelineStage {
 /// the error names the transform length that would. The transforming spelling starts a scalar
 /// track at the feature rate; the measuring one equals `Tap { CepstralPitch(…); Emit(to:) }`.
 /// Switched off, the transforming spelling suspends the rest of its branch; the measuring one
-/// stops measuring (ACT-3). An immutable value, usable on any thread.
+/// stops measuring (ACT-3). An immutable value, usable on any thread; `lower(_:)` runs on the
+/// control context and may allocate.
 public struct CepstralPitch<Output: SignalDomain>: PipelineStage {
+    /// A cepstrum, of any of the three kinds.
     public typealias Input = Quefrency
 
     /// The pitches looked for.
     public let range: FrequencyRange
+    /// The step's switch: off, the transforming spelling suspends the rest of its branch and the
+    /// measuring one stops measuring (ACT-3).
     public let activation: StageActivation
     let measuring: StageDescription?
 
+    /// The step itself, from quefrency to a scalar track; for the measuring spelling, the tap that
+    /// measures (OUT-1).
     public var stageDescriptions: [StageDescription] {
         [measuring ?? StageDescription(self, rule: .fixed(.quefrency, .scalar))]
     }
 
+    /// Checks the range against the cepstrum at the step's position (above 0 Hz, at most the
+    /// Nyquist frequency, a longest period the frame reaches) and emits the node. The measuring
+    /// spelling is lowered as its tap: called on it, this throws. Control context; may allocate.
     public func lower(_ context: inout LoweringContext) throws(DSPError) {
         guard measuring == nil else { throw context.structuralStage() }
         let environment = context.environment
@@ -301,8 +338,8 @@ struct CepstralPitchKey: Hashable, Sendable {
 }
 
 extension CepstralPitch where Output == Scalar {
-    /// The transforming spelling: the chain goes on with the pitch in hertz, one value per
-    /// frame.
+    /// The transforming spelling: the chain goes on with the pitch in hertz, one value per frame.
+    /// Usable on any thread; it does not allocate.
     public init(range: FrequencyRange = .hertz(50 ... 500), isActive: some ActivationSource = .active) {
         self.range = range
         self.activation = isActive.stageActivation
@@ -312,8 +349,8 @@ extension CepstralPitch where Output == Scalar {
 
 extension CepstralPitch where Output == Quefrency {
     /// The measuring spelling (OUT-1): the pitch goes to `binding`, a `Binding<Float>` or a
-    /// `Binding<ScalarFrame>`, on the main thread and at the result rate; the cepstrum passes
-    /// on unchanged.
+    /// `Binding<ScalarFrame>`, on the main thread and at the result rate; the cepstrum passes on
+    /// unchanged. Usable on any thread; it allocates the description of its measuring branch.
     public init(range: FrequencyRange = .hertz(50 ... 500), to binding: some ScalarResultTarget, isActive: some ActivationSource = .active) {
         self.range = range
         self.activation = isActive.stageActivation
@@ -323,6 +360,7 @@ extension CepstralPitch where Output == Quefrency {
 
 extension Pipeline where Output == Spectrum<LinearFrequency, ComplexValues> {
     /// The cepstrum of each spectrum: see ``Cepstrum``.
+    /// Usable on any thread; allocates the pipeline it returns.
     public func cepstrum(_ kind: CepstrumKind = .real, floor: Double = 1e-10, isActive: some ActivationSource = .active) -> Pipeline<Input, Quefrency> {
         appending(Cepstrum(kind, floor: floor, isActive: isActive))
     }
@@ -330,22 +368,26 @@ extension Pipeline where Output == Spectrum<LinearFrequency, ComplexValues> {
 
 extension Pipeline where Output == Quefrency {
     /// The complex cepstrum back to its spectrum: see ``InverseCepstrum``.
+    /// Usable on any thread; allocates the pipeline it returns.
     public func inverseCepstrum(isActive: some ActivationSource = .active) -> Pipeline<Input, Spectrum<LinearFrequency, ComplexValues>> {
         appending(InverseCepstrum(isActive: isActive))
     }
 
     /// A window over quefrency: see ``Lifter``.
+    /// Usable on any thread; allocates the pipeline it returns.
     public func lifter(_ shape: Lifter.Shape, isActive: some ActivationSource = .active) -> Pipeline<Input, Quefrency> {
         appending(Lifter(shape, isActive: isActive))
     }
 
     /// The pitch read from the cepstrum, as a scalar track: see ``CepstralPitch``.
+    /// Usable on any thread; allocates the pipeline it returns.
     public func cepstralPitch(range: FrequencyRange = .hertz(50 ... 500), isActive: some ActivationSource = .active) -> Pipeline<Input, Scalar> {
         appending(CepstralPitch<Scalar>(range: range, isActive: isActive))
     }
 
     /// The pitch read from the cepstrum, delivered to a binding; the cepstrum passes on: see
     /// ``CepstralPitch``.
+    /// Usable on any thread; allocates the pipeline it returns.
     public func cepstralPitch(
         range: FrequencyRange = .hertz(50 ... 500), to binding: some ScalarResultTarget, isActive: some ActivationSource = .active
     ) -> Pipeline<Input, Quefrency> {

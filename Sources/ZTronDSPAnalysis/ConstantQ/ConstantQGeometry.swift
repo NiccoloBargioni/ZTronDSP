@@ -21,9 +21,9 @@ import ZTronDSPCore
 /// atoms of the low bins are shorter than constant-Q asks, which is what shortens the delay
 /// of a transform that runs in real time.
 ///
-/// A geometry is what the steps of §6.8 compute from their arguments and the sample rate at
-/// their position; it is a table, not something a step is given. An immutable value, usable
-/// on any thread; creating one allocates nothing.
+/// A geometry is what the steps of §6.8 compute from their arguments and the sample rate at their
+/// position; it is a table, not something a step is given. An immutable value, usable on any
+/// thread; creating one allocates only the error it throws.
 public struct ConstantQGeometry: Hashable, Sendable {
     /// Samples per second of the signal the atoms are laid on.
     public let sampleRate: Double
@@ -47,6 +47,7 @@ public struct ConstantQGeometry: Hashable, Sendable {
     ///   - tuning: −1 … 1 bins.
     ///   - filterScale: above 0.
     ///   - gamma: 0 Hz or more.
+    ///   - sampleRate: the rate the bins are laid out at: positive and finite.
     /// - Throws: `DSPError.invalidParameter` for a value outside these ranges, and for bins
     ///   that reach the Nyquist frequency: the reason names how many octaves fit.
     public init(
@@ -121,7 +122,7 @@ public struct ConstantQGeometry: Hashable, Sendable {
         return minimumFrequency * pow(2, Double(octave)) * pow(2, (Double(position) + tuning) / Double(binsPerOctave))
     }
 
-    /// The centre of every bin, lowest first.
+    /// The centre of every bin, lowest first. It allocates the array it returns.
     public var frequencies: [Double] { (0 ..< binCount).map { frequency(ofBin: $0) } }
 
     /// The length of the atom of bin `bin` in samples at `sampleRate`:
@@ -130,7 +131,8 @@ public struct ConstantQGeometry: Hashable, Sendable {
         ConstantQGeometry.length(q * sampleRate / (frequency(ofBin: bin) + gamma / alpha))
     }
 
-    /// The atom length of every bin, lowest bin, and so longest atom, first.
+    /// The atom length of every bin, lowest bin, and so longest atom, first. It allocates the array
+    /// it returns.
     public var atomLengths: [Int] { (0 ..< binCount).map { atomLength(ofBin: $0) } }
 
     /// The axis of a spectrum with these bins: what a feed and the environment carry

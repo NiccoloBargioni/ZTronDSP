@@ -4,7 +4,8 @@ import ZTronDSPCore
 /// One condition under which an inverse recovers what its stage was given (INV-2): the
 /// theorem behind it, whether it holds, and by how much.
 ///
-/// An immutable value, usable on any thread.
+/// An immutable value, usable on any thread; creating one does not allocate: it keeps the
+/// strings it is given.
 public struct InversionCondition: Hashable, Sendable {
     /// What the condition is called: "non-zero overlap-add", "sampling theorem".
     public let name: String
@@ -28,6 +29,8 @@ public struct InversionCondition: Hashable, Sendable {
     /// that fails.
     public let predictedError: Double
 
+    /// A condition as an operation states it: necessary unless told otherwise, and accounting
+    /// for no error unless told otherwise.
     public init(
         name: String, theorem: String, quantity: String, observed: Double, holds: Bool, margin: Double, isNecessary: Bool = true,
         predictedError: Double = 0
@@ -46,9 +49,11 @@ public struct InversionCondition: Hashable, Sendable {
 /// What entered a stage and what came back from its inverse, value for value: the raw
 /// material of a measured error (INV-2).
 ///
-/// An immutable value, usable on any thread.
+/// An immutable value, usable on any thread; creating one allocates the arrays it keeps.
 public struct InversionRoundTrip: Hashable, Sendable {
+    /// What entered the stage.
     public let original: [Float]
+    /// What came back from the inverse, value for value with `original`.
     public let reconstruction: [Float]
     /// Values per frame, when the stage works on frames: an error is then held against the
     /// largest value of its own frame (§6.1). 1 for samples.
@@ -65,7 +70,7 @@ public struct InversionRoundTrip: Hashable, Sendable {
 
 /// The error of a round trip, measured (INV-2).
 ///
-/// An immutable value, usable on any thread.
+/// An immutable value, usable on any thread; it does not allocate.
 public struct InversionMeasurement: Hashable, Sendable {
     /// `10·log₁₀(Σ original² / Σ error²)`, in decibels. Infinite for a round trip that is exact
     /// bit for bit; 0 when there was nothing to compare.
@@ -79,6 +84,7 @@ public struct InversionMeasurement: Hashable, Sendable {
     /// Values compared.
     public let count: Int
 
+    /// A measurement from its figures, as they were measured elsewhere.
     public init(signalToNoiseRatio: Double, largestError: Double, relativeError: Double, count: Int) {
         self.signalToNoiseRatio = signalToNoiseRatio
         self.largestError = largestError
@@ -128,13 +134,15 @@ public struct InversionMeasurement: Hashable, Sendable {
 /// report.measuredError             // SNR and largest error of a real round trip
 /// ```
 ///
-/// A failed condition is reported, not thrown (INV-3). A report is an immutable value,
-/// computed in the background, and exports as a MATLAB script (INV-4).
+/// A failed condition is reported, not thrown (INV-3). A report is an immutable value, usable
+/// on any thread; it is computed in the background, which allocates, and exports as a MATLAB
+/// script (INV-4).
 public struct InversionReport: Hashable, Sendable {
     /// The operation.
     public let stage: String
     /// The operation that undoes it.
     public let inverse: String
+    /// The conditions, each with its theorem, its verdict and its margin.
     public let conditions: [InversionCondition]
     /// The relative error the conditions predict: the sum of what each accounts for. It can
     /// exceed 1: an inverse that returns a floor where the signal lay below it, or the image
@@ -169,15 +177,19 @@ public struct InversionReport: Hashable, Sendable {
 /// The signal an inversion report is asked for, and the means to send it through stages
 /// (INV-2): what `InvertibleStage` implementations are handed.
 ///
-/// Everything here allocates and compiles plans: it belongs to background work.
+/// Everything here allocates and compiles plans: it belongs in the background (BG-1), where a
+/// report is computed, never on the main thread or the analysis thread.
 public struct InversionContext: Sendable {
     /// The samples the report is asked for; `nil` when only the conditions are wanted.
     public let samples: [Float]?
+    /// Values per second of `samples`.
     public let sampleRate: Double
     /// The stages between the samples and the stage under report.
     public let upstream: [StageDescription]
     let checkpoint: BackgroundWork.Checkpoint?
 
+    /// A context for `samples` at `sampleRate`, sent through `upstream` first. Made this way it
+    /// is never cancelled.
     public init(samples: [Float]?, sampleRate: Double, upstream: [StageDescription] = []) {
         self.init(samples: samples, sampleRate: sampleRate, upstream: upstream, checkpoint: nil)
     }
@@ -240,7 +252,7 @@ public struct InversionContext: Sendable {
 /// let report = try await MyTransform(size: 64).inversionReport(for: samples, sampleRate: 48_000)
 /// ```
 ///
-/// Both requirements run in background work (BG-1): they may allocate and compile plans, and
+/// Both requirements run in the background (BG-1): they may allocate and compile plans, and
 /// should call `context.check()` between their steps.
 public protocol InvertibleStage: StageValue {
     /// The stage that undoes this one.
@@ -261,19 +273,22 @@ public protocol InvertibleStage: StageValue {
 extension InvertibleStage {
     /// The inversion report of the stage on `samples` (§6.13).
     ///
-    /// The work runs on the background executor (BG-1): the call may be made from any context,
-    /// the main actor included, and can be cancelled (BG-3). A condition that fails is part of
-    /// the report, not an error (INV-3).
+    /// The work runs on the background executor (BG-1): the call may be made from any context, the
+    /// main actor included, and can be cancelled (BG-3). A condition that fails is part of the
+    /// report, not an error (INV-3). It allocates, in the background.
     ///
-    /// - Parameter samples: the signal a condition about the signal is evaluated on, and the
-    ///   round trip measured on. Without one the report holds the conditions that do not
-    ///   depend on a signal and no measured error.
+    /// - Parameters:
+    ///   - samples: the signal a condition about the signal is evaluated on, and the round
+    ///     trip measured on. Without one the report holds the conditions that do not depend
+    ///     on a signal and no measured error.
+    ///   - sampleRate: values per second of `samples`: positive and finite.
     public func inversionReport(for samples: [Float]? = nil, sampleRate: Double = 48_000) async throws(DSPError) -> InversionReport {
         try await report(samples: samples, sampleRate: sampleRate, upstream: [])
     }
 
-    /// The inversion report of the stage where it follows `upstream`: the samples are sent
-    /// through `upstream` first, and the stage is examined on what arrives.
+    /// The inversion report of the stage where it follows `upstream`: the samples are sent through
+    /// `upstream` first, and the stage is examined on what arrives. As the report without `after:`,
+    /// the work runs on the background executor, from any context, and allocates.
     public func inversionReport<Domain>(
         for samples: [Float]? = nil, sampleRate: Double = 48_000, after upstream: Pipeline<Samples, Domain>
     ) async throws(DSPError) -> InversionReport {

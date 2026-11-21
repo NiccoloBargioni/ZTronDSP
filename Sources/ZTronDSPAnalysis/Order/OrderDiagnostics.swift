@@ -20,41 +20,64 @@ extension PipelineBuilder {
     // a branch that taps that spectrum then fails with the family's sentence, and one that
     // taps another fails with the compiler's own report (the limit E-21 records).
 
+    /// Catches a block that begins with a context-dependent step, with a message that says how to
+    /// begin it (ORD-3, ORD-4). Never called, being unavailable: no context runs it, and it
+    /// allocates nothing.
     @available(*, unavailable, message: "A block cannot begin with a step whose domains depend on the stage before it: begin the block with the stage it follows, or write the branch fluently, as .tap { $0.magnitude() }.")
     public static func buildPartialBlock<Step: ContextDependentStep>(first: Step) -> Pipeline<Samples, Samples> {
         Pipeline()
     }
 
+    /// Catches a block that begins with `Magnitude`, with a message that says how to begin it
+    /// (ORD-3, ORD-4). Never called, being unavailable: no context runs it, and it allocates
+    /// nothing.
     @available(*, unavailable, message: "A block cannot begin with Magnitude: its domains depend on the stage before it. Begin the block with the stage it follows, or write the branch fluently, as .tap { $0.magnitude() }.")
     public static func buildPartialBlock(first: Magnitude) -> Pipeline<Spectrum<LinearFrequency, ComplexValues>, Spectrum<LinearFrequency, MagnitudeValues>> {
         Pipeline(unchecked: [])
     }
 
+    /// Catches a block that begins with `Power`, with a message that says how to begin it (ORD-3,
+    /// ORD-4). Never called, being unavailable: no context runs it, and it allocates nothing.
     @available(*, unavailable, message: "A block cannot begin with Power: its domains depend on the stage before it. Begin the block with the stage it follows, or write the branch fluently, as .tap { $0.power() }.")
     public static func buildPartialBlock(first: Power) -> Pipeline<Spectrum<LinearFrequency, ComplexValues>, Spectrum<LinearFrequency, PowerValues>> {
         Pipeline(unchecked: [])
     }
 
+    /// Catches a block that begins with `Decibels`, with a message that says how to begin it
+    /// (ORD-3, ORD-4). Never called, being unavailable: no context runs it, and it allocates
+    /// nothing.
     @available(*, unavailable, message: "A block cannot begin with Decibels: its domains depend on the stage before it. Begin the block with the stage it follows, or write the branch fluently, as .tap { $0.decibels() }.")
     public static func buildPartialBlock(first: Decibels) -> Pipeline<Spectrum<LinearFrequency, PowerValues>, Spectrum<LinearFrequency, DecibelValues>> {
         Pipeline(unchecked: [])
     }
 
+    /// Catches a block that begins with `InverseDecibels`, with a message that says how to begin it
+    /// (ORD-3, ORD-4). Never called, being unavailable: no context runs it, and it allocates
+    /// nothing.
     @available(*, unavailable, message: "A block cannot begin with InverseDecibels: its domains depend on the stage before it. Begin the block with the stage it follows, or write the branch fluently, as .tap { $0.inverseDecibels(.power) }.")
     public static func buildPartialBlock<Values>(first: InverseDecibels<Values>) -> Pipeline<Spectrum<LinearFrequency, DecibelValues>, Spectrum<LinearFrequency, Values>> {
         Pipeline(unchecked: [])
     }
 
+    /// Catches a block that begins with `MelScale`, with a message that says how to begin it
+    /// (ORD-3, ORD-4). Never called, being unavailable: no context runs it, and it allocates
+    /// nothing.
     @available(*, unavailable, message: "A block cannot begin with MelScale: its domains depend on the stage before it. Begin the block with the stage it follows, or write the branch fluently, as .tap { $0.melScale(bands: 40) }.")
     public static func buildPartialBlock(first: MelScale) -> Pipeline<Spectrum<LinearFrequency, PowerValues>, Spectrum<MelFrequency, PowerValues>> {
         Pipeline(unchecked: [])
     }
 
+    /// Catches a block that begins with `SpectralCentroid` in its spelling that ends in a scalar,
+    /// with a message that says how to begin it (ORD-3, ORD-4). Never called, being unavailable: no
+    /// context runs it, and it allocates nothing.
     @available(*, unavailable, message: "A block cannot begin with SpectralCentroid: its domains depend on the stage before it. Begin the block with the stage it follows, or write the branch fluently, as .tap { $0.spectralCentroid() }.")
     public static func buildPartialBlock(first: SpectralCentroid<Scalar>) -> Pipeline<Spectrum<LinearFrequency, MagnitudeValues>, Scalar> {
         Pipeline(unchecked: [])
     }
 
+    /// Catches a block that begins with `SpectralCentroid` in its measuring spelling, with a
+    /// message that says how to begin it (ORD-3, ORD-4). Never called, being unavailable: no
+    /// context runs it, and it allocates nothing.
     @available(*, unavailable, message: "A block cannot begin with SpectralCentroid: its domains depend on the stage before it. Begin the block with the stage it follows, or write the branch fluently, as .tap { $0.spectralCentroid(to: binding) }.")
     public static func buildPartialBlock(first: SpectralCentroid<MeasuredSpectrum>) -> Pipeline<Spectrum<LinearFrequency, MagnitudeValues>, Spectrum<LinearFrequency, MagnitudeValues>> {
         Pipeline(unchecked: [])
@@ -62,103 +85,181 @@ extension PipelineBuilder {
 
     // MARK: The families
 
+    /// Catches `Magnitude` after a domain it does not take, with a message that names what it needs
+    /// (ORD-4). Never called, being unavailable: no context runs it, and it allocates nothing.
     @available(*, unavailable, message: "Magnitude needs a complex spectrum: put it directly after STFT. Magnitudes, powers and decibels are already real, and samples have no bins yet.")
     public static func buildPartialBlock<I, O>(accumulated: Pipeline<I, O>, next: Magnitude) -> Pipeline<I, O> { accumulated }
 
+    /// Catches `Magnitude` after sequence stages alone, with a message that names what it needs
+    /// (ORD-4). Never called, being unavailable: no context runs it, and it allocates nothing.
     @available(*, unavailable, message: "Magnitude needs a complex spectrum: put it directly after STFT. Magnitudes, powers and decibels are already real, and samples have no bins yet.")
     public static func buildPartialBlock(accumulated: SequenceChain, next: Magnitude) -> SequenceChain { accumulated }
 
+    /// Catches `Power` after a domain it does not take, with a message that names what it needs
+    /// (ORD-4). Never called, being unavailable: no context runs it, and it allocates nothing.
     @available(*, unavailable, message: "Power needs a complex spectrum: put it directly after STFT. Magnitudes, powers and decibels are already real, and samples have no bins yet.")
     public static func buildPartialBlock<I, O>(accumulated: Pipeline<I, O>, next: Power) -> Pipeline<I, O> { accumulated }
 
+    /// Catches `Power` after sequence stages alone, with a message that names what it needs
+    /// (ORD-4). Never called, being unavailable: no context runs it, and it allocates nothing.
     @available(*, unavailable, message: "Power needs a complex spectrum: put it directly after STFT. Magnitudes, powers and decibels are already real, and samples have no bins yet.")
     public static func buildPartialBlock(accumulated: SequenceChain, next: Power) -> SequenceChain { accumulated }
 
+    /// Catches `Decibels` after a domain it does not take, with a message that names what it needs
+    /// (ORD-4). Never called, being unavailable: no context runs it, and it allocates nothing.
     @available(*, unavailable, message: "Decibels needs magnitudes or powers: put Magnitude() or Power() before it. It cannot follow a complex spectrum, and the logarithm of a spectrum that is already in decibels means nothing.")
     public static func buildPartialBlock<I, O>(accumulated: Pipeline<I, O>, next: Decibels) -> Pipeline<I, O> { accumulated }
 
+    /// Catches `Decibels` after sequence stages alone, with a message that names what it needs
+    /// (ORD-4). Never called, being unavailable: no context runs it, and it allocates nothing.
     @available(*, unavailable, message: "Decibels needs magnitudes or powers: put Magnitude() or Power() before it. It cannot follow a complex spectrum, and the logarithm of a spectrum that is already in decibels means nothing.")
     public static func buildPartialBlock(accumulated: SequenceChain, next: Decibels) -> SequenceChain { accumulated }
 
+    /// Catches `InverseDecibels` after a domain it does not take, with a message that names what it
+    /// needs (ORD-4). Never called, being unavailable: no context runs it, and it allocates
+    /// nothing.
     @available(*, unavailable, message: "InverseDecibels needs a spectrum in decibels: put it after Decibels().")
     public static func buildPartialBlock<I, O, Values>(accumulated: Pipeline<I, O>, next: InverseDecibels<Values>) -> Pipeline<I, O> { accumulated }
 
+    /// Catches `InverseDecibels` after sequence stages alone, with a message that names what it
+    /// needs (ORD-4). Never called, being unavailable: no context runs it, and it allocates
+    /// nothing.
     @available(*, unavailable, message: "InverseDecibels needs a spectrum in decibels: put it after Decibels().")
     public static func buildPartialBlock<Values>(accumulated: SequenceChain, next: InverseDecibels<Values>) -> SequenceChain { accumulated }
 
+    /// Catches `MelScale` after a domain it does not take, with a message that names what it needs
+    /// (ORD-4). Never called, being unavailable: no context runs it, and it allocates nothing.
     @available(*, unavailable, message: "MelScale needs a linear-frequency spectrum of magnitudes or powers: put Magnitude() or Power() before it, and Decibels() after it.")
     public static func buildPartialBlock<I, O>(accumulated: Pipeline<I, O>, next: MelScale) -> Pipeline<I, O> { accumulated }
 
+    /// Catches `MelScale` after sequence stages alone, with a message that names what it needs
+    /// (ORD-4). Never called, being unavailable: no context runs it, and it allocates nothing.
     @available(*, unavailable, message: "MelScale needs a linear-frequency spectrum of magnitudes or powers: put Magnitude() or Power() before it, and Decibels() after it.")
     public static func buildPartialBlock(accumulated: SequenceChain, next: MelScale) -> SequenceChain { accumulated }
 
+    /// Catches `SpectralCentroid` after a domain it does not take, with a message that names what
+    /// it needs (ORD-4). Never called, being unavailable: no context runs it, and it allocates
+    /// nothing.
     @available(*, unavailable, message: "SpectralCentroid needs magnitudes or powers on a linear-frequency axis: put it after Magnitude() or Power(), before MelScale() and Decibels(). Decibels are not energies, and over mel bands the same formula is not the centroid.")
     public static func buildPartialBlock<I, O, Continuation>(accumulated: Pipeline<I, O>, next: SpectralCentroid<Continuation>) -> Pipeline<I, O> { accumulated }
 
+    /// Catches `SpectralCentroid` after sequence stages alone, with a message that names what it
+    /// needs (ORD-4). Never called, being unavailable: no context runs it, and it allocates
+    /// nothing.
     @available(*, unavailable, message: "SpectralCentroid needs magnitudes or powers on a linear-frequency axis: put it after Magnitude() or Power(), before MelScale() and Decibels(). Decibels are not energies, and over mel bands the same formula is not the centroid.")
     public static func buildPartialBlock<Continuation>(accumulated: SequenceChain, next: SpectralCentroid<Continuation>) -> SequenceChain { accumulated }
 
     // MARK: The self-typed steps
 
+    /// Catches `STFT` after a domain it does not take, with a message that names what it needs
+    /// (ORD-4). Never called, being unavailable: no context runs it, and it allocates nothing.
     @available(*, unavailable, message: "STFT needs samples: it frames the signal and cannot follow a spectrum, a cepstrum or any other frame of bins. For a second analysis, start a Tap where the signal is still samples.")
     public static func buildPartialBlock<I, O>(accumulated: Pipeline<I, O>, next: STFT) -> Pipeline<I, O> { accumulated }
 
+    /// Catches `InverseSTFT` after a domain it does not take, with a message that names what it
+    /// needs (ORD-4). Never called, being unavailable: no context runs it, and it allocates
+    /// nothing.
     @available(*, unavailable, message: "InverseSTFT needs the complex linear-frequency spectrum of an STFT: put it before Magnitude(), Power() or MelScale(), which discard the phase or the resolution it rebuilds the samples from.")
     public static func buildPartialBlock<I, O>(accumulated: Pipeline<I, O>, next: InverseSTFT) -> Pipeline<I, O> { accumulated }
 
+    /// Catches `InverseSTFT` after sequence stages alone, with a message that names what it needs
+    /// (ORD-4). Never called, being unavailable: no context runs it, and it allocates nothing.
     @available(*, unavailable, message: "InverseSTFT needs the complex linear-frequency spectrum of an STFT: put it before Magnitude(), Power() or MelScale(), which discard the phase or the resolution it rebuilds the samples from.")
     public static func buildPartialBlock(accumulated: SequenceChain, next: InverseSTFT) -> SequenceChain { accumulated }
 
+    /// Catches `Level` after a domain it does not take, with a message that names what it needs
+    /// (ORD-4). Never called, being unavailable: no context runs it, and it allocates nothing.
     @available(*, unavailable, message: "Level needs samples: it measures the signal over its own window and cannot follow a spectrum or a feature. Put it where the signal is still samples, or in a Tap that starts there.")
     public static func buildPartialBlock<I, O, Result>(accumulated: Pipeline<I, O>, next: Level<Result>) -> Pipeline<I, O> { accumulated }
 
+    /// Catches `Waveform` after a domain it does not take, with a message that names what it needs
+    /// (ORD-4). Never called, being unavailable: no context runs it, and it allocates nothing.
     @available(*, unavailable, message: "Waveform needs samples: it reduces the signal to its envelope and cannot follow a spectrum or a feature. Put it in a Tap that starts where the signal is still samples.")
     public static func buildPartialBlock<I, O>(accumulated: Pipeline<I, O>, next: Waveform) -> Pipeline<I, O> { accumulated }
 
+    /// Catches `Cepstrum` after a domain it does not take, with a message that names what it needs
+    /// (ORD-4). Never called, being unavailable: no context runs it, and it allocates nothing.
     @available(*, unavailable, message: "Cepstrum needs the complex linear-frequency spectrum of an STFT: put it directly after STFT, before Magnitude() or Power() discard the phase.")
     public static func buildPartialBlock<I, O>(accumulated: Pipeline<I, O>, next: Cepstrum) -> Pipeline<I, O> { accumulated }
 
+    /// Catches `Cepstrum` after sequence stages alone, with a message that names what it needs
+    /// (ORD-4). Never called, being unavailable: no context runs it, and it allocates nothing.
     @available(*, unavailable, message: "Cepstrum needs the complex linear-frequency spectrum of an STFT: put it directly after STFT, before Magnitude() or Power() discard the phase.")
     public static func buildPartialBlock(accumulated: SequenceChain, next: Cepstrum) -> SequenceChain { accumulated }
 
+    /// Catches `InverseCepstrum` after a domain it does not take, with a message that names what it
+    /// needs (ORD-4). Never called, being unavailable: no context runs it, and it allocates
+    /// nothing.
     @available(*, unavailable, message: "InverseCepstrum needs a cepstrum: put it after Cepstrum(.complex), with any Lifter in between.")
     public static func buildPartialBlock<I, O>(accumulated: Pipeline<I, O>, next: InverseCepstrum) -> Pipeline<I, O> { accumulated }
 
+    /// Catches `InverseCepstrum` after sequence stages alone, with a message that names what it
+    /// needs (ORD-4). Never called, being unavailable: no context runs it, and it allocates
+    /// nothing.
     @available(*, unavailable, message: "InverseCepstrum needs a cepstrum: put it after Cepstrum(.complex), with any Lifter in between.")
     public static func buildPartialBlock(accumulated: SequenceChain, next: InverseCepstrum) -> SequenceChain { accumulated }
 
+    /// Catches `Lifter` after a domain it does not take, with a message that names what it needs
+    /// (ORD-4). Never called, being unavailable: no context runs it, and it allocates nothing.
     @available(*, unavailable, message: "Lifter needs a cepstrum: put it after Cepstrum. A spectrum is windowed over frequency, not over quefrency.")
     public static func buildPartialBlock<I, O>(accumulated: Pipeline<I, O>, next: Lifter) -> Pipeline<I, O> { accumulated }
 
+    /// Catches `Lifter` after sequence stages alone, with a message that names what it needs
+    /// (ORD-4). Never called, being unavailable: no context runs it, and it allocates nothing.
     @available(*, unavailable, message: "Lifter needs a cepstrum: put it after Cepstrum. A spectrum is windowed over frequency, not over quefrency.")
     public static func buildPartialBlock(accumulated: SequenceChain, next: Lifter) -> SequenceChain { accumulated }
 
+    /// Catches `CepstralPitch` after a domain it does not take, with a message that names what it
+    /// needs (ORD-4). Never called, being unavailable: no context runs it, and it allocates
+    /// nothing.
     @available(*, unavailable, message: "CepstralPitch needs a cepstrum: put it after Cepstrum, or after a Lifter that follows one.")
     public static func buildPartialBlock<I, O, Result>(accumulated: Pipeline<I, O>, next: CepstralPitch<Result>) -> Pipeline<I, O> { accumulated }
 
+    /// Catches `CepstralPitch` after sequence stages alone, with a message that names what it needs
+    /// (ORD-4). Never called, being unavailable: no context runs it, and it allocates nothing.
     @available(*, unavailable, message: "CepstralPitch needs a cepstrum: put it after Cepstrum, or after a Lifter that follows one.")
     public static func buildPartialBlock<Result>(accumulated: SequenceChain, next: CepstralPitch<Result>) -> SequenceChain { accumulated }
 
+    /// Catches `CepstralCoefficients` after a domain it does not take, with a message that names
+    /// what it needs (ORD-4). Never called, being unavailable: no context runs it, and it allocates
+    /// nothing.
     @available(*, unavailable, message: "CepstralCoefficients needs a mel spectrum in decibels: put MelScale() and then Decibels() before it. The coefficients are defined on log energies.")
     public static func buildPartialBlock<I, O>(accumulated: Pipeline<I, O>, next: CepstralCoefficients) -> Pipeline<I, O> { accumulated }
 
+    /// Catches `CepstralCoefficients` after sequence stages alone, with a message that names what
+    /// it needs (ORD-4). Never called, being unavailable: no context runs it, and it allocates
+    /// nothing.
     @available(*, unavailable, message: "CepstralCoefficients needs a mel spectrum in decibels: put MelScale() and then Decibels() before it. The coefficients are defined on log energies.")
     public static func buildPartialBlock(accumulated: SequenceChain, next: CepstralCoefficients) -> SequenceChain { accumulated }
 
+    /// Catches `InverseCepstralCoefficients` after a domain it does not take, with a message that
+    /// names what it needs (ORD-4). Never called, being unavailable: no context runs it, and it
+    /// allocates nothing.
     @available(*, unavailable, message: "InverseCepstralCoefficients needs mel-frequency cepstral coefficients: put it after CepstralCoefficients.")
     public static func buildPartialBlock<I, O>(accumulated: Pipeline<I, O>, next: InverseCepstralCoefficients) -> Pipeline<I, O> { accumulated }
 
+    /// Catches `InverseCepstralCoefficients` after sequence stages alone, with a message that names
+    /// what it needs (ORD-4). Never called, being unavailable: no context runs it, and it allocates
+    /// nothing.
     @available(*, unavailable, message: "InverseCepstralCoefficients needs mel-frequency cepstral coefficients: put it after CepstralCoefficients.")
     public static func buildPartialBlock(accumulated: SequenceChain, next: InverseCepstralCoefficients) -> SequenceChain { accumulated }
 
     // MARK: The recipes
 
+    /// Catches `Spectrogram` after a domain it does not take, with a message that names what it
+    /// needs (ORD-4). Never called, being unavailable: no context runs it, and it allocates
+    /// nothing.
     @available(*, unavailable, message: "Spectrogram needs samples: it taps the signal and analyses it itself. After a spectrum, write Decibels() and Emit(to:) instead.")
     public static func buildPartialBlock<I, O>(accumulated: Pipeline<I, O>, next: Spectrogram) -> Pipeline<I, O> { accumulated }
 
+    /// Catches `MelSpectrogram` after a domain it does not take, with a message that names what it
+    /// needs (ORD-4). Never called, being unavailable: no context runs it, and it allocates
+    /// nothing.
     @available(*, unavailable, message: "MelSpectrogram needs samples: it taps the signal and analyses it itself. After a spectrum, write MelScale(), Decibels() and Emit(to:) instead.")
     public static func buildPartialBlock<I, O>(accumulated: Pipeline<I, O>, next: MelSpectrogram) -> Pipeline<I, O> { accumulated }
 
+    /// Catches `MFCC` after a domain it does not take, with a message that names what it needs
+    /// (ORD-4). Never called, being unavailable: no context runs it, and it allocates nothing.
     @available(*, unavailable, message: "MFCC needs samples: it taps the signal and analyses it itself. After a mel spectrum in decibels, write CepstralCoefficients() and Emit(to:) instead.")
     public static func buildPartialBlock<I, O>(accumulated: Pipeline<I, O>, next: MFCC) -> Pipeline<I, O> { accumulated }
 }

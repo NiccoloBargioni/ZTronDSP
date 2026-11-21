@@ -4,10 +4,12 @@ import ZTronDSPCore
 /// Why a renderer has to draw (§8.3). The dirty set of a renderer holds exactly these causes;
 /// with none of them pending nothing is drawn (V-4).
 ///
-/// An immutable value, usable on any thread.
+/// An immutable value, usable on any thread; it does not allocate.
 public struct RenderCauses: OptionSet, Hashable, Sendable {
+    /// The causes as bits, one bit per cause.
     public let rawValue: Int
 
+    /// The causes whose bits are set in `rawValue`.
     public init(rawValue: Int) {
         self.rawValue = rawValue
     }
@@ -33,7 +35,8 @@ public struct RenderCauses: OptionSet, Hashable, Sendable {
 /// The renderers of this target count `uploads`, `uploadedColumns`, `draws`, `drawCalls`,
 /// `allocations` and `clears`. The view layer counts the rest through the `record…` methods.
 ///
-/// Threading: main actor, like the renderers and the views that write it.
+/// Threading: main actor, like the renderers and the views that write it. Creating one
+/// allocates; counting does not allocate.
 @MainActor
 public final class RenderProbe {
     /// Views made (`makeUIView`).
@@ -56,6 +59,7 @@ public final class RenderProbe {
     /// Times a data texture was emptied because its feed started over.
     public private(set) var clears = 0
 
+    /// A probe with every count at zero.
     public init() {}
 
     /// A view was made.

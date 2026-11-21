@@ -6,7 +6,9 @@
 #                                      says today, or does not hold every public stage
 #
 # The stages are the lines of Tests/OrderMatrix/stages.txt (`Type | an expression that makes
-# one`), the domains those of Tests/OrderMatrix/domains.txt (`name | Swift type`). The matrix is
+# one`), the domains those of Tests/OrderMatrix/domains.txt (`name | Swift type`). Every public
+# stage of the API digests (Docs/API) has a line there, or one in
+# Tests/OrderMatrix/not-in-matrix.txt that says why it is not in the matrix. The matrix is
 # written to Tests/ZTronDSPTests/OrderMatrixGenerated.swift, where the test OrderMatrixTests
 # holds it against the DomainRule of every stage (tier 1 against tier 2), and to
 # Docs/OrderMatrix.md. A package that adds a stage adds its line and regenerates (STG-1).

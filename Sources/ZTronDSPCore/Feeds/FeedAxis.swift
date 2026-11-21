@@ -3,7 +3,7 @@ import Foundation
 /// What the rows of a feed are (VC-5). A feed carries its axis, and the environment carries
 /// it inside a spectral scope, so a view labels rows without knowing how they were produced.
 ///
-/// An immutable value, usable on any thread.
+/// An immutable value, usable on any thread; reading it does not allocate.
 public enum FeedAxis: Hashable, Sendable {
     /// Bins evenly spaced in hertz: row `k` is `k · nyquist / (binCount − 1)`.
     case linearFrequency(binCount: Int, nyquist: Double)
@@ -24,14 +24,22 @@ public enum FeedAxis: Hashable, Sendable {
     case indices(count: Int)
 
     /// The unit of ``value(ofRow:)``.
+    ///
+    /// A value, usable on any thread; it does not allocate.
     public enum Unit: Hashable, Sendable {
+        /// Hertz: the frequency axes.
         case hertz
+        /// Seconds: lags and quefrencies.
         case seconds
+        /// Beats per minute: tempi.
         case beatsPerMinute
+        /// Pitch classes, 0 for C up to 11 for B.
         case pitchClass
+        /// Plain positions, from 0.
         case index
     }
 
+    /// The unit the rows are measured in.
     public var unit: Unit {
         switch self {
         case .linearFrequency, .mel, .constantQ: .hertz

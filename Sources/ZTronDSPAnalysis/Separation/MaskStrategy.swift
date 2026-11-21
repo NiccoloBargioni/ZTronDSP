@@ -2,6 +2,8 @@ import Accelerate
 import ZTronDSPCore
 
 /// Which part of a harmonic–percussive separation is kept (§6.10).
+///
+/// A value, usable on any thread; it does not allocate.
 public enum HarmonicPercussiveComponent: Hashable, Sendable, CaseIterable {
     /// What lasts in time and is narrow in frequency: partials, sustained tones.
     case harmonic
@@ -23,7 +25,9 @@ public enum HarmonicPercussiveComponent: Hashable, Sendable, CaseIterable {
 /// what they leave is the residual.
 ///
 /// A strategy is a description: an immutable value, usable on any thread, and part of the
-/// description of the stage that holds it. `mask` runs on the analysis thread.
+/// description of the stage that holds it; the stock ones do not allocate. `validate` runs on
+/// the control context; `mask` runs on the analysis thread, where a conformer's must not
+/// allocate (RT-2).
 public protocol MaskStrategy: Hashable, Sendable {
     /// Whether the strategy's own values make a mask. Control context; the default has
     /// nothing to check.
@@ -42,6 +46,8 @@ public protocol MaskStrategy: Hashable, Sendable {
 }
 
 extension MaskStrategy {
+    /// Nothing to check: the default for a strategy without values of its own. Usable on any
+    /// thread; it does not allocate.
     public func validate() throws(DSPError) {}
 }
 
@@ -53,21 +59,25 @@ extension MaskStrategy {
 /// The share is computed as `1 / (1 + (k / c)ᵖ)`: the ratio is taken first, so neither power
 /// overflows or underflows whatever the level of the spectrum (§7.5).
 ///
-/// An immutable value, usable on any thread.
+/// An immutable value, usable on any thread; it does not allocate, and neither does `mask`.
 public struct SoftMask: MaskStrategy {
     /// The exponent `p`: positive and finite.
     public let power: Double
 
+    /// The soft mask with the exponent `power`, which `validate()` checks.
     public init(power: Double = 2) {
         self.power = power
     }
 
+    /// Throws `DSPError.invalidParameter` for a power that is not positive and finite.
     public func validate() throws(DSPError) {
         guard power > 0, power.isFinite else {
             throw .invalidParameter(stage: .none, parameter: "mask", reason: "the power of a soft mask is positive and finite, not \(power); the limit of a large power is .hard")
         }
     }
 
+    /// `1 / (1 + (k / c)ᵖ)` for every bin by vDSP; then 0 where neither median reaches `floor`,
+    /// and ½ where the ratio has no value.
     public func mask(_ component: UnsafePointer<Float>, against competitor: UnsafePointer<Float>, floor: Float, into mask: UnsafeMutablePointer<Float>, count: Int) {
         guard count > 0 else { return }
         let length = vDSP_Length(count)
@@ -105,10 +115,13 @@ public struct SoftMask: MaskStrategy {
 /// elsewhere. It is the limit of the soft mask for a growing power. A tie goes to neither
 /// side.
 ///
-/// An immutable value, usable on any thread.
+/// An immutable value, usable on any thread; it does not allocate, and neither does `mask`.
 public struct HardMask: MaskStrategy {
+    /// The hard mask; there is nothing to set.
     public init() {}
 
+    /// 1 where the component's median exceeds the competitor's and reaches `floor`, 0
+    /// elsewhere.
     public func mask(_ component: UnsafePointer<Float>, against competitor: UnsafePointer<Float>, floor: Float, into mask: UnsafeMutablePointer<Float>, count: Int) {
         var index = 0
         while index < count {
@@ -121,11 +134,11 @@ public struct HardMask: MaskStrategy {
 
 extension MaskStrategy where Self == SoftMask {
     /// The soft mask with the exponent `power`; 2, the default of the separation, weighs by
-    /// energies.
+    /// energies. Usable on any thread; it does not allocate.
     public static func soft(power: Double) -> SoftMask { SoftMask(power: power) }
 }
 
 extension MaskStrategy where Self == HardMask {
-    /// The hard mask.
+    /// The hard mask. Usable on any thread; it does not allocate.
     public static var hard: HardMask { HardMask() }
 }

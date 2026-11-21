@@ -37,8 +37,9 @@ import ZTronDSPMetal
 /// once in the log (subsystem `com.zombietron.ztrondsp`, category `surface`). This holds for
 /// every component of the package, the waveform included.
 ///
-/// Threading: main actor, like every view. Create the feed once, in state or in a model, not
-/// in a `body`.
+/// Threading: main actor, like every view. Its renderer allocates its textures when the
+/// surface is made, and again only when the feed's shape changes (V-6). Create the feed once,
+/// in state or in a model, not in a `body`.
 public struct HeatmapView: View, Equatable {
     private let feed: HeatmapFeed
 
@@ -93,7 +94,8 @@ public struct HeatmapView: View, Equatable {
 /// (V-8).
 ///
 /// Stability, appearance modifiers and threading are those of ``HeatmapView``, whichever way
-/// in is used.
+/// in is used: main actor, and the renderer allocates as it does there. The attachment of
+/// `init(source:)` is compiled off the main thread, and compiling allocates.
 public struct SpectrogramView: View, Equatable {
     private let input: ComponentInput<HeatmapFeed>
 
@@ -162,7 +164,8 @@ public struct SpectrogramView: View, Equatable {
 /// `Chroma` feed that the app's own pipeline writes.
 ///
 /// Stability, appearance modifiers and threading are those of ``HeatmapView``, whichever way
-/// in is used.
+/// in is used: main actor, and the renderer allocates as it does there. The attachment of
+/// `init(source:)` is compiled off the main thread, and compiling allocates.
 public struct ChromagramView: View, Equatable {
     private let input: ComponentInput<HeatmapFeed>
 
@@ -228,7 +231,8 @@ public struct ChromagramView: View, Equatable {
 /// writes.
 ///
 /// Stability, appearance modifiers and threading are those of ``HeatmapView``, whichever way
-/// in is used.
+/// in is used: main actor, and the renderer allocates as it does there. The attachment of
+/// `init(source:)` is compiled off the main thread, and compiling allocates.
 public struct TempogramView: View, Equatable {
     private let input: ComponentInput<HeatmapFeed>
 

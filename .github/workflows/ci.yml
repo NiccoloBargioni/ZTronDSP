@@ -46,7 +46,7 @@ env:
 
 jobs:
   gates-1-4:
-    name: Gates 1–4 · build, lint, compile fixtures, API digest
+    name: Gates 1–4 · build, lint, compile fixtures, API digest and documentation
     # Every job of the gates waits for this one: the nightly run skips them all here.
     if: github.event_name != 'schedule'
     runs-on: ${{ vars.ZTD_RUNNER || 'macos-latest' }}
@@ -61,7 +61,7 @@ jobs:
         run: Scripts/ci.sh $ZTD_CI_STRICT --gate 2
       - name: Gate 3 · compile fixtures and the order matrix
         run: Scripts/ci.sh $ZTD_CI_STRICT --gate 3
-      - name: Gate 4 · API digest
+      - name: Gate 4 · API digest, and every public symbol documented with its threading contract
         run: Scripts/ci.sh $ZTD_CI_STRICT --gate 4
 
   gate-5-tests:

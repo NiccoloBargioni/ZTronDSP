@@ -2,6 +2,8 @@ import Foundation
 import ZTronDSPCore
 
 /// What a `Level` measures.
+///
+/// A value, usable on any thread; it does not allocate.
 public enum LevelKind: Hashable, Sendable {
     /// The largest magnitude in the window, in dBFS.
     case peak
@@ -25,23 +27,34 @@ public enum LevelKind: Hashable, Sendable {
 ///
 /// A multichannel signal is reduced by `channels`. Switched off, the transforming spelling
 /// suspends the rest of its branch; the measuring one stops measuring and the samples pass
-/// (ACT-3). An immutable value, usable on any thread.
+/// (ACT-3). An immutable value, usable on any thread; `lower(_:)` runs on the control context and
+/// may allocate.
 public struct Level<Output: SignalDomain>: PipelineStage {
+    /// Audio samples.
     public typealias Input = Samples
 
+    /// What is measured: the peak or the RMS.
     public let kind: LevelKind
     /// The window, in seconds.
     public let window: TimeInterval
     /// The time between two values, in seconds.
     public let hop: TimeInterval
+    /// How a signal of several channels is reduced (MIC-6): the mixdown unless told otherwise.
     public let channels: ChannelPolicy
+    /// The step's switch: off, the transforming spelling suspends the rest of its branch and the
+    /// measuring one stops measuring (ACT-3).
     public let activation: StageActivation
     let measuring: StageDescription?
 
+    /// The step itself, from samples to a scalar track; for the measuring spelling, the tap that
+    /// measures (OUT-1).
     public var stageDescriptions: [StageDescription] {
         [measuring ?? StageDescription(self, rule: .fixed(.samples, .scalar))]
     }
 
+    /// Checks the window and the hop against the sample rate at the step's position (positive,
+    /// finite, a hop no longer than the window) and emits the node. The measuring spelling is
+    /// lowered as its tap: called on it, this throws. Control context; may allocate.
     public func lower(_ context: inout LoweringContext) throws(DSPError) {
         guard measuring == nil else { throw context.structuralStage() }
         let rate = context.environment.sampleRate
@@ -75,7 +88,8 @@ struct LevelKey: Hashable, Sendable {
 }
 
 extension Level where Output == Scalar {
-    /// The transforming spelling: the chain goes on with the level, one value per hop.
+    /// The transforming spelling: the chain goes on with the level, one value per hop. Usable on
+    /// any thread; it does not allocate.
     public init(
         _ kind: LevelKind, window: TimeInterval = 0.050, hop: TimeInterval = 0.010, channels: ChannelPolicy = .mixdown,
         isActive: some ActivationSource = .active
@@ -92,7 +106,7 @@ extension Level where Output == Scalar {
 extension Level where Output == Samples {
     /// The measuring spelling (OUT-1): the level goes to `binding`, a `Binding<Float>` or a
     /// `Binding<ScalarFrame>`, on the main thread and at the result rate; the samples pass on
-    /// unchanged.
+    /// unchanged. Usable on any thread; it allocates the description of its measuring branch.
     public init(
         _ kind: LevelKind, window: TimeInterval = 0.050, hop: TimeInterval = 0.010, channels: ChannelPolicy = .mixdown,
         to binding: some ScalarResultTarget, isActive: some ActivationSource = .active
@@ -108,6 +122,7 @@ extension Level where Output == Samples {
 
 extension Pipeline where Output == Samples {
     /// The level of the signal, as a scalar track: see ``Level``.
+    /// Usable on any thread; allocates the pipeline it returns.
     public func level(
         _ kind: LevelKind, window: TimeInterval = 0.050, hop: TimeInterval = 0.010, channels: ChannelPolicy = .mixdown,
         isActive: some ActivationSource = .active
@@ -116,6 +131,7 @@ extension Pipeline where Output == Samples {
     }
 
     /// The level of the signal, delivered to a binding; the samples pass on: see ``Level``.
+    /// Usable on any thread; allocates the pipeline it returns.
     public func level(
         _ kind: LevelKind, window: TimeInterval = 0.050, hop: TimeInterval = 0.010, channels: ChannelPolicy = .mixdown,
         to binding: some ScalarResultTarget, isActive: some ActivationSource = .active

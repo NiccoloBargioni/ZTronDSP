@@ -11,7 +11,8 @@ import ZTronDSPCore
 /// ```
 ///
 /// A method is a description: an immutable value, usable on any thread, and part of the
-/// description of the stage that holds it. The work is done by the transforms it makes.
+/// description of the stage that holds it; the stock ones do not allocate. The work is done
+/// by the transforms it makes, and making one allocates.
 public protocol TempogramMethod: Hashable, Sendable {
     /// What turns each window of `window` values of a novelty curve at `featureRate` values
     /// per second into the rows whose tempo lies inside `range`, in beats per minute.
@@ -47,14 +48,18 @@ public protocol TempogramTransform: AnyObject {
 /// of: its column is zeros (NUM-1).
 ///
 /// An immutable value, usable on any thread.
+/// It does not allocate; `makeTransform` runs on the control context and allocates.
 public struct AutocorrelationTempogram: TempogramMethod {
     /// The least value at lag 0, the energy of the windowed segment, that is divided by.
     public let floor: Double
 
+    /// The autocorrelation tempogram with `floor`, which `makeTransform` checks.
     public init(floor: Double = 1e-10) {
         self.floor = floor
     }
 
+    /// The transform for windows of `window` values at `featureRate`, its rows the lags whose
+    /// tempo lies inside `range`.
     public func makeTransform(window: Int, featureRate: Double, range: ClosedRange<Double>) throws(DSPError) -> any TempogramTransform {
         try AutocorrelationTempogramTransform(window: window, featureRate: featureRate, range: range, floor: floor)
     }
@@ -67,29 +72,35 @@ public struct AutocorrelationTempogram: TempogramMethod {
 /// spaces the rows more finely; the window still sets what two tempi can be told apart.
 ///
 /// An immutable value, usable on any thread.
+/// It does not allocate; `makeTransform` runs on the control context and allocates.
 public struct FourierTempogram: TempogramMethod {
     /// How many times its own length a window is zero-padded to: 1 to 64.
     public let resolution: Int
 
+    /// The Fourier tempogram, zero-padded `resolution` times; `makeTransform` checks that the
+    /// factor lies between 1 and 64.
     public init(resolution: Int = 4) {
         self.resolution = resolution
     }
 
+    /// The transform for windows of `window` values at `featureRate`, its rows the bins whose
+    /// tempo lies inside `range`.
     public func makeTransform(window: Int, featureRate: Double, range: ClosedRange<Double>) throws(DSPError) -> any TempogramTransform {
         try FourierTempogramTransform(window: window, featureRate: featureRate, range: range, resolution: resolution)
     }
 }
 
 extension TempogramMethod where Self == AutocorrelationTempogram {
-    /// The autocorrelation tempogram, the default.
+    /// The autocorrelation tempogram, the default. Usable on any thread; it does not allocate.
     public static var autocorrelation: AutocorrelationTempogram { AutocorrelationTempogram() }
 }
 
 extension TempogramMethod where Self == FourierTempogram {
-    /// The Fourier tempogram, zero-padded four times.
+    /// The Fourier tempogram, zero-padded four times. Usable on any thread; it does not allocate.
     public static var fourier: FourierTempogram { FourierTempogram() }
 
-    /// The Fourier tempogram, zero-padded `resolution` times.
+    /// The Fourier tempogram, zero-padded `resolution` times. Usable on any thread; it does not
+    /// allocate.
     public static func fourier(resolution: Int) -> FourierTempogram { FourierTempogram(resolution: resolution) }
 }
 
@@ -117,9 +128,13 @@ extension TempogramMethod where Self == FourierTempogram {
 ///   `frameSize` is the window, `hopSize` is 1 and `featureRate` is the rate of the curve.
 ///
 /// Switched off, it suspends the rest of its branch (ACT-3). An immutable value, usable on any
-/// thread; `lower(_:)` runs on the control context.
+/// thread. Its method is kept boxed (`AnyStrategy`): creating one, and reading `method`, allocate
+/// only for a method larger than three words, which no stock one is. `lower(_:)` runs on the
+/// control context and may allocate.
 public struct Tempogram: PipelineStage {
+    /// A novelty curve (O-9).
     public typealias Input = Novelty
+    /// One column of tempi per value of the curve.
     public typealias Output = TempoSpectrum
 
     let methodBox: AnyStrategy
@@ -129,9 +144,14 @@ public struct Tempogram: PipelineStage {
     public let taper: Window
     /// The tempi that are emitted, in beats per minute.
     public let range: ClosedRange<Double>
+    /// `.causal` unless told otherwise; `.centered` declares its look-ahead as latency.
     public let alignment: FrameAlignment
+    /// The step's switch: off, it suspends the rest of its branch (ACT-3).
     public let activation: StageActivation
 
+    /// A tempogram by `method` over windows of `window` values multiplied by `taper`, its rows the
+    /// tempi inside `range`. Nothing is checked here: `lower(_:)` checks the values when the plan
+    /// is compiled.
     public init(
         _ method: some TempogramMethod = .autocorrelation, window: Int = 384, taper: Window = .hann, range: ClosedRange<Double> = 30 ... 300,
         alignment: FrameAlignment = .causal, isActive: some ActivationSource = .active
@@ -164,6 +184,9 @@ public struct Tempogram: PipelineStage {
         let alignment: FrameAlignment
     }
 
+    /// Checks the values (a window of 2 to 65 536 values, a range above 0 that is not empty),
+    /// makes the method's transform once for its rows, and emits the node with its look-ahead as
+    /// latency. Control context; allocates.
     public func lower(_ context: inout LoweringContext) throws(DSPError) {
         let rate = context.environment.sampleRate
         guard rate > 0, rate.isFinite else { throw context.invalid("sampleRate", "a tempogram needs the rate of the novelty curve, and there is none here") }
@@ -194,6 +217,7 @@ public struct Tempogram: PipelineStage {
 
 extension Pipeline where Output == Novelty {
     /// The tempogram of the novelty curve: see ``Tempogram``.
+    /// Usable on any thread; allocates the pipeline it returns.
     public func tempogram(
         _ method: some TempogramMethod = .autocorrelation, window: Int = 384, taper: Window = .hann, range: ClosedRange<Double> = 30 ... 300,
         alignment: FrameAlignment = .causal, isActive: some ActivationSource = .active

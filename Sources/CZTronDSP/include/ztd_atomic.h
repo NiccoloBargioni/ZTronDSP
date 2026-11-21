@@ -17,6 +17,8 @@ typedef struct ztd_atomic ztd_atomic_t;
 ztd_atomic_t *ztd_atomic_create(uint64_t initial);
 void ztd_atomic_destroy(ztd_atomic_t *cell);
 
+/* Reads the value (acquire) and writes it (release). Any thread, the I/O and analysis threads
+   included: neither allocates nor blocks. */
 uint64_t ztd_atomic_load(const ztd_atomic_t *cell) ZTD_NONBLOCKING;
 void ztd_atomic_store(ztd_atomic_t *cell, uint64_t value) ZTD_NONBLOCKING;
 /* Adds and returns the new value. */

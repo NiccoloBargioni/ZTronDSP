@@ -1,13 +1,17 @@
 import ZTronDSPCore
 
 /// The elements an `IIRSystem { }` block gathered, in order. What the builder passes around;
-/// an app never names it. An immutable value, usable on any thread.
+/// an app never names it. An immutable value, usable on any thread; the builder allocates it
+/// as it gathers.
 public struct IIRSystemContent: Hashable, Sendable {
     let elements: [AnyStrategy]
 }
 
 /// The result builder behind `IIRSystem { … }`: one element per line (§6.3.7), with `if`,
 /// `if … else`, `switch`, `for … in` and `if #available` around them.
+///
+/// Its functions run where the system is described, on any thread, and may allocate the
+/// content they return.
 @resultBuilder
 public enum IIRSystemBuilder {
     /// An element. Usable on any thread.
@@ -15,6 +19,9 @@ public enum IIRSystemBuilder {
         IIRSystemContent(elements: [AnyStrategy(element)])
     }
 
+    /// Unavailable: it exists for its diagnostic, which names the elements an `IIRSystem` holds and
+    /// where the value belongs instead. Never called, being unavailable: no context runs it, and it
+    /// allocates nothing.
     @available(*, unavailable, message: "An IIRSystem holds poles, zeros, sections, difference equations and the IIR forms of the response and equaliser stages (Pole, Zero, Section, DifferenceEquation, LowPass, HighPass, BandPass, BandStop, BandBoost, LowShelf, HighShelf): this value is none of them. Taps and LeastSquares belong in an FIRSystem; a smoother, a gain or a rate changer belongs in the pipeline, beside Filter(system).")
     public static func buildExpression<Value>(_ value: Value) -> IIRSystemContent {
         IIRSystemContent(elements: [])
@@ -83,7 +90,8 @@ public enum IIRSystemBuilder {
 public struct IIRSystem: LTISystem, IIRSystemElement {
     let elements: [AnyStrategy]
 
-    /// A system from a block of elements. Usable on any thread.
+    /// A system from a block of elements. Runs the block where it is called, on any thread, and
+    /// allocates the elements.
     public init(@IIRSystemBuilder _ content: () -> IIRSystemContent) {
         elements = content().elements
     }
@@ -217,12 +225,14 @@ public struct IIRSystem: LTISystem, IIRSystemElement {
         elements.contains { ($0.value(as: (any IIRSystemElement).self))?.dependsOnSampleRate ?? true }
     }
 
-    /// The continuous values of the elements, in order (ANI-2). Usable on any thread.
+    /// The continuous values of the elements, in order (ANI-2). Usable on any thread; it may
+    /// allocate.
     public var parameters: [Double] {
         elements.flatMap { ($0.value(as: (any IIRSystemElement).self))?.parameters ?? [] }
     }
 
-    /// The system with the continuous values of its elements replaced. Usable on any thread.
+    /// The system with the continuous values of its elements replaced. Usable on any thread; it may
+    /// allocate.
     public func replacingParameters(_ values: ArraySlice<Double>) -> IIRSystem {
         guard values.count == parameters.count else { return self }
         var remaining = values

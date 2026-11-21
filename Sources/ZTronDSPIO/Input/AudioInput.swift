@@ -7,9 +7,9 @@ import AVFAudio
 /// the port, so it stays valid, and comparable, after the microphone was unplugged and plugged
 /// back (MIC-4).
 ///
-/// An immutable value, usable on any thread.
+/// An immutable value, usable on any thread; copying and comparing one does not allocate.
 public struct AudioInput: Sendable, Hashable, Identifiable {
-    /// What kind of input a port is.
+    /// What kind of input a port is: a value, usable on any thread; it does not allocate.
     public enum Kind: Sendable, Hashable {
         /// The device's own microphone.
         case builtIn

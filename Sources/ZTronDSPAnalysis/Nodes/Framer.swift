@@ -55,6 +55,7 @@ public final class Framer {
     /// - Parameters:
     ///   - frameSize: samples per frame, at least 1.
     ///   - hopSize: samples between frame starts, `1 … frameSize`.
+    ///   - alignment: where a frame sits on the signal; `.causal` unless told otherwise.
     /// - Throws: `DSPError.invalidParameter` for sizes that do not fit together,
     ///   `DSPError.resourceAllocationFailed` when memory cannot be had.
     public convenience init(frameSize: Int, hopSize: Int, alignment: FrameAlignment = .causal) throws(DSPError) {

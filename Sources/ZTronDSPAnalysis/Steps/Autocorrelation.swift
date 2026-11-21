@@ -31,7 +31,9 @@ import ZTronDSPCore
 /// - On a signal of several channels, `channels` says what is correlated (MIC-6).
 ///
 /// Switched off, it suspends the rest of its branch (ACT-3). An immutable value, usable on any
-/// thread; `lower(_:)` runs on the control context.
+/// thread. Its backend is kept boxed (`AnyStrategy`): creating one, and reading `backend`, allocate
+/// only for a backend larger than three words, which the stock one is not. `lower(_:)` runs on the
+/// control context and may allocate.
 public struct Autocorrelation: ContextDependentStep {
     /// Values per frame.
     public let window: Int
@@ -39,13 +41,20 @@ public struct Autocorrelation: ContextDependentStep {
     public let hop: Int
     /// The last lag of a frame; `nil` for `window − 1`, the last lag that has a product.
     public let maxLag: Int?
+    /// What each frame is divided by, as in `DSP.autocorrelate`: `.none` unless told otherwise.
     public let normalization: CorrelationNormalization
     /// The least value at lag 0 that `.coefficient` divides by.
     public let floor: Double
+    /// What is correlated on a signal of several channels (MIC-6): the mixdown unless told
+    /// otherwise.
     public let channels: ChannelPolicy
     let backendBox: AnyStrategy
+    /// The step's switch: off, it suspends the rest of its branch (ACT-3).
     public let activation: StageActivation
 
+    /// An autocorrelation of `window` values every `hop` values, for the lags `0 … maxLag`, by the
+    /// transform of `backend`. Nothing is checked here: `lower(_:)` checks the values when the plan
+    /// is compiled.
     public init(
         window: Int = 2_048, hop: Int = 512, maxLag: Int? = nil, normalization: CorrelationNormalization = .none,
         floor: Double = DSP.correlationFloor, channels: ChannelPolicy = .mixdown, backend: some FFTBackend = .vDSP,
@@ -67,6 +76,7 @@ public struct Autocorrelation: ContextDependentStep {
     /// From any sampled sequence to lags.
     public static let rule = DomainRule("Autocorrelation: a sampled sequence to lags") { $0.isSampledSequence ? .lags : nil }
 
+    /// The step with its typing rule, ``rule``.
     public var stageDescription: StageDescription { StageDescription(self, rule: Autocorrelation.rule) }
 
     /// The longest window and the last lag the step takes.
@@ -83,6 +93,11 @@ public struct Autocorrelation: ContextDependentStep {
         let backend: AnyStrategy
     }
 
+    /// Checks the values against the environment at the step's position (a sample rate, a window
+    /// and a last lag up to 2²⁴, a hop between 1 and the window, a finite floor that is not
+    /// negative, a transform length the backend supports, the channel `channels` names) and emits
+    /// the node. Equal autocorrelations at one position are one node (F5). Control context; may
+    /// allocate.
     public func lower(_ context: inout LoweringContext) throws(DSPError) {
         let rate = context.environment.sampleRate
         guard rate > 0, rate.isFinite else { throw context.invalid("sampleRate", "an autocorrelation needs the rate of the sequence it frames, and there is none here") }
@@ -114,17 +129,21 @@ public struct Autocorrelation: ContextDependentStep {
 // MARK: The typing rules (tier 1)
 
 extension PipelineBuilder {
+    /// An autocorrelation follows any sampled sequence. Runs where the pipeline is described, on
+    /// any thread, and allocates.
     public static func buildPartialBlock<I, M: SampledSequence>(accumulated: Pipeline<I, M>, next: Autocorrelation) -> Pipeline<I, Lags> {
         accumulated.appending(next.stageDescription)
     }
 
     /// Sequence stages and then an autocorrelation: like a block of sequence stages alone, the
     /// block is taken to start from samples.
+    /// Runs where the pipeline is described, on any thread, and allocates.
     public static func buildPartialBlock(accumulated: SequenceChain, next: Autocorrelation) -> Pipeline<Samples, Lags> {
         Pipeline(unchecked: accumulated.stages + [next.stageDescription])
     }
 
     /// A block that begins with an autocorrelation is taken to start from samples.
+    /// Runs where the pipeline is described, on any thread, and allocates.
     public static func buildPartialBlock(first: Autocorrelation) -> Pipeline<Samples, Lags> {
         Pipeline(unchecked: [first.stageDescription])
     }
@@ -132,6 +151,7 @@ extension PipelineBuilder {
 
 extension Pipeline where Output: SampledSequence {
     /// The autocorrelation of the sequence, frame by frame: see ``Autocorrelation``.
+    /// Usable on any thread; allocates the pipeline it returns.
     public func autocorrelation(
         window: Int = 2_048, hop: Int = 512, maxLag: Int? = nil, normalization: CorrelationNormalization = .none,
         floor: Double = DSP.correlationFloor, channels: ChannelPolicy = .mixdown, backend: some FFTBackend = .vDSP,

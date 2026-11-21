@@ -1,13 +1,17 @@
 import ZTronDSPCore
 
 /// The elements an `FIRSystem { }` block gathered, in order. What the builder passes around;
-/// an app never names it. An immutable value, usable on any thread.
+/// an app never names it. An immutable value, usable on any thread; the builder allocates it
+/// as it gathers.
 public struct FIRSystemContent: Hashable, Sendable {
     let elements: [AnyStrategy]
 }
 
 /// The result builder behind `FIRSystem { … }`: one element per line (§6.3.7), with `if`,
 /// `if … else`, `switch`, `for … in` and `if #available` around them.
+///
+/// Its functions run where the system is described, on any thread, and may allocate the
+/// content they return.
 @resultBuilder
 public enum FIRSystemBuilder {
     /// An element. Usable on any thread.
@@ -15,6 +19,9 @@ public enum FIRSystemBuilder {
         FIRSystemContent(elements: [AnyStrategy(element)])
     }
 
+    /// Unavailable: it exists for its diagnostic, which names the elements an `FIRSystem` holds and
+    /// where the value belongs instead. Never called, being unavailable: no context runs it, and it
+    /// allocates nothing.
     @available(*, unavailable, message: "An FIRSystem holds FIR elements: Taps, LeastSquares, Zero and the FIR forms of the response stages, such as LowPass(.windowedSinc(), cutoff:length:). This value is none of them: an equaliser (BandBoost, LowShelf, HighShelf) always has poles and belongs in an IIRSystem; a smoother, a gain or a rate changer belongs in the pipeline, beside Filter(system).")
     public static func buildExpression<Value>(_ value: Value) -> FIRSystemContent {
         FIRSystemContent(elements: [])
@@ -73,7 +80,8 @@ public enum FIRSystemBuilder {
 public struct FIRSystem: LTISystem, FIRSystemElement {
     let elements: [AnyStrategy]
 
-    /// A system from a block of elements. Usable on any thread.
+    /// A system from a block of elements. Runs the block where it is called, on any thread, and
+    /// allocates the elements.
     public init(@FIRSystemBuilder _ content: () -> FIRSystemContent) {
         elements = content().elements
     }
@@ -134,12 +142,14 @@ public struct FIRSystem: LTISystem, FIRSystemElement {
         elements.contains { ($0.value(as: (any FIRSystemElement).self))?.dependsOnSampleRate ?? true }
     }
 
-    /// The continuous values of the elements, in order (ANI-2). Usable on any thread.
+    /// The continuous values of the elements, in order (ANI-2). Usable on any thread; it may
+    /// allocate.
     public var parameters: [Double] {
         elements.flatMap { ($0.value(as: (any FIRSystemElement).self))?.parameters ?? [] }
     }
 
-    /// The system with the continuous values of its elements replaced. Usable on any thread.
+    /// The system with the continuous values of its elements replaced. Usable on any thread; it may
+    /// allocate.
     public func replacingParameters(_ values: ArraySlice<Double>) -> FIRSystem {
         guard values.count == parameters.count else { return self }
         var remaining = values

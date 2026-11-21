@@ -83,8 +83,8 @@ extension ShelfSlope {
 /// **In a system** (`IIRSystem { }`) the same value is an element; there it must keep the
 /// default `isActive` (ACT-1).
 ///
-/// An immutable value, usable on any thread. Designing happens when the stage is resolved or
-/// lowered: control or background context.
+/// An immutable value, usable on any thread. Designing, which allocates, happens when the stage
+/// is resolved or lowered: control or background context.
 public struct BandBoost: SequenceStage, IIRSystemElement {
     enum Shape: Hashable, Sendable {
         case order(Int)
@@ -112,8 +112,13 @@ public struct BandBoost: SequenceStage, IIRSystemElement {
     /// A band-boost of the given order: 1, the default, is the Cookbook's peaking section.
     /// Usable on any thread.
     ///
-    /// - Parameter isActive: `true`, `false`, `.active`, `.bypassed`, or a SwiftUI
-    ///   `Binding<Bool>`.
+    /// - Parameters:
+    ///   - center: The centre of the band, resolved against the environment (ENV-2).
+    ///   - gain: The gain at the centre; a negative number of decibels cuts.
+    ///   - bandwidth: The width of the band, between its two half-gain frequencies.
+    ///   - order: The number of biquads; 1, the default, is the Cookbook's peaking section.
+    ///   - isActive: `true`, `false`, `.active`, `.bypassed`, or a SwiftUI
+    ///     `Binding<Bool>`.
     public init(
         center: Frequency, gain: Amplification, bandwidth: Bandwidth, order: Int = 1, isActive: some ActivationSource = .active
     ) {
@@ -145,11 +150,12 @@ public struct BandBoost: SequenceStage, IIRSystemElement {
         }
     }
 
-    /// Centre, gain in decibels and bandwidth (ANI-2). Usable on any thread.
+    /// Centre, gain in decibels and bandwidth (ANI-2). Usable on any thread; it allocates the array
+    /// it returns.
     public var parameters: [Double] { [center.animatableValue, gain.animatableValue, bandwidth.animatableValue] }
 
-    /// The stage with its continuous values replaced. Passing its own values returns it
-    /// unchanged. Usable on any thread.
+    /// The stage with its continuous values replaced. Passing its own values returns it unchanged.
+    /// Usable on any thread; it may allocate.
     public func replacingParameters(_ values: ArraySlice<Double>) -> BandBoost {
         guard values.count == 3 else { return self }
         let list = Array(values)
@@ -187,8 +193,8 @@ public struct BandBoost: SequenceStage, IIRSystemElement {
 /// midpoint, gain and slope are its continuous values (ANI-2). In an `IIRSystem { }` it is an
 /// element and must keep the default `isActive` (ACT-1).
 ///
-/// An immutable value, usable on any thread. Designing happens when the stage is resolved or
-/// lowered: control or background context.
+/// An immutable value, usable on any thread. Designing, which allocates, happens when the stage
+/// is resolved or lowered: control or background context.
 public struct LowShelf: SequenceStage, IIRSystemElement {
     /// The frequency at which the gain is half the shelf's gain in decibels. Usable on any
     /// thread.
@@ -209,8 +215,13 @@ public struct LowShelf: SequenceStage, IIRSystemElement {
 
     /// A low shelf. Usable on any thread.
     ///
-    /// - Parameter isActive: `true`, `false`, `.active`, `.bypassed`, or a SwiftUI
-    ///   `Binding<Bool>`.
+    /// - Parameters:
+    ///   - midpoint: The frequency at which the gain is half the shelf's gain in decibels.
+    ///   - gain: The gain of the shelf, reached at 0 Hz.
+    ///   - slope: The steepness of the shelf; `.slope(1)`, the steepest that stays monotonic,
+    ///     by default.
+    ///   - isActive: `true`, `false`, `.active`, `.bypassed`, or a SwiftUI
+    ///     `Binding<Bool>`.
     public init(midpoint: Frequency, gain: Amplification, slope: ShelfSlope = .slope(1), isActive: some ActivationSource = .active) {
         self.init(midpoint: midpoint, gain: gain, slope: slope, activation: isActive.stageActivation)
     }
@@ -221,11 +232,12 @@ public struct LowShelf: SequenceStage, IIRSystemElement {
         try EqualizerDesign.lowShelf(midpoint: try midpoint.hertz(sampleRate: sampleRate), gain: gain, slope: slope, sampleRate: sampleRate)
     }
 
-    /// Midpoint, gain in decibels and slope (ANI-2). Usable on any thread.
+    /// Midpoint, gain in decibels and slope (ANI-2). Usable on any thread; it allocates the array
+    /// it returns.
     public var parameters: [Double] { [midpoint.animatableValue, gain.animatableValue, slope.animatableValue] }
 
-    /// The stage with its continuous values replaced. Passing its own values returns it
-    /// unchanged. Usable on any thread.
+    /// The stage with its continuous values replaced. Passing its own values returns it unchanged.
+    /// Usable on any thread; it may allocate.
     public func replacingParameters(_ values: ArraySlice<Double>) -> LowShelf {
         guard values.count == 3 else { return self }
         let list = Array(values)
@@ -261,8 +273,8 @@ public struct LowShelf: SequenceStage, IIRSystemElement {
 /// midpoint, gain and slope are its continuous values (ANI-2). In an `IIRSystem { }` it is an
 /// element and must keep the default `isActive` (ACT-1).
 ///
-/// An immutable value, usable on any thread. Designing happens when the stage is resolved or
-/// lowered: control or background context.
+/// An immutable value, usable on any thread. Designing, which allocates, happens when the stage
+/// is resolved or lowered: control or background context.
 public struct HighShelf: SequenceStage, IIRSystemElement {
     /// The frequency at which the gain is half the shelf's gain in decibels. Usable on any
     /// thread.
@@ -283,8 +295,13 @@ public struct HighShelf: SequenceStage, IIRSystemElement {
 
     /// A high shelf. Usable on any thread.
     ///
-    /// - Parameter isActive: `true`, `false`, `.active`, `.bypassed`, or a SwiftUI
-    ///   `Binding<Bool>`.
+    /// - Parameters:
+    ///   - midpoint: The frequency at which the gain is half the shelf's gain in decibels.
+    ///   - gain: The gain of the shelf, reached at the Nyquist frequency.
+    ///   - slope: The steepness of the shelf; `.slope(1)`, the steepest that stays monotonic,
+    ///     by default.
+    ///   - isActive: `true`, `false`, `.active`, `.bypassed`, or a SwiftUI
+    ///     `Binding<Bool>`.
     public init(midpoint: Frequency, gain: Amplification, slope: ShelfSlope = .slope(1), isActive: some ActivationSource = .active) {
         self.init(midpoint: midpoint, gain: gain, slope: slope, activation: isActive.stageActivation)
     }
@@ -295,11 +312,12 @@ public struct HighShelf: SequenceStage, IIRSystemElement {
         try EqualizerDesign.highShelf(midpoint: try midpoint.hertz(sampleRate: sampleRate), gain: gain, slope: slope, sampleRate: sampleRate)
     }
 
-    /// Midpoint, gain in decibels and slope (ANI-2). Usable on any thread.
+    /// Midpoint, gain in decibels and slope (ANI-2). Usable on any thread; it allocates the array
+    /// it returns.
     public var parameters: [Double] { [midpoint.animatableValue, gain.animatableValue, slope.animatableValue] }
 
-    /// The stage with its continuous values replaced. Passing its own values returns it
-    /// unchanged. Usable on any thread.
+    /// The stage with its continuous values replaced. Passing its own values returns it unchanged.
+    /// Usable on any thread; it may allocate.
     public func replacingParameters(_ values: ArraySlice<Double>) -> HighShelf {
         guard values.count == 3 else { return self }
         let list = Array(values)
@@ -339,8 +357,8 @@ public struct HighShelf: SequenceStage, IIRSystemElement {
 /// bandwidth are its continuous values (ANI-2). In an `IIRSystem { }` it is an element and
 /// must keep the default `isActive` (ACT-1).
 ///
-/// An immutable value, usable on any thread. Designing happens when the stage is resolved or
-/// lowered: control or background context.
+/// An immutable value, usable on any thread. Designing, which allocates, happens when the stage
+/// is resolved or lowered: control or background context.
 public struct MatchedPeak: SequenceStage, IIRSystemElement {
     /// The centre of the band. Usable on any thread.
     public let center: Frequency
@@ -360,8 +378,12 @@ public struct MatchedPeak: SequenceStage, IIRSystemElement {
 
     /// A matched peak. Usable on any thread.
     ///
-    /// - Parameter isActive: `true`, `false`, `.active`, `.bypassed`, or a SwiftUI
-    ///   `Binding<Bool>`.
+    /// - Parameters:
+    ///   - center: The centre of the band, resolved against the environment (ENV-2).
+    ///   - gain: The gain at the centre.
+    ///   - bandwidth: The width of the band, between its two half-gain frequencies.
+    ///   - isActive: `true`, `false`, `.active`, `.bypassed`, or a SwiftUI
+    ///     `Binding<Bool>`.
     public init(center: Frequency, gain: Amplification, bandwidth: Bandwidth, isActive: some ActivationSource = .active) {
         self.init(center: center, gain: gain, bandwidth: bandwidth, activation: isActive.stageActivation)
     }
@@ -372,11 +394,12 @@ public struct MatchedPeak: SequenceStage, IIRSystemElement {
         try MatchedPeakDesign(center: try center.hertz(sampleRate: sampleRate), gain: gain, bandwidth: bandwidth, sampleRate: sampleRate)
     }
 
-    /// Centre, gain in decibels and bandwidth (ANI-2). Usable on any thread.
+    /// Centre, gain in decibels and bandwidth (ANI-2). Usable on any thread; it allocates the array
+    /// it returns.
     public var parameters: [Double] { [center.animatableValue, gain.animatableValue, bandwidth.animatableValue] }
 
-    /// The stage with its continuous values replaced. Passing its own values returns it
-    /// unchanged. Usable on any thread.
+    /// The stage with its continuous values replaced. Passing its own values returns it unchanged.
+    /// Usable on any thread; it may allocate.
     public func replacingParameters(_ values: ArraySlice<Double>) -> MatchedPeak {
         guard values.count == 3 else { return self }
         let list = Array(values)

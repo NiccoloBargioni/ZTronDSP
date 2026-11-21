@@ -27,7 +27,8 @@ import ZTronDSPCore
 /// - The session is activated, and never deactivated unless the policy says
 ///   ``deactivatingOnStop()`` (CAP-4).
 ///
-/// An immutable value, usable on any thread.
+/// An immutable value, usable on any thread; it does not allocate, but to keep the closure of
+/// ``custom(_:)``.
 public struct AudioSessionPolicy: Sendable {
     /// Who configures the session.
     enum Management: Sendable {

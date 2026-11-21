@@ -3,12 +3,16 @@ import Foundation
 /// A source that delivers samples the caller holds (§4.4): a recording already in memory, the
 /// output of another computation, a fixture in a test.
 ///
-/// Threading: the samples are copied when the source is created and never change. `render`
-/// runs on the thread the engine paces the source on; `prepare` runs on the control context
-/// while the source is not running, and starts the samples over.
+/// Threading: the samples are copied when the source is created and never change; creating
+/// one allocates that copy. `render` runs on the thread the engine paces the source on and
+/// does not allocate; `prepare` runs on the control context while the source is not running,
+/// and starts the samples over.
 public final class BufferSource: PullSampleSource, @unchecked Sendable {
+    /// How the engine paces the source: `.asFastAsPossible` unless told otherwise.
     public let pacing: Pacing
+    /// The sample rate and the channel count of the samples.
     public let format: SignalFormat
+    /// The source's events; a buffer source sends none.
     public var events: AsyncStream<SourceEvent> { channel.stream }
 
     private let channels: [ContiguousArray<Float>]
@@ -20,6 +24,8 @@ public final class BufferSource: PullSampleSource, @unchecked Sendable {
     /// A source of one channel.
     ///
     /// - Parameters:
+    ///   - samples: the samples, copied.
+    ///   - sampleRate: their sample rate, in hertz.
     ///   - pacing: `.asFastAsPossible`, the default, hands the samples over as fast as they are
     ///     processed; `.realTime` plays them at the sample rate.
     ///   - loops: start over at the end instead of ending.
@@ -36,6 +42,8 @@ public final class BufferSource: PullSampleSource, @unchecked Sendable {
         self.loops = loops
     }
 
+    /// Checks the format and the lengths of the channels, and starts the samples over. Control
+    /// context.
     public func prepare() async throws(DSPError) {
         guard format.isValid else {
             throw .invalidParameter(stage: .none, parameter: "samples", reason: "\(format) is not a signal format")
@@ -46,10 +54,14 @@ public final class BufferSource: PullSampleSource, @unchecked Sendable {
         position = 0
     }
 
+    /// Does nothing: the engine's requests drive the source.
     public func start() throws(DSPError) {}
 
+    /// Does nothing.
     public func stop() {}
 
+    /// Copies the next frames, as many as fit; at the end it starts over when the source loops
+    /// and returns 0 otherwise. Does not allocate.
     public func render(into block: inout AudioBlock) -> Int {
         if position >= frameCount, loops { position = 0 }
         let frames = min(block.capacity, frameCount - position)

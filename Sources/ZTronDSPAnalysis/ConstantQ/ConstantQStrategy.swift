@@ -10,8 +10,9 @@ import ZTronDSPCore
 ///
 /// `ConstantQ` works out the bins from its arguments and the sample rate at its position; the
 /// strategy is asked two things about them. A strategy is a description: an immutable value,
-/// usable on any thread, and part of the description of the step that holds it. The work is
-/// done by the node it makes.
+/// usable on any thread, and part of the description of the step that holds it; the stock
+/// one allocates only to box a backend larger than three words. The work is done by the node
+/// it makes, and making it allocates.
 public protocol ConstantQStrategy: Hashable, Sendable {
     /// The delay of the transform: how many samples after the one a frame is centred on have
     /// arrived when the frame is complete. `ConstantQ` declares it as its latency (REAL-5),
@@ -34,6 +35,8 @@ public protocol ConstantQStrategy: Hashable, Sendable {
     /// analysis thread (RT-2).
     ///
     /// - Parameters:
+    ///   - geometry: the bins, at the sample rate of the step's position.
+    ///   - hop: samples between two frames.
     ///   - window: the window of the atoms.
     ///   - sparsity: the share of a kernel row that may be dropped, for a strategy that has
     ///     kernels.
@@ -66,8 +69,10 @@ public protocol ConstantQStrategy: Hashable, Sendable {
 ///   its kernel's energy is refused when the transform is made: it lies too high in its
 ///   octave's band, or its atom is too short.
 ///
-/// The cost per hop is one transform of the length of the highest octave's longest atom, and
-/// one sparse product, per octave. An immutable value, usable on any thread.
+/// The cost per hop is one transform of the length of the highest octave's longest atom, and one
+/// sparse product, per octave. An immutable value, usable on any thread. Its backend is kept boxed
+/// (`AnyStrategy`): creating one, and reading `backend`, allocate only for a backend larger than
+/// three words, which the stock one is not; `makeNode` runs on the control context and allocates.
 public struct MultirateSparseKernelStrategy: ConstantQStrategy {
     let backendBox: AnyStrategy
 
@@ -79,12 +84,15 @@ public struct MultirateSparseKernelStrategy: ConstantQStrategy {
     /// The transform backend the strategy was declared with.
     public var backend: any FFTBackend { backendBox.value(as: (any FFTBackend).self) ?? VDSPFFTBackend() }
 
-    /// The octaves laid on one another for a hop, checked (O-17). Arithmetic, but for the
-    /// half-band filter, which is designed on the first call and kept.
+    /// The octaves laid on one another for a hop, checked (O-17). It allocates the schedule's
+    /// arrays; the first call also designs the half-band filter, which is kept.
     func schedule(of geometry: ConstantQGeometry, hop: Int) throws(DSPError) -> ConstantQSchedule {
         try ConstantQSchedule(geometry: geometry, hop: hop, filterLength: geometry.octaves > 1 ? HalfBand.taps().count : 1)
     }
 
+    /// The delay of the lowest octave, from the schedule of the octaves for `hop`, checked
+    /// (O-17). Control context, as the requirement says; it allocates the schedule's arrays, and
+    /// the first call also designs the half-band filter, which is kept.
     public func latency(of geometry: ConstantQGeometry, hop: Int, window: Window, sparsity: Double) throws(DSPError) -> Int {
         try schedule(of: geometry, hop: hop).latency
     }
@@ -118,6 +126,8 @@ public struct MultirateSparseKernelStrategy: ConstantQStrategy {
         return kernels
     }
 
+    /// Lays out the octaves for `hop`, finds the transform length and makes the kernels and the
+    /// half-band taps, then the node.
     public func makeNode(
         of geometry: ConstantQGeometry, hop: Int, window: Window, sparsity: Double, channel: Int?, channelCount: Int, maximumBlockFrames: Int
     ) throws(DSPError) -> any AnalysisNode {
@@ -136,10 +146,11 @@ public struct MultirateSparseKernelStrategy: ConstantQStrategy {
 
 extension ConstantQStrategy where Self == MultirateSparseKernelStrategy {
     /// The octave-recursive multirate transform with one sparse spectral kernel, on the vDSP
-    /// transform: the default.
+    /// transform: the default. Usable on any thread; it does not allocate.
     public static var multirateSparseKernel: MultirateSparseKernelStrategy { MultirateSparseKernelStrategy() }
 
-    /// The same transform on a Fourier backend of your choice.
+    /// The same transform on a Fourier backend of your choice. Usable on any thread; it allocates
+    /// only to box a backend larger than three words.
     public static func multirateSparseKernel(backend: some FFTBackend) -> MultirateSparseKernelStrategy {
         MultirateSparseKernelStrategy(backend: backend)
     }

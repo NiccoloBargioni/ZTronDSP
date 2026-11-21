@@ -2,13 +2,22 @@ import Foundation
 
 /// One second-order section as the run-time kernels take it:
 /// `y[n] = b0·x[n] + b1·x[n−1] + b2·x[n−2] − a1·y[n−1] − a2·y[n−2]` (a0 = 1).
+///
+/// An immutable value, usable on any thread. It does not allocate, except ``coefficients``,
+/// which returns a new array.
 public struct BiquadSection: Hashable, Sendable {
+    /// The coefficient of `x[n]`.
     public let b0: Double
+    /// The coefficient of `x[n−1]`.
     public let b1: Double
+    /// The coefficient of `x[n−2]`.
     public let b2: Double
+    /// The coefficient of `y[n−1]`, which is subtracted.
     public let a1: Double
+    /// The coefficient of `y[n−2]`, which is subtracted.
     public let a2: Double
 
+    /// The section with these coefficients; `a0` is 1.
     public init(b0: Double, b1: Double, b2: Double, a1: Double, a2: Double) {
         self.b0 = b0
         self.b1 = b1
@@ -25,6 +34,8 @@ public struct BiquadSection: Hashable, Sendable {
 }
 
 /// How the environment changes downstream of an analysis step (ENV-1, §5.2).
+///
+/// A value, usable on any thread; it does not allocate.
 public enum ScopeChange: Hashable, Sendable {
     /// The step keeps the scope it is in.
     case none
@@ -45,18 +56,32 @@ public enum ScopeChange: Hashable, Sendable {
 /// are equal. Equal steps at the same position in different branches are computed once (F5),
 /// and an unchanged step keeps its node across a plan change (SWAP-1), so make `key` the
 /// value that determines the node: usually the stage itself.
+///
+/// An immutable value, usable on any thread. Creating one may allocate, for the boxed key;
+/// `make` runs on the control context.
 public struct AnalysisStep: Hashable, Sendable {
+    /// The step's name, as errors and the description of the plan show it.
     public let name: String
+    /// The value that determines the node, boxed.
     public let key: AnyStrategy
     /// The shape of the frames the node writes.
     public let output: FrameFormat
+    /// How the environment changes downstream of the step.
     public let scope: ScopeChange
     /// The delay the step adds, in seconds (REAL-5).
     public let latency: TimeInterval
     let make: @Sendable () throws(DSPError) -> any AnalysisNode
 
-    /// - Parameter make: creates the node. It runs on the control context, once per plan that
-    ///   needs a new node, and may allocate and throw.
+    /// A step whose node `make` creates.
+    ///
+    /// - Parameters:
+    ///   - name: the step's name, as errors and the description of the plan show it.
+    ///   - key: the value that determines the node: usually the stage itself.
+    ///   - output: the shape of the frames the node writes.
+    ///   - scope: how the environment changes downstream; `.none` keeps it.
+    ///   - latency: the delay the step adds, in seconds (REAL-5).
+    ///   - make: creates the node. It runs on the control context, once per plan that
+    ///     needs a new node, and may allocate and throw.
     public init(
         name: String, key: some Hashable & Sendable, output: FrameFormat, scope: ScopeChange = .none, latency: TimeInterval = 0,
         make: @escaping @Sendable () throws(DSPError) -> any AnalysisNode
@@ -69,10 +94,13 @@ public struct AnalysisStep: Hashable, Sendable {
         self.make = make
     }
 
+    /// True when the names, keys, output formats, scope changes and latencies are equal; `make`
+    /// is not compared.
     public static func == (lhs: AnalysisStep, rhs: AnalysisStep) -> Bool {
         lhs.name == rhs.name && lhs.key == rhs.key && lhs.output == rhs.output && lhs.scope == rhs.scope && lhs.latency == rhs.latency
     }
 
+    /// Hashes the name, the key and the output format.
     public func hash(into hasher: inout Hasher) {
         hasher.combine(name)
         hasher.combine(key)
@@ -91,7 +119,8 @@ public struct AnalysisStep: Hashable, Sendable {
 /// kernel, made anew. Its `values` say what the kernel is set to: other values of the same
 /// number are sent to the kernel that runs, and nothing is compiled.
 ///
-/// An immutable value, usable on any thread; `make` runs on the control context.
+/// An immutable value, usable on any thread; `make` runs on the control context. Creating one
+/// may allocate, for the boxed key and the values.
 public struct CustomKernel: Hashable, Sendable {
     /// The name of the stage, as errors and the description of the plan show it.
     public let name: String
@@ -120,9 +149,17 @@ public struct CustomKernel: Hashable, Sendable {
 
     /// A kernel without values: everything that tells it from another is in `key`.
     ///
-    /// - Parameter make: creates the kernel for the channel count, the sample rate and the
-    ///   largest block at the stage's position. Control context; may allocate. A kernel whose
-    ///   `process` is null is taken as a failed allocation.
+    /// - Parameters:
+    ///   - name: the name of the stage, as errors and the description of the plan show it.
+    ///   - key: what tells this kernel from another of the same name.
+    ///   - interpolation: the numerator of the rate ratio, output frames per input frame; a
+    ///     value below 1 counts as 1.
+    ///   - decimation: the denominator of that ratio; a value below 1 counts as 1.
+    ///   - latencyFrames: the delay the kernel adds, in input frames; it must equal the
+    ///     `latency_frames` of the kernel `make` returns.
+    ///   - make: creates the kernel for the channel count, the sample rate and the
+    ///     largest block at the stage's position. Control context; may allocate. A kernel whose
+    ///     `process` is null is taken as a failed allocation.
     public init(
         name: String, key: some Hashable & Sendable, interpolation: Int = 1, decimation: Int = 1, latencyFrames: Int = 0,
         make: @escaping @Sendable (_ channelCount: Int, _ sampleRate: Double, _ maximumFrames: Int) -> ztd_kernel_t
@@ -142,8 +179,14 @@ public struct CustomKernel: Hashable, Sendable {
     /// keeps a copy of `values`). Nothing of `make` runs here.
     ///
     /// - Parameters:
+    ///   - name: the name of the stage, as errors and the description of the plan show it.
     ///   - key: the structure of the stage, without its values: an order, a family, a strategy.
     ///   - values: the stage's continuous values; see ``values``.
+    ///   - interpolation: the numerator of the rate ratio, output frames per input frame; a
+    ///     value below 1 counts as 1.
+    ///   - decimation: the denominator of that ratio; a value below 1 counts as 1.
+    ///   - latencyFrames: the delay the kernel adds, in input frames; it must equal the
+    ///     `latency_frames` of the kernel `make` returns.
     ///   - make: creates the kernel for the channel count, the sample rate and the largest
     ///     block at the stage's position, set to `values`. Control context; may allocate. A
     ///     kernel whose `process` is null is taken as a failed allocation. When `values` is
@@ -162,6 +205,7 @@ public struct CustomKernel: Hashable, Sendable {
         self.make = { channelCount, sampleRate, maximumFrames in make(channelCount, sampleRate, maximumFrames, values) }
     }
 
+    /// True when the two describe one kernel set to the same values.
     public static func == (lhs: CustomKernel, rhs: CustomKernel) -> Bool {
         lhs.hasSameStructure(as: rhs) && lhs.values == rhs.values
     }
@@ -172,6 +216,7 @@ public struct CustomKernel: Hashable, Sendable {
             && latencyFrames == other.latencyFrames && values.count == other.values.count
     }
 
+    /// Hashes the name and the key.
     public func hash(into hasher: inout Hasher) {
         hasher.combine(name)
         hasher.combine(key)
@@ -183,7 +228,8 @@ public struct CustomKernel: Hashable, Sendable {
 /// As for a `CustomKernel`, the name, the key, the latency and the number of values say which
 /// processor it is, and the `values` what it is set to (§5.5.4).
 ///
-/// An immutable value, usable on any thread; `make` runs on the control context.
+/// An immutable value, usable on any thread; `make` runs on the control context. Creating one
+/// may allocate, for the boxed key and the values.
 public struct CustomProcessor: Hashable, Sendable {
     /// The name of the stage, as errors and the description of the plan show it.
     public let name: String
@@ -209,8 +255,13 @@ public struct CustomProcessor: Hashable, Sendable {
 
     /// A processor without values: everything that tells it from another is in `key`.
     ///
-    /// - Parameter make: creates the processor for the environment at the stage's position.
-    ///   Control context; may allocate and throw.
+    /// - Parameters:
+    ///   - name: the name of the stage, as errors and the description of the plan show it.
+    ///   - key: what tells this processor from another of the same name.
+    ///   - latencyFrames: the delay the processor adds, in frames; it must equal the
+    ///     `latencyFrames` of the processor `make` returns.
+    ///   - make: creates the processor for the environment at the stage's position.
+    ///     Control context; may allocate and throw.
     public init(
         name: String, key: some Hashable & Sendable, latencyFrames: Int = 0,
         make: @escaping @Sendable (DSPEnvironment) throws(DSPError) -> any SampleProcessor
@@ -229,8 +280,11 @@ public struct CustomProcessor: Hashable, Sendable {
     /// keeps a copy of `values`). Nothing of `make` runs here.
     ///
     /// - Parameters:
+    ///   - name: the name of the stage, as errors and the description of the plan show it.
     ///   - key: the structure of the stage, without its values.
     ///   - values: the stage's continuous values; see ``values``.
+    ///   - latencyFrames: the delay the processor adds, in frames; it must equal the
+    ///     `latencyFrames` of the processor `make` returns.
     ///   - make: creates the processor for the environment at the stage's position, set to
     ///     `values`. Control context; may allocate and throw.
     public init(
@@ -245,6 +299,7 @@ public struct CustomProcessor: Hashable, Sendable {
         self.makeAdjustable = { (environment: DSPEnvironment) throws(DSPError) -> any AdjustableSampleProcessor in try make(environment, values) }
     }
 
+    /// True when the two describe one processor set to the same values.
     public static func == (lhs: CustomProcessor, rhs: CustomProcessor) -> Bool {
         lhs.hasSameStructure(as: rhs) && lhs.values == rhs.values
     }
@@ -254,6 +309,7 @@ public struct CustomProcessor: Hashable, Sendable {
         name == other.name && key == other.key && latencyFrames == other.latencyFrames && values.count == other.values.count
     }
 
+    /// Hashes the name and the key.
     public func hash(into hasher: inout Hasher) {
         hasher.combine(name)
         hasher.combine(key)
@@ -266,6 +322,9 @@ public struct CustomProcessor: Hashable, Sendable {
 /// A stage that lowers to stock specs is fused like a stock stage; one with its own kernel is
 /// a fusion barrier (EXT-2). Each spec is bound to an implementation by its size when the plan
 /// is compiled (SEL-3).
+///
+/// A value, usable on any thread; reading its properties does not allocate, but for `isIdentity`,
+/// which may.
 public enum KernelSpec: Hashable, Sendable {
     /// `out = in · factor`, every channel alike. A changed factor ramps over `ramp` seconds.
     case gain(factor: Float, ramp: TimeInterval)
@@ -324,8 +383,9 @@ public enum KernelSpec: Hashable, Sendable {
         }
     }
 
-    /// True for a spec that does nothing: a unity gain, a cascade without sections, an FIR
-    /// that is a single unit tap. Such a kernel is removed (F4).
+    /// True for a spec that does nothing: a unity gain, a cascade without sections, an FIR that is
+    /// a single unit tap. Such a kernel is removed (F4). It may allocate the one-tap list it
+    /// compares an FIR's taps with.
     public var isIdentity: Bool {
         switch self {
         case .gain(let factor, _): factor == 1

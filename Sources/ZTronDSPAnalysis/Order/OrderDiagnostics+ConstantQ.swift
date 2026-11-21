@@ -11,6 +11,9 @@ import ZTronDSPCore
 extension PipelineBuilder {
     // MARK: A block cannot begin with a context-dependent step (ORD-3)
 
+    /// Catches a block that begins with `ConstantQScale`, with a message that says how to begin it
+    /// (ORD-3, ORD-4). Never called, being unavailable: no context runs it, and it allocates
+    /// nothing.
     @available(*, unavailable, message: "A block cannot begin with ConstantQScale: its domains depend on the stage before it. Begin the block with the stage it follows, or write the branch fluently, as .tap { $0.constantQScale() }.")
     public static func buildPartialBlock(first: ConstantQScale) -> Pipeline<Spectrum<LinearFrequency, MagnitudeValues>, Spectrum<ConstantQFrequency, MagnitudeValues>> {
         Pipeline(unchecked: [])
@@ -18,25 +21,40 @@ extension PipelineBuilder {
 
     // MARK: The family
 
+    /// Catches `ConstantQScale` after a domain it does not take, with a message that names what it
+    /// needs (ORD-4). Never called, being unavailable: no context runs it, and it allocates
+    /// nothing.
     @available(*, unavailable, message: "ConstantQScale needs a linear-frequency spectrum of magnitudes or powers: put Magnitude() or Power() before it, and Decibels() after it. For a spectrum that keeps its phase, use ConstantQ() on the samples instead.")
     public static func buildPartialBlock<I, O>(accumulated: Pipeline<I, O>, next: ConstantQScale) -> Pipeline<I, O> { accumulated }
 
+    /// Catches `ConstantQScale` after sequence stages alone, with a message that names what it
+    /// needs (ORD-4). Never called, being unavailable: no context runs it, and it allocates
+    /// nothing.
     @available(*, unavailable, message: "ConstantQScale needs a linear-frequency spectrum of magnitudes or powers: put Magnitude() or Power() before it, and Decibels() after it. For a spectrum that keeps its phase, use ConstantQ() on the samples instead.")
     public static func buildPartialBlock(accumulated: SequenceChain, next: ConstantQScale) -> SequenceChain { accumulated }
 
     // MARK: The self-typed steps
 
+    /// Catches `ConstantQ` after a domain it does not take, with a message that names what it needs
+    /// (ORD-4). Never called, being unavailable: no context runs it, and it allocates nothing.
     @available(*, unavailable, message: "ConstantQ needs samples: it frames the signal and cannot follow a spectrum, a cepstrum or any other frame of bins. For a constant-Q axis on the magnitudes or powers of an STFT, use ConstantQScale(); for a second analysis, start a Tap where the signal is still samples.")
     public static func buildPartialBlock<I, O>(accumulated: Pipeline<I, O>, next: ConstantQ) -> Pipeline<I, O> { accumulated }
 
+    /// Catches `ChromaFold` after a domain it does not take, with a message that names what it
+    /// needs (ORD-4). Never called, being unavailable: no context runs it, and it allocates
+    /// nothing.
     @available(*, unavailable, message: "ChromaFold needs the magnitudes of a constant-Q spectrum: put it after ConstantQ() and Magnitude(), or after Magnitude() and ConstantQScale(). The bins of an STFT are not spaced by semitones, and complex values, powers and decibels are not what a pitch class sums.")
     public static func buildPartialBlock<I, O>(accumulated: Pipeline<I, O>, next: ChromaFold) -> Pipeline<I, O> { accumulated }
 
+    /// Catches `ChromaFold` after sequence stages alone, with a message that names what it needs
+    /// (ORD-4). Never called, being unavailable: no context runs it, and it allocates nothing.
     @available(*, unavailable, message: "ChromaFold needs the magnitudes of a constant-Q spectrum: put it after ConstantQ() and Magnitude(), or after Magnitude() and ConstantQScale(). The bins of an STFT are not spaced by semitones, and complex values, powers and decibels are not what a pitch class sums.")
     public static func buildPartialBlock(accumulated: SequenceChain, next: ChromaFold) -> SequenceChain { accumulated }
 
     // MARK: The recipe
 
+    /// Catches `ChromaCQT` after a domain it does not take, with a message that names what it needs
+    /// (ORD-4). Never called, being unavailable: no context runs it, and it allocates nothing.
     @available(*, unavailable, message: "ChromaCQT needs samples: it taps the signal and analyses it itself. After a constant-Q spectrum, write Magnitude(), ChromaFold() and Emit(to:) instead.")
     public static func buildPartialBlock<I, O>(accumulated: Pipeline<I, O>, next: ChromaCQT) -> Pipeline<I, O> { accumulated }
 }

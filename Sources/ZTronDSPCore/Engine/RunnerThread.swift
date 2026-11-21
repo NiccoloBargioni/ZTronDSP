@@ -30,6 +30,8 @@ final class HubList {
 }
 
 /// How an analysis thread is scheduled (RT-9).
+///
+/// A value, usable on any thread; it does not allocate.
 public enum AnalysisScheduling: Sendable, Hashable {
     /// No session has run yet: the thread does not exist.
     case notStarted

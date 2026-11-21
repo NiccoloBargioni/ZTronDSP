@@ -8,7 +8,7 @@ import ZTronDSPCore
 /// A later layer resolves a `Frequency` against the pipeline's environment and passes the
 /// number on.
 ///
-/// An immutable value, usable on any thread.
+/// An immutable value, usable on any thread; it does not allocate.
 public enum FilterResponse: Hashable, Sendable {
     /// Passes what lies below `cutoff`.
     case lowPass(cutoff: Double)

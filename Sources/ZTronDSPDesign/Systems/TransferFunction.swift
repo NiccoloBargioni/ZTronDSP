@@ -20,7 +20,8 @@ import ZTronDSPCore
 /// stability in zero-pole or section form, where such a pole is where it was put.
 ///
 /// Construction never fails; a denominator that is zero is reported when the system is
-/// analysed. An immutable value, usable on any thread.
+/// analysed. An immutable value, usable on any thread; its analysis allocates (see
+/// `LTISystem`).
 public struct TransferFunction: LTISystem, Hashable, Sendable {
     /// The numerator. Usable on any thread.
     public let numerator: Polynomial
@@ -32,7 +33,8 @@ public struct TransferFunction: LTISystem, Hashable, Sendable {
     /// thread.
     public let rootFinder: AnyStrategy
 
-    /// Usable on any thread.
+    /// Usable on any thread; it allocates only to box a root finder larger than three words, which
+    /// the stock one is not.
     public init(
         numerator: Polynomial, denominator: Polynomial, domain: SystemDomain,
         rootFinder: some PolynomialRootFinder = .companionQR
@@ -44,7 +46,7 @@ public struct TransferFunction: LTISystem, Hashable, Sendable {
     }
 
     /// From coefficient lists, highest power first. Leading zeros are dropped. Usable on any
-    /// thread.
+    /// thread; it may allocate.
     public init(
         numerator: [Double], denominator: [Double], domain: SystemDomain,
         rootFinder: some PolynomialRootFinder = .companionQR
@@ -55,7 +57,7 @@ public struct TransferFunction: LTISystem, Hashable, Sendable {
     /// The digital system of the difference equation
     /// `a₀·y[n] = Σ bₖ·x[n − k] − Σ_{k ≥ 1} aₖ·y[n − k]`: coefficients of `z⁻¹`, lowest delay
     /// first. The shorter list is padded with zeros at its end, which turns the two into
-    /// polynomials in `z` of equal degree. Usable on any thread.
+    /// polynomials in `z` of equal degree. Usable on any thread; it allocates the padded lists.
     public static func differenceEquation(
         b: [Double], a: [Double], rootFinder: some PolynomialRootFinder = .companionQR
     ) -> TransferFunction {

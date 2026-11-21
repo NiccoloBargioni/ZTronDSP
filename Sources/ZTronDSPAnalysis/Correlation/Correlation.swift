@@ -12,11 +12,15 @@ import ZTronDSPDesign
 /// | `.unbiased` | `r[ℓ] / (products at lag ℓ)` | Each lag divided by the number of products it sums: `N − |ℓ|` for inputs of one length. A lag without products is 0. |
 /// | `.coefficient` | `r[ℓ] / √(Σx²·Σy²)` | Between −1 and 1; an autocorrelation reads 1 at lag 0. Where the denominator does not exceed the floor, every value is 0 (NUM-1). |
 ///
-/// An immutable value, usable on any thread.
+/// An immutable value, usable on any thread; it does not allocate.
 public enum CorrelationNormalization: Hashable, Sendable, CaseIterable {
+    /// The sums as they are.
     case none
+    /// Divided by the length of the longer input.
     case biased
+    /// Each lag divided by the number of products it sums.
     case unbiased
+    /// Divided by the root of the product of the two energies: between −1 and 1.
     case coefficient
 }
 
@@ -24,6 +28,7 @@ extension DSP {
     /// The least denominator a `.coefficient` normalisation divides by: the root of the
     /// product of the two energies, far below anything a signal that is not silence gives
     /// (two inputs of a hundred samples at an RMS level 220 dB under full scale just reach it).
+    /// A constant, readable on any thread; it does not allocate.
     public static let correlationFloor: Double = 1e-20
 
     /// The cross-correlation of `x` and `y`: `r[ℓ] = Σₙ x[n + ℓ]·y[n]` for every lag at which
@@ -38,9 +43,12 @@ extension DSP {
     /// index `M − 1`. It is the convolution of `x` with `y` back to front, and `mode` cuts it as
     /// it cuts a convolution.
     ///
-    /// A one-shot computation: synchronous, it runs where it is called and allocates (§9.2).
+    /// A one-shot computation: synchronous, it runs where it is called, on any thread, and
+    /// allocates (§9.2).
     ///
     /// - Parameters:
+    ///   - x: the first input, `N` values.
+    ///   - y: the second input, `M` values: the one the lag shifts against `x`.
     ///   - mode: which part of the result is returned; `.full` by default.
     ///   - normalization: `.none` by default.
     ///   - strategy: as for ``convolve(_:_:mode:strategy:crossovers:)``; the FFT method
@@ -49,6 +57,7 @@ extension DSP {
     ///     is, so there the quotients are right to that floor and not to 10⁻⁶ of the largest
     ///     of them, unless the method is `.direct` (§7.5, row 10).
     ///   - floor: the least denominator `.coefficient` divides by.
+    ///   - crossovers: the measured crossovers `.automatic` follows (§7.4).
     /// - Throws: `DSPError.invalidParameter` for an empty input, a floor that is negative or
     ///   not a number, or a result of more than 2²⁸ values;
     ///   `DSPError.resourceAllocationFailed` when a transform cannot be set up.
@@ -87,10 +96,11 @@ extension DSP {
     /// let r = try DSP.autocorrelate(frame, maxLag: 2_048, normalization: .coefficient)
     /// ```
     ///
-    /// A one-shot computation: synchronous, it runs where it is called and allocates (§9.2).
-    /// For a stream, the step is `Autocorrelation`.
+    /// A one-shot computation: synchronous, it runs where it is called, on any thread, and
+    /// allocates (§9.2). For a stream, the step is `Autocorrelation`.
     ///
     /// - Parameters:
+    ///   - x: the signal, `N` values.
     ///   - maxLag: the last lag returned; `nil`, the default, is `x.count − 1`, the last lag
     ///     that has a product. A lag past it is 0.
     ///   - normalization: `.none` by default. `.coefficient` divides by the value at lag 0.
@@ -99,6 +109,7 @@ extension DSP {
     ///     `N + maxLag`, so that the result is the linear autocorrelation and not the circular
     ///     one; `.automatic` chooses by the crossover of `crossovers`.
     ///   - floor: the least value at lag 0 that `.coefficient` divides by.
+    ///   - crossovers: the measured crossovers `.automatic` follows (§7.4).
     /// - Returns: `maxLag + 1` values. With the Wiener–Khinchin relation each is right to the
     ///   floor of a single-precision transform under the value at lag 0, about 10⁻⁷ of it
     ///   (§7.5, row 11): a lag that should read 0 reads that much, with either sign.

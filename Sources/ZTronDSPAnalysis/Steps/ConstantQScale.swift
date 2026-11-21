@@ -29,7 +29,8 @@ import ZTronDSPCore
 ///   the rows and `ChromaFold` folds them without knowing how they were produced.
 ///
 /// Going back to linear bins is lossy and is not offered (D-10). Switched off, the step
-/// suspends the rest of its branch (ACT-3). An immutable value, usable on any thread.
+/// suspends the rest of its branch (ACT-3). An immutable value, usable on any thread; `lower(_:)`
+/// runs on the control context and may allocate.
 public struct ConstantQScale: ContextDependentStep {
     /// The centre of the lowest bin, before tuning.
     public let fmin: Frequency
@@ -47,8 +48,12 @@ public struct ConstantQScale: ContextDependentStep {
     public let window: Window
     /// The share of a band's summed weights that may be dropped.
     public let sparsity: Double
+    /// The step's switch: off, it suspends the rest of its branch (ACT-3).
     public let activation: StageActivation
 
+    /// The bins of ``ConstantQ`` with the same arguments, as weights over linear bins. Nothing is
+    /// checked here: `lower(_:)` checks the values against the spectra at the step's position when
+    /// the plan is compiled.
     public init(
         fmin: Frequency = .midiNote(24), octaves: Int = 7, binsPerOctave: Int = 36, tuning: Double = 0, filterScale: Double = 1,
         gamma: Double = 0, window: Window = .hann, sparsity: Double = 0.01, isActive: some ActivationSource = .active
@@ -70,6 +75,7 @@ public struct ConstantQScale: ContextDependentStep {
         axis == .linear && (values == .magnitude || values == .power) ? .spectrum(axis: .constantQ, values: values) : nil
     }
 
+    /// The step with its typing rule, ``rule``.
     public var stageDescription: StageDescription { StageDescription(self, rule: ConstantQScale.rule) }
 
     struct Key: Hashable, Sendable {
@@ -107,6 +113,10 @@ public struct ConstantQScale: ContextDependentStep {
         return geometry
     }
 
+    /// Checks the values against the spectra at the step's position (a transform length, a
+    /// sparsity from 0 up to but not 1, a window over a whole frame, a lowest atom the frame
+    /// holds) and emits the banded or the dense projection, whichever the crossover chooses.
+    /// Control context; may allocate.
     public func lower(_ context: inout LoweringContext) throws(DSPError) {
         let environment = context.environment
         guard case .linearFrequency(let bins, let nyquist)? = environment.frequencyAxis, bins >= 2, nyquist > 0 else {
@@ -144,6 +154,8 @@ public struct ConstantQScale: ContextDependentStep {
 }
 
 extension PipelineBuilder {
+    /// `ConstantQScale` follows magnitudes or powers on a linear-frequency axis and keeps the kind
+    /// of value. Runs where the pipeline is described, on any thread, and allocates.
     public static func buildPartialBlock<I, Values: LinearValued>(
         accumulated: Pipeline<I, Spectrum<LinearFrequency, Values>>, next: ConstantQScale
     ) -> Pipeline<I, Spectrum<ConstantQFrequency, Values>> {
@@ -153,6 +165,7 @@ extension PipelineBuilder {
 
 extension Pipeline {
     /// The magnitudes or powers on a constant-Q axis: see ``ConstantQScale``.
+    /// Usable on any thread; allocates the pipeline it returns.
     public func constantQScale<Values: LinearValued>(
         fmin: Frequency = .midiNote(24), octaves: Int = 7, binsPerOctave: Int = 36, tuning: Double = 0, filterScale: Double = 1,
         gamma: Double = 0, window: Window = .hann, sparsity: Double = 0.01, isActive: some ActivationSource = .active

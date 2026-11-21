@@ -20,7 +20,8 @@ extension View {
     ///
     /// Discrete: a change takes effect at once and is not animated (ANI-1).
     ///
-    /// Threading: main actor, like every view modifier; it stores one small value.
+    /// Threading: main actor, like every view modifier; it stores one small value, and may
+    /// allocate as SwiftUI does for any environment value.
     public func colorMap(_ map: some ColorMap) -> some View {
         environment(\.dspColorMap, AnyColorMap(map))
     }
@@ -32,14 +33,16 @@ extension View {
     /// Animatable: inside `withAnimation` the view is redrawn once per display frame with an
     /// interpolated range (ANI-1).
     ///
-    /// Threading: main actor, like every view modifier; it stores one small value.
+    /// Threading: main actor, like every view modifier; it stores one small value, and may
+    /// allocate as SwiftUI does for any environment value.
     public func valueRange(_ range: ClosedRange<Float>) -> some View {
         environment(\.dspValueRange, .constant(range))
     }
 
     /// The value range, read from a binding.
     ///
-    /// Threading: main actor, like every view modifier; it stores one small value.
+    /// Threading: main actor, like every view modifier; it stores one small value, and may
+    /// allocate as SwiftUI does for any environment value.
     public func valueRange(_ range: Binding<ClosedRange<Float>>) -> some View {
         environment(\.dspValueRange, .bound(range))
     }
@@ -51,7 +54,8 @@ extension View {
     /// rows are already mel bands, constant-Q bins, pitch classes or tempi is drawn bin for
     /// bin whatever the scale (VC-5). Discrete: a change takes effect at once.
     ///
-    /// Threading: main actor, like every view modifier; it stores one small value.
+    /// Threading: main actor, like every view modifier; it stores one small value, and may
+    /// allocate as SwiftUI does for any environment value.
     public func frequencyScale(_ scale: some FrequencyScale) -> some View {
         environment(\.dspFrequencyScale, AnyFrequencyScale(scale))
     }
@@ -64,14 +68,16 @@ extension View {
     /// `.pinchScaling(.vertical)` a pinch scales the range, and the view keeps the scaled
     /// range itself until this one changes (PINCH-5).
     ///
-    /// Threading: main actor, like every view modifier; it stores one small value.
+    /// Threading: main actor, like every view modifier; it stores one small value, and may
+    /// allocate as SwiftUI does for any environment value.
     public func frequencyRange(_ range: ClosedRange<Double>) -> some View {
         environment(\.dspFrequencyRange, .constant(range))
     }
 
     /// The vertical range, read from a binding; a vertical pinch writes it (PINCH-5).
     ///
-    /// Threading: main actor, like every view modifier; it stores one small value.
+    /// Threading: main actor, like every view modifier; it stores one small value, and may
+    /// allocate as SwiftUI does for any environment value.
     public func frequencyRange(_ range: Binding<ClosedRange<Double>>) -> some View {
         environment(\.dspFrequencyRange, .bound(range))
     }
@@ -83,14 +89,16 @@ extension View {
     /// `.pinchScaling(.horizontal)` a pinch scales the span, and the view keeps the scaled
     /// span itself until this one changes (PINCH-5).
     ///
-    /// Threading: main actor, like every view modifier; it stores one small value.
+    /// Threading: main actor, like every view modifier; it stores one small value, and may
+    /// allocate as SwiftUI does for any environment value.
     public func timeSpan(_ seconds: Double) -> some View {
         environment(\.dspTimeSpan, .constant(seconds))
     }
 
     /// The time span, read from a binding; a horizontal pinch writes it (PINCH-5).
     ///
-    /// Threading: main actor, like every view modifier; it stores one small value.
+    /// Threading: main actor, like every view modifier; it stores one small value, and may
+    /// allocate as SwiftUI does for any environment value.
     public func timeSpan(_ seconds: Binding<Double>) -> some View {
         environment(\.dspTimeSpan, .bound(seconds))
     }
@@ -100,14 +108,16 @@ extension View {
     ///
     /// Animatable (ANI-1). With `.pinchScaling(.vertical)` a pinch scales the range.
     ///
-    /// Threading: main actor, like every view modifier; it stores one small value.
+    /// Threading: main actor, like every view modifier; it stores one small value, and may
+    /// allocate as SwiftUI does for any environment value.
     public func amplitudeRange(_ range: ClosedRange<Float>) -> some View {
         environment(\.dspAmplitudeRange, .constant(range))
     }
 
     /// The amplitude range, read from a binding; a vertical pinch writes it (PINCH-5).
     ///
-    /// Threading: main actor, like every view modifier; it stores one small value.
+    /// Threading: main actor, like every view modifier; it stores one small value, and may
+    /// allocate as SwiftUI does for any environment value.
     public func amplitudeRange(_ range: Binding<ClosedRange<Float>>) -> some View {
         environment(\.dspAmplitudeRange, .bound(range))
     }
@@ -116,7 +126,8 @@ extension View {
     /// count as 1 (§8.3). A component draws only when there is something new to show, so
     /// this is a cap, not a rate.
     ///
-    /// Threading: main actor, like every view modifier; it stores one small value.
+    /// Threading: main actor, like every view modifier; it stores one small value, and may
+    /// allocate as SwiftUI does for any environment value.
     public func maximumFrameRate(_ framesPerSecond: Int) -> some View {
         environment(\.dspMaximumFrameRate, framesPerSecond)
     }
@@ -129,7 +140,8 @@ extension View {
     /// changes. The same views can be placed by themselves: ``FrequencyAxisView``,
     /// ``TimeAxisView``, ``PitchClassAxisView``, ``TempoAxisView``.
     ///
-    /// Threading: main actor, like every view modifier; it stores one small value.
+    /// Threading: main actor, like every view modifier; it stores one small value, and may
+    /// allocate as SwiftUI does for any environment value.
     public func axis(_ axis: DSPAxis) -> some View {
         transformEnvironment(\.dspShownAxes) { $0.formUnion(.axis(axis)) }
     }
@@ -150,7 +162,8 @@ extension View {
     /// scales every axis named here (PINCH-8). With one axis named that is the same pinch;
     /// with both, a pinch whose fingers land together scales both whatever its direction.
     ///
-    /// Threading: main actor, like every view modifier; it stores one small value.
+    /// Threading: main actor, like every view modifier; it stores one small value, and may
+    /// allocate as SwiftUI does for any environment value.
     public func pinchScaling(_ axes: Axis.Set) -> some View {
         environment(\.dspPinchAxes, axes)
     }

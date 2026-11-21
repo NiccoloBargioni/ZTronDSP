@@ -24,7 +24,8 @@ import ZTronDSPCore
 /// Threading: an immutable value, `Sendable`. `filter` blocks until the GPU has finished and
 /// allocates: background work only, never the main thread or the analysis thread.
 public struct MetalMedianFilter: Sendable {
-    /// The direction the median is taken along.
+    /// The direction the median is taken along: a value, usable on any thread; it does not
+    /// allocate.
     public enum Axis: Hashable, Sendable {
         /// Across columns: the same row of the frames before and after. What keeps harmonics.
         case time
