@@ -2,7 +2,7 @@ Currency check (§7.3), 2026-11-16: the registered source of this row was confir
 
 # Masks of the harmonic–percussive separation (WP-530)
 
-Stability register row 16, of which the masks are the arithmetic: the medians are exact (`median-lanes.md`), the masks divide. Code: `Sources/ZTronDSPAnalysis/Separation/MaskStrategy.swift` (`SoftMask`, `HardMask`), `Nodes/HarmonicPercussiveNode.swift` (`SeparationMasks`). Tests: `Tests/ZTronDSPAnalysisTests/SeparationMaskTests.swift`, and `RhythmSeparationStabilityTests.swift` for the figures below. References: `Tests/Golden/generators/hpss.py`, the published definition written out with NumPy and SciPy (librosa is not installed in the generator environment). Figures are from the iOS 27.0 simulator on the host of §3, measured in Debug; the tests that bound them pass in Debug and in Release.
+Stability register row 16, of which the masks are the arithmetic: the medians are exact (`median-lanes.md`), the masks divide. Code: `Sources/ZTronDSPAnalysis/Separation/MaskStrategy.swift` (`SoftMask`, `HardMask`), `Nodes/HarmonicPercussiveNode.swift` (`SeparationMasks`). Tests: `Tests/ZTronDSPAnalysisTests/SeparationMaskTests.swift`, and `RhythmSeparationStabilityTests.swift` for the figures below. References: `Tests/Golden/generators/hpss.py`: librosa 0.11.0's masks, `librosa.decompose.hpss(…, mask=True)` with every argument explicit, held within 10⁻¹² to the published definition written out with NumPy and SciPy (STG-2). Figures are from the iOS 27.0 simulator on the host of §3, measured in Debug; the tests that bound them pass in Debug and in Release.
 
 ## Hazard
 

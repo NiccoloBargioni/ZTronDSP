@@ -1,7 +1,9 @@
-"""Reference implementations the spectral generators share, written from the published
-definitions with NumPy only (STG-2). librosa, which the table of STG-2 names for several of
-them, is not installed where the vectors were generated; each function states the definition
-it follows and the librosa call it stands for.
+"""The definitions the spectral generators share, written from their publications with NumPy
+only (STG-2). Where librosa is the oracle (spectral_transforms.py, mel.py, cepstrum.py,
+onset_strength.py, hpss.py, tempogram.py, constant_q.py) these are the second, independent
+computation a generator holds librosa's output to (_golden.cross_check, within 1e-12) before it
+writes librosa's; each function states the definition it follows and the librosa call it is held
+to. The window figures are the definitions of window_analysis.py, which has no librosa call.
 """
 
 
@@ -26,7 +28,8 @@ def frames(numpy, x, frame, hop, centred):
 def stft(numpy, x, frame, hop, window, length, centred, factor=1.0):
     """X[k, m] = Σ_n factor·w[n]·y[k·hop + n]·e^(−j2πmn/length): the unscaled one-sided DFT of
     each windowed frame, zero-padded after its samples to `length` (librosa.stft with
-    win_length == n_fft when length == frame)."""
+    win_length == n_fft when length == frame; spectral_transforms.py gives the call for the
+    zero-padded framing)."""
     cut = frames(numpy, x, frame, hop, centred) * numpy.asarray(window)[numpy.newaxis, :] * factor
     return numpy.fft.rfft(cut, n=length, axis=-1, norm="backward")
 

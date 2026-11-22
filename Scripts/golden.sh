@@ -22,8 +22,9 @@
 # The manifest is Tests/Golden/manifest.json: for each generator, the hash of its source and of
 # every file it wrote (*.json, *.f32, *.f64 in the Golden folders, and its OUTPUTS; README.txt
 # is not a vector). Pins are in Tests/Golden/generators/requirements.txt: running refuses to
-# start when an installed oracle differs from its pin, and a generator that stops because a
-# pinned oracle is not installed is recorded as pending. --check also holds every golden MATLAB
+# start when an installed oracle differs from its pin (NumPy, SciPy and librosa are read as a
+# generator loads them, through _oracle.py), and a generator that stops because a pinned oracle
+# is not installed is recorded as pending. The run log shows each generator's cross-checks. --check also holds every golden MATLAB
 # script (*.m in a Golden folder) to the static check of Scripts/lib/matlab_check.py (MAT-2).
 # Exit status: 0 ok, 1 failure or drift, 2 usage error or a refused run, 3 pending under --strict
 # or, for --octave, no Octave.

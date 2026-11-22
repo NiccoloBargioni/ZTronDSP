@@ -1,7 +1,8 @@
-"""Reference implementation of the harmonic–percussive separation, written from its published
-definition with NumPy and SciPy (STG-2). librosa, which the table of STG-2 names, is not
-installed where the vectors were generated; each function states the definition it follows and
-the librosa call it stands for.
+"""The definition of the harmonic–percussive separation, written from its publication with NumPy
+and SciPy (STG-2): the second, independent computation hpss.py holds librosa's masks to
+(_golden.cross_check, within 1e-12) before it writes them. The vectors are librosa's
+(librosa.decompose.hpss, oracle form); each function states the definition it follows and the
+librosa call it is held to.
 """
 
 
@@ -22,9 +23,10 @@ def medians(ndimage, magnitudes, time_kernel, frequency_kernel):
 
 def soft_mask(numpy, component, competitor, power, floor):
     """M = c^p / (c^p + k^p), computed on the two values divided by the larger of them, as
-    librosa.util.softmask(X, X_ref, power=power, split_zeros=False) computes it, with one
+    librosa.util.softmask(X, X_ref, power=power, split_zeros=…) computes it, with one
     difference the specification asks for (§6.10, NUM-1): where the larger of the two lies
-    below `floor` the mask is 0, where librosa uses the smallest normal number."""
+    below `floor` the mask is 0, where librosa uses the smallest normal number (and 0.5 when
+    split_zeros, which librosa.decompose.hpss sets at unit margins)."""
     larger = numpy.maximum(component, competitor)
     known = larger >= floor
     scale = numpy.where(known, larger, 1.0)

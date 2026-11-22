@@ -98,6 +98,29 @@ struct ChromaTests {
         #expect(worstSum <= 0.01, "\(name): a pitch-class sum is off by \(worstSum) of the largest of the excerpt")
     }
 
+    /// The acceptance of §6.8 against the parity oracle (STG-2): the chroma of the package's
+    /// transform against librosa's, `librosa.feature.chroma_cqt` of `librosa.cqt` (`librosa.vqt`
+    /// where γ > 0) with every argument explicit, which `constant_q.py` writes beside the
+    /// definition's chroma. librosa scales its atoms otherwise and resamples between octaves,
+    /// so the two transforms are not equal; their chroma are held by the cosine of §6.8.
+    @Test(arguments: ["music-defaults", "music-variable-q", "music-top-octave"])
+    func theChromaOfTheMusicFixturesIsThatOfLibrosa(name: String) throws {
+        let golden = try GoldenFile(named: "constant_q", in: .module).require("transform-\(name)")
+        #expect(try golden.string("fixture") == "music", "§6.8 asks for the cosine on the music fixtures")
+        let signal = try fixture(of: golden)
+        let reference = try golden.real("librosaChroma"), frames = try golden.integer("frames")
+        let transform = try constantQ(of: golden)
+        let chroma: [[Float]] = try Pipeline { transform; Magnitude(); ChromaFold() }
+            .process(signal.samples, format: signal.format, blockSize: 441)
+        #expect(chroma.count > 5 && chroma.count <= frames && reference.count == frames * 12)
+        var least = 1.0
+        for frame in chroma.indices where frame < frames {
+            least = min(least, cosineSimilarity(chroma[frame].map(Double.init), Array(reference[frame * 12 ..< (frame + 1) * 12])))
+        }
+        print("measured WP-524: \(name): least frame-wise cosine similarity to librosa.feature.chroma_cqt \(least) over \(chroma.count) frames (0.98 asked for)")
+        #expect(least >= 0.98, "\(name): the least frame-wise cosine similarity to librosa's chroma is \(least); 0.98 is asked for (§6.8)")
+    }
+
     @Test func silenceGivesZeros() throws {
         func fold<N: ChromaNormalization>(_ normalization: N) throws -> [[Float]] {
             try Pipeline { ConstantQ(); Magnitude(); ChromaFold(normalization: normalization) }.process(TestSignal.silence(count: 25_000), format: format)

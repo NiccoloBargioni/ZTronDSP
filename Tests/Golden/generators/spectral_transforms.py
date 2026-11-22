@@ -1,24 +1,40 @@
 """Golden vectors for the transform backend and the STFT step (WP-502, WP-504, STG-2).
 
-Oracle: numpy.fft.rfft, every argument explicit.
+The transform (fft.json). Oracle: numpy.fft.rfft / irfft, every argument explicit.
 
-The table of STG-2 names librosa.stft for the framings. librosa is not installed where these
-vectors were generated, so the short-time transform is written here from its published
-definition, with NumPy only:
+The short-time transform (stft.json). Oracle: librosa 0.11.0, ORACLE FORM: the frames written
+are librosa.stft's, every argument explicit, the input in float64,
 
-    X[k, m] = Σ_n w[n] · y[k·hop + n] · e^(−j2πmn/M),   n = 0 … N − 1,   m = 0 … M/2
+    librosa.stft(y=x, n_fft=M, hop_length=hop, win_length=M, window=w, center=centred,
+                 dtype=numpy.complex128, pad_mode="reflect", out=None)        (bins × frames)
 
-    causal    y = x                          frame k is x[k·hop : k·hop + N]      (center=False)
-    centred   y = x reflected by N // 2 at   frame k is centred on x[k·hop]       (center=True,
-              its start (numpy.pad, mode                                           pad_mode="reflect")
-              "reflect": the edge sample is
-              not repeated)
+transposed to frames × bins. `w` is the name ("hann", "hamming": librosa takes
+scipy.signal.get_window(name, M, fftbins=True), periodic) when M = N; when the frame is
+zero-padded to M > N it is the array [get_window(name, N, fftbins=True), M − N zeros], because
+librosa's own win_length < n_fft would centre the window in the frame, and the signal is extended
+by M − N zeros at its end, so that librosa counts the frames of the N-sample framing (the zeros
+meet the zeros of the window). A window normalisation is a factor on every value, applied to
+librosa's output: 2/Σw (amplitude), √(2/(M·Σw²)) (power).
 
-A streaming analysis has no end of signal: of the centred frames only those whose last sample
-has arrived exist, k ≤ (len(x) − N // 2) / hop. The window is scipy.signal.get_window("hann", N,
-fftbins=True) unless the case says otherwise, zero-padded after its samples when M > N.
+A streaming analysis has no end of signal: of librosa's centred frames (1 + len(x)/hop, the
+signal reflected by M/2 at both ends) the stream has those whose last sample has arrived,
+k ≤ (len(x) − N/2)/hop, the first ones, which are written; the end's frames are not.
 
-Grid: lengths 16, 48, 80, 240, 1 024, 4 096; two framings. Tolerance: 1e-5 of the frame maximum.
+Cross-check, before anything is written: the definition (_spectral.stft, NumPy)
+
+    X[k, m] = Σ_n factor·w[n]·y[k·hop + n]·e^(−j2πmn/M),   n = 0 … N − 1,   m = 0 … M/2
+
+    causal    y = x                          frame k is x[k·hop : k·hop + N]
+    centred   y = x reflected by N/2 at its  frame k is centred on x[k·hop]
+              start (numpy.pad "reflect",
+              the edge sample not repeated)
+
+must equal librosa's frames within 1e-12 of the largest value (both in double precision; it
+measures 1.4e-16).
+
+Grid: lengths 16, 48, 80, 240, 1 024, 4 096; two framings; zero-padding with a Hamming window and
+an odd hop; the two normalisations. Read by ZTronDSPAnalysisTests (STFTTests); tolerance 1e-5 of
+the frame maximum (STG-2).
 
     python3 spectral_transforms.py
 """
@@ -26,6 +42,7 @@ import _golden
 import _spectral
 
 numpy, scipy = _golden.oracle()
+librosa = _golden.librosa()
 from scipy import signal  # noqa: E402
 
 TARGET = "ZTronDSPAnalysisTests"
@@ -52,8 +69,29 @@ _golden.write(TARGET, "fft", cases)
 # --- WP-504: the short-time transform --------------------------------------------------------------
 
 
-def stft(x, frame, hop, window, length, centred, factor):
-    return _spectral.stft(numpy, x, frame, hop, window, length, centred, factor)
+def librosa_stft(x, frame, hop, name, length, centred, factor):
+    """librosa.stft of the framing, frames × bins: for a stream, the frames whose last sample has
+    arrived (centred), every one of them (causal)."""
+    y = numpy.asarray(x, dtype=numpy.float64)
+    window = name
+    if length > frame and centred:
+        raise ValueError("librosa centres its frame of n_fft samples: a centred, zero-padded framing has no librosa call here")
+    if length > frame:
+        window = numpy.concatenate([signal.get_window(name, frame, fftbins=True), numpy.zeros(length - frame)])
+        y = numpy.concatenate([y, numpy.zeros(length - frame)])
+    spectra = librosa.stft(y=y, n_fft=length, hop_length=hop, win_length=length, window=window, center=centred,
+                           dtype=numpy.complex128, pad_mode="reflect", out=None).T
+    count = (len(x) - frame // 2) // hop + 1 if centred else (len(x) - frame) // hop + 1
+    return factor * spectra[:count]
+
+
+def stft(name, x, frame, hop, window_name, length, centred, factor):
+    """librosa's frames, held to the definition before they are written."""
+    window = signal.get_window(window_name, frame, fftbins=True)
+    definition = _spectral.stft(numpy, x, frame, hop, window, length, centred, factor)
+    spectra = librosa_stft(x, frame, hop, window_name, length, centred, factor)
+    _golden.cross_check(f"stft {name}", spectra, definition, 1e-12)
+    return spectra
 
 
 cases = []
@@ -75,23 +113,21 @@ def add(name, parameters, x, spectra):
 for frame in LENGTHS:
     hop = frame // 4
     x = noise(4 * frame + 3, 5040 + frame)
-    window = signal.get_window("hann", frame, fftbins=True)
     for centred in (False, True):
         name = f"{frame}-{'centered' if centred else 'causal'}"
         add(name, {"frame": frame, "hop": hop, "length": frame, "window": "hann", "centered": 1 if centred else 0,
                    "normalization": "none"},
-            x, stft(x, frame, hop, window, frame, centred, 1.0))
+            x, stft(name, x, frame, hop, "hann", frame, centred, 1.0))
 
 # Zero-padding, another window, an odd hop, and the two normalisations.
 x = noise(2000, 5049)
-window = signal.get_window("hamming", 240, fftbins=True)
 add("padded", {"frame": 240, "hop": 77, "length": 480, "window": "hamming", "centered": 0, "normalization": "none"},
-    x, stft(x, 240, 77, window, 480, False, 1.0))
-window = signal.get_window("hann", 1024, fftbins=True)
+    x, stft("padded", x, 240, 77, "hamming", 480, False, 1.0))
+hann = signal.get_window("hann", 1024, fftbins=True)
 add("amplitude", {"frame": 1024, "hop": 256, "length": 1024, "window": "hann", "centered": 1, "normalization": "amplitude"},
-    x, stft(x, 1024, 256, window, 1024, True, 2.0 / numpy.sum(window)))
+    x, stft("amplitude", x, 1024, 256, "hann", 1024, True, 2.0 / numpy.sum(hann)))
 add("power", {"frame": 1024, "hop": 256, "length": 2048, "window": "hann", "centered": 0, "normalization": "power"},
-    x, stft(x, 1024, 256, window, 2048, False, numpy.sqrt(2.0 / (2048.0 * numpy.sum(window * window)))))
+    x, stft("power", x, 1024, 256, "hann", 2048, False, numpy.sqrt(2.0 / (2048.0 * numpy.sum(hann * hann)))))
 
 cases.append(_golden.case("data", {}, {
     "signals": _golden.raw_array(TARGET, "stft_signals.f32", numpy.concatenate(signals), dtype="f32"),

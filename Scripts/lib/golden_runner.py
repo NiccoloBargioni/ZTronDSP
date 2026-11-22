@@ -28,7 +28,9 @@ Tests/Golden/generators/requirements.txt. NumPy, SciPy and librosa must be pinne
 read as a generator loads them, through _oracle.installed() (librosa after the SciPy stand-ins);
 a further pin is read from the installed package's metadata. A generator that stops because a
 pinned oracle is not installed is recorded as pending: --check reports it loudly and fails on it
-under --strict.
+under --strict. The lines a generator prints for its cross-checks (_golden.cross_check: the
+NumPy definition held to the oracle's output before anything is written) are shown in the run
+log under its name.
 
 The golden MATLAB scripts (every *.m in a Golden folder: the exports of §6.14 and the writer's
 own script) are held, by --check, to the static check of Scripts/lib/matlab_check.py (MAT-2:
@@ -245,8 +247,14 @@ def snapshot(tree, generator):
     return state
 
 
+def cross_checks(result):
+    """The lines a generator printed for its cross-checks (_golden.cross_check): the run log shows them."""
+    return [line for line in result.stdout.split("\n") if line.startswith("cross-check ")]
+
+
 def run_generator(tree, generator, pins):
-    """Runs one generator in its tree. Returns (outputs written, error, name of a missing oracle)."""
+    """Runs one generator in its tree. Returns (outputs written, error, name of a missing oracle,
+    the lines of its cross-checks)."""
     before = snapshot(tree, generator)
     result = subprocess.run([sys.executable, generator["path"]], cwd=generator["directory"], capture_output=True, text=True)
     if result.returncode != 0:
@@ -255,18 +263,18 @@ def run_generator(tree, generator, pins):
             module = missing.group(1).lower()
             for pin in pins:
                 if pin.replace("-", "_") == module:
-                    return [], None, pin
+                    return [], None, pin, []
         tail = "\n".join((result.stderr.strip() or result.stdout.strip() or "it exited with status %d" % result.returncode).split("\n")[-6:])
-        return [], tail, None
+        return [], tail, None, []
     after = snapshot(tree, generator)
     written = {relative for relative, state in after.items() if before.get(relative) != state}
     absent = [relative for relative in generator["outputs"] if relative not in after]
     if absent:
-        return [], "it declares OUTPUTS that it did not write: %s" % ", ".join(absent), None
+        return [], "it declares OUTPUTS that it did not write: %s" % ", ".join(absent), None, []
     written |= set(generator["outputs"])
     if not written:
-        return [], "it wrote nothing into a Golden folder and declares no OUTPUTS", None
-    return sorted(written), None, None
+        return [], "it wrote nothing into a Golden folder and declares no OUTPUTS", None, []
+    return sorted(written), None, None, cross_checks(result)
 
 
 def selected(generators, only):
@@ -291,7 +299,7 @@ def generate(tree, only):
     failed = 0
     for generator in chosen:
         name = generator["name"]
-        outputs, error, missing_oracle = run_generator(tree, generator, pins)
+        outputs, error, missing_oracle, checks = run_generator(tree, generator, pins)
         if missing_oracle:
             if any(entry["generator"] == name for entry in manifest["generators"]):
                 print("golden: SKIPPED %s: %s is not installed; its committed vectors were kept as they are" % (name, missing_oracle))
@@ -312,6 +320,8 @@ def generate(tree, only):
             "generator": name, "source": generator["source"], "sourceSha256": sha256(generator["path"]),
             "outputs": [{"path": relative, "sha256": sha256(tree.absolute(relative))} for relative in outputs]})
         print("golden: %s: %s" % (name, ", ".join(outputs) if len(outputs) <= 3 else "%d files, %s … %s" % (len(outputs), outputs[0], outputs[-1])))
+        for line in checks:
+            print("golden:   " + line)
 
     owners = {}
     for entry in manifest["generators"]:
@@ -649,7 +659,7 @@ def reproduce(tree, only, tolerance):
                 print("golden: FAILED %s: it has no committed files to compare with" % name)
                 failed += 1
                 continue
-            outputs, error, missing_oracle = run_generator(scratch, fresh_generators[name], pins)
+            outputs, error, missing_oracle, _ = run_generator(scratch, fresh_generators[name], pins)
             if missing_oracle:
                 print("golden: SKIPPED %s: %s is not installed; nothing was reproduced" % (name, missing_oracle))
                 continue

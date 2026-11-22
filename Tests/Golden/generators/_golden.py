@@ -72,7 +72,7 @@ def cross_check(what, oracle_values, definition_values, bound):
         index = numpy.unravel_index(int(numpy.argmax(difference)), a.shape)
         sys.exit(f"cross-check {what}: the definition deviates from the oracle by {deviation:.3e} of the largest value "
                  f"({worst:.6e} of {largest:.6e}); the bound is {bound:.1e}. At {tuple(int(i) for i in index)}: "
-                 f"oracle {a[index]!r}, definition {b[index]!r}")
+                 f"oracle {a[index].item()!r}, definition {b[index].item()!r}")
     print(f"cross-check {what}: {deviation:.2e} of the largest value (bound {bound:.0e})")
     return deviation
 

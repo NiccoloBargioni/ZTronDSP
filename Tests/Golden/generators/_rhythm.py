@@ -1,7 +1,8 @@
-"""Reference implementations of the onset strength and of the tempograms, written from their
-published definitions with NumPy and SciPy (STG-2). librosa, which the table of STG-2 names for
-the onset strength, is not installed where the vectors were generated; each function states the
-definition it follows and the librosa call it stands for.
+"""The definitions of the onset strength and of the tempograms, written from their publications
+with NumPy and SciPy (STG-2): the second, independent computation onset_strength.py and
+tempogram.py hold librosa's output to (_golden.cross_check, within 1e-12) before they write it.
+The vectors are librosa's (oracle form); each function states the definition it follows and the
+librosa call it is held to.
 """
 
 
@@ -31,10 +32,11 @@ def onset_strength(numpy, ndimage, decibels, lag, max_size, floor):
         o[t] = mean over bands f of max(0, S[f, t] - R[f, t - lag]),   0 for t < lag
 
     S is the spectrum with its values raised to `floor`; R is S, or S under a maximum filter of
-    `max_size` bands along frequency. It stands for
+    `max_size` bands along frequency. It is held to
 
-        librosa.onset.onset_strength(S=S.T, lag=lag, max_size=max_size, ref=None, detrend=False,
-                                     center=False, aggregate=numpy.mean)
+        librosa.onset.onset_strength(y=None, sr=…, S=S.T, lag=lag, max_size=max_size, ref=None,
+                                     detrend=False, center=False, feature=None,
+                                     aggregate=numpy.mean)
 
     on a spectrum floored the same way: the reference is scipy.ndimage.maximum_filter1d with
     librosa's arguments, the difference is spaced by `lag`, negatives are discarded, the bands
@@ -56,7 +58,8 @@ def tempogram_windows(numpy, onset, window, centred):
     causal    window k is onset[k : k + window]: it describes the value it ends on
     centred   window k is centred on onset[k], which sits at index window // 2 of it; the curve
               is led in by a linear ramp from 0 (numpy.pad(mode="linear_ramp", end_values=0),
-              as librosa.feature.tempogram(center=True) pads it)
+              as librosa.feature.tempogram(center=True) pads it; tempogram.py frames librosa's
+              way and asserts the same windows through the cross-check)
 
     A stream has no end: of the centred windows only those whose last value has arrived exist.
     """
@@ -76,7 +79,9 @@ def autocorrelation_tempogram(numpy, windows, taper, feature_rate, low, high, fl
     ascending tempo. Returns (columns, beats per minute).
 
     librosa.feature.tempogram differs in two documented ways: it does not remove the mean, and it
-    returns every lag.
+    returns every lag. tempogram.py therefore holds this to librosa.feature.tempogram called on
+    each mean-removed window (center=False, norm=None), normalised by librosa.util.normalize
+    (norm=inf, threshold=floor, fill=False), the rows of these lags kept.
     """
     window = windows.shape[1]
     segments = (windows - windows.mean(axis=1, keepdims=True)) * numpy.asarray(taper, dtype=numpy.float64)[numpy.newaxis, :]
@@ -95,8 +100,11 @@ def fourier_tempogram(numpy, windows, taper, feature_rate, low, high, resolution
     resolution·window. Bin k is 60·k·feature_rate / length beats per minute; the rows are the
     bins inside low … high. Returns (columns, beats per minute).
 
-    librosa.feature.fourier_tempogram differs: it keeps the mean, does not zero-pad, and returns
-    the complex spectrum.
+    librosa.feature.fourier_tempogram differs: it keeps the mean, does not zero-pad, returns the
+    complex spectrum, and leads a centred curve in with zeros. tempogram.py therefore holds this
+    to the magnitude of librosa.feature.fourier_tempogram called on each mean-removed window
+    zero-padded to the fast length (center=False, the taper zero-padded alike), the rows of
+    these bins kept.
     """
     window = windows.shape[1]
     segments = (windows - windows.mean(axis=1, keepdims=True)) * numpy.asarray(taper, dtype=numpy.float64)[numpy.newaxis, :]

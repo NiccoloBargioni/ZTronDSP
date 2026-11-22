@@ -153,7 +153,7 @@ expect_status 3 "the strict check fails on a pending generator" "$GOLDEN" --chec
 fresh_tree; add cross_check_fails
 expect_status 1 "a cross-check that fails stops the generator" "$GOLDEN" --only cross_check_fails --root "$TREE"
 expect_contains "… with the deviation and the bound" "cross-check a definition one part in 1e9 away: the definition deviates from the oracle by 1.000e-09 of the largest value"
-expect_contains "… and both values where they differ most" "At (2,): oracle 3.0, definition 3.000000003"
+expect_contains "… and both values where they differ most" "At (2,): oracle 3.0, definition 3.0000000030000002"
 if [ ! -e "$TREE/Tests/ZTronDSPAnalysisTests/Golden/cross_check_fails.json" ]; then pass "… and writes no vector"; else fail "… and writes no vector"; fi
 
 # librosa: pinned like NumPy and SciPy, and read as a generator loads it (_oracle.installed(), after

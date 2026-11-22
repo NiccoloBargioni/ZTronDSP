@@ -112,7 +112,11 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       # The generator environment: GNU Octave runs every golden MATLAB script in gate 7 (WP-910),
-      # and the pinned oracles reproduce the vectors in the step after it.
+      # and the pinned oracles reproduce the vectors in the step after it. requirements.txt pins
+      # NumPy, SciPy and librosa, the oracle of spectral_transforms, mel, cepstrum, onset_strength,
+      # hpss, tempogram and constant_q; pip brings librosa's own dependencies (numba, llvmlite,
+      # soxr, scikit-learn, soundfile, audioread) at the versions it resolves, which
+      # requirements.txt records beside the pins and does not pin.
       - name: GNU Octave, for the golden MATLAB scripts
         run: brew install octave
       - name: Gate 7 · the vectors against their manifest; the golden MATLAB scripts under GNU Octave

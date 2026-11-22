@@ -2,7 +2,7 @@ Currency check (§7.3), 2026-11-16: the registered source of this row was confir
 
 # Tempograms (WP-526, WP-527)
 
-Stability register row 15. Code: `Sources/ZTronDSPAnalysis/Nodes/TempogramNodes.swift` (`TempogramNode`, `AutocorrelationTempogramTransform`, `FourierTempogramTransform`), `Steps/Tempogram.swift`; the autocorrelation is `Nodes/WienerKhinchin.swift` (`autocorrelation.md`). Tests: `Tests/ZTronDSPAnalysisTests/TempogramTests.swift`, and `RhythmSeparationStabilityTests.swift` for the figures below. References: `Tests/Golden/generators/tempogram.py`, the published definitions written out with NumPy (librosa is not installed in the generator environment). Figures are from the iOS 27.0 simulator on the host of §3, measured in Debug; the tests that bound them pass in Debug and in Release.
+Stability register row 15. Code: `Sources/ZTronDSPAnalysis/Nodes/TempogramNodes.swift` (`TempogramNode`, `AutocorrelationTempogramTransform`, `FourierTempogramTransform`), `Steps/Tempogram.swift`; the autocorrelation is `Nodes/WienerKhinchin.swift` (`autocorrelation.md`). Tests: `Tests/ZTronDSPAnalysisTests/TempogramTests.swift`, and `RhythmSeparationStabilityTests.swift` for the figures below. References: `Tests/Golden/generators/tempogram.py`: librosa 0.11.0's `librosa.feature.tempogram` and `librosa.feature.fourier_tempogram` called on each mean-removed window, every argument explicit, held within 10⁻¹² to the published definitions written out with NumPy (STG-2; the mean removal is §6.9's, not librosa's). Figures are from the iOS 27.0 simulator on the host of §3, measured in Debug; the tests that bound them pass in Debug and in Release.
 
 ## Hazard
 

@@ -3,8 +3,18 @@
 # Scripts/golden.sh --check compares the pins with the ones Tests/Golden/manifest.json recorded.
 numpy==2.2.6
 scipy==1.15.3
-# librosa is the oracle of the generators that import it. It was not installed on the machine the
-# first vectors were generated on: a generator that stops on `import librosa` is recorded as
-# pending in the manifest until it is. The pin is the release that was current when this file
-# was written; it has not been exercised here.
+# librosa is the oracle of spectral_transforms, mel, cepstrum, onset_strength, hpss, tempogram and
+# constant_q, which load it through _oracle.load_librosa() after the SciPy stand-ins. The runner
+# reads its version as a generator loads it, like NumPy's and SciPy's, and refuses another; where
+# it is not installed, a generator that needs it is recorded as pending (or its committed vectors
+# are kept). Installed on the generator host on 2026-11-21 with the owner's approval; every
+# librosa vector in the manifest was generated with it on 2026-11-22.
 librosa==0.11.0
+# Installed with librosa 0.11.0 on 2026-11-21, not pinned by the runner. They can move numbers:
+#   numba 0.68.1, llvmlite 0.50.0   librosa compiles some of its functions with them on first use
+#                                   (two --reproduce runs in a row reproduce every vector bit for bit)
+#   soxr 1.1.0                      resamples between octaves in librosa.cqt and librosa.vqt
+#                                   (res_type="soxr_hq"): constant_q's librosaChroma of the transforms
+#   scikit-learn 1.7.2              loaded by librosa.decompose (hpss.py); no call of a generator
+#                                   computes with it
+#   soundfile 0.14.0, audioread 3.1.0   read audio files, which no generator does

@@ -55,6 +55,32 @@ struct ConstantQScaleTests {
         #expect(projection.bands.allSatisfy { $0.firstBin == 0 && $0.weights.count == frame / 2 + 1 }, "without sparsity a band is every bin")
     }
 
+    /// The chroma acceptance of §6.8 against the parity oracle (STG-2), on the reading CR-035
+    /// proposes: the chroma of the pseudo constant-Q against `librosa.feature.chroma_cqt` of
+    /// `librosa.pseudo_cqt` (every argument explicit, its frames centred on the centres of the
+    /// package's) with librosa's scale of band k, l_k / n_fft^(3/2), removed. As librosa scales
+    /// them, the low octaves weigh 1/f more in the fold than bands that read their own amplitude
+    /// (§6.8), and the cosine against that chroma is measured and printed, not held.
+    @Test func theChromaOfThePseudoConstantQIsThatOfLibrosa() throws {
+        let golden = try GoldenFile(named: "constant_q", in: .module).require("pseudo-music-semitones")
+        #expect(try golden.string("fixture") == "music", "§6.8 asks for the cosine on the music fixtures")
+        let signal = try fixture(of: golden)
+        let frame = try golden.integer("frame"), hop = try golden.integer("hop"), frames = try golden.integer("frames")
+        let reference = try golden.real("librosaChroma"), asIs = try golden.real("librosaChromaAsIs")
+        let scale = try step(of: golden, sparsity: 0.01)
+        let chroma: [[Float]] = try Pipeline { STFT(frame: frame, hop: hop); Magnitude(); scale; ChromaFold() }
+            .process(signal.samples, format: signal.format, blockSize: 441)
+        #expect(chroma.count == frames && reference.count == frames * 12 && asIs.count == frames * 12)
+        var least = 1.0, leastAsIs = 1.0
+        for index in chroma.indices where index < frames {
+            let values = chroma[index].map(Double.init), range = index * 12 ..< (index + 1) * 12
+            least = min(least, cosineSimilarity(values, Array(reference[range])))
+            leastAsIs = min(leastAsIs, cosineSimilarity(values, Array(asIs[range])))
+        }
+        print("measured WP-523: pseudo-music-semitones: least frame-wise cosine similarity to librosa's chroma \(least) with librosa's band scale removed (0.98 asked for, CR-035), \(leastAsIs) with it kept")
+        #expect(least >= 0.98, "the least frame-wise cosine similarity to librosa's chroma, its band scale removed, is \(least); 0.98 is asked for (§6.8, CR-035)")
+    }
+
     @Test func theNodesGiveTheProjectionInDoublePrecisionAndAgreeWithEachOther() throws {
         let signal = TestSignal.whiteNoise(count: 16_000, seed: 523, amplitude: 0.5)
         let stft = STFT(frame: 2_048, hop: 512)

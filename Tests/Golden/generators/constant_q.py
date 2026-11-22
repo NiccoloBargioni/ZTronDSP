@@ -1,43 +1,88 @@
 """Golden vectors for the constant-Q transform and chroma (WP-517 … WP-524, STG-2).
 
-The table of STG-2 names librosa for the spectral packages. librosa is not installed where
-these vectors were generated, so every reference here is written from the published
-definitions with NumPy only, evaluated directly, densely and in double precision. Nothing of
-the method under test (octave recursion, half-band decimation, sparse kernels) is used: the
-transform is the sum over the samples of the signal that defines it.
+The definitions of §6.8 are evaluated here directly, densely and in double precision with NumPy;
+nothing of the method under test (octave recursion, half-band decimation, sparse kernels) is used.
+librosa 0.11.0 is the oracle wherever the specification's quantity and a librosa call are the
+same function (ORACLE FORM: librosa's output is written, held first to the definition within
+1e-12), and where they are not, librosa's output is written beside the definition's and compared
+by the specification's criterion (DERIVED FORM). Every librosa argument is explicit, the input
+is float64.
 
     geometry      f_k = fmin * 2^((k + tuning) / B),  alpha = 2^(1/B) - 1,  Q = filterScale / alpha,
                   N_k = ceil(Q * fs / (f_k + gamma / alpha))                          (section 6.8)
+                  ORACLE FORM: librosa.cqt_frequencies(n_bins=octaves * B, fmin=fmin,
+                  bins_per_octave=B, tuning=tuning), and the ceiling of
+                  librosa.filters.wavelet_lengths(freqs=f, sr=fs, window="hann",
+                  filter_scale=filterScale, gamma=gamma, alpha=2^(1/B) - 1 for every bin)[0]
+                  (alpha given: librosa's own default is its relative bandwidth,
+                  (2^(2/B) - 1) / (2^(2/B) + 1), whose atoms are 1 to 3 % longer)
 
     atom          a_k[m] = (2 / sum(w)) * w(1/2 + m / N_k) * exp(j 2 pi f_k m / fs)
                   for m = -floor(N_k / 2) ... ceil(N_k / 2) - 1, with w the periodic Hann
                   window, 0.5 - 0.5 cos(2 pi t). The factor 2 / sum(w) makes a sine at f_k read
-                  its own amplitude; librosa scales its atoms otherwise (L1, then sqrt(N_k)), so
-                  its magnitudes differ from these by a factor per bin.
-
-    transform     X[n, k] = sum_m x[n * hop + m] * conj(a_k[m]),  x = 0 outside the signal
-                  (Brown 1991; librosa.cqt / librosa.vqt with center=True, pad_mode="constant")
+                  its own amplitude; librosa scales its atoms otherwise (L1, then by N_k / n_fft,
+                  then the response by 1 / sqrt(N_k)), builds them of 2 floor(N_k / 2) + 1 samples
+                  and resamples between octaves, so no factor per bin turns its transform into
+                  this one.
 
     kernel        K[k, b] = conj(DFT_N(a_k laid in a frame of N points, centred on sample h))[b] / N
                   for b = 0 ... N/2, with N the smallest transform length (f * 2^n, f in 1, 3, 5,
                   15, n >= 4) that holds the longest atom of the octave and h half that atom
-                  (Brown & Puckette 1992)
+                  (Brown & Puckette 1992). The definition only: no librosa function returns the
+                  spectral kernel of these atoms (librosa.filters.constant_q builds librosa's).
+
+    transform     X[n, k] = sum_m x[n * hop + m] * conj(a_k[m]),  x = 0 outside the signal
+                  (Brown 1991). DERIVED FORM: the definition's X is the tested vector; beside
+                  it, librosa's chroma of librosa's transform,
+                      librosa.feature.chroma_cqt(y=None, sr=22050.0, C=numpy.abs(V), hop_length=hop,
+                          fmin=fmin * 2^(tuning / B), norm=numpy.inf, threshold=0.0, tuning=tuning,
+                          n_chroma=12, n_octaves=octaves, window=None, bins_per_octave=B,
+                          cqt_mode="full")
+                      V = librosa.cqt(y=x, sr=22050.0, hop_length=hop, fmin=fmin, n_bins=octaves * B,
+                          bins_per_octave=B, tuning=tuning, filter_scale=filterScale, norm=1,
+                          sparsity=0.01, window="hann", scale=True, pad_mode="constant",
+                          res_type="soxr_hq", dtype=numpy.complex128)
+                      (librosa.vqt with intervals="equal" and gamma=gamma, the same otherwise,
+                      for gamma > 0; 22 050 Hz is the fixtures' rate), the frames centred on
+                      n * hop as the definition's
+                  which ChromaTests holds the package's chroma to by the criterion of section 6.8:
+                  frame-wise cosine similarity >= 0.98 on the music fixtures.
 
     chroma        bin k belongs to pitch class (c0 + round(12 k / B)) mod 12, c0 the class of the
                   semitone nearest to bin 0 with C as 0; the magnitudes of a class are summed and
-                  the twelve sums divided by the largest (librosa.feature.chroma_cqt with
-                  norm=inf, threshold=0; rounding of halves away from zero)
+                  the twelve sums divided by the largest. ORACLE FORM for the fold: what is
+                  written is librosa.feature.chroma_cqt (arguments as above, norm=numpy.inf, and
+                  norm=None for the sums) of the definition's magnitudes, held to the fold of the
+                  definition within 1e-12.
 
     pseudo CQ     C[n, k] = sum_b R_k[b] * |S[n, b]| for magnitudes, sum_b R_k[b]^2 * |S[n, b]|^2 for
                   powers, with S the STFT (causal frames, periodic Hann, no normalisation) and
-                  R_k[b] = |DFT_M(a_k)[b]| / 2, the response of the atom, 1 at f_k
-                  (librosa.pseudo_cqt, whose weights are scaled otherwise)
+                  R_k[b] = |DFT_M(a_k)[b]| / 2, the response of the atom, 1 at f_k. S is librosa's
+                  (librosa.stft, center=False, held to the definition within 1e-12). DERIVED FORM:
+                  the definition's C is the tested vector; beside it, librosa's chroma of
+                      P = librosa.pseudo_cqt(y=x, sr=22050.0, hop_length=512, fmin=fmin,
+                          n_bins=octaves * B, bins_per_octave=B, tuning=tuning,
+                          filter_scale=filterScale, norm=1, sparsity=0.01, window="hann",
+                          scale=True, pad_mode="constant", dtype=numpy.complex128)
+                  in its frames centred on the centres of the definition's (four frames later),
+                  twice: of |P| as it is ("librosaChromaAsIs"), and of |P| with librosa's scale of
+                  band k, l_k / n_fft^(3/2), removed ("librosaChroma"), l_k the lengths librosa
+                  builds the atoms with, librosa.filters.wavelet_lengths with librosa's relative
+                  bandwidth. librosa's scale weighs the low octaves by 1/f in the fold, so the
+                  first cannot meet 0.98 against chroma whose bands read their own amplitude
+                  (it measures 0.963 on the music fixture): CR-035 proposes the second as the
+                  reference of section 6.8 for the pseudo constant-Q.
 
-Tolerances, as the tests hold them: frequencies 1e-12 relative, atom lengths equal; dense kernel
-entries 1e-6 of the largest entry of the row; the multirate transform within 0.03 of the frame
-maximum of the definition (what a kernel thinned to sparsity 0.01 and half-band decimation
-cost; the acceptance of section 6.8 is by property); chroma cosine similarity >= 0.98; the pseudo
-constant-Q within 1e-5 of the frame maximum.
+The cosine of the definition's chroma against librosa's is printed for every case (a
+"cross-check" line of the run log) and must reach 0.98 on the music fixtures, or the generator
+stops; on the speech fixture it is recorded only.
+
+Read by ZTronDSPAnalysisTests (ConstantQGeometryTests, ConstantQKernelTests, ConstantQTests,
+ChromaTests, ConstantQScaleTests). Tolerances, as the tests hold them: frequencies 1e-12
+relative, atom lengths equal; dense kernel entries 1e-6 of the largest entry of the row; the
+multirate transform within 0.03 of the frame maximum of the definition (what a kernel thinned to
+sparsity 0.01 and half-band decimation cost; the acceptance of section 6.8 is by property);
+chroma cosine similarity >= 0.98; the pseudo constant-Q within 1e-5 of the frame maximum.
 
     python3 constant_q.py
 """
@@ -48,8 +93,11 @@ import _fixtures
 import _spectral
 
 numpy, scipy = _golden.oracle()
+librosa = _golden.librosa()
+from scipy import signal  # noqa: E402
 
 TARGET = "ZTronDSPAnalysisTests"
+MUSIC_CRITERION = 0.98
 cases = []
 
 
@@ -126,6 +174,38 @@ def chroma(magnitudes, classes):
     return sums, normalised
 
 
+def librosa_chroma(magnitudes, hop, fmin, octaves, bins, tuning, norm):
+    """librosa.feature.chroma_cqt of constant-Q magnitudes, frames × bins in and frames × 12 out;
+    fmin is the centre of bin 0 before tuning, as the transform was given it."""
+    return librosa.feature.chroma_cqt(y=None, sr=_fixtures.SAMPLE_RATE, C=numpy.ascontiguousarray(magnitudes.T), hop_length=hop,
+                                      fmin=fmin * 2.0 ** (tuning / bins), norm=norm, threshold=0.0, tuning=tuning, n_chroma=12,
+                                      n_octaves=octaves, window=None, bins_per_octave=bins, cqt_mode="full").T
+
+
+def least_cosine(a, b):
+    """The least frame-wise cosine similarity of two chroma sequences, frames × 12 (a frame of
+    zeros against a frame of zeros counts as 1, against anything else as 0)."""
+    least = 1.0
+    for x, y in zip(a, b):
+        nx, ny = numpy.linalg.norm(x), numpy.linalg.norm(y)
+        value = float(numpy.dot(x, y) / (nx * ny)) if nx > 0 and ny > 0 else (1.0 if nx == ny else 0.0)
+        least = min(least, value)
+    return least
+
+
+def compare_chroma(what, fixture, definition, reference):
+    """Prints the least frame-wise cosine of the definition's chroma against librosa's; on a music
+    fixture it must reach the criterion of §6.8."""
+    least = least_cosine(definition, reference)
+    if fixture == "music":
+        print(f"cross-check {what}: least frame-wise cosine of the definition's chroma {least:.4f} (criterion >= {MUSIC_CRITERION}, §6.8)")
+        if least < MUSIC_CRITERION:
+            raise SystemExit(f"{what}: the definition's chroma meets librosa's at {least:.4f} only: settle that first")
+    else:
+        print(f"cross-check {what}: least frame-wise cosine of the definition's chroma {least:.4f} (a speech fixture: recorded, no criterion)")
+    return least
+
+
 # --- Geometry ----------------------------------------------------------------------------------------
 GEOMETRIES = (
     # name, sample rate, fmin, octaves, bins per octave, tuning, filter scale, gamma
@@ -138,13 +218,21 @@ GEOMETRIES = (
     ("variable-q-fine", 48000.0, 110.0, 6, 48, 0.5, 1.0, 6.6),
 )
 for name, rate, fmin, octaves, bins, tuning, scale, gamma in GEOMETRIES:
-    freqs = frequencies(fmin, octaves, bins, tuning)
     alpha = 2.0 ** (1.0 / bins) - 1.0
+    freqs = librosa.cqt_frequencies(n_bins=octaves * bins, fmin=fmin, bins_per_octave=bins, tuning=tuning)
+    exact, _ = librosa.filters.wavelet_lengths(freqs=freqs, sr=rate, window="hann", filter_scale=scale, gamma=gamma,
+                                               alpha=numpy.full(len(freqs), alpha))
+    if numpy.any(numpy.abs(exact - numpy.round(exact)) < 1e-6):
+        raise ValueError(f"geometry {name}: an atom length lies on a whole number: choose other parameters")
+    atom_lengths = numpy.ceil(exact).astype(int)
+    definition = frequencies(fmin, octaves, bins, tuning)
+    _golden.cross_check(f"cqt_frequencies {name}", freqs, definition, 1e-12)
+    _golden.cross_check(f"wavelet_lengths {name}", exact, exact_lengths(rate, definition, bins, scale, gamma), 1e-12)
+    _golden.cross_check(f"atom lengths {name}", atom_lengths, lengths(rate, definition, bins, scale, gamma), 0.0)
     cases.append(_golden.case(f"geometry-{name}", {
         "sampleRate": rate, "fmin": fmin, "octaves": octaves, "binsPerOctave": bins, "tuning": tuning, "filterScale": scale,
         "gamma": gamma, "alpha": alpha, "q": scale / alpha},
-        {"frequencies": _golden.real_vector(freqs),
-         "atomLengths": _golden.real_vector(lengths(rate, freqs, bins, scale, gamma))}))
+        {"frequencies": _golden.real_vector(freqs), "atomLengths": _golden.real_vector(atom_lengths)}))
 
 # --- The dense kernel of the highest octave ------------------------------------------------------------
 KERNELS = (
@@ -200,16 +288,34 @@ for name, fixture, fmin, octaves, bins, tuning, scale, gamma, hop in TRANSFORMS:
         "real": _golden.raw_array(TARGET, f"constant_q_{name}_real.f64", spectrum.real, dtype="f64"),
         "imaginary": _golden.raw_array(TARGET, f"constant_q_{name}_imaginary.f64", spectrum.imag, dtype="f64")}
     if bins % 12 == 0:
-        sums, normalised = chroma(numpy.abs(spectrum), pitch_classes(freqs[0], bins, len(freqs)))
+        magnitudes = numpy.abs(spectrum)
+        sums = librosa_chroma(magnitudes, hop, fmin, octaves, bins, tuning, None)
+        normalised = librosa_chroma(magnitudes, hop, fmin, octaves, bins, tuning, numpy.inf)
+        definition_sums, definition_normalised = chroma(magnitudes, pitch_classes(freqs[0], bins, len(freqs)))
+        _golden.cross_check(f"chroma_cqt fold, sums, {name}", sums, definition_sums, 1e-12)
+        _golden.cross_check(f"chroma_cqt fold, normalised, {name}", normalised, definition_normalised, 1e-12)
+        y = numpy.asarray(samples, dtype=numpy.float64)
+        if gamma == 0:
+            response = librosa.cqt(y=y, sr=rate, hop_length=hop, fmin=fmin, n_bins=octaves * bins, bins_per_octave=bins, tuning=tuning,
+                                   filter_scale=scale, norm=1, sparsity=0.01, window="hann", scale=True, pad_mode="constant",
+                                   res_type="soxr_hq", dtype=numpy.complex128)
+        else:
+            response = librosa.vqt(y=y, sr=rate, hop_length=hop, fmin=fmin, n_bins=octaves * bins, intervals="equal", gamma=gamma,
+                                   bins_per_octave=bins, tuning=tuning, filter_scale=scale, norm=1, sparsity=0.01, window="hann",
+                                   scale=True, pad_mode="constant", res_type="soxr_hq", dtype=numpy.complex128)
+        if response.shape[1] < frames:
+            raise SystemExit(f"transform {name}: librosa gives {response.shape[1]} frames, the definition {frames}")
+        reference = librosa_chroma(numpy.abs(response.T[:frames]), hop, fmin, octaves, bins, tuning, numpy.inf)
+        compare_chroma(f"transform-{name} chroma against librosa.chroma_cqt(|librosa.{'cqt' if gamma == 0 else 'vqt'}|)", fixture,
+                       normalised, reference)
         values["chromaSums"] = _golden.raw_array(TARGET, f"constant_q_{name}_chroma_sums.f64", sums, dtype="f64")
         values["chroma"] = _golden.raw_array(TARGET, f"constant_q_{name}_chroma.f64", normalised, dtype="f64")
+        values["librosaChroma"] = _golden.raw_array(TARGET, f"constant_q_{name}_librosa_chroma.f64", reference, dtype="f64")
     cases.append(_golden.case(f"transform-{name}", {
         "fixture": fixture, "sampleRate": rate, "fmin": fmin, "octaves": octaves, "binsPerOctave": bins, "tuning": tuning,
         "filterScale": scale, "gamma": gamma, "hop": hop, "frames": int(frames), "bins": int(len(freqs))}, values))
 
 # --- The pseudo constant-Q of the fixtures ---------------------------------------------------------------
-from scipy import signal  # noqa: E402
-
 FRAME, HOP = 4096, 512
 PSEUDO = (
     # name, fixture, fmin, octaves, bins per octave, tuning, filter scale, gamma
@@ -230,12 +336,44 @@ for name, fixture, fmin, octaves, bins, tuning, scale, gamma in PSEUDO:
         frame[m - m[0]] = a
         # The transform of the atom is 2 at its own frequency: (2 / sum(w)) * sum(w).
         response[k] = numpy.abs(numpy.fft.fft(frame, n=FRAME, axis=-1, norm="backward")[:FRAME // 2 + 1]) / 2.0
-    magnitudes = numpy.abs(_spectral.stft(numpy, samples, FRAME, HOP, window, FRAME, False))
+    y = numpy.asarray(samples, dtype=numpy.float64)
+    spectrum = librosa.stft(y=y, n_fft=FRAME, hop_length=HOP, win_length=FRAME, window="hann", center=False,
+                            dtype=numpy.complex128, pad_mode="reflect", out=None).T
+    _golden.cross_check(f"stft pseudo-{name}", spectrum, _spectral.stft(numpy, samples, FRAME, HOP, window, FRAME, False), 1e-12)
+    magnitudes = numpy.abs(spectrum)
+    projected = magnitudes @ response.T
+    values = {
+        "magnitudes": _golden.raw_array(TARGET, f"constant_q_pseudo_{name}_magnitudes.f64", projected, dtype="f64"),
+        "powers": _golden.raw_array(TARGET, f"constant_q_pseudo_{name}_powers.f64", (magnitudes ** 2) @ (response ** 2).T, dtype="f64"),
+        "peakOfResponse": _golden.real_vector(numpy.max(response, axis=1))}
+    if bins % 12 == 0:
+        pseudo = numpy.abs(librosa.pseudo_cqt(y=y, sr=rate, hop_length=HOP, fmin=fmin, n_bins=octaves * bins, bins_per_octave=bins,
+                                              tuning=tuning, filter_scale=scale, norm=1, sparsity=0.01, window="hann", scale=True,
+                                              pad_mode="constant", dtype=numpy.complex128))
+        # The lengths librosa builds the atoms of pseudo_cqt with: its relative bandwidth.
+        ratio = 2.0 ** (1.0 / bins)
+        relative_bandwidth = (ratio ** 2 - 1.0) / (ratio ** 2 + 1.0)
+        built, _ = librosa.filters.wavelet_lengths(
+            freqs=librosa.cqt_frequencies(n_bins=octaves * bins, fmin=fmin * 2.0 ** (tuning / bins), bins_per_octave=bins, tuning=0.0),
+            sr=rate, window="hann", filter_scale=scale, gamma=0.0, alpha=numpy.full(octaves * bins, relative_bandwidth))
+        offset = FRAME // (2 * HOP)
+        count = projected.shape[0]
+        if pseudo.shape[1] < offset + count:
+            raise SystemExit(f"pseudo-{name}: librosa gives {pseudo.shape[1]} frames, {offset + count} are needed")
+        aligned = pseudo.T[offset:offset + count]
+        as_is = librosa_chroma(aligned, HOP, fmin, octaves, bins, tuning, numpy.inf)
+        unscaled = librosa_chroma(aligned * (FRAME ** 1.5 / built)[numpy.newaxis, :], HOP, fmin, octaves, bins, tuning, numpy.inf)
+        definition = librosa_chroma(projected, HOP, fmin, octaves, bins, tuning, numpy.inf)
+        _golden.cross_check(f"chroma_cqt fold, pseudo-{name}", definition, chroma(projected, pitch_classes(freqs[0], bins, len(freqs)))[1], 1e-12)
+        least_cosine_as_is = least_cosine(definition, as_is)
+        print(f"cross-check pseudo-{name} chroma against librosa.chroma_cqt(|librosa.pseudo_cqt|) as it is: least frame-wise cosine "
+              f"{least_cosine_as_is:.4f} (librosa's scale of band k, l_k / n_fft^1.5, kept: CR-035)")
+        compare_chroma(f"pseudo-{name} chroma against librosa.chroma_cqt(|librosa.pseudo_cqt| * n_fft^1.5 / l_k)", fixture, definition, unscaled)
+        values["librosaChroma"] = _golden.raw_array(TARGET, f"constant_q_pseudo_{name}_librosa_chroma.f64", unscaled, dtype="f64")
+        values["librosaChromaAsIs"] = _golden.raw_array(TARGET, f"constant_q_pseudo_{name}_librosa_chroma_as_is.f64", as_is, dtype="f64")
     cases.append(_golden.case(f"pseudo-{name}", {
         "fixture": fixture, "sampleRate": rate, "fmin": fmin, "octaves": octaves, "binsPerOctave": bins, "tuning": tuning,
         "filterScale": scale, "gamma": gamma, "frame": FRAME, "hop": HOP, "frames": int(magnitudes.shape[0]), "bins": int(len(freqs))},
-        {"magnitudes": _golden.raw_array(TARGET, f"constant_q_pseudo_{name}_magnitudes.f64", magnitudes @ response.T, dtype="f64"),
-         "powers": _golden.raw_array(TARGET, f"constant_q_pseudo_{name}_powers.f64", (magnitudes ** 2) @ (response ** 2).T, dtype="f64"),
-         "peakOfResponse": _golden.real_vector(numpy.max(response, axis=1))}))
+        values))
 
 _golden.write(TARGET, "constant_q", cases)

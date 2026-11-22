@@ -2,7 +2,7 @@ Currency check (§7.3), 2026-11-16: the registered source of this row was confir
 
 # Onset strength (WP-525)
 
-Stability register row 14. Code: `Sources/ZTronDSPAnalysis/Nodes/OnsetStrengthNode.swift`, `Steps/OnsetStrength.swift`. Tests: `Tests/ZTronDSPAnalysisTests/OnsetStrengthTests.swift`, and `RhythmSeparationStabilityTests.swift` for the figures below. References: `Tests/Golden/generators/onset_strength.py`, the published definition written out with NumPy and SciPy (librosa is not installed in the generator environment). Figures are from the iOS 27.0 simulator on the host of §3, measured in Debug; the tests that bound them pass in Debug and in Release.
+Stability register row 14. Code: `Sources/ZTronDSPAnalysis/Nodes/OnsetStrengthNode.swift`, `Steps/OnsetStrength.swift`. Tests: `Tests/ZTronDSPAnalysisTests/OnsetStrengthTests.swift`, and `RhythmSeparationStabilityTests.swift` for the figures below. References: `Tests/Golden/generators/onset_strength.py`: librosa 0.11.0's `librosa.onset.onset_strength` on a mel spectrum in decibels raised to the floor, every argument explicit, held within 10⁻¹² to the published definition written out with NumPy and SciPy (STG-2). Figures are from the iOS 27.0 simulator on the host of §3, measured in Debug; the tests that bound them pass in Debug and in Release.
 
 ## Hazard
 

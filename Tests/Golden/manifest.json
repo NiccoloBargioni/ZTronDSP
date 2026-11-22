@@ -49,7 +49,7 @@
    "outputs": [
     {
      "path": "Tests/ZTronDSPAnalysisTests/Golden/cepstrum.json",
-     "sha256": "5153f25acc619f16cc8cae44e67c6d46df452ebfbd3d1d8ce467cf03cb790d91"
+     "sha256": "72e43b1c861fdbf2b19d47a980fac4ec2ba763b1a17433604f3998113d88b8f7"
     },
     {
      "path": "Tests/ZTronDSPAnalysisTests/Golden/cepstrum_power_music.f64",
@@ -69,39 +69,39 @@
     },
     {
      "path": "Tests/ZTronDSPAnalysisTests/Golden/mfcc_music_128_128.f64",
-     "sha256": "98acfbd6a041d65e713884239bbcd88f9083e6b8b7f1581a1d84111160fb08f1"
+     "sha256": "4c603e51e2f32e6dc985a05bb7f910f14f02bf52f233bd0bc1a164c5a2a88924"
     },
     {
      "path": "Tests/ZTronDSPAnalysisTests/Golden/mfcc_music_26_26.f64",
-     "sha256": "775dd61fe0e3b7e09cbbfe3d9ab132340931ee4648d77820a91bd82c59f11326"
+     "sha256": "4567f655b7251c1f360ff1e31b500ee99e52f141315395d30668a61d0b3e673a"
     },
     {
      "path": "Tests/ZTronDSPAnalysisTests/Golden/mfcc_music_40_13.f64",
-     "sha256": "248ec50e8f2a605b371cb9d95980b0e754fdecd43dcaf9a7b124a39420fee38d"
+     "sha256": "81275ce533326dd0ba0241b8058e1518dbbc143e2994d792fcdf1b9f08103aea"
     },
     {
      "path": "Tests/ZTronDSPAnalysisTests/Golden/mfcc_music_64_20.f64",
-     "sha256": "7e2c1c85ee0392b3c1236f58cec8682e99e44e1b0d1781ef8e8edd185e743024"
+     "sha256": "e6a68e868eb2bd324630350a7140d6db3574f6f0810765018c4ce2099e33ea8d"
     },
     {
      "path": "Tests/ZTronDSPAnalysisTests/Golden/mfcc_speech_128_128.f64",
-     "sha256": "cd8ecda5680dc78fa1b9a02f945fbe6bf31f0c360262103b04a96f1ed75925b9"
+     "sha256": "1e9c0f3f13332f380c4430f57fac5b83f87e5178c75c20651dbb67acd601260a"
     },
     {
      "path": "Tests/ZTronDSPAnalysisTests/Golden/mfcc_speech_26_26.f64",
-     "sha256": "dbb757778b9db0817872d191c20a6bb4d0465c22773323601a111f0aab5efaf0"
+     "sha256": "4a48b39bdef21da291beb95b311c83167e149ac6679c1b31158a2ea74edffbba"
     },
     {
      "path": "Tests/ZTronDSPAnalysisTests/Golden/mfcc_speech_40_13.f64",
-     "sha256": "1d96667fc833bb03398675bdf8b6c31ef1fe0f1a6a431ed60b85566ad7528853"
+     "sha256": "5c0446bd81a62d21c77db269839d22e9a77037c2790cf0d720cfce3e7ab7801d"
     },
     {
      "path": "Tests/ZTronDSPAnalysisTests/Golden/mfcc_speech_64_20.f64",
-     "sha256": "137d38cc0dd4c1732923cd88fb0b7b867461f328335b42acbe34d361eff929fb"
+     "sha256": "8213adadcf1640c71c110f8d83407b63b6aeb1e56881a5a43c4309b91ee2d3cd"
     }
    ],
    "source": "Tests/Golden/generators/cepstrum.py",
-   "sourceSha256": "0366686ae97a29891fdf9dda1d8fb35b1798668c2dd32855085bc52968bfa805"
+   "sourceSha256": "4f7d9257ba5747a5c59bcc7807e3a05b7cda169b6a27ee691f80b92f2e05df06"
   },
   {
    "generator": "colormaps",
@@ -119,7 +119,7 @@
    "outputs": [
     {
      "path": "Tests/ZTronDSPAnalysisTests/Golden/constant_q.json",
-     "sha256": "4b56fec6599e3e7e7d60a960fc75bb65f7fc16e4fa6a53d951bd9b133fc8fc3a"
+     "sha256": "0352caba362057ed79fd4ae9b3c7b2996bdfc30efbc5b113000f454c33e6219f"
     },
     {
      "path": "Tests/ZTronDSPAnalysisTests/Golden/constant_q_kernel_defaults-22050_imaginary.f64",
@@ -158,6 +158,10 @@
      "sha256": "f5045760508d52a08038506ea20e7ebc7885b8c7f1d253f7d9db2f01f8f84bbb"
     },
     {
+     "path": "Tests/ZTronDSPAnalysisTests/Golden/constant_q_music-defaults_librosa_chroma.f64",
+     "sha256": "77902f9892df67793e145c95258688a0c2e29df19fc248207f6bc6da7fc8f7ec"
+    },
+    {
      "path": "Tests/ZTronDSPAnalysisTests/Golden/constant_q_music-defaults_real.f64",
      "sha256": "94908340b077d91e3e7d94d8bc36b4e427a298dc2316c0d58e30b282c9037d37"
     },
@@ -172,6 +176,10 @@
     {
      "path": "Tests/ZTronDSPAnalysisTests/Golden/constant_q_music-top-octave_imaginary.f64",
      "sha256": "476659f68667080558d97712da028b910bad6cc842b1815135d756878b985abe"
+    },
+    {
+     "path": "Tests/ZTronDSPAnalysisTests/Golden/constant_q_music-top-octave_librosa_chroma.f64",
+     "sha256": "030da66a413775a60a88a27e5f2da165eaad4728fa17ca19189156aa453c890b"
     },
     {
      "path": "Tests/ZTronDSPAnalysisTests/Golden/constant_q_music-top-octave_real.f64",
@@ -190,8 +198,20 @@
      "sha256": "16b3903f3461e12aea1da7297c058d75b2cd5f8271e3e4d589b6c89923795d81"
     },
     {
+     "path": "Tests/ZTronDSPAnalysisTests/Golden/constant_q_music-variable-q_librosa_chroma.f64",
+     "sha256": "1f50c7702721742e584d8cbd49514dcdfcac9cc0fee8f2532716aa325defc80a"
+    },
+    {
      "path": "Tests/ZTronDSPAnalysisTests/Golden/constant_q_music-variable-q_real.f64",
      "sha256": "17c8bd5b9570a3970f6f9b4477c0f9cbec3d84c1bba4d2125a5e1eb2ea0db44a"
+    },
+    {
+     "path": "Tests/ZTronDSPAnalysisTests/Golden/constant_q_pseudo_music-semitones_librosa_chroma.f64",
+     "sha256": "220a27a6de921e620322bf78e6129814b639a8c604d6bd63e1587f7e3e19d80c"
+    },
+    {
+     "path": "Tests/ZTronDSPAnalysisTests/Golden/constant_q_pseudo_music-semitones_librosa_chroma_as_is.f64",
+     "sha256": "11eacc3d099a12c568ef199a31751b030df7de57b9dd204d5f855e444991b6f2"
     },
     {
      "path": "Tests/ZTronDSPAnalysisTests/Golden/constant_q_pseudo_music-semitones_magnitudes.f64",
@@ -200,6 +220,14 @@
     {
      "path": "Tests/ZTronDSPAnalysisTests/Golden/constant_q_pseudo_music-semitones_powers.f64",
      "sha256": "2bab809c362d6176f57ea41474f6a2231e2657843ddb565a53763357700c7cb9"
+    },
+    {
+     "path": "Tests/ZTronDSPAnalysisTests/Golden/constant_q_pseudo_speech-thirds-of-semitones_librosa_chroma.f64",
+     "sha256": "6e360d3f2f616da6c12f8dba0aa9f5cead9c132a86ffb6275275f8f4d6c9b536"
+    },
+    {
+     "path": "Tests/ZTronDSPAnalysisTests/Golden/constant_q_pseudo_speech-thirds-of-semitones_librosa_chroma_as_is.f64",
+     "sha256": "b95d93d4565af08208259f0d79c8052522c5f5f9436812166a9c6668c98e366a"
     },
     {
      "path": "Tests/ZTronDSPAnalysisTests/Golden/constant_q_pseudo_speech-thirds-of-semitones_magnitudes.f64",
@@ -222,12 +250,16 @@
      "sha256": "4087e4f3ad7faa25a6e7f2119a268b9dd245573cbdd36241d784e5793d06a0a5"
     },
     {
+     "path": "Tests/ZTronDSPAnalysisTests/Golden/constant_q_speech-semitones_librosa_chroma.f64",
+     "sha256": "6b5e4b4ce0b0f2a3f2e0be32f81073b99cae80efefb88cbba983695f0fc956ea"
+    },
+    {
      "path": "Tests/ZTronDSPAnalysisTests/Golden/constant_q_speech-semitones_real.f64",
      "sha256": "a7ebaa0a59e77a00eec15c59cb12e32ee0668b769085c7ca398163caa9385b84"
     }
    ],
    "source": "Tests/Golden/generators/constant_q.py",
-   "sourceSha256": "aba81bef41e31506d57ea0738cb5a4fa22ca3ca5644bd612dfd92674745da3de"
+   "sourceSha256": "9da22fc5e7b93b2bdf643abbe723d8c945a584875c9f03c31b0a4ffefc2a904e"
   },
   {
    "generator": "convolution",
@@ -531,7 +563,7 @@
    "outputs": [
     {
      "path": "Tests/ZTronDSPAnalysisTests/Golden/hpss.json",
-     "sha256": "9a32bf0dea14e7beda351ad8ab6b010fcdaef218264429623b6748fecfea3181"
+     "sha256": "b122595a431c415ef202d144f1749a8584d8b074dd505d526ec764339ac8e779"
     },
     {
      "path": "Tests/ZTronDSPAnalysisTests/Golden/hpss_music-hard-31-31_harmonic.f32",
@@ -567,7 +599,7 @@
     }
    ],
    "source": "Tests/Golden/generators/hpss.py",
-   "sourceSha256": "90555d823281125eb0a9e6a37b4877e9ac65ce992e271955829896c039f34995"
+   "sourceSha256": "16fb06be9e3390cc8f040c5acb21c2034e1a937ff0ba405ef84589209305f60e"
   },
   {
    "generator": "iir_design",
@@ -662,11 +694,11 @@
    "outputs": [
     {
      "path": "Tests/ZTronDSPAnalysisTests/Golden/mel.json",
-     "sha256": "f19c27e0e781ef8249995eaa5df653d2602690d84e21ae13f659f2604b003c96"
+     "sha256": "546f73b61983557824334d1ed605b919ca982ec71f0d43b31db983cc0f145236"
     },
     {
      "path": "Tests/ZTronDSPAnalysisTests/Golden/mel_bank_default-22050-2048-128.f64",
-     "sha256": "6bf56b539923c6e01b737b42d7e37307f8e8172f9d31b7887545352bc288a257"
+     "sha256": "b19a1dad1bad10ea494498f359ef18ae415b3f384dd514b9ab9d93550844a2f9"
     },
     {
      "path": "Tests/ZTronDSPAnalysisTests/Golden/mel_bank_htk-44100-4096-64-area.f64",
@@ -678,23 +710,23 @@
     },
     {
      "path": "Tests/ZTronDSPAnalysisTests/Golden/mel_bank_slaney-16000-512-26-range.f64",
-     "sha256": "38c01f95c6d68dbafacf1aa955d4c7ef7b68430193fababc52f2b860450be083"
+     "sha256": "8e89648f3088df722a63175c444c08d64ece61e18d1537e2c7b7b84bfab6ba56"
     },
     {
      "path": "Tests/ZTronDSPAnalysisTests/Golden/mel_bank_slaney-48000-240-12-peak.f64",
-     "sha256": "368efc5965938396a9117476ddf99a980a36332f49b9b9f3827f01d23d0289b6"
+     "sha256": "9845d45ead51384db686f9052ff34c4a5a265d7fe7c5e6087bcb2c1a536af201"
     },
     {
      "path": "Tests/ZTronDSPAnalysisTests/Golden/mel_spectrogram_music.f64",
-     "sha256": "05b20d9641dc26bbd98952beb62a3906dc8358b2df06c0fb3a59465b5e00bc4a"
+     "sha256": "954a9f8cf8b9aa628ea13eb2405e17e7775a4ea52aa42c420d4e090dcff2e3f7"
     },
     {
      "path": "Tests/ZTronDSPAnalysisTests/Golden/mel_spectrogram_speech.f64",
-     "sha256": "9de7965c7895953da02a236ac5013f66e4549062e645eca50335129852690f93"
+     "sha256": "d2c2e04598c2fcfe61cb19c0692e3aa0a4a3e29b95925fe3e8efa46f4c81c145"
     }
    ],
    "source": "Tests/Golden/generators/mel.py",
-   "sourceSha256": "4ef4a7832cf147bce4d5ccaa6376604ae2a289dcdc04e46f68ff2be19f5c6421"
+   "sourceSha256": "4a423c578d2e71a890fae86257f4b3cb110b427466e33347c38beb04b30f9024"
   },
   {
    "generator": "metal_images",
@@ -848,11 +880,11 @@
    "outputs": [
     {
      "path": "Tests/ZTronDSPAnalysisTests/Golden/onset_strength.json",
-     "sha256": "f7a3d7ea80258723218a75d956c4af1cee637acb446977b9123838dc0aa044cc"
+     "sha256": "bb66e0e6128a995bbb453a3683796d69505df323d7ef3531f8ffd370ee148522"
     }
    ],
    "source": "Tests/Golden/generators/onset_strength.py",
-   "sourceSha256": "eb998739808440a89307da66d25a8c0de93e426dad42f60cc5fc044beca57847"
+   "sourceSha256": "499004cc388ab500cd4429761fa4bf7e7e929dd2e96e479908df12760c05c458"
   },
   {
    "generator": "savitzky_golay",
@@ -885,19 +917,19 @@
    "outputs": [
     {
      "path": "Tests/ZTronDSPAnalysisTests/Golden/fft.json",
-     "sha256": "f2bc47532f7db5237182f6d076ba202b6f2597ebf930462e2b91a6910c82ef23"
+     "sha256": "313e2f5e2a7fbb27294cb015c6ab36dcc50dd0841d1c5d6cca194088ef21dbce"
     },
     {
      "path": "Tests/ZTronDSPAnalysisTests/Golden/stft.json",
-     "sha256": "bb63d6ab60485eecca9cbfe7d2e0b80aeda11db2acacdc9c20f55a575f381412"
+     "sha256": "157c52fb1f9eb5b6ccac416ec456e1eae5d95a2ba5efab791cc53e04ff1ca50a"
     },
     {
      "path": "Tests/ZTronDSPAnalysisTests/Golden/stft_imaginary.f64",
-     "sha256": "1f5c92af146fc3a01df8bf71d1e77c1bb4e29c8de237a83a219fa6137d851ad6"
+     "sha256": "cf0db1336b4e22d8fe29eafe7b9b60b954e9a634251d5c22dfad1b4b775eeb06"
     },
     {
      "path": "Tests/ZTronDSPAnalysisTests/Golden/stft_real.f64",
-     "sha256": "da3c107f5bc18eb1403ae72709c1ca61605490cafdac972335f2dbae653a155d"
+     "sha256": "6e186378401193b6d6d4c595ff1dd93ee56bd25011dcab48f6daae3155e717ca"
     },
     {
      "path": "Tests/ZTronDSPAnalysisTests/Golden/stft_signals.f32",
@@ -905,7 +937,7 @@
     }
    ],
    "source": "Tests/Golden/generators/spectral_transforms.py",
-   "sourceSha256": "b60ef7e68896521d202bbe85963f97cc8a7960e23bc7c608c23eb6278d0eb77d"
+   "sourceSha256": "1933df3f2b6d120bdf4ed1aa39834a8fb51327c97a686a9fbb6648c490f6d4b2"
   },
   {
    "generator": "system_analysis_matlab",
@@ -923,7 +955,7 @@
    "outputs": [
     {
      "path": "Tests/ZTronDSPAnalysisTests/Golden/tempogram.json",
-     "sha256": "84b86f05615d2365dcc917392ee96f357ebb9070991a17b07c7a826af72c2f8e"
+     "sha256": "99f5dcd096e04b1947f7cc426d6252862c617993392250cb857a2114683ee7ec"
     },
     {
      "path": "Tests/ZTronDSPAnalysisTests/Golden/tempogram_curve-autocorrelation-101-hamming-60-240-centred.f32",
@@ -959,11 +991,11 @@
     },
     {
      "path": "Tests/ZTronDSPAnalysisTests/Golden/tempogram_music-autocorrelation-64-hann-30-300-causal.f32",
-     "sha256": "62169b4e94e41adb98a574e39c0c6682b5a248a0ef03b233e19983f17d30c102"
+     "sha256": "5aebbdfcbe6cafecca03766b08dc5dac15de4069cbbacea807a722102b53898a"
     },
     {
      "path": "Tests/ZTronDSPAnalysisTests/Golden/tempogram_music-autocorrelation-64-hann-30-300-centred.f32",
-     "sha256": "e2dc0b720325dca0e8a17ec110c6c31b3d7a129233ebf5538c59ed01d34397a0"
+     "sha256": "fd734c1db4ee5d0404bc5c793b3799688ce4c21d6bbe1e175fe1de9177d714e1"
     },
     {
      "path": "Tests/ZTronDSPAnalysisTests/Golden/tempogram_music-fourier-64-hann-30-300-causal-x4.f32",
@@ -975,7 +1007,7 @@
     }
    ],
    "source": "Tests/Golden/generators/tempogram.py",
-   "sourceSha256": "de418a8d4ee3b9a4aabd141d48008fba9e1637ca3cfb957f852dab8ffb582fec"
+   "sourceSha256": "088c251a7e26ebb781ec7f7042db5683e11263f23f8d61421d216111f200a140"
   },
   {
    "generator": "window_analysis",
