@@ -68,3 +68,60 @@ It is not a reading of the papers: titles, abstracts and summaries of search res
 - SciPy, `zpk2sos` (the `'nearest'` pairing): https://docs.scipy.org/doc/scipy/reference/generated/scipy.signal.zpk2sos.html ; MATLAB, `tf2sos`: https://ch.mathworks.com/help/signal/ref/tf2sos.html
 - Higgins & Munson, "Optimal and suboptimal error spectrum shaping for cascade-form digital filters" (1984): https://pure.psu.edu/en/publications/optimal-and-suboptimal-error-spectrum-shaping-for-cascade-form-di/
 - Apple, discrete Fourier transforms in vDSP: https://developer.apple.com/library/archive/documentation/Performance/Conceptual/vDSP_Programming_Guide/USingDFTFunctions/USingDFTFunctions.html
+
+## Second pass of 2026-11-21 (register audit, WP-905a … WP-905d)
+
+The register audit (`register-audit-2026-11.md`) searched every row again on 2026-11-21, between 20:45 and 22:35 (Europe/Rome), by web search, in the same way as the first pass: results, abstracts and summaries were read, not the papers. This time the rows marked "—" above were searched too. The first pass stands as it was written; what the second pass adds is in the last column, and a better method found is raised in `Docs/Process/changes/CR-020.md`, not adopted.
+
+| # | Operation | Searched | Found | Outcome |
+|---|---|---|---|---|
+| 1 | Real FFT | Apple's iOS & iPadOS 27 release notes and security content for Accelerate; real-data FFT accuracy in ACM TOMS and arXiv, 2025–2026; MPSGraph FFT | The iOS 27 notes have no Accelerate or vDSP section; the security content of iOS 27 lists two Accelerate entries, out-of-bounds writes when processing crafted images, fixed by bounds checking, and nothing on the DFT. Kawakami & Takahashi (arXiv 2603.29129, 2026) compute FFTs at a target precision from lower-precision transforms, more accurate than FFTW in double precision and 107 to 1 315 times slower; nothing new on MPSGraph's FFT since WWDC 2024 | Current |
+| 2 | Framing | Double-mapped (mirrored) ring buffers, 2025 | Libraries still map a buffer twice (Rust crates of 2025–2026 among them); the cost held against it is the same as in the first pass | Current |
+| 3 | IIR filtering | Biquad round-off at low cut-offs, DAFx 2025–2026 | A DAFx 2026 paper and its write-up address the cramping of equaliser responses near Nyquist (a design matter, row 4); nothing new on the round-off of the registered structure | Current; CR-020 item 4 stands |
+| 4 | IIR design | New s-to-z mappings (2025–2026); elliptic functions | The 2025 interpolation-based third-order mapping of the first pass, the matched-Z transform and phase-invariant mappings; nothing newer. Landen's transformation is still the method for elliptic functions | Current |
+| 5 | FIR design | Windowed, least-squares and Kaiser-estimate design, 2025–2026 | Tutorials and tool documentation of the three methods in use; nothing that replaces them | Current |
+| 6 | Savitzky–Golay | Replacements, 2025–2026 | The modified-sinc smoother of Schmid, Rath & Diebold (2022) and its implementations (OpenMS); nothing newer | Current; CR-020 item 1 stands |
+| 7 | FIR, short | Read with row 1 | No change to `vDSP_conv` or `vDSP_desamp` in the iOS 27 notes | Current |
+| 8 | FIR, long | Non-uniform partitioned convolution, DAFx and JAES, 2025–2026 | AES papers on uniform and non-uniform partitioning, the 2025 JAES paper of the first pass among them, and a 2025 preprint that runs uniform partitioning on the GPU; non-uniform partitioning is still the alternative for long responses | Current |
+| 9 | Rate changes | Polyphase and half-band resampling, 2025 | Libraries of cascaded half-band stages and polyphase resamplers; no new method | Current |
+| 10 | One-shot convolution, correlation | Searched with row 1 | A 2025 preprint (ACM TOMS format) on FFT convolution without index-reversal permutations: a library-level optimisation of the same method | Current |
+| 11 | Autocorrelation | Searched with row 10 | Wiener–Khinchin with zero-padding is the method in use | Current |
+| 12 | Polynomial roots | Fast backward-stable companion QR, 2025 | Aurentz, Mach, Robol, Vandebril & Watkins (2018), the registered alternative; nothing newer | Current |
+| 13 | Constant-Q | Real-time and invertible constant-Q transforms, 2025–2026 | An exact factorisation of the invertible constant-Q transform (Franchino, Moliner & Välimäki, arXiv 2609.29119, 2026) that computes the registered alternative faster; a real-time invertible engine on non-stationary Gabor frames (CiCueTea, 2026) and a 2025 generative model use the registered alternative as it is | Current. The factorisation is raised as CR-020 item 9 |
+| 14 | Onset envelope | Spectral-flux onset functions, 2025–2026 | SuperFlux is still the comparison; the 2024 chirp-group-delay preprint of the first pass | Current; CR-020 item 5 stands |
+| 15 | Tempogram | Tempograms, 2025–2026 | A differentiable predominant local pulse (Chiu, Schreiber & Müller, ISMIR 2025) built on the Fourier tempogram | Current |
+| 16 | Median filtering | Sorting-network medians and medians for separation, 2025–2026 | Adams 2021 (CR-020 item 2) and a 2025 preprint of a register-resident selection network; Fitzgerald's median filters still in the separation libraries | Current |
+| 17 | Spectral centroid | The centroid of frames with little energy, 2025–2026 | Patents and a 2026 preprint that leave out or flag frames without energy; nothing that changes the definition | Current |
+| 18 | Mel conversion | Mel filter banks: Slaney and HTK, 2025–2026 | Libraries (Rust crates, NVIDIA DALI) offer the same two conventions and normalisations | Current |
+| 19 | Cepstrum | Phase unwrapping for the complex cepstrum, 2025–2026 | Nothing from 2025–2026; discontinuity detection and adaptive integration are still the methods in use, with the root-based and differential cepstra as the ways around unwrapping | Current; CR-020 item 7 stands |
+| 20 | Band-boost | Peaking and high-order equaliser design, DAFx and JAES, 2025–2026 | Schlecht, Sinjanakhom & Välimäki, "Multi-shelf graphic equalizer" (Signal Processing, 2025): cascaded shelves for graphic equalisers, not a band-boost design; Orfanidis 2005 is still the reference the tools follow (MATLAB `designParamEQ`) | Current |
+| 21 | Window analysis | Side-lobe fall-off, scalloping loss and window figures, 2025–2026 | Yamaoka & Oshima (IEEE Access, 2025): side lobes reduced by multiplying cosine-sum windows, a design method; Prabhu's book (2014) for the figures; nothing on computing them | Current |
+| 22 | Inversion analysis | STFT invertibility, frame bounds, NOLA and COLA, 2025–2026 | A 2026 preprint on an STFT with data-adaptive windows, which restores reconstruction by normalising its envelope; nothing that sharpens NOLA or the frame bounds | Current |
+| 23 | Heat-map rendering | Real-time spectrograms on the GPU, 2025–2026 | Open projects keep a ring of columns, upload only the new ones and colour in the shader, which is the registered design; nothing on half-float textures | Current |
+| 24 | Implementation selection | Measured choice between implementations, 2025–2026 | SciPy's `choose_conv_method` (a prediction, or timing with `measure=True`) and the autotuners of FFT libraries (time the candidates after a warm-up, keep the result): the registered approach | Current |
+
+### Sources of the second pass
+
+- Apple, iOS & iPadOS 27 release notes: https://developer.apple.com/documentation/ios-ipados-release-notes/ios-ipados-27-release-notes ; security content of iOS 27: https://support.apple.com/149034
+- A target-precision FFT (arXiv, 2026): https://arxiv.org/abs/2603.29129 ; FFT convolution without permutations (arXiv, 2025): https://arxiv.org/abs/2506.12718
+- MPSGraph FFT (WWDC 2024): https://developer.apple.com/videos/play/wwdc2024/10218/
+- Double-mapped ring buffers in current libraries: https://docs.rs/crate/oneringbuf/latest
+- Equaliser cramping (DAFx 2026): https://www.dafx.de/paper-archive/2026/papers/DAFx26_paper_45.pdf
+- s-to-z mappings: https://reference-global.com/article/10.2478/jee-2025-0018
+- FIR design: https://www.mathworks.com/help/signal/ug/fir-filter-design.html
+- Modified-sinc smoother (OpenMS): https://abibuilder.cs.uni-tuebingen.de/archive/openms/Documentation/nightly/html/classOpenMS_1_1ModifiedSincSmoother.html
+- Partitioned convolution (AES e-library): https://www.aes.org/e-lib/browse.cfm?elib=16530 ; https://iris.unitn.it/handle/11572/466692 ; on the GPU (arXiv, 2025): https://arxiv.org/html/2509.04390v1
+- Half-band resampling: https://github.com/Sin-tel/halfband
+- Companion QR: https://arxiv.org/abs/1611.02435
+- Invertible constant-Q transform, exact factorisation: https://arxiv.org/abs/2609.29119 ; CiCueTea: https://jp.mathworks.com/matlabcentral/fileexchange/184238-cicuetea
+- Onset detection: https://arxiv.org/abs/2408.13734 ; https://essentia.upf.edu/reference/std_SuperFluxExtractor.html
+- Differentiable predominant local pulse (ISMIR 2025): https://www.audiolabs-erlangen.de/content/05_fau/professor/00_mueller/03_publications/2025_ChiuSM_dPLP_ISMIR_ePrint.pdf
+- Selection networks (2025 preprint): https://arxiv.org/html/2507.19926v1 ; Adams 2021: https://history.siggraph.org/?p=121185
+- Spectral centroid (2026 preprint): https://arxiv.org/pdf/2605.30339
+- Mel filter banks: https://docs.nvidia.com/deeplearning/dali/user-guide/docs/operations/nvidia.dali.fn.mel_filter_bank.html
+- Complex cepstrum and phase unwrapping: https://arxiv.org/pdf/1205.3752 ; https://www.cs.princeton.edu/~ken/Complex_Cepstrum_77.pdf
+- Schlecht, Sinjanakhom & Välimäki, "Multi-shelf graphic equalizer" (Signal Processing, 2025): https://acris.aalto.fi/ws/portalfiles/portal/154638738/1-s2.0-S0165168424002494-main.pdf ; MATLAB, parametric equalisers: https://www.mathworks.com/help/audio/ug/equalization.html
+- Yamaoka & Oshima, sidelobe reduction by multiplying cosine-sum windows (IEEE Access, 2025): https://doaj.org/article/56f2fd88fcc145a0ae183b83dcd8378b ; Prabhu, *Window Functions and Their Applications in Signal Processing*: https://library.oapen.org/bitstream/20.500.12657/41686/1/9781466515840.pdf
+- STFT reconstruction: https://ccrma.stanford.edu/~jos/sasp/FBS_Perfect_Reconstruction.html ; an STFT with adaptive windows (2026 preprint): https://arxiv.org/pdf/2610.37795
+- GPU spectrograms: https://raw.githubusercontent.com/calebj0seph/spectro/master/docs/making-of.md
+- SciPy, `choose_conv_method`: https://docs.scipy.org/doc/scipy/reference/generated/scipy.signal.choose_conv_method.html

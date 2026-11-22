@@ -165,7 +165,7 @@ struct RhythmSeparationStabilityTests {
             }.process(samples, format: mono48)
             return (levels.reals, onsets)
         }
-        var largest = 0.0, worst = 0.0, counted = 0.0
+        var largest = 0.0, worst = 0.0, counted = 0.0, countedLoud = 0.0
         for fixture in StressFixture.signals(count: 8_192) {
             let loud = try curve(fixture.samples, floor: floor)
             #expect(loud.onsets.count == 29 && loud.levels.count == 29, "\(fixture.name): \(loud.onsets.count) values")
@@ -200,12 +200,13 @@ struct RhythmSeparationStabilityTests {
             let loudMean = reference.onsets.dropFirst().reduce(0.0) { $0 + Double($1.value) } / 28
             if fixture.name == "white-noise" {
                 counted = quietMean
+                countedLoud = loudMean
                 #expect(quietMean > 0.5 && abs(quietMean - loudMean) < 0.05,
                         "noise 180 dB down rises by \(quietMean) dB a frame on average, as much as at full scale (\(loudMean) dB)")
             }
             #expect(unfloored.onsets.allSatisfy { $0.value.isFinite }, "\(fixture.name): still numbers, whatever the floor")
         }
-        print("measured stability row 14: off the definition by at most \(worst) dB; largest onset strength \(largest) dB; white noise 180 dB under full scale, floor −80 dB: 0 dB a frame; the same with a floor of −1 000 dB: \(counted) dB a frame")
+        print("measured stability row 14: off the definition by at most \(worst) dB; largest onset strength \(largest) dB; white noise 180 dB under full scale, floor −80 dB: 0 dB a frame; the same with a floor of −1 000 dB: \(counted) dB a frame, and at full scale \(countedLoud) dB a frame")
     }
 
     // MARK: Row 15, the tempograms (WP-526, WP-527)

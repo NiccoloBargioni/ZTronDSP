@@ -191,6 +191,34 @@ struct TempogramTests {
         #expect(try columns(of: pulses, rate: rate, Tempogram(AutocorrelationTempogram(floor: 1e6))).allSatisfy { $0.allSatisfy { $0 == 0 } })
     }
 
+    @Test func aValueOfTheCurveThatIsNotFiniteIsTakenAsZero() throws {
+        // The non-finite fixture of WP-016 as a novelty curve: a NaN at value 146, +∞ at 341 and
+        // −∞ at 512. The entry of a pipeline replaces samples (NUM-1); the values of a step reach
+        // the next step as they are, so a stage of the tests' own hands them over.
+        let rate = 93.75
+        let fixture = StressFixture.nonFiniteSignal(count: 1_024)
+        let replaced = fixture.samples.map { $0.isFinite ? $0 : 0 }
+        let format = SignalFormat(sampleRate: rate), drive = [Float](repeating: 0, count: fixture.samples.count)
+        func columns(_ curve: [Float], _ step: Tempogram) throws -> [[Float]] {
+            try Pipeline { CurveAsNovelty(curve); step }.process(drive, format: format, blockSize: 64)
+        }
+        let handed: [ScalarFrame] = try Pipeline { CurveAsNovelty(fixture.samples) }.process(drive, format: format, blockSize: 64)
+        #expect(fixture.nonFiniteCount == 3 && handed.filter { !$0.value.isFinite }.count == 3, "the step is handed the three values as they are")
+        var compared = 0, notFinite = 0, unequal = 0
+        for step in [Tempogram(.autocorrelation), Tempogram(.fourier), Tempogram(.autocorrelation, alignment: .centered), Tempogram(.fourier, alignment: .centered)] {
+            let poisoned = try columns(fixture.samples, step), clean = try columns(replaced, step)
+            #expect(poisoned.count == clean.count && poisoned.count >= 641, "\(poisoned.count) columns")
+            let wrong = poisoned.reduce(0) { $0 + $1.filter { !$0.isFinite }.count }
+            let differing = zip(poisoned, clean).filter { $0.map(\.bitPattern) != $1.map(\.bitPattern) }.count
+            #expect(wrong == 0, "no NaN, no infinity (NUM-1): \(wrong) values are not finite")
+            #expect(differing == 0, "the columns are those of the curve with its \(fixture.nonFiniteCount) values at 0, bit for bit: \(differing) differ")
+            compared += poisoned.count
+            notFinite += wrong
+            unequal += differing
+        }
+        print("measured WP-526/527: the non-finite fixture as a curve of 1 024 values, four tempograms: \(compared) columns, \(notFinite) values not finite, \(unequal) columns not those of the curve with its 3 values at 0")
+    }
+
     // MARK: Alignment and latency
 
     @Test func aCentredColumnIsTheCausalOneOfHalfAWindowLater() throws {

@@ -117,6 +117,33 @@ struct SavitzkyGolayCoefficientTests {
         let highOrder = thrownError { _ = try SavitzkyGolayFit.weights(window: window, polynomialOrder: 150, derivative: 0, position: half) }
         #expect(highOrder == nil || highOrder?.numericalFailure?.routine == "dgels", "a fit beyond the precision of a double is a typed error, never a NaN")
     }
+
+    /// What the scaled abscissa is for (register audit, WP-905a): a fit that is well posed but
+    /// whose powers leave a double on the raw abscissa. Order 84 across 10 001 samples is well
+    /// inside what a least-squares fit on equispaced samples resolves (about 2·√window, 200
+    /// here), but 5 000⁸⁴ is 10³¹⁰·⁷: on the raw abscissa the system is one of infinities and is
+    /// refused. On the scaled one the weights reproduce the polynomial fixtures of WP-016, as
+    /// values and as slopes at the centre.
+    @Test func stressAWindowWhosePowersLeaveADoubleIsFitOnTheScaledAbscissa() throws {
+        let window = 10_001, order = 84
+        let half = (window - 1) / 2
+        #expect((try? SavitzkyGolayFit.weights(window: window, polynomialOrder: order, derivative: 0, position: half, scaled: false)) == nil,
+                "on the raw abscissa the powers overflow")
+        var worst = 0.0
+        for fixture in StressFixture.wellConditionedPolynomials where fixture.degree >= 5 {
+            let polynomial = Polynomial(fixture.coefficients)
+            let samples = (0 ..< window).map { polynomial.evaluate(at: Double($0 - half) / Double(half)) }
+            let scale = samples.map { abs($0) }.max() ?? 1
+            let wanted = [(0, polynomial.evaluate(at: 0), scale), (1, polynomial.derivative.evaluate(at: 0) / Double(half), scale / Double(half))]
+            for (derivative, expected, unit) in wanted {
+                let weights = try SavitzkyGolayFit.weights(window: window, polynomialOrder: order, derivative: derivative, position: half)
+                #expect(weights.allSatisfy { $0.isFinite })
+                worst = max(worst, abs(zip(weights, samples).map { $0 * $1 }.reduce(0, +) - expected) / unit)
+            }
+        }
+        Measurements.shared.record("WP-426 stress: order 84 across 10 001 samples, whose raw powers overflow, factorisation on the scaled abscissa, relative", worst, bound: 1e-12)
+        #expect(worst < 1e-12, "the fit as it is made: \(worst)")
+    }
 }
 
 /// WP-427. Savitzky–Golay application, five edge modes. Acceptance: golden per mode

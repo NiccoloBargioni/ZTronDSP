@@ -2,6 +2,7 @@ import Foundation
 import Testing
 @testable import ZTronDSPAnalysis
 @testable import ZTronDSPCore
+import ZTronDSPDesign
 import ZTronDSPTesting
 
 /// The half-band decimator and the octave schedule (WP-519), and the time alignment of the
@@ -46,6 +47,13 @@ struct ConstantQScheduleTests {
             #expect(abs(level + gain(taps, at: 1 - frequency) - 1) <= 2e-3 || frequency > 0.5, "at \(frequency)")
         }
         #expect(ripple <= 0.01, "the pass band, 0 … 0.4 of the Nyquist frequency, is flat within \(ripple) dB")
+        let mirror = (0 ... 2_000).map { abs(gain(taps, at: Double($0) / 4_000) + gain(taps, at: 1 - Double($0) / 4_000) - 1) }.max() ?? 0
+        // The filter that would keep the whole new band free of aliases: its stop band from 0.5 up.
+        let cleaner = try FIRDesign(
+            .windowedSinc(), passband: .lowPass(cutoff: HalfBand.passbandEdge), stopband: .lowPass(cutoff: 0.5),
+            maximumLoss: .decibels(0.01), minimumAttenuation: .decibels(HalfBand.rejection), sampleRate: 2).taps.count
+        print("measured WP-519: a filter with its stop band from 0.5 of the Nyquist frequency up would need \(cleaner) taps by the same search")
+        print("measured WP-519: the half-band filter, \(taps.count) taps on 4 001 frequencies: the pass band within \(ripple) dB of unity, the stop band \(-20 * log10(leak)) dB down at worst, the response mirrors itself about 0.5 within \(mirror); the taps sum to 1 within \(abs(taps.reduce(0, +) - 1)); Σ|h| = \(taps.reduce(0) { $0 + abs($1) })")
         #expect(20 * log10(leak) <= -80, "the stop band, from 0.6 of the Nyquist frequency up, is \(-20 * log10(leak)) dB down; 80 dB is asked for (§6.8)")
         #expect(HalfBand.passbandEdge + HalfBand.stopbandEdge == 1 && HalfBand.cleanShare == 0.8 && HalfBand.rejection == 80)
     }
@@ -61,6 +69,7 @@ struct ConstantQScheduleTests {
             #expect(output.count == 3_000)
             let peak = output[settled...].reduce(0) { max($0, abs($1)) }
             #expect(20 * log10(Double(peak)) <= -80, "a full-scale tone at \(frequency) of the Nyquist frequency leaves at \(20 * log10(Double(peak))) dB")
+            print("measured WP-519: a full-scale tone at \(frequency) of the Nyquist frequency leaves the decimator at \(20 * log10(Double(peak))) dB")
         }
         // In the pass band a tone comes out as itself, at twice the normalised frequency,
         // delayed by the filter.
@@ -75,6 +84,7 @@ struct ConstantQScheduleTests {
                 worst = max(worst, abs(Double(output[index]) - expected))
             }
             #expect(worst <= 1.5e-3, "a tone at \(frequency) of the Nyquist frequency is off by \(worst)")
+            print("measured WP-519: a tone at \(frequency) of the Nyquist frequency comes out as itself within \(worst)")
         }
     }
 

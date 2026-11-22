@@ -35,11 +35,19 @@ struct ConstantQScaleTests {
         let powers: [[Float]] = try Pipeline { stft; Power(); scale }.process(signal.samples, format: signal.format, blockSize: 441)
         let referenceMagnitudes = try golden.real("magnitudes"), referencePowers = try golden.real("powers")
         #expect(magnitudes.count == frames && powers.count == frames && magnitudes.allSatisfy { $0.count == bins })
+        var worstMagnitude = 0.0, worstPower = 0.0
         for index in 0 ..< min(frames, magnitudes.count) {
             let range = index * bins ..< (index + 1) * bins
             expectClose(magnitudes[index], Array(referenceMagnitudes[range]), .relativeToMaximum(1e-5), "\(name), magnitudes, frame \(index)")
             expectClose(powers[index], Array(referencePowers[range]), .relativeToMaximum(1e-5), "\(name), powers, frame \(index)")
+            for (read, reference, slot) in [(magnitudes[index], Array(referenceMagnitudes[range]), 0), (powers[index], Array(referencePowers[range]), 1)] {
+                let largest = reference.map { abs($0) }.max() ?? 0
+                guard largest > 0 else { continue }
+                let off = zip(read, reference).map { abs(Double($0) - $1) }.max() ?? 0
+                if slot == 0 { worstMagnitude = max(worstMagnitude, off / largest) } else { worstPower = max(worstPower, off / largest) }
+            }
         }
+        print("measured WP-523: \(name): magnitudes within \(worstMagnitude), powers within \(worstPower) of the frame maximum of the dense projection in double precision")
         // The response of a band is 1 at its centre, which lies between two bins of the frame.
         let geometry = try geometry(of: golden)
         let projection = try ConstantQProjection(geometry: geometry, binCount: frame / 2 + 1, window: .hann, sparsity: 0, squared: false)

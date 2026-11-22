@@ -182,6 +182,28 @@ struct HeatmapTextureTests {
         #expect(Array(last.prefix(8)) == [65_504, -65_504, 65_504, -65_504, -65_504, 65_504, -65_504, 65_504])
     }
 
+    /// The search for a value that is not a number covers every bin: the library's signal with
+    /// a NaN (WP-016), turned so that its NaN arrives in each bin in turn.
+    @Test func aNotANumberIsReplacedInWhicheverBinItArrives() async throws {
+        let context = try await sharedContext()
+        let bins = 64
+        let texture = try HeatmapTexture(context: context, binCount: bins, history: bins)
+        let (signal, _) = StressFixture.nonFiniteSignal(count: bins)
+        let position = try #require(signal.firstIndex { $0.isNaN })
+        var columns: [Float] = []
+        for bin in 0 ..< bins {
+            columns += (0 ..< bins).map { signal[($0 - bin + position + bins) % bins] }
+        }
+        columns.withUnsafeBufferPointer { texture.append($0.baseAddress!, count: bins) }
+
+        let texels = Readback.floats(texture.texture)
+        #expect(texels.allSatisfy { $0.isFinite }, "no texel is infinite or not a number")
+        for bin in 0 ..< bins {
+            let stored = levels(texels, of: texture, slot: bin)[0]
+            #expect(stored[bin] == -65_504, "column \(bin): its NaN, in bin \(bin), is stored as \(stored[bin])")
+        }
+    }
+
     @Test func dataNoTextureFitsIsRefused() async throws {
         let context = try await sharedContext()
         let limit = context.capabilities.maximumTextureDimension

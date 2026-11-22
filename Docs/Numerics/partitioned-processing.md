@@ -41,3 +41,8 @@ After 110 000 frames of a full-scale square wave the deviation from the direct k
 ## Stress test
 
 `PartitionedKernelTests.theStressSignalsStayWithinMinus100dBAndSilenceStaysSilent`, on every signal of `StressFixture.signals` (WP-016) and on a long full-scale passage. With the clearing of the sum removed (so that every partition's output carries the ones before it) the test fails, as do `theOutputIsWithinMinus100dBOfTheDirectKernel` and `noLatencyIsAddedWhateverTheBlockSize`. Checked by making exactly that change, 2026-11-15.
+
+Register audit, 2026-11-21 (WP-905b): the change above made again (it fails as described, and `aResetIsAColdStart` with it). Two more mitigations, one at a time:
+
+- Without the cleaning of the input, the tests above all passed. The filter of the stress test has its smallest taps in its head, and a product of them with the `denormal` signal is already zero. `subnormalInputGivesExactZerosOnBothPaths` was added, with a filter whose largest taps are in its head (255 taps, partitions of 128). Without the cleaning it fails for the three ways of cutting that take the direct head, where a subnormal value comes out and the `denormal` signal no longer gives zeros. Whole partitions still give zeros, because their spectra are flushed.
+- Without the flush of the spectra in the delay line and of the tail, every test passes, and no test can tell. The input is already cleaned, so no window holds a value below 10⁻²⁰. A bin or a value of the tail is below it only by the round-off of values above it, and no subnormal value is made from it. What the flush removes lies far under the −100 dB the kernel is held to. The flush keeps the state clean (RT-6); it does not change the output. Recorded as equivalent.

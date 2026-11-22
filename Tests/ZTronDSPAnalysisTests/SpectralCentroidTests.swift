@@ -69,6 +69,27 @@ struct SpectralCentroidTests {
         #expect(throws: DSPError.self) { let _: [ScalarFrame] = try Pipeline { stft; Magnitude(); SpectralCentroid(floor: -1) }.process(two, format: mono48) }
     }
 
+    @Test func theFrequencyOfABinIsItsIndexTimesTheWidthRoundedOnce() throws {
+        // A frame with all its weight in one bin has the frequency of that bin as its centroid,
+        // exactly: the bin's index times the bin width, rounded once to a float. 361 bins up to
+        // 24 kHz are 66.66… Hz apart, a width that is not a float, so rounding the width first
+        // and the product after it would move some bins by a unit in the last place. (The widths
+        // of power-of-two transforms at 44.1, 48, 96 and 192 kHz are floats: there the two agree.)
+        let bins = 361, nyquist = 24_000.0, width = nyquist / Double(bins - 1)
+        let frames = (0 ..< bins).map { bin in (0 ..< bins).map { Float($0 == bin ? 1 : 0) } }
+        let values: [ScalarFrame] = try Pipeline {
+            FrameSequence<Spectrum<LinearFrequency, MagnitudeValues>>(frames, hop: 512, nyquist: nyquist)
+            SpectralCentroid()
+        }.process(FrameSequence<Spectrum<LinearFrequency, MagnitudeValues>>.drive(bins), format: mono48)
+        #expect(values.count == bins)
+        let wrong = values.indices.filter { values[$0].confidence != 1 || values[$0].value.bitPattern != Float(Double($0) * width).bitPattern }
+        #expect(wrong.isEmpty, "bins \(wrong.prefix(8)) are not their frequency rounded once")
+        // The test can tell the two roundings apart.
+        let twice = (0 ..< bins).filter { Float($0) * Float(width) != Float(Double($0) * width) }
+        #expect(!twice.isEmpty, "rounding the width first moves \(twice.count) of the \(bins) bins")
+        print("measured WP-507: \(bins) bins \(width) Hz apart, a frame of weight in one bin each: \(bins - wrong.count) centroids that are the bin's frequency rounded once; rounding the width first would move \(twice.count)")
+    }
+
     @Test(arguments: [1, 7, 480, 4_096])
     func theValuesDoNotDependOnTheBlockSize(blockSize: Int) throws {
         let signal = TestSignal.chirp(from: 200, to: 15_000, sampleRate: 48_000, count: 20_000, amplitude: 0.5)

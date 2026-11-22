@@ -35,3 +35,5 @@ On this host the C loop is faster than vDSP at every size, by a factor of about 
 ## Stress test
 
 `LaneExchangeTests.theImplementationsAgreeOnTiesAndValuesThatAreNotNumbers`, on `StressFixture.nonFiniteSignal` (WP-016) with zeros of both signs worked in, at lengths that put the special pairs in the four-lane body of the C loop and in its tail. With the rule removed from the scalar exchange (a plain compare-and-swap) the test fails. Checked by making exactly that change, 2026-11-15.
+
+Register audit, 2026-11-21 (WP-905c): the exactness is what `bothImplementationsEqualTheScalarExchange` and `theImplementationsAgreeOnTiesAndValuesThatAreNotNumbers` assert, and both pass; the timings are host figures recorded for WP-611b and were not measured again. The rule removed from the scalar exchange (a plain compare-and-swap) fails the stress test again (9 issues: the bits of the zeros and the NaN pairs).

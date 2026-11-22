@@ -33,15 +33,18 @@ struct ConstantQStabilityTests {
             let geometry = try ConstantQGeometry(minimumFrequency: filter.cutoff, octaves: count, sampleRate: filter.sampleRate)
             #expect(count >= 7 && geometry.atomLength(ofBin: 0) > 25_000, "\(filter.name): \(count) octaves, the lowest atom \(geometry.atomLength(ofBin: 0)) samples")
             var entries: [Int] = []
+            var leastKept = 1.0
             for sparsity in [0, 0.01, 0.3, 0.9, 0.999] {
                 let kernel = try ConstantQKernel(geometry: geometry, octave: 0, sparsity: sparsity)
                 let least = kernel.keptEnergy.min() ?? 0
+                leastKept = min(leastKept, least)
                 #expect(least >= ConstantQKernel.keptEnergyFloor, "\(filter.name), sparsity \(sparsity): a row keeps \(least) of its energy")
                 #expect(kernel.span < 2_048 && kernel.real.allSatisfy { $0.isFinite } && kernel.imaginary.allSatisfy { $0.isFinite }, "\(filter.name): the recursion keeps every atom short")
                 entries.append(kernel.nonZeroCount)
                 rows += kernel.rowCount
             }
             #expect(entries == entries.sorted(by: >) && entries[4] == entries[2], "\(filter.name): from 0.3 on the energy decides: \(entries)")
+            print("measured WP-518: \(filter.name): \(count) octaves from \(filter.cutoff) Hz at \(filter.sampleRate) Hz, the lowest atom \(geometry.atomLength(ofBin: 0)) samples; entries kept at sparsities 0, 0.01, 0.3, 0.9, 0.999: \(entries); the least share of its energy a row keeps: \(leastKept)")
             // An octave more, and the highest bins lie where the decimators do not keep the band clean.
             let above = try ConstantQGeometry(minimumFrequency: filter.cutoff, octaves: count + 1, sampleRate: filter.sampleRate)
             let refused = errorMessage { _ = try ConstantQKernel(geometry: above, octave: count) }
@@ -58,6 +61,7 @@ struct ConstantQStabilityTests {
                 #expect(refused == nil, "\(filter.name): \(refused ?? "")")
                 let least = try ConstantQKernel(geometry: geometry, octave: 0, sparsity: 0.9).keptEnergy.min() ?? 0
                 #expect(least >= ConstantQKernel.keptEnergyFloor, "\(filter.name): a row keeps \(least)")
+                print("measured WP-518: \(filter.name): the highest bin of one octave at \(share) of the sample rate is kept; at sparsity 0.9 the least share of its energy a row keeps is \(least)")
             } else {
                 // At 0.49 of the sample rate the transform of the atom reaches across the Nyquist frequency.
                 #expect(refused?.contains("too close to the Nyquist frequency") == true, "\(filter.name): \(refused ?? "accepted")")
@@ -66,6 +70,51 @@ struct ConstantQStabilityTests {
             let halved = try ConstantQGeometry(minimumFrequency: filter.cutoff / pow(2, 71.0 / 36), octaves: 2, sampleRate: filter.sampleRate)
             #expect(errorMessage { _ = try ConstantQKernel(geometry: halved, octave: 1) }?.contains("half-band decimators") == true, "\(filter.name)")
         }
+    }
+
+    /// The kernel is computed in double precision and rounded to single once (register audit,
+    /// WP-905c). At every corner of `StressFixture.filtersNearZero` each part of a kept entry is
+    /// within half a unit in the last place of single precision of its value by the definition,
+    /// the transform of its atom summed here in double precision. An entry rounded twice, once
+    /// to single and once more after the scaling by 1/N, is off by up to a unit.
+    @Test func everyKeptEntryIsItsValueRoundedOnceAtEveryCornerOfTheStressLibrary() throws {
+        var parts = 0, worst = 0.0
+        for filter in StressFixture.filtersNearZero {
+            let count = octaves(above: filter.cutoff, sampleRate: filter.sampleRate)
+            let geometry = try ConstantQGeometry(minimumFrequency: filter.cutoff, octaves: count, sampleRate: filter.sampleRate)
+            let kernel = try ConstantQKernel(geometry: geometry, octave: 0)
+            let length = kernel.transformLength
+            var outside = 0
+            for row in 0 ..< kernel.rowCount {
+                let atom = referenceAtom(length: kernel.atomLengths[row], cyclesPerSample: geometry.normalizedFrequency(atPosition: row))
+                let range = kernel.rowStarts[row] ..< kernel.rowStarts[row + 1]
+                var exact: [(real: Double, imaginary: Double)] = []
+                for index in range {
+                    // conj(Σ a[i] e^(−j2πbi/N)) / N with the atom centred on sample `center`.
+                    let bin = kernel.columns[index]
+                    var sumReal = 0.0, sumImaginary = 0.0
+                    for sample in 0 ..< atom.real.count {
+                        let position = kernel.center + atom.first + sample
+                        let angle = -2 * Double.pi * Double((bin * position) % length) / Double(length)
+                        sumReal += atom.real[sample] * cos(angle) - atom.imaginary[sample] * sin(angle)
+                        sumImaginary += atom.real[sample] * sin(angle) + atom.imaginary[sample] * cos(angle)
+                    }
+                    exact.append((sumReal / Double(length), -sumImaginary / Double(length)))
+                }
+                let peak = exact.reduce(0) { max($0, hypot($1.real, $1.imaginary)) }
+                for (offset, index) in range.enumerated() {
+                    for (stored, value) in [(kernel.real[index], exact[offset].real), (kernel.imaginary[index], exact[offset].imaginary)] {
+                        // Half a unit, and what two sums in double precision may differ by.
+                        let error = abs(Double(stored) - value), slack = 1e-12 * peak
+                        if error > 0.5 * Double(stored.ulp) + slack { outside += 1 }
+                        if 0.5 * Double(stored.ulp) > slack { worst = max(worst, error / Double(stored.ulp)) }
+                        parts += 1
+                    }
+                }
+            }
+            #expect(outside == 0, "\(filter.name), a transform of \(length) points: \(outside) of \(2 * kernel.nonZeroCount) parts are not their value rounded once")
+        }
+        print("measured WP-518: \(parts) parts of the kept entries at the corners of the library; the worst is \(worst) of a unit in the last place of single precision from its value by the definition")
     }
 
     // MARK: Row 13, the half-band decimators (WP-519)
@@ -77,6 +126,7 @@ struct ConstantQStabilityTests {
         for fixture in StressFixture.signals(count: 32_768) {
             var signal = fixture.samples
             var bound = Double(signal.reduce(0) { max($0, abs($1)) })
+            var levels: [Double] = []
             for depth in 0 ..< 6 {
                 signal = halved(signal, by: try HalfBandDecimator(taps: taps))
                 // An output is a sum of taps times samples: no larger than Σ|h| times the largest sample.
@@ -84,6 +134,7 @@ struct ConstantQStabilityTests {
                 #expect(signal.count == 32_768 >> (depth + 1), "\(fixture.name), depth \(depth)")
                 #expect(signal.allSatisfy { $0.isFinite && Double(abs($0)) <= bound * (1 + 1e-6) }, "\(fixture.name), depth \(depth): finite and bounded")
                 let settled = signal[min(taps.count, signal.count)...]
+                levels.append(Double(settled.reduce(0) { max($0, abs($1)) }))
                 switch fixture.name {
                 case "silence", "denormal":
                     #expect(signal.allSatisfy { $0 == 0 }, "\(fixture.name), depth \(depth): zeros")
@@ -109,6 +160,7 @@ struct ConstantQStabilityTests {
                     break
                 }
             }
+            print("measured WP-519: \(fixture.name) through six decimators, the largest settled sample after each: \(levels.map { $0 > 0 ? String(format: "%.2f dB", 20 * log10($0)) : "0" })")
         }
     }
 
@@ -136,6 +188,7 @@ struct ConstantQStabilityTests {
             }
         }
         #expect(worst <= 1e-4, "no bin below a stop band reads more than \(20 * log10(max(worst, 1e-30))) dB of a tone in it; 80 dB down is asked for (§7.5 row 13)")
+        print("measured WP-519: a full-scale tone that would fold onto a bin of the octave at depth 1 … 6 reads at most \(20 * log10(max(worst, 1e-30))) dB in any bin of that octave or one below it")
     }
 
     // MARK: Row 13, the product (WP-520)
@@ -146,8 +199,11 @@ struct ConstantQStabilityTests {
         let product = try SparseKernelProduct(kernel)
         let plan = try VDSPFFTBackend().makePlan(length: kernel.transformLength)
         let bins = kernel.columnCount
+        let rowLengths = (0 ..< kernel.rowCount).map { kernel.rowStarts[$0 + 1] - kernel.rowStarts[$0] }
+        print("measured WP-520: the kernel of the defaults at 48 kHz: \(kernel.rowCount) rows, \(kernel.nonZeroCount) entries, \(rowLengths.min() ?? 0) to \(rowLengths.max() ?? 0) a row, columns \(kernel.columns.min() ?? 0) … \(kernel.columns.max() ?? 0)")
         var worstShare = 0.0
         for fixture in StressFixture.signals(count: kernel.transformLength) {
+            var fixtureWorst = 0.0
             var real = [Float](repeating: 0, count: bins), imaginary = real
             fixture.samples.withUnsafeBufferPointer { source in
                 real.withUnsafeMutableBufferPointer { re in
@@ -182,10 +238,14 @@ struct ConstantQStabilityTests {
                     // 2n products and 2n − 1 additions a part: (2n + 1) · ε of the terms, and what a subnormal result rounds by.
                     let bound = Double(2 * range.count + 1) * Double(Float.ulpOfOne) * terms + 8 * Double(Float.leastNonzeroMagnitude)
                     #expect(error <= bound, "\(fixture.name) × \(scale), row \(row): off by \(error), the bound is \(bound)")
-                    if terms > 1e-30 { worstShare = max(worstShare, error / (Double(Float.ulpOfOne) * terms)) }
+                    if terms > 1e-30 {
+                        worstShare = max(worstShare, error / (Double(Float.ulpOfOne) * terms))
+                        fixtureWorst = max(fixtureWorst, error / (Double(Float.ulpOfOne) * terms))
+                    }
                 }
                 if fixture.name == "silence" { #expect(resultReal.allSatisfy { $0 == 0 } && resultImaginary.allSatisfy { $0 == 0 }) }
             }
+            print("measured WP-520: \(fixture.name): the worst row, at the scales 1, 2⁻⁴⁰ and 2⁴⁰, is off by \(fixtureWorst) ε of the sum of its terms")
         }
         #expect(worstShare > 0 && worstShare <= 2, "the worst row is off by \(worstShare) ε of the sum of its terms")
     }
@@ -226,6 +286,7 @@ struct ConstantQStabilityTests {
                 // The onset of every signal is in the first frames: none is nothing to the definition.
                 #expect(peak > 1e-3 && worst <= 0.03 * peak, "\(fixture.name): off by \(worst / peak) of the largest magnitude of the excerpt, \(peak)")
             }
+            print("measured WP-521/522a: \(fixture.name): the largest magnitude of the definition \(peak), off by \(peak > 0 ? worst / peak : worst) of it (\(worst) absolute); behind the onset the definition reads \(lateReference), the transform \(lateTransform); the largest magnitude read \(largest)")
             if fixture.name == "nyquist" {
                 // Behind its onset a tone at the Nyquist frequency lies in no bin, and folds into none.
                 #expect(lateReference <= 1e-5 && lateTransform <= 1e-4, "the definition reads \(lateReference), the transform \(lateTransform): 80 dB down at least")
@@ -236,6 +297,21 @@ struct ConstantQStabilityTests {
                 #expect(lateReference <= 1e-4 && lateTransform <= 1e-3, "the definition reads \(lateReference), the transform \(lateTransform): 60 dB down at least")
             }
         }
+    }
+
+    /// NUM-1 where the signal enters (register audit, WP-905c): a sample that is not a number is
+    /// replaced by 0 before any octave sees it. The frames of `StressFixture.nonFiniteSignal` are
+    /// numbers, and are those of the same signal with its non-finite samples replaced, bit for
+    /// bit: no coefficient reads a NaN through the decimators or the product.
+    @Test func theTransformOfTheNonFiniteFixtureIsThatOfTheSignalWithItsValuesReplaced() throws {
+        let step = ConstantQ(fmin: .hertz(220), octaves: 5, binsPerOctave: 12, hop: 256)
+        let fixture = StressFixture.nonFiniteSignal(count: 16_384)
+        let replaced = fixture.samples.map { $0.isFinite ? $0 : 0 }
+        let poisoned = try complexFrames(of: Pipeline { step }, on: fixture.samples, format: mono48, blockSize: 480)
+        let clean = try complexFrames(of: Pipeline { step }, on: replaced, format: mono48, blockSize: 480)
+        #expect(fixture.nonFiniteCount == 3 && poisoned.frameCount == clean.frameCount && poisoned.frameCount > 50)
+        #expect(poisoned.reals.allSatisfy { $0.allSatisfy { $0.isFinite } } && poisoned.imaginaries.allSatisfy { $0.allSatisfy { $0.isFinite } }, "no NaN, no infinity (NUM-1)")
+        #expect(poisoned.reals == clean.reals && poisoned.imaginaries == clean.imaginaries, "the frames are those of the signal with its \(fixture.nonFiniteCount) values replaced")
     }
 
     @Test(arguments: [0, 1, 2, 3])
@@ -261,6 +337,7 @@ struct ConstantQStabilityTests {
         for bin in [0, geometry.binCount - 1] {
             let level = 20 * log10(read[bin] / 0.25)
             #expect(abs(level) <= 0.5, "\(filter.name), \(count) octaves, bin \(bin) at \(geometry.frequency(ofBin: bin)) Hz: \(level) dB")
+            print("measured WP-521/522a: \(filter.name), \(count) octaves, the longest atom \(longest) samples: bin \(bin) at \(geometry.frequency(ofBin: bin)) Hz reads \(level) dB")
         }
         #expect(indexOfMaximum(Array(read[..<36])) == 0 && indexOfMaximum(Array(read[(geometry.binCount - 36)...])) == 35)
         #expect(sink.reals.allSatisfy { $0.allSatisfy { $0.isFinite } })
@@ -274,6 +351,7 @@ struct ConstantQStabilityTests {
         for squared in [false, true] {
             let projection = try ConstantQProjection(geometry: geometry, binCount: 2_049, window: .hann, sparsity: 0.01, squared: squared)
             let longest = projection.bands.map { $0.weights.count }.max() ?? 0
+            print("measured WP-523: \(projection.bands.count) bands of \(projection.bands.map { $0.weights.count }.min() ?? 0) to \(longest) bins, \(projection.bands.reduce(0) { $0 + $1.weights.count }) weights in all, \(squared ? "powers" : "magnitudes")")
             #expect(projection.bands.allSatisfy { $0.weights.allSatisfy { $0 >= 0 && $0.isFinite } }, "every weight is a non-negative number")
             for fixture in StressFixture.signals(count: 16_384) {
                 let magnitudes: Pipeline<Samples, Spectrum<LinearFrequency, MagnitudeValues>> = Pipeline { STFT(frame: 4_096, hop: 1_024); Magnitude() }
@@ -297,6 +375,7 @@ struct ConstantQStabilityTests {
                     }
                     #expect(wrong == 0, "\(fixture.name), \(implementation): \(wrong) bands negative, not a number, or not zero where the spectrum is")
                     #expect(worst <= Double(longest) * Double(Float.ulpOfOne), "\(fixture.name), \(implementation), \(squared ? "powers" : "magnitudes"): off by \(worst) of the band; ε·bins is \(Double(longest) * Double(Float.ulpOfOne))")
+                    print("measured WP-523: \(fixture.name), \(implementation), \(squared ? "powers" : "magnitudes"): off by \(worst) of the band, \(worst / Double(Float.ulpOfOne)) ε; \(wrong) bands wrong")
                 }
             }
         }

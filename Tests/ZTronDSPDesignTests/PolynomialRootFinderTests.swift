@@ -58,6 +58,12 @@ struct PolynomialRootFinderTests {
         let split = (1 - constant).squareRoot()
         let near = try finder.roots(of: Polynomial([1, -2, constant]))
         expectRootsClose(near, [Complex(1 + split), Complex(1 - split)], relative: 1e-15, "nearly double root")
+        // Both products are exact there. Kahan's example is where the fused multiply-adds are
+        // needed (register audit, WP-905b): b² and 4ac are rounded, and what is left of their
+        // difference is all rounding error. The roots are 1 and c/a; the discriminant formed
+        // without the two errors is 0, a double root, 1.4e-8 from either.
+        let kahan = try finder.roots(of: Polynomial([94_906_265.625, -189_812_534, 94_906_268.375]))
+        expectRootsClose(kahan, [Complex(1), Complex(94_906_268.375 / 94_906_265.625)], relative: 1e-15, "Kahan's quadratic")
 
         // Coefficients whose squares would overflow.
         let huge = try finder.roots(of: Polynomial([1e200, -3e200, 2e200]))
@@ -177,6 +183,64 @@ struct PolynomialRootFinderTests {
         Measurements.shared.record("WP-402 Wilkinson WITHOUT polish, relative root error (hazard)", worst, bound: fixture.achievableAccuracy)
         #expect(worst > fixture.achievableAccuracy, "the unpolished eigenvalues are off by \(worst)")
         expectRootsClose(try finder.roots(of: polynomial), expected(fixture), relative: fixture.achievableAccuracy, "polished")
+    }
+
+    /// The test of the residual in the polish (register audit, WP-905b). The triple root of
+    /// WP-016 rescaled by 0.1, 0.2, …, 4.0: off the binary grid the coefficients are rounded,
+    /// the triple root becomes a cluster of three simple ones, and a Newton step from an
+    /// eigenvalue inside the cluster can land anywhere. A step is kept only when it lowers the
+    /// residual, so no polished root is a worse root of the polynomial than the eigenvalue it
+    /// came from, and every rescaled polynomial is found to the fixture's accuracy.
+    @Test func stressThePolishLeavesAMultipleRootAloneWhereNewtonsMethodIsErratic() throws {
+        let fixture = StressFixture.tripleRoot
+        let unpolishedFinder = CompanionQRRootFinder(balancing: true, polishSteps: 0)
+        var worst = 0.0
+        var plainWorst = 0.0
+        for step in 1 ... 40 {
+            let scale = 0.1 * Double(step)
+            var power = 1.0
+            let coefficients = fixture.coefficients.map { coefficient -> Double in
+                defer { power *= scale }
+                return coefficient * power
+            }
+            let polynomial = Polynomial(coefficients)
+            let exact = expected(fixture).map { $0 * scale }
+            let eigenvalues = try unpolishedFinder.roots(of: polynomial)
+            let polished = try finder.roots(of: polynomial)
+            let extended = coefficients.map { DoubleDouble($0) }
+            let residual = { (root: Complex) in ExtendedHorner.evaluate(extended, at: root).value.magnitude }
+            #expect(polished.count == eigenvalues.count)
+            for (root, eigenvalue) in zip(polished, eigenvalues) {
+                #expect(residual(root) <= residual(eigenvalue), "rescaled by \(scale): a polished root is a worse root than its eigenvalue")
+            }
+            worst = max(worst, try #require(expectRootsClose(polished, exact, relative: fixture.achievableAccuracy, "rescaled by \(scale)")))
+
+            // The hazard, shown: the same two Newton steps from the same eigenvalues, each kept
+            // whatever it does to the residual.
+            var plain: [Complex] = []
+            var index = 0
+            while index < eigenvalues.count {
+                var root = eigenvalues[index]
+                for _ in 0 ..< 2 {
+                    let current = ExtendedHorner.evaluate(extended, at: root)
+                    guard current.value.magnitude > 0, current.derivative.magnitude > 0 else { break }
+                    let candidate = root - current.value / current.derivative
+                    guard candidate.isFinite else { break }
+                    root = candidate
+                }
+                plain.append(root)
+                if eigenvalues[index].imaginary != 0, index + 1 < eigenvalues.count {
+                    plain.append(root.conjugate)
+                    index += 2
+                } else {
+                    index += 1
+                }
+            }
+            plainWorst = max(plainWorst, RootMatching.bottleneck(plain, exact))
+        }
+        Measurements.shared.record("WP-402 triple root rescaled by 0.1 to 4.0, relative root error", worst, bound: fixture.achievableAccuracy)
+        Measurements.shared.record("WP-402 rescaled triple root, Newton steps kept WITHOUT the residual test, relative root error (hazard)", plainWorst, bound: fixture.achievableAccuracy)
+        #expect(plainWorst > fixture.achievableAccuracy, "without the test of the residual a cluster is thrown off by \(plainWorst)")
     }
 
     // MARK: rootConditions

@@ -37,6 +37,7 @@ struct ConstantQTests {
             }
             #expect(worst <= 0.5, "\(rate) Hz: a tone at a bin centre is off by \(worst) dB; 0.5 dB is allowed (§6.8)")
             #expect(worst <= 0.05, "\(rate) Hz: … and measures \(worst) dB")
+            print("measured WP-521: at \(rate) Hz a tone at a bin centre of the highest octave is off by \(worst) dB at worst")
         }
     }
 
@@ -68,6 +69,7 @@ struct ConstantQTests {
             }
         }
         #expect(worst <= 0.05, "the worst of 252 bins is off by \(worst) dB")
+        print("measured WP-522a: a tone at the centre of each of the 252 bins of the defaults at \(rate) Hz is off by \(worst) dB at worst")
     }
 
     @Test func aToneBetweenTwoBinsIsSharedByThem() throws {
@@ -120,6 +122,8 @@ struct ConstantQTests {
         let unthinned = distance(dense)
         let octaves = try golden.integer("octaves")
         #expect(unthinned <= (octaves == 1 ? 1e-4 : 0.01) && unthinned < thinned, "\(name), sparsity 0: off by \(unthinned)")
+        let densePerFrame = worstDeviation(dense, real: real, imaginary: imaginary, bins: bins, frames: dense.frameCount)
+        print("measured WP-521/522a: \(name): sparsity 0.01 off by \(thinned) of the largest magnitude of the excerpt (a frame against its own maximum: \(perFrame.worst) at worst, \(perFrame.mean) in the mean); sparsity 0 off by \(unthinned) (a frame: \(densePerFrame.worst) at worst)")
     }
 
     @Test func theHighestOctaveIsTheDefinitionWithoutTheSparsity() throws {
@@ -146,6 +150,9 @@ struct ConstantQTests {
                 worst = max(worst, complexDeviation(sink.reals[frame], sink.imaginaries[frame], reference.real[frame], reference.imaginary[frame]))
             }
             #expect(worst <= tolerance, "\(window): a frame is off by \(worst) of its maximum")
+            let kernel = try ConstantQKernel(geometry: geometry, octave: 0, window: window, sparsity: 0)
+            let mirrored = 1 - (kernel.keptEnergy.min() ?? 0)
+            print("measured WP-521: the highest octave under \(window), sparsity 0, against the definition: a frame is off by \(worst) of its maximum; the share of an atom's energy at negative frequencies is \(mirrored) at most")
             if window == .hamming { #expect(worst >= 1e-3, "the mirror image of a Hamming atom is not nothing: \(worst)") }
         }
     }

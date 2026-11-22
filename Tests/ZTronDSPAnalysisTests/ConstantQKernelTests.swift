@@ -164,6 +164,41 @@ struct ConstantQKernelTests {
         #expect(counts[5] == counts[4] && counts[7] == counts[4], "\(counts)")
         #expect(counts[4] >= 36 * 5, "five entries a row hold 99.9 % of a Hann atom: \(counts[4]) in 36 rows")
         #expect(ConstantQKernel.keptEnergyFloor == 0.999)
+
+        // The figures of `constant-q-kernel.md`, printed (register audit, WP-905c).
+        for rate in [22_050.0, 44_100, 48_000] {
+            let defaults = try ConstantQGeometry(minimumFrequency: noteFrequency(24), sampleRate: rate)
+            let kernel = try ConstantQKernel(geometry: defaults, octave: 6, sparsity: 0.01)
+            let schedule = try ConstantQSchedule(geometry: defaults, hop: 512, filterLength: HalfBand.taps().count)
+            print("measured WP-518: the defaults at \(rate) Hz, sparsity 0.01: the longest atom \(kernel.span), a transform of \(kernel.transformLength), \(kernel.nonZeroCount) entries of \(kernel.rowCount * kernel.columnCount), \(Double(kernel.nonZeroCount) / Double(kernel.rowCount)) a row; the least share of its energy a row keeps \(kernel.keptEnergy.min() ?? 0); latency \(schedule.latency) samples, the lowest atom \(defaults.atomLength(ofBin: 0)); zeros ahead of the decimators \(schedule.primes), lags \(schedule.delays)")
+        }
+        let at48 = try ConstantQGeometry(minimumFrequency: noteFrequency(24), sampleRate: 48_000)
+        for sparsity in [0, 0.001, 0.01, 0.05, 0.3, 0.9, 0.999] {
+            let kernel = try ConstantQKernel(geometry: at48, octave: 6, sparsity: sparsity)
+            print("measured WP-518: the defaults at 48 kHz, sparsity \(sparsity): \(kernel.nonZeroCount) entries, the least share of its energy a row keeps \(kernel.keptEnergy.min() ?? 0)")
+        }
+    }
+
+    /// Hazard 2 of the product (register audit, WP-905c): the columns of a kernel are bins of the
+    /// transform it was made for. The node refuses a kernel for another length before a product
+    /// is made of it: one for twice the length would read bins the spectrum does not have.
+    @Test func aKernelForAnotherTransformLengthIsRefusedBeforeAProductIsMadeOfIt() throws {
+        let strategy = MultirateSparseKernelStrategy()
+        let geometry = try ConstantQGeometry(minimumFrequency: 220, octaves: 5, binsPerOctave: 12, sampleRate: 48_000)
+        let schedule = try strategy.schedule(of: geometry, hop: 256)
+        let length = try strategy.transformLength(holding: schedule.spans.max() ?? 1)
+        let taps = try HalfBand.taps().map { Float($0) }
+        func refusal(kernelLength: Int) -> String? {
+            errorMessage {
+                _ = try ConstantQNode(
+                    geometry: geometry, schedule: schedule,
+                    kernels: try strategy.kernels(of: geometry, window: .hann, sparsity: 0.01, transformLength: kernelLength),
+                    taps: taps, plan: strategy.backend.makePlan(length: length), mixer: ChannelMixer(channel: nil, channelCount: 1, maximumFrames: 512))
+            }
+        }
+        #expect(refusal(kernelLength: length) == nil, "the kernel made for the transform")
+        let refused = try #require(refusal(kernelLength: 2 * length), "a kernel for \(2 * length) points on a transform of \(length)")
+        #expect(refused.contains("for a transform of \(2 * length) points does not fit") && refused.contains("a transform of \(length)"), "\(refused)")
     }
 
     @Test func aRowThatCannotKeepItsEnergyIsRefusedAndTheErrorSaysWhy() throws {

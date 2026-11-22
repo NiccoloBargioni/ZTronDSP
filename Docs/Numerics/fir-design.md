@@ -26,6 +26,8 @@ Parity (golden vectors, `Tests/Golden/generators/fir_design.py`):
 
 Least squares with a gap, by how much of the axis is left out (hazard 1). `rcond` is `dpocon`'s estimate for the normal equations:
 
+(Register audit, 2026-11-21: the rows of 61 and 101 taps, the `rcond` and largest taps of the 31-tap row, and the errors at 41 and 101 taps were measured once, on 2026-11-15, and are printed by no test. The tests print and hold the stress fixture's 2.75e-5, the golden row, and the 31-tap ratios of error, 1.0019, and of norm, 2.386.)
+
 | Fit | `rcond` | Cholesky alone (`dposv`) | With the test and the fall-back |
 |---|---|---|---|
 | bands 0…0.3 and 0.4…0.9 of Nyquist, 61 taps | 1.7e-8 | used | the same taps |

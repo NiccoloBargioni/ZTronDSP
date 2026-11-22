@@ -33,7 +33,7 @@ Against the reference: frame-wise cosine similarity at least 0.99999999998 and v
 - **The mean is removed** from every window before the window function is applied (`TempogramNode`): what is transformed is what moves.
 - **The lag-0 guard** (NUM-1): a window whose value at lag 0 does not exceed the method's floor (`AutocorrelationTempogram(floor:)`, 10⁻¹⁰ by default), or is not a number, gives a column of zeros and is not divided. The Fourier tempogram divides by nothing.
 - **Only the rows inside `range`** are written to the column and named on the axis: lag 0, the lags shorter than the fastest tempo and the bins under the slowest are not among them.
-- A value of the curve that is not a number is taken as 0 where it enters the window.
+- A value of the curve that is not finite (a NaN or an infinity) is taken as 0 where it enters the window.
 - Hazard 4 is bounded by the figures above: a pedestal of 1 000 costs three of the seven digits.
 
 ## Stress test
@@ -41,3 +41,5 @@ Against the reference: frame-wise cosine similarity at least 0.99999999998 and v
 `RhythmSeparationStabilityTests.theTempogramOfEveryStressCurveShowsWhatMovesAndNothingElse`, on every signal of `StressFixture.signals` as a curve: the bounds; zeros for the curves that do not move; the same picture with and without a pedestal; the tempo of the square.
 
 With the mean left in (the window multiplied by the window function as it is) the test fails: on the pedestal the rows of `full-scale-sine`, `full-scale-square`, `nyquist` and `white-noise` are no longer those of the curve without it, the largest row is no longer at the tempo of the square, and `dc` has rows in both tempograms; `TempogramTests.silenceAndACurveThatDoesNotMoveGiveZeros` and the golden comparisons fail with it. With the lag-0 guard removed it fails for `silence`, `dc`, `denormal`, `impulse` and `decaying-tail`, whose columns hold NaN and infinity where a window has no energy. Both checked by making exactly those changes, 2026-11-16.
+
+Register audit, 2026-11-21 (WP-905c): the figures are reproduced: within 3.7193·10⁻⁵ on the pedestal, no coefficient above 0.98402, the square's largest row at lag 48, exact zeros for the curves that do not move, and against the reference a least similarity of 0.99999999998682 and 6.363·10⁻⁷ of the largest value. The mean left in and the lag-0 guard removed fail the stress test as described (1 289 and 3 146 issues). The replacement of a value that is not finite removed failed no test, since the entry of a pipeline replaces non-finite samples before a curve is made of them; `TempogramTests.aValueOfTheCurveThatIsNotFiniteIsTakenAsZero` hands the step `StressFixture.nonFiniteSignal` as a curve through a stage of the tests' own: in four tempograms, 2 948 columns, every value is finite and every column is that of the curve with its three values at 0, bit for bit, and the mutation fails it.

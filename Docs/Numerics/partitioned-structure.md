@@ -26,3 +26,5 @@ The spectra the kernel holds equal the transform of each partition, computed fro
 ## Stress test
 
 `PartitionedStructureTests.theSpectraOfTheStressSignalsAreExactWhereTheirEnergyIs`: taps taken from the `dc`, `nyquist`, `impulse` and `white-noise` signals of `StressFixture.signals` (WP-016) put the energy of a partition in bin 0, in bin B, evenly in all bins. With bin B left out of what the accessor returns the test fails on `nyquist`, and `theSpectraEqualTheTransformOfEachPartition` fails with it. Checked by making exactly that change, 2026-11-15.
+
+Register audit, 2026-11-21 (WP-905b): the change above made again (it fails as described), and two more, one at a time. Admitting a partition that is not a power of two fails `thePartitionMustBeAPowerOfTwoFromEightUp` (24 is accepted). A scale one step above 1 / (4N) fails `theSpectraOfTheStressSignalsAreExactWhereTheirEnergyIs`: the `dc` and `nyquist` taps no longer read back as exactly 32, nor the impulse as exactly 1. The scale is exact, and the test sees it.

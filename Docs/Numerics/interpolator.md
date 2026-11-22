@@ -29,3 +29,5 @@ The output equals zero-stuff-then-filter with gain L, zero-stuffed with the tool
 ## Stress test
 
 `InterpolatorKernelTests.theGainIsTheFactor`, on the `dc` signal of `StressFixture.signals` (WP-016) and on an impulse. With the gain left out of the phase taps it fails: the constant comes out at 1 / L. Checked by making exactly that change, 2026-11-15.
+
+Register audit, 2026-11-21 (WP-905b): the change above made again (the gain test fails at all three factors, with `theOutputEqualsZeroStuffThenFilter` and `latencySettlingTimeAndResetAreAsStated`). `vDSP_conv` called on the block's own frames instead of the whole cell fails `theOutputIsTheSameBitForBitForAnySequenceOfBlockSizes`, but for a factor of 1 only, the one call without an output stride. On this simulator the strided path of factors 2 to 5 rounds the same whatever the length of the call (hazard 3: it is another path). The cells are what makes the factor of 1 exact.

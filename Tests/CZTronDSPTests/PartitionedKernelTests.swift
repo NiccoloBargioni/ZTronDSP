@@ -208,6 +208,25 @@ struct PartitionedKernelTests {
         #expect(tail[(2_000 + 1_001 + 512)...].allSatisfy { $0 == 0 }, "no round-off lingers in the delay line")
     }
 
+    /// RT-6 on both paths (register audit, WP-905b). Above, the head of the filter holds its
+    /// smallest taps, and a product of them with the `denormal` signal is already zero. Here the
+    /// filter's largest taps are in its head, so a block that is not whole partitions convolves
+    /// what came in with taps that keep a subnormal value subnormal. The input is cleaned as it
+    /// enters: with the `denormal` and `decaying-tail` signals of WP-016, nothing subnormal
+    /// comes out, and subnormal input gives exact zeros, on either path.
+    @Test func subnormalInputGivesExactZerosOnBothPaths() throws {
+        let taps = windowedSinc(count: 255, cutoff: 0.1)
+        #expect(taps[..<128].contains { $0 > 0.1 }, "the largest taps are in the head of 128")
+        for name in ["denormal", "decaying-tail"] {
+            let signal = try #require(StressFixture.signals(count: 4_096).first { $0.name == name })
+            for (cut, blocks) in [("whole partitions", Blocks.fixed(128)), ("frame by frame", .fixed(1)), ("7", .fixed(7)), ("irregular up to 300", .irregular(seed: 56, upTo: 300))] {
+                let output = partitioned(taps, partition: 128).run(signal.samples, blocks)
+                #expect(!output.contains { $0.isSubnormal }, "\(name), \(cut): a subnormal value came out")
+                if name == "denormal" { #expect(output.allSatisfy { $0 == 0 }, "\(name), \(cut): nothing in, exactly nothing out") }
+            }
+        }
+    }
+
     @Test func aResetIsAColdStart() {
         let taps = noiseTaps(700)
         let input = TestSignal.whiteNoise(count: 3_000, seed: 2_152)

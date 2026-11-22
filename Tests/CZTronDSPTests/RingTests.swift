@@ -414,6 +414,57 @@ struct RingStorageTests {
         }
     }
 
+    /// §7.5 row 2, hazard 3: a session longer than 2³² frames, 24.8 hours at 48 kHz. Both
+    /// positions pass 2³² with a lap that is no divisor of it, so every lap starts somewhere else
+    /// in the storage; the lap that straddles 2³², and the one after it, come out as they went
+    /// in, bit for bit (the non-finite fixture of WP-016), and every count stays exact. Then the
+    /// full ring is given 2 · (2³² − 1) frames more: every one is counted as dropped, which a
+    /// 32-bit count would not survive, and the ring still holds what it held.
+    @Test(arguments: [ZTD_RING_STORAGE_PLAIN.rawValue, ZTD_RING_STORAGE_MIRRORED.rawValue])
+    func aSessionLongerThanTwoToThe32FramesKeepsEveryFrameAndEveryCount(storage: UInt32) throws {
+        let ring = try #require(TestRing(channels: 1, capacity: 1 << 20, storage: ztd_ring_storage_t(rawValue: storage)))
+        let capacity = ring.capacity
+        let lap = capacity - 7
+        let fixture = StressFixture.nonFiniteSignal(count: lap).samples
+        let source = UnsafeMutablePointer<Float>.allocate(capacity: lap)
+        let table = UnsafeMutablePointer<UnsafePointer<Float>?>.allocate(capacity: 1)
+        defer {
+            source.deallocate()
+            table.deallocate()
+        }
+        source.initialize(from: fixture, count: lap)
+        table[0] = UnsafePointer(source)
+        let pointer = ring.ring
+        let boundary = UInt64(1) << 32
+        var position: UInt64 = 0
+        var lapsRight = true
+        while position + UInt64(lap) <= boundary {
+            // Written and consumed unread: what is checked is where the counts take the ring.
+            if ztd_ring_write(pointer, table, UInt32(lap)) != UInt32(lap) || ztd_ring_consume(pointer, UInt32(lap)) != UInt32(lap) {
+                lapsRight = false
+            }
+            position += UInt64(lap)
+        }
+        #expect(lapsRight, "every lap below 2^32 was taken whole and consumed whole")
+        #expect(position < boundary && position + UInt64(lap) > boundary, "the next lap straddles 2^32")
+        for _ in 0 ..< 2 {
+            #expect(ztd_ring_write(pointer, table, UInt32(lap)) == UInt32(lap) && ring.available == lap && ring.space == capacity - lap)
+            if ring.isMirrored { #expect(ring.peek(0, lap).map(bits) == bits(fixture), "one view, though the lap wraps") }
+            #expect(ring.read(lap).map(bits) == [bits(fixture)], "the lap at position \(position) comes out as it went in")
+            position += UInt64(lap)
+        }
+        #expect(position > boundary && ring.available == 0 && ring.space == capacity && ring.overrun == 0)
+        note("ring \(ring.isMirrored ? "mirrored" : "plain"): frames through the ring", Double(position), "frames")
+
+        // Full, then given 2^32 − 1 frames twice. A full ring reads nothing of what it is given, it
+        // only counts it, so the lap's storage stands for the frames of each call.
+        #expect(ztd_ring_write(pointer, table, UInt32(lap)) == UInt32(lap) && ztd_ring_write(pointer, table, 7) == 7 && ring.space == 0)
+        #expect(ztd_ring_write(pointer, table, UInt32.max) == 0 && ztd_ring_write(pointer, table, UInt32.max) == 0)
+        #expect(ztd_ring_overrun_frames(pointer) == 2 * UInt64(UInt32.max), "every dropped frame is counted: \(ztd_ring_overrun_frames(pointer))")
+        note("ring \(ring.isMirrored ? "mirrored" : "plain"): overrun count", Double(ztd_ring_overrun_frames(pointer)), "frames")
+        #expect(ring.read(capacity).map(bits) == [bits(fixture) + bits(Array(fixture[..<7]))], "and the ring holds what it held")
+    }
+
     /// RT-9: the storage is touched page by page when the ring is created, both views of a
     /// mirrored ring, so no thread takes a first-touch fault later.
     @Test(arguments: [ZTD_RING_STORAGE_PLAIN.rawValue, ZTD_RING_STORAGE_MIRRORED.rawValue])

@@ -29,3 +29,5 @@ The output equals filter-then-subsample, computed in double precision at the ful
 ## Stress test
 
 `DecimatorKernelTests.aFullScaleToneAtNyquistDoesNotAliasIntoTheBand`, on the `nyquist` and `dc` signals of `StressFixture.signals` (WP-016). With the low-pass removed (the taps replaced by a unit impulse when the kernel is created) it fails: the alias is at full scale. Checked by making exactly that change, 2026-11-15.
+
+Register audit, 2026-11-21 (WP-905b): the change above made again ("the alias is 0.0 dB"), and two more, one at a time. An output that is due only once the frame after its own has arrived (the phase rounded down) fails `theOutputEqualsFilterThenSubsampleForIrregularBlockSizes` for every factor from 2 up: an output short at the end (857 where 858 are due). `vDSP_desamp` called for the due outputs only, not the whole cell, fails `theOutputIsTheSameBitForBitForAnySequenceOfBlockSizes` for every factor, which confirms hazard 3. The cleaning of the input is the history's, shared with the direct FIR (`fir-direct.md`).

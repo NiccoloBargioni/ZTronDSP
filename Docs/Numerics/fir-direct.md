@@ -27,3 +27,5 @@ The output is the same bit for bit for any sequence of block sizes, frame by fra
 ## Stress test
 
 `FIRKernelTests.theErrorStaysWithinTheRegistersBoundOnTheStressSignals`, on every signal of `StressFixture.signals` (WP-016): the error is within the register's bound of the convolution of the cleaned input, no subnormal value comes out, and silence and subnormal input give exact zeros. With the cleaning of the input removed the test fails on the `denormal` signal (subnormal products come out). With the cells removed (`vDSP_conv` called with the block's own length) `theOutputIsTheSameBitForBitForAnySequenceOfBlockSizes` fails for every tested length from five taps up. Both checked by making exactly those changes, 2026-11-15.
+
+Register audit, 2026-11-21 (WP-905b): both changes made again, one at a time. Without the cleaning, `subnormalInputGivesExactZeros` of the decimator and of the interpolator fails as well, since the three kernels share the history (`ztd_history_accept`); without the cells the bit-for-bit test fails for every length from five taps up, as above.

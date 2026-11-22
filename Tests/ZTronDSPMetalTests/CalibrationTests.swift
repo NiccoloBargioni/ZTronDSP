@@ -145,6 +145,63 @@ struct CalibrationTests {
         #expect(CallTimer(samples: 1, sampleNanoseconds: 0).nanosecondsPerCall { once += 1 } > 0 && once == 2)
     }
 
+    /// The fastest sample counts (`crossover-search.md`): a sample slowed by something else is
+    /// not the figure. With no time to spare there is one call per sample after the untimed
+    /// warm-up; the first timed call does all the work here, the others none.
+    @Test func theFastestSampleCountsAndADisturbedOneDoesNot() {
+        let cell = UnsafeMutablePointer<UInt64>.allocate(capacity: 1)
+        defer { cell.deallocate() }
+        cell.initialize(to: 0x9E37_79B9)
+        var calls = 0
+        var disturbed = 0.0
+        let figure = CallTimer(samples: 5, sampleNanoseconds: 0).nanosecondsPerCall {
+            calls += 1
+            guard calls == 2 else { return }
+            let start = DispatchTime.now().uptimeNanoseconds
+            Self.spin(1_000_000, cell)
+            disturbed = Double(DispatchTime.now().uptimeNanoseconds - start)
+        }
+        #expect(calls == 6, "the warm-up and five samples of one call each: \(calls) calls")
+        #expect(disturbed > 0 && figure < disturbed / 100, "the fastest sample, \(figure) ns, and not the disturbed one, \(disturbed) ns")
+    }
+
+    /// The order the closures of a search were called in.
+    private final class CallOrder: @unchecked Sendable {
+        // Threading: `calls` is read and written only with the lock held.
+        private let lock = NSLock()
+        private var calls: [String] = []
+
+        func record(_ call: String) {
+            lock.lock()
+            calls.append(call)
+            lock.unlock()
+        }
+
+        var recorded: [String] {
+            lock.lock()
+            defer { lock.unlock() }
+            return calls
+        }
+    }
+
+    /// The two candidates take turns at every size (`crossover-search.md`): what drifts while
+    /// the device is measured, its clock or its temperature, falls on both curves alike.
+    @Test func theCandidatesTakeTurnsAtEverySize() throws {
+        let order = CallOrder()
+        let sizes = [8, 16, 32, 64]
+        let lighter = CalibrationCandidate(.native, label: "loop") { size, _ in
+            order.record("loop \(size)")
+            return 3 * Double(size)
+        }
+        let heavier = CalibrationCandidate(.accelerate, label: "library") { size, _ in
+            order.record("library \(size)")
+            return 100
+        }
+        let measurement = try Calibration.search(.elementwise, sizes: sizes, lighter: lighter, heavier: heavier)
+        #expect(order.recorded == sizes.flatMap { ["loop \($0)", "library \($0)"] }, "\(order.recorded)")
+        #expect(measurement.crossover == 64, "3·n against 100: the heavier one leads from 64 on")
+    }
+
     @Test func aCancelledTaskStopsTheSearchBetweenTwoSizes() async {
         let candidate = simulated(.native, "loop") { Double($0) }
         let task = Task { () async throws -> CrossoverMeasurement in

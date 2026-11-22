@@ -102,6 +102,35 @@ struct OnsetStrengthTests {
         #expect(silence.count == 29 && silence.allSatisfy { $0.value == 0 })
     }
 
+    @Test func aLevelThatIsNotFiniteNeverGivesAValueThatIsNot() throws {
+        // The non-finite fixture of WP-016 as levels: its white noise of ±0.5 read as −50 … −30 dB
+        // in frames of eight bands, with a NaN in frame 9, +∞ in frame 21 and −∞ in frame 32. The
+        // entry of a pipeline replaces samples (NUM-1); the frames of a step reach the next step
+        // as they are.
+        let fixture = StressFixture.nonFiniteSignal(count: 512)
+        let levels = fixture.samples.map { 20 * $0 - 40 }
+        func frames(_ values: [Float]) -> [[Float]] { stride(from: 0, to: values.count, by: 8).map { Array(values[$0 ..< $0 + 8]) } }
+        let holding = try #require(levels.firstIndex { $0.isNaN }) / 8, rising = try #require(levels.firstIndex(of: .infinity)) / 8
+        // What the floor makes of the others: −∞ lies under it, +∞ above every level there is.
+        // A NaN it leaves as it is (`vDSP_vthr` passes a NaN through), so it stands for nothing here.
+        let replaced = levels.map { $0.isNaN || $0 == -.infinity ? -80 : $0 == .infinity ? Float.greatestFiniteMagnitude : $0 }
+        #expect(fixture.nonFiniteCount == 3 && holding == 9 && rising == 21)
+        for step in [OnsetStrength(), OnsetStrength(lag: 2, maxSize: 3)] {
+            let poisoned = try curve(of: frames(levels), step), clean = try curve(of: frames(replaced), step)
+            #expect(poisoned.count == 64 && clean.count == 64)
+            #expect(poisoned.allSatisfy { $0.value.isFinite && $0.value >= 0 }, "no NaN, no infinity (NUM-1)")
+            // No value where the mean is not finite, rather than a value that is not a number or an
+            // onset of ∞ dB: the frame that holds the NaN, the frame `lag` later that is compared
+            // with it, and the frame in which a band rises to +∞.
+            let none = [holding, holding + step.lag, rising]
+            let written = none.map { "frame \($0): \(poisoned[$0].value) dB, confidence \(poisoned[$0].confidence)" }
+            #expect(none.allSatisfy { poisoned[$0].value == 0 && poisoned[$0].confidence == 0 }, "\(written)")
+            let differing = poisoned.indices.filter { !none.contains($0) && poisoned[$0] != clean[$0] }
+            #expect(differing.isEmpty, "every other value is that of the levels the floor makes of them; frames \(differing) are not")
+            print("measured WP-525: the non-finite fixture as levels, lag \(step.lag), maximum over \(step.maxSize): \(written.joined(separator: "; ")); frame 32 (−∞): \(poisoned[32].value) dB, confidence \(poisoned[32].confidence); \(differing.count) other values differ from those of the levels the floor makes of them")
+        }
+    }
+
     // MARK: Downstream: a novelty curve (§5.2, ENV-1)
 
     @Test func downstreamTheSignalIsANoveltyCurveAtTheFeatureRate() throws {

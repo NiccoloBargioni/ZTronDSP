@@ -333,6 +333,10 @@ struct BandBoostTests {
                 let a0 = 1 + alpha / amplitude
                 let expected = [(1 + alpha * amplitude) / a0, -2 * cosine / a0, (1 - alpha * amplitude) / a0, -2 * cosine / a0, (1 - alpha / amplitude) / a0]
                 expectClose(design.secondOrderSections.sections[0].coefficients, expected, .absolute(1e-13), band.name)
+                // The section is the Cookbook's own, not one paired from the zeros and poles:
+                // above and below the line it has one middle coefficient, −2·cos ω₀ / a₀.
+                let coefficients = design.secondOrderSections.sections[0].coefficients
+                #expect(coefficients[1] == coefficients[3], "\(band.name): b1 \(coefficients[1]), a1 \(coefficients[3])")
             }
         }
         // The default order is 1.

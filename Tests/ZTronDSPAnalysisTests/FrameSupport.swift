@@ -151,6 +151,53 @@ final class SamplesAsNoveltyNode: AnalysisNode {
     func reset() {}
 }
 
+/// A novelty curve a test wrote by hand, one value for every sample that drives it, at the
+/// rate of the samples: what hands a step values that the entry of a pipeline would have
+/// replaced (NUM-1), a NaN or an infinity among them. The values repeat when the samples
+/// outlast them.
+struct CurveAsNovelty: PipelineStage {
+    typealias Input = Samples
+    typealias Output = Novelty
+    let values: [Float]
+
+    init(_ values: [Float]) {
+        self.values = values
+    }
+
+    func lower(_ context: inout LoweringContext) throws(DSPError) {
+        let rate = context.environment.sampleRate, values = values
+        // The bits, not the values, tell two curves apart: a NaN is not equal to itself.
+        context.emit(.analysis(AnalysisStep(name: "CurveAsNovelty", key: values.map(\.bitPattern), output: .scalar, scope: .featureSequence(rate: rate)) {
+            () throws(DSPError) -> any AnalysisNode in CurveAsNoveltyNode(values, rate: rate)
+        }))
+    }
+}
+
+final class CurveAsNoveltyNode: AnalysisNode {
+    private let values: [Float]
+    private let rate: Double
+    private var next = 0
+    var latencyFrames: Int { 0 }
+    var settlingFrames: Int { 0 }
+
+    init(_ values: [Float], rate: Double) {
+        self.values = values
+        self.rate = rate
+    }
+
+    func process(_ input: FrameView, _ output: inout FrameWriter) {
+        guard let block = input.samples, !values.isEmpty else { return }
+        var index = 0
+        while index < block.frameCount {
+            output.emit(scalar: ScalarFrame(value: values[next % values.count], confidence: 1), time: input.time + Double(index) / rate)
+            next += 1
+            index += 1
+        }
+    }
+
+    func reset() { next = 0 }
+}
+
 /// The cosine similarity of two vectors; 1 for two vectors of zeros, which are the same
 /// column, and 0 when only one of them is zeros.
 func cosineSimilarity(_ a: [Float], _ b: [Double]) -> Double {

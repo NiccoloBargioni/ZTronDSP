@@ -347,10 +347,10 @@ replaces. Field by field: `Docs/Process/templates/ledger-row.md`.
 | WP-903b | The budgets of §10.4 on the reference devices; a device run | 541, 809b | R, V |  | Blocked-on-deps |  |  |  |  |  |  |  |  | n/a | n/a |  |
 | WP-904a | Floor verification on an iOS 15 device: unit, parity and audit plans (PLAT-3) | all | S, A |  | Blocked-on-deps |  |  |  |  |  |  |  |  | n/a | n/a |  |
 | WP-904b | Floor verification: rendering, UI and integration plans; the device checks listed in §13.1 | 904a | S, V |  | Blocked-on-deps |  |  |  |  |  |  |  |  | n/a | n/a |  |
-| WP-905a | Audit of the algorithm and stability registers, six rows to a package (§7.3, §7.5) | all | N, A |  | Blocked-on-deps |  |  |  |  |  |  |  |  | n/a | n/a |  |
-| WP-905b | Audit of the algorithm and stability registers, six rows to a package (§7.3, §7.5) | all | N, A |  | Blocked-on-deps |  |  |  |  |  |  |  |  | n/a | n/a |  |
-| WP-905c | Audit of the algorithm and stability registers, six rows to a package (§7.3, §7.5) | all | N, A |  | Blocked-on-deps |  |  |  |  |  |  |  |  | n/a | n/a |  |
-| WP-905d | Audit of the algorithm and stability registers, six rows to a package (§7.3, §7.5) | all | N, A |  | Blocked-on-deps |  |  |  |  |  |  |  |  | n/a | n/a |  |
+| WP-905a | Audit of the algorithm and stability registers, six rows to a package (§7.3, §7.5) | all | N, A |  | Verifying | Implementer M9-registers (agent) |  |  |  |  |  |  |  | n/a | n/a |  |
+| WP-905b | Audit of the algorithm and stability registers, six rows to a package (§7.3, §7.5) | all | N, A |  | Verifying | Implementer M9-registers (agent) |  |  |  |  |  |  |  | n/a | n/a |  |
+| WP-905c | Audit of the algorithm and stability registers, six rows to a package (§7.3, §7.5) | all | N, A |  | Verifying | Implementer M9-registers (agent) |  |  |  |  |  |  |  | n/a | n/a |  |
+| WP-905d | Audit of the algorithm and stability registers, six rows to a package (§7.3, §7.5) | all | N, A |  | Verifying | Implementer M9-registers (agent) |  |  |  |  |  |  |  | n/a | n/a |  |
 | WP-906 | Release 0.1.0 checklist | all | A, T |  | Blocked-on-deps |  |  |  |  |  |  |  |  | n/a | n/a |  |
 | WP-907 | External parity suite: a package outside this one re-implements `Gain`, an IIR low-pass on its own C kernel, and a mel projection node, on the public API only (EXT-4) | 339, 437, 432a, 535 | A, R |  | Verifying | Implementer X (external parity, agent) |  |  |  |  |  |  |  | n/a | n/a |  |
 | WP-908 | Extension guide: one compiled example for each row of §5.11.1 | 907 | A, T |  | Verifying | Implementer X (external parity, agent) |  |  |  |  |  |  |  | n/a | n/a |  |
