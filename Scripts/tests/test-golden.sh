@@ -149,6 +149,57 @@ expect_status 0 "the check reports a pending generator loudly" "$GOLDEN" --check
 expect_contains "… by name" "golden: PENDING needs_missing"
 expect_status 3 "the strict check fails on a pending generator" "$GOLDEN" --check --strict --root "$TREE"
 
+# The second computation a generator keeps beside its oracle (_golden.cross_check).
+fresh_tree; add cross_check_fails
+expect_status 1 "a cross-check that fails stops the generator" "$GOLDEN" --only cross_check_fails --root "$TREE"
+expect_contains "… with the deviation and the bound" "cross-check a definition one part in 1e9 away: the definition deviates from the oracle by 1.000e-09 of the largest value"
+expect_contains "… and both values where they differ most" "At (2,): oracle 3.0, definition 3.000000003"
+if [ ! -e "$TREE/Tests/ZTronDSPAnalysisTests/Golden/cross_check_fails.json" ]; then pass "… and writes no vector"; else fail "… and writes no vector"; fi
+
+# librosa: pinned like NumPy and SciPy, and read as a generator loads it (_oracle.installed(), after
+# the SciPy stand-ins). Stand-ins for librosa, put first on PYTHONPATH: another version; an import
+# that fails as it fails where librosa is not installed; an installed librosa that cannot be loaded.
+LIBROSA_OTHER="$SCRATCH/librosa-other"; mkdir -p "$LIBROSA_OTHER/librosa"
+printf '__version__ = "0.0.1"\n' > "$LIBROSA_OTHER/librosa/__init__.py"
+LIBROSA_ABSENT="$SCRATCH/librosa-absent"; mkdir -p "$LIBROSA_ABSENT/librosa"
+printf 'raise ModuleNotFoundError("No module named %s", name="librosa")\n' "'librosa'" > "$LIBROSA_ABSENT/librosa/__init__.py"
+LIBROSA_BROKEN="$SCRATCH/librosa-broken"; mkdir -p "$LIBROSA_BROKEN/librosa"
+printf 'import ztd_dependency_of_librosa  # noqa: F401\n__version__ = "0.11.0"\n' > "$LIBROSA_BROKEN/librosa/__init__.py"
+LIBROSA_PIN="$(sed -n 's/^librosa==//p' "$ROOT/Tests/Golden/generators/requirements.txt")"
+fresh_tree; add needs_librosa
+expect_status 2 "a librosa of another version than its pin refuses the run" env PYTHONPATH="$LIBROSA_OTHER" "$GOLDEN" --root "$TREE"
+expect_contains "… with both versions" "librosa 0.0.1 is installed and $LIBROSA_PIN is pinned"
+expect_status 2 "… also when only a generator that does not load librosa is asked for" env PYTHONPATH="$LIBROSA_OTHER" "$GOLDEN" --only buttap --root "$TREE"
+expect_status 2 "… and when the vectors are reproduced" env PYTHONPATH="$LIBROSA_OTHER" "$GOLDEN" --reproduce --only buttap --root "$TREE"
+expect_status 2 "a librosa that is installed and cannot be loaded refuses the run" env PYTHONPATH="$LIBROSA_BROKEN" "$GOLDEN" --root "$TREE"
+expect_contains "… with Python's words" "No module named 'ztd_dependency_of_librosa'"
+expect_status 0 "without librosa, a generator that needs it does not stop the others" env PYTHONPATH="$LIBROSA_ABSENT" "$GOLDEN" --root "$TREE"
+expect_contains "… the run log says so" "librosa not installed"
+expect_contains "… and the generator is recorded as pending" "PENDING needs_librosa: librosa is not installed"
+expect_contains "… while the others ran" "golden: buttap: Tests/ZTronDSPDesignTests/Golden/buttap.json"
+expect_status 3 "… which the strict check fails on" "$GOLDEN" --check --strict --root "$TREE"
+fresh_tree; sed -i '' '/^librosa==/d' "$GENERATORS/requirements.txt"
+expect_status 2 "librosa must be pinned, like NumPy and SciPy" "$GOLDEN" --root "$TREE"
+expect_contains "… and the refusal says so" "librosa is not pinned in Tests/Golden/generators/requirements.txt"
+if python3 -c "import sys; sys.path.insert(0, '$ROOT/Tests/Golden/generators'); import _oracle; sys.exit(0 if _oracle.installed()['librosa'] == '$LIBROSA_PIN' else 1)" >/dev/null 2>&1; then
+    fresh_tree; add needs_librosa
+    expect_status 0 "with the pinned librosa installed, a generator that loads it runs" "$GOLDEN" --root "$TREE"
+    expect_contains "… the run log names librosa among the oracles" ", librosa $LIBROSA_PIN"
+    expect_contains "… and the generator held librosa's output to its definition" "cross-check hz_to_mel, htk:"
+    if grep -q "\"librosa\":\"$LIBROSA_PIN\"" "$TREE/Tests/ZTronDSPAnalysisTests/Golden/needs_librosa.json"; then pass "… and its vector file records librosa's version"; else fail "… and its vector file records librosa's version" "$(head -c 300 "$TREE/Tests/ZTronDSPAnalysisTests/Golden/needs_librosa.json")"; fi
+    if grep -q '"librosa"' "$VECTOR"; then fail "… while a generator that does not load librosa does not record it" "$(head -c 300 "$VECTOR")"; else pass "… while a generator that does not load librosa does not record it"; fi
+    expect_status 0 "… and the strict check passes: nothing is pending" "$GOLDEN" --check --strict --root "$TREE"
+    expect_status 0 "… and it reproduces" "$GOLDEN" --reproduce --only needs_librosa --root "$TREE"
+    expect_contains "… bit for bit" "needs_librosa reproduces its committed files bit for bit"
+    expect_status 0 "without librosa afterwards, its committed vectors are kept" env PYTHONPATH="$LIBROSA_ABSENT" "$GOLDEN" --root "$TREE"
+    expect_contains "… and the run says so" "SKIPPED needs_librosa: librosa is not installed; its committed vectors were kept as they are"
+    expect_status 0 "… and the strict check still passes" "$GOLDEN" --check --strict --root "$TREE"
+    expect_status 0 "… and reproducing without librosa skips it, loudly" env PYTHONPATH="$LIBROSA_ABSENT" "$GOLDEN" --reproduce --only needs_librosa --root "$TREE"
+    expect_contains "… by name" "SKIPPED needs_librosa: librosa is not installed; nothing was reproduced"
+else
+    echo "  SKIP  librosa $LIBROSA_PIN is not installed: a generator that loads it was not run with it"
+fi
+
 expect_status 2 "an unknown generator is a usage error" "$GOLDEN" --only nothing --root "$TREE"
 expect_status 2 "a tree without generators is a usage error" "$GOLDEN" --check --root "$SCRATCH"
 

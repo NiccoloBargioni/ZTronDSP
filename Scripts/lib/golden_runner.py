@@ -24,8 +24,11 @@ and of each file it wrote: what changed in a Golden folder during its run (*.jso
 *.f64 and whatever else it puts there; README.txt is not a vector), and its OUTPUTS.
 
 Running refuses to start when an installed oracle differs from its pin in
-Tests/Golden/generators/requirements.txt. A generator that stops because a pinned oracle is not
-installed is recorded as pending: --check reports it loudly and fails on it under --strict.
+Tests/Golden/generators/requirements.txt. NumPy, SciPy and librosa must be pinned there, and are
+read as a generator loads them, through _oracle.installed() (librosa after the SciPy stand-ins);
+a further pin is read from the installed package's metadata. A generator that stops because a
+pinned oracle is not installed is recorded as pending: --check reports it loudly and fails on it
+under --strict.
 
 The golden MATLAB scripts (every *.m in a Golden folder: the exports of §6.14 and the writer's
 own script) are held, by --check, to the static check of Scripts/lib/matlab_check.py (MAT-2:
@@ -62,7 +65,8 @@ PACKAGE_ROOT = os.path.normpath(os.path.join(os.path.dirname(os.path.abspath(__f
 VECTOR_SUFFIXES = (".json", ".f32", ".f64")
 SCRIPT_SUFFIX = ".m"                 # a golden MATLAB script (§6.14): listed like a vector, and checked
 NOT_VECTORS = ("README.txt",)
-BUILT_IN = ("numpy", "scipy")        # read through _oracle.versions()
+ORACLES = ("numpy", "scipy", "librosa")  # pinned always, read through _oracle.installed()
+REQUIRED = ("numpy", "scipy")             # every generator loads these; librosa may be absent (pending)
 # Generators that live outside Tests/Golden/generators: (script, the files it writes).
 EXTRA_GENERATORS = (("Scripts/generate-stress-fixtures.py", ("Sources/ZTronDSPTesting/StressFixtureData.swift",)),)
 NOT_COPIED = shutil.ignore_patterns(".build", ".git", ".swiftpm", "DerivedData", "*.xcresult", "__pycache__", ".venv")
@@ -186,9 +190,10 @@ class Tree:
 
 
 def installed_oracles(tree):
-    """Versions of NumPy and SciPy as the generators will see them, and the stand-ins in use."""
+    """Versions of NumPy, SciPy and librosa as the generators will see them (librosa None when it
+    is not installed), and the stand-ins in use."""
     probe = ("import json, sys\nsys.path.insert(0, %r)\nimport _oracle\n"
-             "print(json.dumps({'versions': _oracle.versions(), 'replaced': list(_oracle.replaced)}))\n" % tree.generators_directory)
+             "print(json.dumps({'versions': _oracle.installed(), 'replaced': list(_oracle.replaced)}))\n" % tree.generators_directory)
     result = subprocess.run([sys.executable, "-c", probe], capture_output=True, text=True)
     if result.returncode != 0:
         raise Refused("the oracles cannot be loaded through Tests/Golden/generators/_oracle.py:\n" + result.stderr.strip())
@@ -199,14 +204,20 @@ def check_pins(tree):
     """Refuses when an installed oracle differs from its pin. Returns the pins."""
     pins = tree.pins()
     state = installed_oracles(tree)
-    for name in BUILT_IN:
+    loaded = []
+    for name in ORACLES:
         if name not in pins:
             raise Refused("%s is not pinned in %s" % (name, tree.relative(tree.requirements)))
-        if state["versions"].get(name) != pins[name]:
+        version = state["versions"].get(name)
+        if version is None and name not in REQUIRED:
+            loaded.append("%s not installed" % name)
+            continue
+        if version != pins[name]:
             raise Refused("%s %s is installed and %s is pinned: the vectors would not be the committed ones. "
-                          "Install the pinned version, or change the pin and regenerate everything" % (name, state["versions"].get(name), pins[name]))
+                          "Install the pinned version, or change the pin and regenerate everything" % (name, version, pins[name]))
+        loaded.append("%s %s" % (name, version))
     others = []
-    for name in sorted(set(pins) - set(BUILT_IN)):
+    for name in sorted(set(pins) - set(ORACLES)):
         try:
             version = importlib.metadata.version(name)
         except importlib.metadata.PackageNotFoundError:
@@ -215,7 +226,7 @@ def check_pins(tree):
         if version != pins[name]:
             raise Refused("%s %s is installed and %s is pinned" % (name, version, pins[name]))
         others.append("%s %s" % (name, version))
-    print("golden: oracles %s" % ", ".join(["%s %s" % (name, state["versions"][name]) for name in BUILT_IN] + others))
+    print("golden: oracles %s" % ", ".join(loaded + others))
     if state["replaced"]:
         print("golden: stand-ins are in place of %d SciPy extensions this host cannot load (no oracle function reaches them):" % len(state["replaced"]))
         for name in state["replaced"]:

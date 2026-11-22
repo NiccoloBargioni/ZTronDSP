@@ -1,6 +1,7 @@
 """Loads the pinned oracles for the golden-vector generators (STG-2).
 
-Call `load()` before importing anything from SciPy.
+Call `load()` before importing anything from SciPy, and `load_librosa()` to get librosa: a
+generator never writes `import librosa` itself.
 
 The SciPy 1.15.3 wheel for CPython 3.10 carries eight Fortran extensions that the dynamic
 loader of macOS 27 rejects ("section '__DATA/__thread_bss' has a zero-fill section type, but
@@ -9,6 +10,17 @@ imports them eagerly, so without help `import scipy.signal` fails on such a host
 function a generator uses reaches any of them, so `load()` puts an inert stand-in in the place
 of exactly those eight modules, and only when the real one cannot be loaded. A stand-in raises
 if anything ever calls into it, and any other load failure stays fatal.
+
+librosa imports `scipy.ndimage` and `scipy.signal`, so on such a host it can be imported only
+after those stand-ins are in place: `load_librosa()` calls `load()` first. When librosa is not
+installed, `load_librosa()` raises Python's own ModuleNotFoundError ("No module named
+'librosa'"), which the runner (Scripts/lib/golden_runner.py) records as a pending generator,
+librosa being pinned in requirements.txt.
+
+The versions a generator records in each vector file (`versions()`) are those of the oracles it
+loaded: NumPy and SciPy always, librosa when the generator loaded it. The runner reads every
+pinned oracle as a generator would load it (`installed()`) and refuses to run when one differs
+from its pin.
 """
 
 import importlib
@@ -90,6 +102,34 @@ def load():
     return numpy, scipy
 
 
+def load_librosa():
+    """Installs the SciPy stand-ins (`load()`), then imports librosa and returns the module.
+
+    Raises ModuleNotFoundError ("No module named 'librosa'") when librosa is not installed: the
+    runner then records the generator as pending."""
+    load()
+    import librosa
+    return librosa
+
+
 def versions():
+    """The versions of the oracles this process loaded: NumPy and SciPy, and librosa when it was
+    loaded through `load_librosa()`. A vector file records them (_golden.write)."""
     numpy, scipy = load()
-    return {"numpy": numpy.__version__, "scipy": scipy.__version__}
+    found = {"numpy": numpy.__version__, "scipy": scipy.__version__}
+    if "librosa" in sys.modules:
+        found["librosa"] = sys.modules["librosa"].__version__
+    return found
+
+
+def installed():
+    """The versions of every oracle a generator can load, as it would load them: NumPy and SciPy,
+    and librosa, or None for librosa when it is not installed. The runner holds them to the pins."""
+    found = versions()
+    try:
+        found["librosa"] = load_librosa().__version__
+    except ModuleNotFoundError as error:
+        if error.name != "librosa":
+            raise
+        found["librosa"] = None
+    return found
