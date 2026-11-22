@@ -65,8 +65,21 @@ done
 
 echo "ledger"
 expect_status 0 "the committed ledger is consistent with §12 and §11" "$LEDGER" --check
-rows="$(grep -c '^| WP-' "$P/ledger.md")"
-if [ "$rows" -eq 289 ]; then pass "it has one row for each of the 289 packages"; else fail "it has one row for each of the 289 packages ($rows rows)"; fi
+# One row for each package of §12. A split recorded here (§11.7) adds a row for each part,
+# directly under the package it retires; the check above vouches for those, so they are not
+# counted (a part that §12 itself lists has no retired row above it, and is).
+rows="$(awk -F'|' '
+    { gsub(/\\\|/, "") }
+    /^\| WP-/ { id = $2; gsub(/ /, "", id); status = $7; gsub(/ /, "", status); order[++n] = id; state[id] = status }
+    END {
+        for (k = 1; k <= n; k++) {
+            base = substr(order[k], 1, 6)
+            if (order[k] != base && state[base] == "Retired") continue
+            count++
+        }
+        print count + 0
+    }' "$P/ledger.md")"
+if [ "$rows" -eq 289 ]; then pass "it has one row for each of the 289 packages, the parts of a split aside"; else fail "it has one row for each of the 289 packages, the parts of a split aside ($rows rows)"; fi
 cp "$P/ledger.md" "$L"
 expect_status 0 "re-deriving it changes nothing" "$LEDGER" --update --ledger "$L"
 if cmp -s "$L" "$P/ledger.md"; then pass "… byte for byte"; else fail "… byte for byte" "$(diff "$P/ledger.md" "$L" | head -5)"; fi

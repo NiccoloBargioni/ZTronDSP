@@ -41,6 +41,7 @@ static _Thread_local int32_t ztd_priority_before = -1;
 static int32_t ztd_thread_base_priority(void) {
     thread_extended_info_data_t info;
     mach_msg_type_number_t count = THREAD_EXTENDED_INFO_COUNT;
+    // coverage:ignore(the kernel refuses a thread that is gone, a flavour it does not know or a short count; the calling thread asking with its own count is none of these)
     if (thread_info(pthread_mach_thread_np(pthread_self()), THREAD_EXTENDED_INFO, (thread_info_t)&info, &count) != KERN_SUCCESS) {
         return -1;
     }
