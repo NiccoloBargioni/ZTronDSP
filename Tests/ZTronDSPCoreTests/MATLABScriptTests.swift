@@ -5,52 +5,27 @@ import ZTronDSPTesting
 
 @Suite("MATLABScript (WP-120)")
 struct MATLABScriptTests {
-    /// The golden script: every kind of variable and every plot command.
-    private static let golden = """
-        % Pole-zero map of a second-order section
-        fs = 48000;
-        w = [0 0.25 0.5 1];
-        g = [1 0.5 0.25];
-        p = [0.5+0.5i 0.5-0.5i];
-        H = [1 2 3; 4 5 6];
-        S = [0 0.5; 1 1.5; 2 2.5];
-        d = [1 NaN 3];
-        subplot(2, 1, 1);
-        plot(w, 20*log10(abs(H(1,:))), 'r--');
-        hold on;
-        semilogx(w, w);
-        loglog(w, w);
-        stem(real(p), imag(p), 'x');
-        hold off;
-        grid on;
-        grid off;
-        xlabel('Frequency (Hz)');
-        ylabel('Magnitude (dB)');
-        title('It''s a filter');
-        axis equal;
-        axis([0 24000 -90 6]);
-        subplot(2, 1, 2);
-        imagesc(w, g, S);
-        axis xy;
-        colorbar;
-
-        """
+    /// The golden script: every kind of variable and every plot command, in a script that runs
+    /// under GNU Octave. Tests/Golden/generators/matlab_writer.py writes it (STG-2), and
+    /// Scripts/golden.sh --octave runs it (WP-910).
+    private static func golden() throws -> String {
+        let url = try #require(Bundle.module.url(forResource: "script_writer", withExtension: "m", subdirectory: "Golden"), "Golden/script_writer.m is not in the test bundle")
+        return try String(contentsOf: url, encoding: .utf8)
+    }
 
     private func build() throws -> MATLABScript {
         try MATLABScript()
             .comment("Pole-zero map of a second-order section")
             .scalar("fs", 48_000)
-            .vector("w", [0, 0.25, 0.5, 1])
+            .vector("w", [0.125, 0.25, 0.5, 1])
             .vector("g", [1, 0.5, 0.25] as [Float])
             .vector("p", real: [0.5, 0.5], imaginary: [0.5, -0.5])
-            .matrix("H", rows: [[1, 2, 3], [4, 5, 6]])
+            .matrix("H", rows: [[1, 2, 3, 4], [5, 6, 7, 8]])
             .matrix("S", values: [0, 0.5, 1, 1.5, 2, 2.5], rows: 3, columns: 2)
             .vector("d", optional: [1, nil, 3])
-            .subplot(2, 1, 1)
+            .subplot(2, 2, 1)
             .plot("w", "20*log10(abs(H(1,:)))", style: "r--")
             .hold()
-            .semilogx("w", "w")
-            .loglog("w", "w")
             .stem("real(p)", "imag(p)", style: "x")
             .hold(false)
             .grid()
@@ -60,13 +35,23 @@ struct MATLABScriptTests {
             .title("It's a filter")
             .axis("equal")
             .axis(x: 0 ... 24_000, y: -90 ... 6)
-            .subplot(2, 1, 2)
+            .subplot(2, 2, 2)
+            .semilogx("w", "w")
+            .xlabel("Frequency (Hz)")
+            .ylabel("Gain")
+            .subplot(2, 2, 3)
+            .loglog("w", "w")
+            .xlabel("Frequency (Hz)")
+            .ylabel("Gain")
+            .subplot(2, 2, 4)
             .imagesc("w", "g", "S")
             .colorbar()
+            .xlabel("Time (s)")
+            .ylabel("Band")
     }
 
     @Test func emittedTextEqualsTheGoldenScript() throws {
-        #expect(try build().text == Self.golden)
+        #expect(try build().text == Self.golden())
     }
 
     @Test func equalInputGivesEqualText() throws {

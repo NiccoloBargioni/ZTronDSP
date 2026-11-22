@@ -31,11 +31,12 @@ an assignment of numbers, or one of the plot commands of MAT-2; data comes befor
 command plots is a variable of the script, or `real`, `imag`, or the unit circle, and the two
 things plotted against one another are of one size. That is a check of structure, not Octave.
 
-The script then runs under GNU Octave when `octave-cli` or `octave` is on the PATH: it must
-finish without an error and leave every variable at its length. Without Octave the script is
-still written, and a line says that it was not run; ZTD_REQUIRE_OCTAVE=1 turns that into a
-failure (for the completeness gate, WP-910). The Octave step was written on a machine without
-Octave and has not been exercised.
+The script then runs under GNU Octave when `octave` (or `octave-cli`) is on the PATH, headless
+(QT_QPA_PLATFORM=offscreen, no window, no start-up files, the figures not shown): it must finish
+without an error and leave every variable at its length. Without Octave the script is still
+written, and a line says that it was not run; ZTD_REQUIRE_OCTAVE=1 turns that into a failure.
+Since WP-910 the Octave run of every golden script, this one among them, is also a part of CI
+gate 7 (Scripts/golden.sh --octave), which checks the figure the script draws as well.
 
     python3 system_analysis_matlab.py
 """
@@ -273,9 +274,11 @@ def check(text):
 
 def run_under_octave(path):
     """Runs the script under GNU Octave. Returns None when Octave is not installed, else its name."""
-    octave = shutil.which("octave-cli") or shutil.which("octave")
+    octave = shutil.which("octave") or shutil.which("octave-cli")
     if octave is None:
         return None
+    environment = dict(os.environ)
+    environment.setdefault("QT_QPA_PLATFORM", "offscreen")
     checks = (
         "set(0, 'defaultfigurevisible', 'off'); "
         "source('%s'); "
@@ -286,8 +289,8 @@ def run_under_octave(path):
         "disp('ZTD-OCTAVE-OK');"
     ) % ((path.replace("'", "''"),) + (FREQUENCIES,) * 4 + (SAMPLES,) * 3)
     with tempfile.TemporaryDirectory() as scratch:
-        result = subprocess.run([octave, "--no-gui", "--quiet", "--no-init-file", "--eval", checks],
-                                cwd=scratch, capture_output=True, text=True, timeout=300)
+        result = subprocess.run([octave, "--no-gui", "--quiet", "--norc", "--no-history", "--eval", checks],
+                                cwd=scratch, env=environment, capture_output=True, text=True, timeout=300)
     if result.returncode != 0 or "ZTD-OCTAVE-OK" not in result.stdout:
         raise RuntimeError("the script does not run under %s:\n%s\n%s" % (octave, result.stdout.strip(), result.stderr.strip()))
     return octave

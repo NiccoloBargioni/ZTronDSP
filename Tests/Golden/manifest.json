@@ -34,6 +34,17 @@
    "sourceSha256": "b071926a29244767301f08f7031f3d1c6aca13c8799fcb37e948fb8e5a24c3e7"
   },
   {
+   "generator": "calibration_matlab",
+   "outputs": [
+    {
+     "path": "Tests/ZTronDSPMetalTests/Golden/calibration_report.m",
+     "sha256": "da368eb35ce3ab0c9fe6de6492b9a0a86d7eddb85e48f3a2bfa7d86dc833767d"
+    }
+   ],
+   "source": "Tests/Golden/generators/calibration_matlab.py",
+   "sourceSha256": "5f4c76bf982175c0350f720b6d07c958896ffc302073ae3d4d8047ff966c19e8"
+  },
+  {
    "generator": "cepstrum",
    "outputs": [
     {
@@ -633,7 +644,18 @@
     }
    ],
    "source": "Tests/Golden/generators/matlab_scripts.py",
-   "sourceSha256": "c330157107122b036852daef1f9326dc70661417da67f9e8ecedd4aa658a379c"
+   "sourceSha256": "f1cadc5e877e0c580228fb17e31a0cfdb02630a1d8e082ed179aa31b02eb2e20"
+  },
+  {
+   "generator": "matlab_writer",
+   "outputs": [
+    {
+     "path": "Tests/ZTronDSPCoreTests/Golden/script_writer.m",
+     "sha256": "0bf0acd1b70425f55c662ca66116d391b2ff711461fcf41666cdf59f8907343b"
+    }
+   ],
+   "source": "Tests/Golden/generators/matlab_writer.py",
+   "sourceSha256": "976f3b50f98f73059ef812138119479e2215fe8b89804da0f3e11d27037c0b90"
   },
   {
    "generator": "mel",
@@ -894,7 +916,7 @@
     }
    ],
    "source": "Tests/Golden/generators/system_analysis_matlab.py",
-   "sourceSha256": "c27704b45725ade6ff2eec1d501f368f690f9d9029bd5f7c86c469530a697667"
+   "sourceSha256": "fecdb9e2729882d33d156096e59de8d700004e2d36477c9457597139d63dbaa6"
   },
   {
    "generator": "tempogram",

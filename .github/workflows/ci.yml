@@ -108,10 +108,14 @@ jobs:
     name: Gate 7 · golden vectors
     needs: [gate-5-tests, gate-5-thread-sanitizer]
     runs-on: ${{ vars.ZTD_RUNNER || 'macos-latest' }}
-    timeout-minutes: 30
+    timeout-minutes: 60
     steps:
       - uses: actions/checkout@v4
-      - name: Gate 7 · the vectors against their manifest
+      # The generator environment: GNU Octave runs every golden MATLAB script in gate 7 (WP-910),
+      # and the pinned oracles reproduce the vectors in the step after it.
+      - name: GNU Octave, for the golden MATLAB scripts
+        run: brew install octave
+      - name: Gate 7 · the vectors against their manifest; the golden MATLAB scripts under GNU Octave
         run: Scripts/ci.sh $ZTD_CI_STRICT --gate 7
       - name: The pinned oracles reproduce the vectors
         run: |

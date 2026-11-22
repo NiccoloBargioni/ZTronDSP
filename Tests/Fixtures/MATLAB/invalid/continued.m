@@ -1,0 +1,3 @@
+% expect: the statement continues on the next line (...)
+x = [1 2 ...
+3];

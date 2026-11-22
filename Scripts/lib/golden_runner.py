@@ -5,6 +5,7 @@
     golden_runner.py --reproduce [--only NAME]… [--tolerance T]
                                                     run the generators in a scratch copy of the tree
                                                     and compare with what is committed
+    golden_runner.py --octave                       run every golden MATLAB script under GNU Octave
     Common option: --root DIR (a tree that holds Tests/Golden; default: the package).
 
 A generator is every Tests/Golden/generators/[a-z]*.py; a file whose name starts with an
@@ -26,8 +27,20 @@ Running refuses to start when an installed oracle differs from its pin in
 Tests/Golden/generators/requirements.txt. A generator that stops because a pinned oracle is not
 installed is recorded as pending: --check reports it loudly and fails on it under --strict.
 
-Exit status: 0 done or consistent, 1 a generator failed or the check found drift, 2 usage error
-or a refused run, 3 pending generators under --strict.
+The golden MATLAB scripts (every *.m in a Golden folder: the exports of §6.14 and the writer's
+own script) are held, by --check, to the static check of Scripts/lib/matlab_check.py (MAT-2:
+balanced, terminated, defined before use, rows of equal length, the commands of MAT-2 only).
+--octave runs each under GNU Octave for real (WP-910): `octave --no-gui --quiet --norc
+--no-history`, with QT_QPA_PLATFORM=offscreen, in a scratch folder, one process per script; the
+runner sets the default figure visibility off and then sources the script unchanged, so every
+plot command executes and draws, unseen. A script passes when Octave exits 0, prints no error and
+no warning, reaches the end, and leaves the figure the static check says the script draws: per
+axes its lines, stems and images, scales, grid, hold state, labels and title, and the colorbars.
+Without Octave on the PATH the run is skipped, loudly, with exit status 3.
+
+Exit status: 0 done or consistent, 1 a generator failed, the check found drift or a script failed
+under Octave, 2 usage error or a refused run, 3 pending generators under --strict, or no Octave
+for --octave.
 """
 
 import ast
@@ -42,8 +55,12 @@ import subprocess
 import sys
 import tempfile
 
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+import matlab_check  # noqa: E402
+
 PACKAGE_ROOT = os.path.normpath(os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", ".."))
 VECTOR_SUFFIXES = (".json", ".f32", ".f64")
+SCRIPT_SUFFIX = ".m"                 # a golden MATLAB script (§6.14): listed like a vector, and checked
 NOT_VECTORS = ("README.txt",)
 BUILT_IN = ("numpy", "scipy")        # read through _oracle.versions()
 # Generators that live outside Tests/Golden/generators: (script, the files it writes).
@@ -295,7 +312,7 @@ def generate(tree, only):
             failed += 1
     if not only:
         for relative in tree.golden_files():
-            if relative.endswith(VECTOR_SUFFIXES) and relative not in owners:
+            if relative.endswith(VECTOR_SUFFIXES + (SCRIPT_SUFFIX,)) and relative not in owners:
                 print("golden: FAILED: %s was written by no generator; remove it, or restore the generator it came from" % relative)
                 failed += 1
     tree.write_manifest(manifest)
@@ -354,6 +371,12 @@ def check(tree, strict):
     for relative in tree.golden_files():
         if relative.endswith(VECTOR_SUFFIXES) and relative not in listed:
             problems.append("%s is a vector file that the manifest does not list" % relative)
+        elif relative.endswith(SCRIPT_SUFFIX) and relative not in listed:
+            problems.append("%s is a golden MATLAB script that the manifest does not list: a generator writes it (STG-2)" % relative)
+    scripts = matlab_scripts(tree)
+    for relative in scripts:
+        found, _ = matlab_check.check_file(tree.absolute(relative))
+        problems += ["%s:%d: %s" % (relative, line, message) if line else "%s: %s" % (relative, message) for line, message in found]
 
     for entry in pending:
         print("golden: PENDING %s: %s — no vectors exist, and every test that needs them is not running" % (entry["generator"], entry.get("reason", "no reason recorded")))
@@ -365,10 +388,176 @@ def check(tree, strict):
     print("golden: %d file%s of %d generator%s match the manifest%s" % (
         len(listed), "" if len(listed) == 1 else "s", len(manifest["generators"]), "" if len(manifest["generators"]) == 1 else "s",
         "; %d pending" % len(pending) if pending else ""))
+    if scripts:
+        print("golden: %d golden MATLAB script%s pass the static check (Scripts/lib/matlab_check.py, MAT-2)" % (
+            len(scripts), "" if len(scripts) == 1 else "s"))
     if pending and strict:
         print("golden: --strict: pending generators fail the check")
         return 3
     return 0
+
+
+def matlab_scripts(tree):
+    """The golden MATLAB scripts of the tree, relative to it."""
+    return [relative for relative in tree.golden_files() if relative.endswith(SCRIPT_SUFFIX)]
+
+
+# The two functions the Octave run puts on Octave's path, in a scratch folder: the first sources a
+# script in a workspace of its own with the default figure visibility off, so that its plot
+# commands execute and draw unseen; the second prints what the figures hold.
+OCTAVE_FUNCTIONS = {
+    "ztd_run.m": """function ztd_run (ztd_script)
+  % Sources one golden script, unchanged, in a workspace of its own; its figures are drawn, unseen.
+  set (0, 'defaultfigurevisible', 'off');
+  source (ztd_script);
+end
+""",
+    "ztd_figure_report.m": """function ztd_figure_report ()
+  % Prints the figures the script left: per axes the lines, stems and images it holds, its scales,
+  % grid, hold state, labels and title; per figure the colorbars.
+  figures = findall (0, 'type', 'figure');
+  printf ('ZTD-FIGURES\\t%d\\n', numel (figures));
+  for f = reshape (figures, 1, [])
+    bars = 0;
+    for ax = reshape (findall (f, 'type', 'axes'), 1, [])
+      if (strcmp (get (ax, 'tag'), 'colorbar'))
+        bars += 1;
+        continue;
+      end
+      children = allchild (ax);
+      baselines = [];
+      stems = 0;
+      for child = reshape (children, 1, [])
+        if (strcmp (get (child, 'type'), 'hggroup') && isprop (child, 'baseline'))
+          stems += 1;
+          baselines(end + 1) = get (child, 'baseline');
+        end
+      end
+      lines = 0;
+      images = 0;
+      for child = reshape (children, 1, [])
+        switch (get (child, 'type'))
+          case 'line'
+            lines += ! any (baselines == child);
+          case 'image'
+            images += 1;
+        end
+      end
+      printf ('ZTD-PANEL\\t%d\\t%d\\t%d\\t%s\\t%s\\t%s\\t%s\\t%s\\t%s\\t%s\\n', lines, stems, images, ...
+              get (ax, 'xscale'), get (ax, 'yscale'), get (ax, 'xgrid'), get (ax, 'nextplot'), ...
+              get (get (ax, 'xlabel'), 'string'), get (get (ax, 'ylabel'), 'string'), get (get (ax, 'title'), 'string'));
+    end
+    printf ('ZTD-COLORBARS\\t%d\\n', bars);
+  end
+end
+""",
+}
+OCTAVE_OPTIONS = ("--no-gui", "--quiet", "--norc", "--no-history")
+OCTAVE_DONE = "ZTD-OCTAVE-DONE"
+
+
+def octave_text(text):
+    """Text inside single quotes in Octave."""
+    return "'" + text.replace("'", "''") + "'"
+
+
+def octave_version(octave):
+    try:
+        result = subprocess.run([octave, "--version"], capture_output=True, text=True, timeout=120)
+    except (OSError, subprocess.TimeoutExpired) as error:
+        return "of unknown version (%s)" % error
+    first = result.stdout.strip().split("\n")[0] if result.stdout.strip() else ""
+    match = re.search(r"version (\S+)", first)
+    return match.group(1) if match else (first or "of unknown version")
+
+
+def drawn_figure(output):
+    """The figure as the report of ztd_figure_report gives it, in the form of matlab_check's model."""
+    figures, bars, panels = None, 0, []
+    for line in output.split("\n"):
+        fields = line.rstrip("\r").split("\t")
+        if fields[0] == "ZTD-FIGURES" and len(fields) == 2 and fields[1].isdigit():
+            figures = int(fields[1])
+        elif fields[0] == "ZTD-COLORBARS" and len(fields) == 2 and fields[1].isdigit():
+            bars += int(fields[1])
+        elif fields[0] == "ZTD-PANEL" and len(fields) == 11 and all(field.isdigit() for field in fields[1:4]):
+            panels.append(tuple(int(field) for field in fields[1:4]) + tuple(fields[4:]))
+    return {"figures": figures, "colorbars": bars, "panels": sorted(panels)}
+
+
+def described(model):
+    if not model["figures"]:
+        return "no figure (the script plots nothing)"
+    panels = model["panels"]
+    counts = [(sum(panel[i] for panel in panels), name) for i, name in ((0, "line"), (1, "stem"), (2, "image"))]
+    held = ", ".join("%d %s%s" % (count, name, "" if count == 1 else "s") for count, name in counts if count)
+    return "%d figure: %d axes (%s), %d colorbar%s, labels, titles and scales as the script sets them" % (
+        model["figures"], len(panels), held or "empty", model["colorbars"], "" if model["colorbars"] == 1 else "s")
+
+
+def octave(tree):
+    scripts = matlab_scripts(tree)
+    binary = shutil.which("octave")
+    if binary is None:
+        print("golden: SKIPPED: GNU Octave is not installed (no octave on the PATH): the %d golden MATLAB script%s %s not run "
+              "under Octave (brew install octave)" % (len(scripts), "" if len(scripts) == 1 else "s", "was" if len(scripts) == 1 else "were"))
+        return 3
+    if not scripts:
+        print("golden: there is no golden MATLAB script to run under Octave")
+        return 0
+    environment = dict(os.environ)
+    environment.setdefault("QT_QPA_PLATFORM", "offscreen")
+    holder = tempfile.mkdtemp(prefix="ztd-octave-")
+    failed = 0
+    try:
+        for name, text in OCTAVE_FUNCTIONS.items():
+            with open(os.path.join(holder, name), "w", encoding="utf-8") as handle:
+                handle.write(text)
+        print("golden: GNU Octave %s (%s), once per script in a scratch folder: QT_QPA_PLATFORM=%s octave %s --eval "
+              "\"addpath(<scratch>); ztd_run(<script>); ztd_figure_report (); printf ('%s\\n');\"" % (
+                  octave_version(binary), binary, environment["QT_QPA_PLATFORM"], " ".join(OCTAVE_OPTIONS), OCTAVE_DONE))
+        for relative in scripts:
+            path = tree.absolute(relative)
+            static, model = matlab_check.check_file(path)
+            statement = "addpath (%s); ztd_run (%s); ztd_figure_report (); printf ('%s\\n');" % (
+                octave_text(holder), octave_text(path), OCTAVE_DONE)
+            reasons, details = [], []
+            try:
+                result = subprocess.run([binary] + list(OCTAVE_OPTIONS) + ["--eval", statement], cwd=holder, env=environment,
+                                        capture_output=True, text=True, timeout=300)
+            except subprocess.TimeoutExpired:
+                reasons.append("Octave did not finish within 300 s")
+                result = None
+            if result is not None:
+                errors = [line for line in result.stderr.split("\n") if re.match(r"^\s*(error|warning)\b", line, re.IGNORECASE)]
+                if result.returncode != 0:
+                    reasons.append("Octave exited with status %d" % result.returncode)
+                if errors:
+                    reasons.append("Octave reported %d error%s or warning%s" % (len(errors), "" if len(errors) == 1 else "s", "" if len(errors) == 1 else "s"))
+                if OCTAVE_DONE not in result.stdout.split("\n"):
+                    reasons.append("the run did not reach its end (%s was not printed)" % OCTAVE_DONE)
+                if not reasons:
+                    drawn = drawn_figure(result.stdout)
+                    if drawn != model:
+                        reasons.append("the figure Octave drew is not the one the script draws")
+                        details += ["expected: " + line for line in matlab_check.model_lines(model)]
+                        details += ["drawn:    " + line for line in matlab_check.model_lines(drawn)] if drawn["figures"] is not None else \
+                            ["drawn:    no report of the figures"]
+                details += ["stderr: " + line for line in result.stderr.strip().split("\n") if line.strip()][-12:]
+            if static:
+                details.append("the static check finds %d problem%s here (Scripts/golden.sh --check)" % (len(static), "" if len(static) == 1 else "s"))
+            if reasons:
+                failed += 1
+                print("golden: FAILED under Octave: %s: %s" % (relative, "; ".join(reasons)))
+            else:
+                print("golden: ran under Octave: %s: exit 0, no error and no warning, %s" % (relative, described(model)))
+            for line in details:
+                print("golden:   " + line)
+    finally:
+        shutil.rmtree(holder, ignore_errors=True)
+    print("golden: %d of %d golden MATLAB script%s ran under GNU Octave as %s" % (
+        len(scripts) - failed, len(scripts), "" if len(scripts) == 1 else "s", "they draw" if len(scripts) != 1 else "it draws"))
+    return 1 if failed else 0
 
 
 def read_raw(path, kind):
@@ -511,6 +700,8 @@ def main(arguments):
             mode = "check"
         elif argument == "--reproduce":
             mode = "reproduce"
+        elif argument == "--octave":
+            mode = "octave"
         elif argument == "--strict":
             strict = True
         elif argument in ("--only", "--root", "--tolerance") and index + 1 < len(arguments):
@@ -541,6 +732,8 @@ def main(arguments):
             return check(tree, strict)
         if mode == "reproduce":
             return reproduce(tree, only, tolerance)
+        if mode == "octave":
+            return octave(tree)
         return generate(tree, only)
     except Refused as refusal:
         print("golden: refused: %s" % refusal, file=sys.stderr)

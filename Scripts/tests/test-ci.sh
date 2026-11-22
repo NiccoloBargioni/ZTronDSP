@@ -29,6 +29,8 @@ standin() {   # <path> <name in the log> : a script that logs its call and exits
 for tool in lint-bans check-dependency-graph compile-fixtures api-digest docs coverage-gate golden benchmarks external-parity order-matrix; do
     standin "$S/Scripts/$tool.sh" "$tool"
 done
+# The golden stand-in answers the Octave run (--octave) with $STUB_GOLDEN_OCTAVE, everything else with $STUB_GOLDEN.
+printf '#!/bin/bash\necho "golden $*" >> "$STUB_LOG"\ncase " $* " in *" --octave "*) exit "${STUB_GOLDEN_OCTAVE:-0}" ;; esac\nexit "${STUB_GOLDEN:-0}"\n' > "$S/Scripts/golden.sh"
 cat > "$S/bin/xc" <<'EOS'
 #!/bin/bash
 echo "xc $* [config=${ZTD_CONFIG:-} device=${ZTD_DEVICE:-} derived=${ZTD_DERIVED##*/} xcargs=${ZTD_XCARGS:-}]" >> "$STUB_LOG"
@@ -121,6 +123,7 @@ logged "gate 4 checks the digest" "api-digest --check"
 logged "… and the documentation of every public symbol (WP-901b)" "docs --audit"
 not_logged "… but builds no documentation: that is no gate" "docs --build"
 logged "gate 7 checks the manifest" "golden --check"
+logged "… and runs the golden MATLAB scripts under GNU Octave (WP-910)" "golden --octave"
 logged "gate 8 checks the benchmarks" "benchmarks --check"
 
 for case in "1:STUB_XCODEBUILD:build" "1:STUB_XC_BUILD:build" "1:STUB_GALLERY_APP:build" "5:STUB_GALLERY_HOSTED:tests" "2:STUB_LINT_BANS:lint and dependency graph" "2:STUB_CHECK_DEPENDENCY_GRAPH:lint and dependency graph" \
@@ -141,7 +144,7 @@ expect_lacks "… none is left out" "not run"
 
 ci 0 "named gates run alone, in order whatever the order they were named in" "$CI" --gate 7 --gate 2
 order="$(sed -E 's/ .*//' "$STUB_LOG" | tr '\n' ' ')"
-if [ "$order" = "lint-bans check-dependency-graph golden " ]; then pass "… gate 2 before gate 7, and nothing else"; else fail "… gate 2 before gate 7, and nothing else" "$order"; fi
+if [ "$order" = "lint-bans check-dependency-graph golden golden " ]; then pass "… gate 2 before gate 7 (its manifest check, then its Octave run), and nothing else"; else fail "… gate 2 before gate 7 (its manifest check, then its Octave run), and nothing else" "$order"; fi
 
 # Inputs that do not exist yet are skipped loudly.
 rm "$S/Scripts/benchmarks.sh" "$S/Scripts/external-parity.sh" "$S/Scripts/order-matrix.sh"
@@ -172,6 +175,12 @@ ci 0 "a list of changed files adds the COV-3 check" env ZTD_CI_COVERAGE_REPORT="
 logged "… in the changed-files mode" "coverage-gate --report /tmp/a.json --mode changed-files"
 ci 1 "the strict golden check fails on pending generators" env STUB_GOLDEN=3 "$CI" --strict --gate 7
 logged "… and was asked to be strict" "golden --check --strict"
+ci 1 "a golden script that fails under GNU Octave fails gate 7" env STUB_GOLDEN_OCTAVE=1 "$CI" --gate 7
+expect_contains "… which is reported" "$(printf 'ci: gate 7  %-36s FAILED — the golden MATLAB scripts under GNU Octave' 'golden vectors')"
+ci 0 "without GNU Octave the Octave run is skipped, and the gate passes in part" env STUB_GOLDEN_OCTAVE=3 "$CI" --gate 7
+expect_contains "… loudly, with what to install" "ci: [gate 7] SKIPPED: the golden MATLAB scripts under GNU Octave: Octave is not installed (brew install octave)"
+expect_contains "… as a gate passed in part" "$(printf 'ci: gate 7  %-36s PASSED IN PART' 'golden vectors')"
+ci 1 "… and under --strict that skip fails the run" env STUB_GOLDEN_OCTAVE=3 "$CI" --strict --gate 7
 
 # Gate 5: the matrix, the Release run of the allocation audit, the Thread Sanitizer.
 ci 0 "the matrix runs the tests once per runtime of PLAT-3 that is installed" "$CI" --gate 5 --matrix

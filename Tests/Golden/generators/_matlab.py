@@ -10,7 +10,14 @@ colorbar, hold), every expression must use only variables the script has defined
 functions numel, abs, fft, log10 and max, and the things that are plotted against one another
 must be of one size. It evaluates the script's expressions with NumPy: it is a check of
 structure, not Octave.
+
+`lint(text)` holds a script to the static check of CI gate 7 (Scripts/lib/matlab_check.py),
+which also reads complex vectors and every command form the writer makes; the run under GNU
+Octave itself is Scripts/golden.sh --octave (WP-910).
 """
+import importlib.util
+import math
+import os
 import re
 
 
@@ -50,6 +57,21 @@ class Script:
 
     def vector(self, name, values):
         self.lines.append(f"{name} = [{' '.join(number(v) for v in values)}];")
+        return self
+
+    def optional(self, name, values):
+        """A vector of doubles in which None, a value that is undefined, is written as NaN."""
+        self.lines.append(f"{name} = [{' '.join('NaN' if v is None else number(v) for v in values)}];")
+        return self
+
+    def complex_vector(self, name, real, imaginary):
+        parts = ["%s%s%si" % (number(re_), "-" if math.copysign(1.0, im) < 0 else "+", number(abs(im))) for re_, im in zip(real, imaginary)]
+        self.lines.append(f"{name} = [{' '.join(parts)}];")
+        return self
+
+    def rows(self, name, rows):
+        """A matrix of doubles, row after row."""
+        self.lines.append(f"{name} = [{'; '.join(' '.join(number(v) for v in row) for row in rows)}];")
         return self
 
     def singles(self, numpy, name, values):
@@ -99,6 +121,10 @@ class Script:
 
     def axis(self, x0, x1, y0, y1):
         self.lines.append(f"axis([{number(x0)} {number(x1)} {number(y0)} {number(y1)}]);")
+        return self
+
+    def axis_word(self, word):
+        self.lines.append("axis %s;" % "".join(c for c in word if c.isalpha()))
         return self
 
     @property
@@ -292,3 +318,16 @@ def check(numpy, text):
             continue
         raise ValueError(f"not a statement the package writes: {line[:80]}")
     return statements, variables
+
+
+# --- The static check of CI gate 7 -------------------------------------------------------------------
+
+def lint(text):
+    """Raises ValueError with every problem Scripts/lib/matlab_check.py finds in a script."""
+    path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "..", "..", "Scripts", "lib", "matlab_check.py")
+    specification = importlib.util.spec_from_file_location("matlab_check", path)
+    checker = importlib.util.module_from_spec(specification)
+    specification.loader.exec_module(checker)
+    problems, _ = checker.check_text(text)
+    if problems:
+        raise ValueError("the script fails the static check of gate 7:\n" + "\n".join("line %d: %s" % problem for problem in problems))

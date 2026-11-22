@@ -16,10 +16,11 @@ a double and 9 from a single, core MATLAB only, no date and no machine name.
                                    (_spectral.window_figures_on_grid), so the test compares the
                                    numbers of the two scripts within round-off, not digit for digit
 
-GNU Octave is not installed where these were generated, so "runs under Octave" is not shown.
-Instead every script is read back by _matlab.check, which accepts only the statements of MAT-2,
-resolves every variable and function an expression names, and requires what is plotted against
-one another to be of one size.
+Every script is read back by _matlab.check, which accepts only the statements of MAT-2, resolves
+every variable and function an expression names, and requires what is plotted against one
+another to be of one size. That they run under GNU Octave is shown by CI gate 7 since WP-910:
+Scripts/golden.sh --octave runs every golden script and compares the figure Octave draws with
+the one the static check of Scripts/lib/matlab_check.py expects.
 
     python3 matlab_scripts.py
 """

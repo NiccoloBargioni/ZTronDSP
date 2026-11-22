@@ -607,6 +607,15 @@ struct SystemAnalysisExportTests {
         #expect(Self.values("p", in: tapLines) == [0, 0])
     }
 
+    @Test func theAxesOfThePoleZeroMapCarryTheUnitOfThePlane() async throws {
+        // MAT-2, axis labels and units (WP-910): the s-plane is in radians per second; the
+        // z-plane has no unit.
+        let analog = try await IIRDesign(.butterworth, .lowPass(cutoff: 2 * .pi * 1_000), order: 2, domain: .analog).zeroPoleGain.analysis(sampleRate: 48_000).matlabScript()
+        #expect(analog.contains("hold off;\naxis equal;\ngrid on;\nxlabel('Real part (rad/s)');\nylabel('Imaginary part (rad/s)');\ntitle('Poles (x) and zeros (o)');\n"))
+        let digital = try await Self.hum.analysis(sampleRate: 48_000).matlabScript()
+        #expect(digital.contains("hold off;\naxis equal;\ngrid on;\nxlabel('Real part');\nylabel('Imaginary part');\ntitle('Poles (x) and zeros (o), with the unit circle');\n"))
+    }
+
     @Test func whatNoKernelRunsExportsWithoutTimeResponses() async throws {
         // An analog system: the half plane, radians per second inside, hertz on the axes.
         let design = try IIRDesign(.butterworth, .bandPass(from: 2 * .pi * 1_000, to: 2 * .pi * 3_000), order: 3, domain: .analog)

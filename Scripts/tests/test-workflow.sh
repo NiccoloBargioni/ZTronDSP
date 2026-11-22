@@ -60,6 +60,13 @@ bench = jobs["gate-8-benchmarks"]["runs-on"]
 print("benchmarks on a pinned runner: %s" % ("yes" if isinstance(bench, list) and "self-hosted" in bench and "ztrondsp-benchmark" in bench else "NO"))
 print("self-tests of the gates: %s" % ("yes" if any("Scripts/tests/run-all.sh" in (s.get("run") or "") for j in jobs.values() for s in j.get("steps", [])) else "NO"))
 print("strict run by dispatch: %s" % ("yes" if "--strict" in workflow.get("env", {}).get("ZTD_CI_STRICT", "") else "NO"))
+# WP-910: GNU Octave is installed in the job of gate 7, before the step that runs the gate.
+octave = "no"
+for job, index in where.get(7, []):
+    steps = jobs[job].get("steps", [])
+    if any("brew install octave" in (step.get("run") or "") for step in steps[:index]):
+        octave = "yes"
+print("octave installed before gate 7: %s" % octave)
 
 # The UI tests of the gallery: a nightly job through `Scripts/ci.sh --nightly`, not a gate; the nightly
 # run skips the gates. YAML 1.1 reads the key `on` as true, which JSON writes as "true". These lines say
@@ -80,6 +87,7 @@ expect_contains "there is a Thread Sanitizer job" "thread sanitizer job: yes"
 expect_contains "benchmarks run on a pinned runner" "benchmarks on a pinned runner: yes"
 expect_contains "the self-tests of the gates run too" "self-tests of the gates: yes"
 expect_contains "a strict run can be dispatched" "strict run by dispatch: yes"
+expect_contains "GNU Octave is installed before gate 7 runs the golden MATLAB scripts (WP-910)" "octave installed before gate 7: yes"
 expect_contains "the tests of gate 5 name their runtime" "--gate 5 --runtime com.apple.CoreSimulator.SimRuntime.\${{ matrix.runtime }}"
 expect_contains "the gallery's UI tests run in a job of their own" "nightly job: gallery-ui-nightly"
 expect_contains "… on a schedule" "nightly job on a schedule: yes"

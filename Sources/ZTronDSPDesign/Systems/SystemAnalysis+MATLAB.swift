@@ -19,12 +19,12 @@ extension SystemAnalysis: MATLABExportable {
     /// | `magnitude_db`, `phase_rad`, `group_delay` | the responses at `f`: decibels no lower than the floor of −160 dB (NUM-1), the unwrapped phase in radians, the delay in samples (seconds for an analog system); a group delay that is undefined is `NaN` |
     /// | `n`, `impulse`, `step` | 256 samples of the impulse and of the step response, for a stable digital system |
     ///
-    /// The plots are the pole–zero map (with the unit circle for a digital system), the
-    /// magnitude, the unwrapped phase, the group delay and, for a stable digital system, the
-    /// impulse and step responses. The script uses core MATLAB only, so it also runs in GNU
-    /// Octave (MAT-2); numbers are written so that they read back exactly (MAT-3); it carries
-    /// no date and no machine name, so equal analyses give equal text (MAT-4). The package
-    /// writes no file: what comes back is text (MAT-5).
+    /// The plots are the pole–zero map (with the unit circle for a digital system; its axes in
+    /// radians per second for an analog one), the magnitude, the unwrapped phase, the group
+    /// delay and, for a stable digital system, the impulse and step responses. The script uses
+    /// core MATLAB only, so it also runs in GNU Octave (MAT-2); numbers are written so that they
+    /// read back exactly (MAT-3); it carries no date and no machine name, so equal analyses give
+    /// equal text (MAT-4). The package writes no file: what comes back is text (MAT-5).
     ///
     /// The call may be made from any context; the work runs on `BackgroundWork` (BG-1, MAT-6) and
     /// can be cancelled (BG-3). It allocates, in the background.
@@ -101,8 +101,9 @@ extension SystemAnalysis: MATLABExportable {
         if isDigital {
             script = script.plot("cos(linspace(0, 2 * pi, 361))", "sin(linspace(0, 2 * pi, 361))", style: "k:")
         }
+        // The z-plane has no unit; the s-plane is in radians per second (MAT-2: labels and units).
         script = script.hold(false).axis("equal").grid()
-            .xlabel("Real part").ylabel("Imaginary part")
+            .xlabel(isDigital ? "Real part" : "Real part (rad/s)").ylabel(isDigital ? "Imaginary part" : "Imaginary part (rad/s)")
             .title(isDigital ? "Poles (x) and zeros (o), with the unit circle" : "Poles (x) and zeros (o)")
         script = script.subplot(rows, 2, 2).semilogx("f", "magnitude_db").grid()
             .xlabel("Frequency (Hz)").ylabel("Magnitude (dB)").title("Magnitude response")

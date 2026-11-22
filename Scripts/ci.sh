@@ -30,7 +30,9 @@
 #      suites (gallery.sh hosted), which fail on the words "recorded a known issue"; the
 #      allocation-audit tests once more in Release (CR-002); the Thread Sanitizer run
 #   6  Scripts/coverage-gate.sh on the result of gate 5
-#   7  Scripts/golden.sh --check
+#   7  Scripts/golden.sh --check (the manifest, and the static check of every golden MATLAB script);
+#      Scripts/golden.sh --octave: every golden MATLAB script run under GNU Octave (WP-910),
+#      skipped, loudly, where Octave is not installed
 #   8  The benchmark regression check (Scripts/benchmarks.sh --check, WP-006), on a pinned runner
 #   9  The external parity suite (Scripts/external-parity.sh, WP-907): the promises of EXT-1…EXT-4
 #      held as plain expectations (values that update without a plan, a node audited on the
@@ -375,6 +377,14 @@ gate_7() {
         0) ok "golden vectors against their manifest" ;;
         3) failed "golden vectors: generators are still pending" ;;
         *) failed "golden vectors against their manifest" ;;
+    esac
+    say "the golden MATLAB scripts under GNU Octave"
+    "$ROOT/Scripts/golden.sh" --octave
+    status=$?
+    case $status in
+        0) ok "the golden MATLAB scripts under GNU Octave" ;;
+        3) skipped "the golden MATLAB scripts under GNU Octave: Octave is not installed (brew install octave)" ;;
+        *) failed "the golden MATLAB scripts under GNU Octave" ;;
     esac
 }
 

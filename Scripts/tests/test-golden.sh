@@ -151,5 +151,88 @@ expect_status 3 "the strict check fails on a pending generator" "$GOLDEN" --chec
 
 expect_status 2 "an unknown generator is a usage error" "$GOLDEN" --only nothing --root "$TREE"
 expect_status 2 "a tree without generators is a usage error" "$GOLDEN" --check --root "$SCRATCH"
+
+# The golden MATLAB scripts (WP-910): the static check of --check, and the run under GNU Octave.
+MATLAB="$ROOT/Tests/Fixtures/MATLAB"
+fresh_tree; cp "$MATLAB/invalid/not-a-command.m" "$TREE/Tests/ZTronDSPDesignTests/Golden/stray.m"
+expect_status 1 "a golden MATLAB script that fails the static check fails the check" "$GOLDEN" --check --root "$TREE"
+expect_contains "… with the line and the problem" "Tests/ZTronDSPDesignTests/Golden/stray.m:4: semilogz is not one of the commands of MAT-2"
+expect_contains "… and a golden script that no generator wrote is named too" "stray.m is a golden MATLAB script that the manifest does not list"
+expect_status 1 "… and a full run says no generator wrote it" "$GOLDEN" --root "$TREE"
+expect_contains "… by name" "stray.m was written by no generator"
+
+OCTAVE_TREE="$SCRATCH/octave-tree"
+octave_tree() {   # <fixture>…: a tree whose only golden files are these scripts
+    reset_folder "$OCTAVE_TREE"
+    mkdir -p "$OCTAVE_TREE/Tests/Golden/generators" "$OCTAVE_TREE/Tests/ZTronDSPCoreTests/Golden"
+    cp "$@" "$OCTAVE_TREE/Tests/ZTronDSPCoreTests/Golden/"
+}
+# A stand-in for GNU Octave on the PATH: it logs how it was called, keeps the function through which
+# the runner sources a script, and answers as STANDIN_MODE says.
+STANDINS="$SCRATCH/standins"; mkdir -p "$STANDINS"
+export STANDIN_LOG="$SCRATCH/octave.log" STANDIN_KEEP="$SCRATCH/kept"
+mkdir -p "$STANDIN_KEEP"
+cat > "$STANDINS/octave" <<'EOS'
+#!/bin/bash
+if [ "${1:-}" = "--version" ]; then echo "GNU Octave (stand-in) version 0.0-standin"; exit 0; fi
+printf 'QT_QPA_PLATFORM=%s %s\n' "${QT_QPA_PLATFORM:-}" "$*" >> "$STANDIN_LOG"
+helpers="$(printf '%s' "$*" | sed -n -E "s/.*addpath \('([^']*)'\).*/\1/p")"
+[ -n "$helpers" ] && cp "$helpers/ztd_run.m" "$STANDIN_KEEP/" 2>/dev/null
+case "${STANDIN_MODE:-}" in
+    silent) exit 0 ;;
+    failing) echo "error: 'semilogz' undefined" >&2; exit 1 ;;
+    warning) printf 'ZTD-FIGURES\t0\nZTD-OCTAVE-DONE\n'; echo "warning: axis: omitting non-positive data in log plot" >&2; exit 0 ;;
+    nothing) printf 'ZTD-FIGURES\t0\nZTD-OCTAVE-DONE\n'; exit 0 ;;
+esac
+exit 0
+EOS
+chmod +x "$STANDINS/octave"
+printf '%% A script that defines its data and plots nothing.\nx = [1 2 3];\n' > "$SCRATCH/plots-nothing.m"
+
+octave_tree "$SCRATCH/plots-nothing.m"
+expect_status 0 "a run whose Octave exits 0, warns of nothing and reports the figure the script draws passes" env STANDIN_MODE=nothing PATH="$STANDINS:$PATH" "$GOLDEN" --octave --root "$OCTAVE_TREE"
+expect_contains "… and names the script" "ran under Octave: Tests/ZTronDSPCoreTests/Golden/plots-nothing.m: exit 0, no error and no warning, no figure"
+expect_contains "… and the Octave it ran" "golden: GNU Octave 0.0-standin ($STANDINS/octave)"
+if grep -q -F -- "QT_QPA_PLATFORM=offscreen --no-gui --quiet --norc --no-history --eval addpath (" "$STANDIN_LOG"; then pass "Octave is run without its window, without the user's start-up files, offscreen"; else fail "Octave is run without its window, without the user's start-up files, offscreen" "$(cat "$STANDIN_LOG")"; fi
+if grep -q -F "ztd_run ('$OCTAVE_TREE/Tests/ZTronDSPCoreTests/Golden/plots-nothing.m'); ztd_figure_report (); printf ('ZTD-OCTAVE-DONE\n');" "$STANDIN_LOG"; then pass "… and sources the script through the runner's function, then reports the figure"; else fail "… and sources the script through the runner's function, then reports the figure" "$(cat "$STANDIN_LOG")"; fi
+visible="$(grep -n "set (0, 'defaultfigurevisible', 'off');" "$STANDIN_KEEP/ztd_run.m" | cut -d: -f1)"; sourced="$(grep -n "source (ztd_script);" "$STANDIN_KEEP/ztd_run.m" | cut -d: -f1)"
+if [ -n "$visible" ] && [ -n "$sourced" ] && [ "$visible" -lt "$sourced" ]; then pass "… which sets the default figure visibility off before it sources the script, unchanged"; else fail "… which sets the default figure visibility off before it sources the script, unchanged" "$(cat "$STANDIN_KEEP/ztd_run.m" 2>&1)"; fi
+expect_status 1 "a run that warns fails" env STANDIN_MODE=warning PATH="$STANDINS:$PATH" "$GOLDEN" --octave --root "$OCTAVE_TREE"
+expect_contains "… and says why" "FAILED under Octave: Tests/ZTronDSPCoreTests/Golden/plots-nothing.m: Octave reported 1 error or warning"
+expect_contains "… with Octave's words" "stderr: warning: axis: omitting non-positive data in log plot"
+expect_status 1 "a run that stops with an error fails" env STANDIN_MODE=failing PATH="$STANDINS:$PATH" "$GOLDEN" --octave --root "$OCTAVE_TREE"
+expect_contains "… with the status and the error" "Octave exited with status 1; Octave reported 1 error or warning"
+expect_status 1 "a run that does not reach its end fails" env STANDIN_MODE=silent PATH="$STANDINS:$PATH" "$GOLDEN" --octave --root "$OCTAVE_TREE"
+expect_contains "… and says so" "the run did not reach its end (ZTD-OCTAVE-DONE was not printed)"
+octave_tree "$MATLAB/valid/every-statement.m"
+expect_status 1 "a run that does not draw what the script draws fails: the plot commands must execute" env STANDIN_MODE=nothing PATH="$STANDINS:$PATH" "$GOLDEN" --octave --root "$OCTAVE_TREE"
+expect_contains "… and says so" "the figure Octave drew is not the one the script draws"
+expect_contains "… with the figure expected" "expected: figures 1"
+expect_contains "… and the one drawn" "drawn:    figures 0"
+PYTHON="$(python3 -c 'import sys; print(sys.executable)')"     # the interpreter itself, not a shim that needs the PATH
+expect_status 3 "without Octave on the PATH the run is skipped" env PATH="" "$PYTHON" "$ROOT/Scripts/lib/golden_runner.py" --octave --root "$OCTAVE_TREE"
+expect_contains "… loudly, with how many scripts were not run" "golden: SKIPPED: GNU Octave is not installed (no octave on the PATH): the 1 golden MATLAB script was not run under Octave"
+expect_status 3 "… also when the PATH holds no Octave but other tools" env PATH="/usr/bin:/bin" "$PYTHON" "$ROOT/Scripts/lib/golden_runner.py" --octave --root "$OCTAVE_TREE"
+reset_folder "$OCTAVE_TREE"; mkdir -p "$OCTAVE_TREE/Tests/Golden/generators"
+expect_status 0 "a tree without golden scripts runs nothing" env STANDIN_MODE=nothing PATH="$STANDINS:$PATH" "$GOLDEN" --octave --root "$OCTAVE_TREE"
+expect_contains "… and says so" "there is no golden MATLAB script to run under Octave"
+
+# GNU Octave itself, when it is installed: the package's golden scripts, the valid fixture, and the
+# fixtures whose problem stops or warns Octave (a wrong plot command among them) fail.
+if command -v octave >/dev/null 2>&1 && octave --version 2>/dev/null | head -1 | grep -q "GNU Octave"; then
+    expect_status 0 "GNU Octave: every golden script of the package runs, and draws what it says" "$GOLDEN" --octave
+    expect_contains "… all of them" "golden MATLAB scripts ran under GNU Octave as they draw"
+    octave_tree "$MATLAB/valid/every-statement.m"
+    expect_status 0 "GNU Octave: the script with every kind of statement runs and draws what the static check expects" "$GOLDEN" --octave --root "$OCTAVE_TREE"
+    expect_contains "… five panels, one colorbar" "1 figure: 5 axes (9 lines, 1 stem, 1 image), 1 colorbar"
+    for fixture in $(grep -l '^% octave: ' "$MATLAB"/invalid/*.m); do
+        expected="$(sed -n 's/^% octave: //p' "$fixture" | head -1)"
+        octave_tree "$fixture"
+        expect_status 1 "GNU Octave: invalid/$(basename "$fixture") fails" "$GOLDEN" --octave --root "$OCTAVE_TREE"
+        expect_contains "… with Octave's words: $expected" "$expected"
+    done
+else
+    echo "  SKIP  GNU Octave is not installed: the golden scripts and the fixtures were not run under it (brew install octave)"
+fi
 expect_status 0 "after all of this the package's own files still match the manifest" "$GOLDEN" --check
 finish
