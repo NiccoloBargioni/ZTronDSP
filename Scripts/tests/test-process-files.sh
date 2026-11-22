@@ -161,4 +161,61 @@ if grep -q '^| WP-010 .* | Ready |' "$L"; then pass "… which becomes Ready whe
 cp "$SCRATCH/good.md" "$L"; printf '| WP-777 | A row for nothing | — | A, T |  | Ready |  |  |  |  |  |  |  |  | n/a | n/a |  |\n' >> "$L"
 expect_status 1 "a row that is neither a package nor a part of a retired one is reported" "$LEDGER" --check --ledger "$L"
 expect_contains "… by name" "WP-777 is neither a package of §12 nor a part of a retired one"
+
+# --release (the release checklist, WP-906): every row that keeps a release from being made.
+set_statuses() { # <status> [<id> …]: the status of the rows named, or of every row that is not an OPT package's
+    python3 - "$L" "$@" <<'PY'
+import re, sys
+path, status, wanted = sys.argv[1], sys.argv[2], sys.argv[3:]
+lines = open(path, encoding="utf-8").read().split("\n")
+for index, line in enumerate(lines):
+    if not line.startswith("| WP-"):
+        continue
+    cells = [cell.strip() for cell in re.split(r"(?<!\\)\|", line.strip()[1:-1])]
+    if (wanted and cells[0] in wanted) or (not wanted and cells[4] != "OPT"):
+        cells[5] = status
+        lines[index] = "| " + " | ".join(cells) + " |"
+open(path, "w", encoding="utf-8").write("\n".join(lines))
+PY
+}
+cp "$SCRATCH/good.md" "$L"
+expect_status 1 "--release fails while a package is not Done" "$LEDGER" --release --ledger "$L"
+expect_contains "… and names each such row with its status" "ledger: WP-002 Ready"
+expect_contains "… a blocked one too" "ledger: WP-108 Blocked-on-deps"
+expect_lacks "… but not a package that is Done" "ledger: WP-001 "
+expect_lacks "… nor an OPT package that awaits its trigger (WP-R5)" "ledger: WP-422 "
+expect_contains "… then the tally, with what holds nothing up" "rows are not Done: "
+expect_contains "… which counts the OPT packages that wait" "3 OPT packages awaiting their trigger hold nothing up"
+set_statuses Done
+expect_status 0 "--release passes when every package is Done" "$LEDGER" --release --ledger "$L"
+expect_contains "… and says so" "ledger: every package is Done (289 rows; 3 OPT packages awaiting their trigger hold nothing up)"
+set_statuses Fixing WP-101
+expect_status 1 "… and fails again when one row is not" "$LEDGER" --release --ledger "$L"
+expect_contains "… which it names" "ledger: WP-101 Fixing"
+expect_contains "… and counts" "ledger: 1 of 289 rows are not Done: 1 Fixing (3 OPT packages awaiting their trigger hold nothing up)"
+set_statuses Done WP-101; set_statuses Implementing WP-422
+expect_status 1 "an OPT package whose trigger came is held to Done like the rest" "$LEDGER" --release --ledger "$L"
+expect_contains "… and named" "ledger: WP-422 Implementing"
+set_statuses Awaiting-trigger WP-422; set_statuses Retired WP-003
+expect_status 1 "a retired package without parts holds the release up" "$LEDGER" --release --ledger "$L"
+expect_contains "… as retired" "ledger: WP-003 Retired"
+python3 - "$L" <<'PY'
+import sys
+path = sys.argv[1]
+lines = open(path, encoding="utf-8").read().split("\n")
+index = next(i for i, line in enumerate(lines) if line.startswith("| WP-003 |"))
+for suffix in ("b", "a"):
+    cells = [cell.strip() for cell in lines[index].strip().strip("|").split("|")]
+    cells[0], cells[5] = "WP-003" + suffix, "Done"
+    lines.insert(index + 1, "| " + " | ".join(cells) + " |")
+open(path, "w", encoding="utf-8").write("\n".join(lines))
+PY
+expect_status 0 "… and nothing once its parts are rows of their own, all Done" "$LEDGER" --release --ledger "$L"
+expect_contains "… which the summary counts" "ledger: every package is Done (291 rows; 3 OPT packages awaiting their trigger and 1 retired package hold nothing up)"
+set_statuses Verifying WP-003b
+expect_status 1 "… but a part that is not Done holds it up" "$LEDGER" --release --ledger "$L"
+expect_contains "… by name" "ledger: WP-003b Verifying"
+rm -f "$L"
+expect_status 1 "--release without a ledger fails" "$LEDGER" --release --ledger "$L"
+expect_contains "… and says why" "ledger: no ledger at"
 finish

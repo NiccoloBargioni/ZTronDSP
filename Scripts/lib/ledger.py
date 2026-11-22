@@ -1,14 +1,21 @@
 """Derives and checks the delivery ledger, Docs/Process/ledger.md (WP-008, §11.9).
 
-    ledger.py --update [--spec FILE] [--ledger FILE]   write the ledger, keeping what was filled in
-    ledger.py --check  [--spec FILE] [--ledger FILE]   compare the ledger with §12 and with §11
+    ledger.py --update  [--spec FILE] [--ledger FILE]   write the ledger, keeping what was filled in
+    ledger.py --check   [--spec FILE] [--ledger FILE]   compare the ledger with §12 and with §11
+    ledger.py --release [--spec FILE] [--ledger FILE]   list every row that keeps a release from
+                                                        being made (the release checklist, WP-906)
 
 The columns that come from §12 (package, dependencies, lenses, tag) are always re-derived. The
 status is re-derived only while it is one of the three states this script computes: `Ready`,
 `Blocked-on-deps`, `Awaiting-trigger`. Every other column, and every other status, belongs to
 the integrator and is kept as found.
 
-Exit status: 0 consistent, 1 findings, 2 usage error.
+--release reads the statuses as the ledger records them (--check says whether they are current).
+A release needs every package `Done`; a package retired into parts that are rows of their own
+(§11.7) and an `OPT` package that awaits its trigger (WP-R5) hold nothing up. Every other row is
+printed as `ledger: WP-nnn <status>`, then a tally.
+
+Exit status: 0 consistent (for --release: every package Done), 1 findings, 2 usage error.
 """
 
 import os
@@ -233,6 +240,43 @@ def check(specification, existing, existing_order, ledger_path):
     return findings
 
 
+def release(existing, existing_order):
+    """Prints the rows that keep a release from being made; returns the exit status."""
+    waiting, retired, awaiting = [], 0, 0
+    for identifier in existing_order:
+        row = existing[identifier]
+        status = row["Status"]
+        if status == "Done":
+            continue
+        if status == "Retired" and parts_in_ledger(identifier, existing_order):
+            retired += 1
+            continue
+        if status == "Awaiting-trigger" and row["Tag"] == "OPT":
+            awaiting += 1
+            continue
+        waiting.append((identifier, status or "without a status"))
+    held = []
+    if awaiting:
+        held.append("%d OPT package%s awaiting %s trigger" % (awaiting, "" if awaiting == 1 else "s", "its" if awaiting == 1 else "their"))
+    if retired:
+        held.append("%d retired package%s" % (retired, "" if retired == 1 else "s"))
+    aside = ""
+    if held:
+        aside = "%s hold%s nothing up" % (" and ".join(held), "s" if awaiting + retired == 1 else "")
+    for identifier, status in waiting:
+        print("ledger: %s %s" % (identifier, status))
+    if waiting:
+        states = {}
+        for _, status in waiting:
+            states[status] = states.get(status, 0) + 1
+        print("ledger: %d of %d rows are not Done: %s%s" % (
+            len(waiting), len(existing_order), ", ".join("%d %s" % (count, state) for state, count in sorted(states.items())),
+            " (%s)" % aside if aside else ""))
+        return 1
+    print("ledger: every package is Done (%d rows%s)" % (len(existing_order), "; " + aside if aside else ""))
+    return 0
+
+
 def main(arguments):
     spec_path = os.path.join(ROOT, "Docs", "Specification", "ZTronDSP-SPEC.md")
     ledger_path = os.path.join(ROOT, "Docs", "Process", "ledger.md")
@@ -240,7 +284,7 @@ def main(arguments):
     index = 0
     while index < len(arguments):
         argument = arguments[index]
-        if argument in ("--update", "--check"):
+        if argument in ("--update", "--check", "--release"):
             mode = argument
         elif argument in ("--spec", "--ledger") and index + 1 < len(arguments):
             index += 1
@@ -289,6 +333,8 @@ def main(arguments):
     if not os.path.isfile(ledger_path):
         print("ledger: no ledger at %s" % ledger_path, file=sys.stderr)
         return 1
+    if mode == "--release":
+        return release(existing, order)
     findings = check(specification, existing, order, ledger_path)
     for finding in findings:
         print("ledger: " + finding)

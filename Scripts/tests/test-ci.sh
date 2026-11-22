@@ -71,7 +71,9 @@ if [ "$1 $2 ${3:-}" = "list runtimes -j" ]; then
 ]}
 JSON
 elif [ "$1 $2" = "list devices" ]; then
-    echo "    ztdsp-ci-18-6 (00000000-0000-0000-0000-000000000186) (Shutdown)"
+    # STUB_SIMCTL_BOOTED names the simulator that was booted before the run.
+    if [ "${STUB_SIMCTL_BOOTED:-}" = "ztdsp-ci-18-6" ]; then state=Booted; else state=Shutdown; fi
+    echo "    ztdsp-ci-18-6 (00000000-0000-0000-0000-000000000186) ($state)"
 elif [ "$1" = "create" ]; then
     echo "11111111-1111-1111-1111-111111111111"
 fi
@@ -153,7 +155,10 @@ expect_contains "the benchmark gate says it was skipped, and why" "ci: [gate 8] 
 expect_contains "the external parity gate too" "ci: gate 9  external parity                      SKIPPED"
 expect_contains "a gate with one part missing passes in part" "ci: gate 3  compile fixtures and order matrix    PASSED IN PART — skipped: the order matrix"
 ci 1 "under --strict a skipped part fails the run" "$CI" --strict --gate 3
+expect_contains "… and the verdict says that a skip counted" "ci: --strict: a skipped gate counts as a failure"
 ci 1 "under --strict a skipped gate fails the run" "$CI" --strict --gate 8
+ci 1 "under --strict a gate that fails, with nothing skipped" env STUB_LINT_BANS=1 "$CI" --strict --gate 2
+expect_lacks "… is not put down to a skip (WP-906)" "a skipped gate counts as a failure"
 ci 0 "GitHub gets a warning annotation for a skip" env GITHUB_ACTIONS=true "$CI" --gate 9
 expect_contains "… with the gate in its title" "::warning title=CI gate 9 (external parity) skipped::"
 ci 1 "… and an error annotation for a failure" env GITHUB_ACTIONS=true STUB_GOLDEN=1 "$CI" --gate 7
@@ -194,6 +199,20 @@ ci 1 "a failure on one runtime fails the gate" env STUB_XC_FAILING_DEVICE=ztdsp-
 logged "… after the other runtimes ran" "device=ztdsp-ci-27-0"
 ci 0 "a named runtime runs alone" "$CI" --gate 5 --runtime com.apple.CoreSimulator.SimRuntime.iOS-27-0
 not_logged "… and no other" "ztdsp-ci-17-5"
+
+# A simulator of the matrix that the run booted is shut down after its runs (WP-906): one is
+# booted at a time, not four.
+ci 0 "a simulator of the matrix that the run boots" "$CI" --gate 5 --matrix
+logged "… is shut down after its runs" "simctl shutdown 00000000-0000-0000-0000-000000000186"
+expect_contains "… which is said" "shut down ztdsp-ci-18-6, which this run booted"
+order="$(grep -F -e 'gallery hosted [config=Debug device=ztdsp-ci-18-6' -e 'simctl shutdown 00000000-0000-0000-0000-000000000186' -e 'xc test-only [config=Debug device=ztdsp-ci-27-0' "$STUB_LOG" | sed -E 's/ .*//' | tr '\n' ' ')"
+if [ "$order" = "gallery simctl xc " ]; then pass "… after its hosted suites, before the next runtime's tests"; else fail "… after its hosted suites, before the next runtime's tests" "$order"; fi
+ci 0 "a simulator of the matrix that was booted before the run" env STUB_SIMCTL_BOOTED=ztdsp-ci-18-6 "$CI" --gate 5 --matrix
+not_logged "… is left booted" "simctl shutdown"
+ci 0 "the device of Scripts/xc.sh, without --runtime or --matrix" env ZTD_DEVICE=ztdsp-ci-18-6 "$CI" --gate 5
+not_logged "… is left as it is" "simctl shutdown"
+ci 0 "the nightly job on the matrix" "$CI" --nightly --matrix
+logged "… shuts down the simulator it booted, after its UI tests" "simctl shutdown 00000000-0000-0000-0000-000000000186"
 
 # Gate 5: the gallery's hosted suites, on each simulator of the matrix, with no known issue.
 ci 0 "the gallery's hosted suites run on each runtime of the matrix" "$CI" --gate 5 --matrix

@@ -15,6 +15,8 @@
 #                     (repeatable); without it the tests run on the device of Scripts/xc.sh
 #   --matrix          run on every runtime of PLAT-3 that is installed: iOS 17.5, the newest
 #                     18.x, the newest 26.x, 27.0
+#                     A simulator of --runtime or --matrix that the run boots is shut down after
+#                     its runs, so that one is booted at a time
 #   --tsan            also run the tests under the Thread Sanitizer
 #   --tsan-only       run only the Thread Sanitizer part of gate 5
 #
@@ -223,6 +225,27 @@ gallery_hosted() {
     return "$status"
 }
 
+# simulator_booted <name>: 0 when the simulator of that name is booted now.
+simulator_booted() { $SIMCTL list devices | grep -E "^ +$1 \(" | grep -q -F "(Booted)"; }
+
+# boots_it <name>: 0 when <name> is a simulator of --runtime or --matrix that is not booted now.
+# The run boots it (Scripts/xc.sh and gallery.sh do) and shuts it down after its runs, so that a
+# run on the matrix leaves no more simulators booted than it found: one at a time, not four.
+boots_it() {
+    [ -n "$1" ] || return 1
+    [ "$matrix" -eq 1 ] || [ "${#runtimes[@]}" -gt 0 ] || return 1
+    ! simulator_booted "$1"
+}
+
+# shut_down <name>: shuts the simulator of that name down.
+shut_down() {
+    local udid
+    udid="$($SIMCTL list devices | grep -E "^ +$1 \(" | head -1 | sed -E 's/.*\(([0-9A-Fa-f-]{36})\).*/\1/')"
+    [ -n "$udid" ] || return 0
+    if $SIMCTL shutdown "$udid" >/dev/null 2>&1; then say "shut down $1, which this run booted"; fi
+    return 0
+}
+
 ensure_simulator() {  # <runtime identifier>: prints the name of a simulator on that runtime, creating it if needed
     local runtime="$1" name type
     name="ztdsp-ci-${runtime##*iOS-}"
@@ -288,7 +311,7 @@ gate_4() {
 }
 
 gate_5() {
-    local bundle="$RESULTS/Debug.xcresult" devices=() name first=1 arguments filters=() line
+    local bundle="$RESULTS/Debug.xcresult" devices=() name first=1 arguments filters=() line owned
     if [ "$tsan_only" -eq 0 ]; then
         run "build everything for testing (Debug, coverage on)" env ZTD_XCARGS="-enableCodeCoverage YES" "$XC" build || return
 
@@ -301,12 +324,14 @@ gate_5() {
                 arguments="$arguments -resultBundlePath $bundle"
                 first=0
             fi
+            owned=0; if boots_it "$name"; then owned=1; fi
             if [ -n "$name" ]; then
                 run "tests in Debug on $name" env ZTD_DEVICE="$name" ZTD_CONFIG=Debug ZTD_XCARGS="$arguments" "$XC" test-only
             else
                 run "tests in Debug" env ZTD_CONFIG=Debug ZTD_XCARGS="$arguments" "$XC" test-only
             fi
             run "the gallery's hosted suites${name:+ on $name}, with no known issue" gallery_hosted "$name"
+            if [ "$owned" -eq 1 ]; then shut_down "$name"; fi
         done
 
         # CR-002: a Debug run shows that the hot path does not allocate at -Onone; the same tests
@@ -407,10 +432,12 @@ gate_8() {
 # Not a gate: the gallery's UI tests take 6 to 14 minutes, so they run nightly
 # (.github/workflows/ci.yml), on each simulator gate 5 would use.
 nightly_job() {
-    local devices=() name
+    local devices=() name owned
     simulators
     for name in ${devices[@]+"${devices[@]}"}; do
+        owned=0; if boots_it "$name"; then owned=1; fi
         run "the gallery's UI tests${name:+ on $name}" env ZTD_DEVICE="$name" ZTD_CONFIG=Debug ZTD_DERIVED="$DERIVED-gallery" "$GALLERY" ui
+        if [ "$owned" -eq 1 ]; then shut_down "$name"; fi
     done
 }
 
@@ -425,6 +452,7 @@ gate_9() {
 # ---------------------------------------------------------------------------------------------
 
 overall=0
+skip_failed=0   # 1 once --strict failed a gate that skipped a part, so that the verdict says why
 for current in "${ordered[@]}"; do
     part_pass=0; part_fail=0; part_skip=0; gate_notes=""
     printf '\nci: ===== %s: %s =====\n' "$(label "$current")" "${GATE_NAMES[$current]}"
@@ -444,6 +472,7 @@ for current in "${ordered[@]}"; do
         [ "$keep_going" -eq 1 ] || break
     elif [ "$strict" -eq 1 ] && [ "${RESULT[$current]}" != "passed" ]; then
         overall=1
+        skip_failed=1
         [ "$keep_going" -eq 1 ] || break
     fi
 done
@@ -457,7 +486,7 @@ for number in "${ordered[@]}"; do
     fi
 done
 if [ "$overall" -ne 0 ]; then
-    [ "$strict" -eq 1 ] && echo "ci: --strict: a skipped gate counts as a failure"
+    [ "$skip_failed" -eq 1 ] && echo "ci: --strict: a skipped gate counts as a failure"
     echo "ci: FAILED"
 else
     echo "ci: no gate failed"

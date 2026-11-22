@@ -25,7 +25,7 @@ for argument in "$@"; do
     esac
 done
 
-SUITES="spec-crosscheck process-files check-registers lint-bans check-dependency-graph coverage-gate matlab-check golden compile-fixtures order-matrix api-digest docs benchmarks ci workflow external-parity"
+SUITES="spec-crosscheck process-files check-registers lint-bans check-dependency-graph coverage-gate matlab-check golden compile-fixtures order-matrix api-digest docs benchmarks ci workflow external-parity release-check"
 failed_suites=""; total=0; total_failed=0; skips=0
 for suite in $SUITES; do
     script="$ROOT/Scripts/tests/test-$suite.sh"
