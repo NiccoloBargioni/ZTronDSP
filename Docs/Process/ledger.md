@@ -268,7 +268,7 @@ replaces. Field by field: `Docs/Process/templates/ledger-row.md`.
 
 | ID | Package | Deps | Lenses | Tag | Status | Implementer | Verifier A | Verifier B | Time (min) | Revision | Report A | Report B | Fix cycles | Currency check | Stability note | Backlog |
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
-| WP-601 | `MetalContext`: device, queue, library from the module bundle (DEP-4), capability flags | 001 | A, T |  | Verifying | Implementer M6 (agent) |  |  |  |  |  |  |  | n/a | n/a |  |
+| WP-601 | `MetalContext`: device, queue, library from the module bundle (DEP-4), capability flags | 001 | A, T |  | Verifying | Implementer M6 (agent) |  |  |  |  |  |  |  | n/a | n/a | 2026-11-28: DEP-4 as specified (brief 76; CR-011 withdrawn): the build compiles Shaders/*.metal into default.metallib in the module bundle, which MetalContext loads with makeDefaultLibrary(bundle: .module); a missing library or function is backendUnavailable; building needs Xcode's Metal Toolchain component, which Scripts/xc.sh checks and every CI job that builds downloads (impl-WP-601-offline-shaders.md) |
 | WP-602 | Colour maps as 256 × 1 look-up textures | 601 | V, T |  | Verifying | Implementer M6 (agent) |  |  |  |  |  |  |  | n/a | n/a |  |
 | WP-603 | Image support for tests: off-screen target, read-back, PSNR, golden-image loader (§8.5) | 601, 004 | V, T |  | Verifying | Implementer M6 (agent) |  |  |  |  |  |  |  | n/a | n/a |  |
 | WP-604 | Ring texture, column upload (half-float), max-reduced levels along frequency (V-8) | 601, 333 | V, R |  | Verifying | Implementer M6 (agent) |  |  |  |  |  |  |  | n/a | n/a |  |

@@ -9,10 +9,11 @@ A renderer draws a feed into whatever render pass it is handed: ``HeatmapRendere
 a `HeatmapFeed`, ``WaveformRenderer`` the envelope of a `WaveformFeed`. It runs on the main actor,
 does nothing on a display tick unless something is pending, uploads exactly the columns that
 arrived since its last draw, and allocates its data texture again only when the feed changes
-shape. ``MetalContext`` holds the device, its command queue and the shader library; the shaders are
-compiled when a context is made, off the main thread, and ``MetalContext/shared()`` keeps one for
-the life of the process. The sizes at which a primitive moves to another implementation are
-measured with ``Calibration`` and kept as data, in the core's `CrossoverTable`.
+shape. ``MetalContext`` holds the device, its command queue and the shader library: the build
+compiles the shaders into the module's resource bundle, a context loads them and builds its
+pipeline states once, off the main thread, and ``MetalContext/shared()`` keeps one for the life of
+the process. The sizes at which a primitive moves to another implementation are measured with
+``Calibration`` and kept as data, in the core's `CrossoverTable`.
 
 ## Topics
 

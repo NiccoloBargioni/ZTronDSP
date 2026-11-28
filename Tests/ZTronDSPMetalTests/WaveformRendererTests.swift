@@ -292,7 +292,7 @@ struct WaveformRendererTests {
 
         // On a context held to textures of 64 texels a history of 100 pairs is too large: a
         // renderer that is given such a feed later shows nothing and says why.
-        let limited = try MetalContext(device: context.device, shaderSource: try ShaderSources.bundled(), textureLimit: 64)
+        let limited = try MetalContext(device: context.device, library: context.library, textureLimit: 64)
         let small = WaveformFeed(history: 16), large = WaveformFeed(history: 100)
         try FeedWriter.append(pairs: pairs(0 ..< 10), to: small)
         try FeedWriter.append(pairs: pairs(0 ..< 50), to: large)

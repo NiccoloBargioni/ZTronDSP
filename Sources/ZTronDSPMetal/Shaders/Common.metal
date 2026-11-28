@@ -1,20 +1,12 @@
 // Common.metal — what every render pass of the package shares.
 //
-// The sources in this folder are concatenated in the order of their names and compiled as one
-// library when a MetalContext is created (change request CR-011), so this file comes first and
-// the others use what it declares.
+// The build compiles each file of this folder on its own and links them into default.metallib in
+// the module bundle (DEP-4). The vertex type that the fragment functions of the other files take
+// is declared in Common.h, which they include.
 
 #include <metal_stdlib>
+#include "Common.h"
 using namespace metal;
-
-// One corner of the triangle that covers the whole target.
-struct ZTDScreenVertex {
-    float4 position [[position]];
-    // Where the fragment is in the target: x from 0 at the left edge to 1 at the right edge,
-    // y from 0 at the BOTTOM edge to 1 at the top edge. Rendering depends on these alone, never
-    // on the target's size in pixels (SZ-1).
-    float2 unit;
-};
 
 // A triangle that covers the target, from the vertex number alone: one draw call, no vertex
 // buffer (§8.2).

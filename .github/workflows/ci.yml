@@ -9,6 +9,10 @@
 # (`Scripts/ci.sh --nightly`, job gallery-ui-nightly), and on a dispatch that asks for them. The
 # nightly run is that job alone; the gates run on pushes, pull requests and dispatches.
 #
+# The build compiles the Metal shaders into the resource bundle of ZTronDSPMetal (DEP-4), which
+# needs Xcode's Metal Toolchain component; a new Xcode may lack it, and Scripts/xc.sh then stops.
+# Every job that builds downloads it before its first gate. Gate 7 builds nothing.
+#
 # Repository variables:
 #   ZTD_RUNNER             the label of the macOS runner (default: macos-latest)
 #   ZTD_XCODE              the path of the Xcode to use (default: /Applications/Xcode_27.0.app)
@@ -55,6 +59,8 @@ jobs:
       - uses: actions/checkout@v4
       - name: The self-tests of the gates
         run: Scripts/tests/run-all.sh
+      - name: Xcode's Metal Toolchain component, which the build of the shaders needs (DEP-4)
+        run: xcodebuild -downloadComponent MetalToolchain
       - name: Gate 1 · build for simulator and device, warnings as errors in production targets; the gallery application in Release
         run: Scripts/ci.sh $ZTD_CI_STRICT --gate 1
       - name: Gate 2 · lint-bans, all four parts, and the dependency graph
@@ -79,6 +85,8 @@ jobs:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
+      - name: Xcode's Metal Toolchain component, which the build of the shaders needs (DEP-4)
+        run: xcodebuild -downloadComponent MetalToolchain
       - name: Gate 5 · tests in Debug and the gallery's hosted suites (no known issue); the allocation-audit tests once more in Release
         run: Scripts/ci.sh $ZTD_CI_STRICT --gate 5 --runtime com.apple.CoreSimulator.SimRuntime.${{ matrix.runtime }}
       - name: Gate 6 · coverage, from the run on the newest runtime
@@ -101,6 +109,8 @@ jobs:
     timeout-minutes: 90
     steps:
       - uses: actions/checkout@v4
+      - name: Xcode's Metal Toolchain component, which the build of the shaders needs (DEP-4)
+        run: xcodebuild -downloadComponent MetalToolchain
       - name: Gate 5 · tests under the Thread Sanitizer
         run: Scripts/ci.sh $ZTD_CI_STRICT --gate 5 --tsan-only
 
@@ -135,6 +145,8 @@ jobs:
     timeout-minutes: 60
     steps:
       - uses: actions/checkout@v4
+      - name: Xcode's Metal Toolchain component, which the build of the shaders needs (DEP-4)
+        run: xcodebuild -downloadComponent MetalToolchain
       - name: Gate 8 · benchmarks against their committed baselines
         run: Scripts/ci.sh $ZTD_CI_STRICT --gate 8
 
@@ -159,6 +171,8 @@ jobs:
     timeout-minutes: 60
     steps:
       - uses: actions/checkout@v4
+      - name: Xcode's Metal Toolchain component, which the build of the shaders needs (DEP-4)
+        run: xcodebuild -downloadComponent MetalToolchain
       - name: Gate 9 · a package outside this one against the stock stages (EXT-4), the promises kept
         run: Scripts/ci.sh $ZTD_CI_STRICT --gate 9
 
@@ -174,6 +188,8 @@ jobs:
         runtime: [iOS-17-5, iOS-18-6, iOS-26-5, iOS-27-0]
     steps:
       - uses: actions/checkout@v4
+      - name: Xcode's Metal Toolchain component, which the build of the shaders needs (DEP-4)
+        run: xcodebuild -downloadComponent MetalToolchain
       - name: The gallery's UI tests (GalleryUITests, 6 to 14 minutes)
         run: Scripts/ci.sh --nightly --runtime com.apple.CoreSimulator.SimRuntime.${{ matrix.runtime }}
       - name: Keep the log of a failed run

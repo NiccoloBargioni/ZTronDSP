@@ -18,6 +18,7 @@
 //   3. Colour. Fill over background, premultiplied by alpha.
 
 #include <metal_stdlib>
+#include "Common.h"
 using namespace metal;
 
 struct ZTDWaveformUniforms {

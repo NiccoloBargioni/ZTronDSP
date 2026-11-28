@@ -14,7 +14,8 @@ processing and analysis stages attaches, unchanged, to any sample source, and Me
 views show what a source or a pipeline produces.
 
 - iOS 15.0 and later; Swift 6 language mode (tools 6.2). Built and tested with xcodebuild; plain
-  `swift build` is not a supported path.
+  `swift build` is not a supported path. The build compiles the Metal shaders, so it needs Xcode's
+  Metal Toolchain component (`xcodebuild -downloadComponent MetalToolchain`).
 - Products: `ZTronDSP` (the facade), `ZTronDSPUI` (the SwiftUI views) and `ZTronDSPTesting`
   (mock sources and the allocation audit, for the tests of an app or of an extension).
 - No UIKit outside one bridge file, no `AnyView`, no Combine, no configuration objects.

@@ -10,6 +10,12 @@
 #
 # A filter is a test target, Target/Suite or Target/Suite/test, as -only-testing takes them.
 #
+# The build compiles the Metal shaders into the resource bundle of ZTronDSPMetal (DEP-4), which
+# needs Xcode's Metal Toolchain component. `build` and `test` check for it before they start: when
+# the Metal compiler is missing, or is only the stand-in Xcode puts in its place, they stop with
+# one line that names `xcodebuild -downloadComponent MetalToolchain`, and status 64, as for a
+# command xc.sh does not know.
+#
 # Environment:
 #   ZTD_DEVICE    simulator name (default ztdsp-27); created if it does not exist
 #   ZTD_RUNTIME   runtime identifier for a device that has to be created (default: newest iOS)
@@ -90,6 +96,21 @@ run_xcodebuild() {
     return "${PIPESTATUS[0]}"
 }
 
+# Whether the Metal compiler is installed: `xcrun -f metal` finds it, and it runs. Without the
+# component Xcode still ships a `metal` that `xcrun -f` can find, which only says what is missing
+# and fails, so finding one is not enough.
+metal_toolchain_installed() {
+    local compiler
+    compiler="$(xcrun -f metal 2>/dev/null)" || return 1
+    [ -n "$compiler" ] && [ -x "$compiler" ] && "$compiler" --version >/dev/null 2>&1
+}
+
+require_metal_toolchain() {
+    metal_toolchain_installed && return 0
+    echo "xc.sh: building compiles the Metal shaders, and Xcode's Metal Toolchain component is not installed: run \`xcodebuild -downloadComponent MetalToolchain\`, then build again" >&2
+    exit 64
+}
+
 only_testing_args() {
     local args=()
     for filter in "$@"; do args+=("-only-testing:$filter"); done
@@ -100,9 +121,11 @@ command="${1:-}"; [ $# -gt 0 ] && shift
 
 case "$command" in
     build)
+        require_metal_toolchain
         run_xcodebuild build-for-testing
         ;;
     test)
+        require_metal_toolchain
         run_xcodebuild build-for-testing || exit $?
         filters=(); while IFS= read -r line; do [ -n "$line" ] && filters+=("$line"); done < <(only_testing_args "$@")
         run_xcodebuild test-without-building ${filters[@]+"${filters[@]}"}
@@ -118,7 +141,7 @@ case "$command" in
         device_udid
         ;;
     *)
-        sed -n '2,22p' "${BASH_SOURCE[0]}" | sed -E 's/^# ?//'
+        sed -n '2,28p' "${BASH_SOURCE[0]}" | sed -E 's/^# ?//'
         exit 64
         ;;
 esac

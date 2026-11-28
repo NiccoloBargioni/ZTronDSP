@@ -10,10 +10,11 @@
 #                                           ZTronDSPUI is the one name Binding; no @_spi, package
 #                                           access or @testable in production code, and no
 #                                           @testable in the gallery's application
-#   4  WP-012  API-6, IMM-2, VIS-1, §9.2, COV-4(a)
+#   4  WP-012  API-6, IMM-2, VIS-1, §9.2, COV-4(a), DEP-4
 #                                           no configuration-object names; public setters, `open`,
 #                                           `@unchecked Sendable` and shader functions against
-#                                           their registers
+#                                           their registers; no shader library made from source
+#                                           under Sources/ (the build compiles the shaders)
 #
 #   Scripts/lint-bans.sh                 all four parts, over the package
 #   Scripts/lint-bans.sh --part 2        one part (repeat --part for several)

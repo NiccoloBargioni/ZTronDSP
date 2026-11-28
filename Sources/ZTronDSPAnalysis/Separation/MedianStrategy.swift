@@ -164,8 +164,8 @@ public struct MetalMedian: MedianStrategy {
         self.device = device
     }
 
-    /// The context the filter computes on. Blocks while the shaders compile the first time:
-    /// background work only.
+    /// The context the filter computes on. Blocks while the shared context is made the first
+    /// time: background work only.
     func context() throws(DSPError) -> MetalContext {
         switch device {
         case .shared: return try MetalContext.sharedBlocking()

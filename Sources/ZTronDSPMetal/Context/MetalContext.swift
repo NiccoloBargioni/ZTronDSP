@@ -29,8 +29,9 @@ public struct MetalCapabilities: Hashable, Sendable {
 /// The Metal device the package draws and computes with, its command queue, the shader
 /// library and what the device can do (WP-601).
 ///
-/// The shaders travel in the module bundle as sources and are compiled when a context is
-/// created (change request CR-011). That takes from some milliseconds to seconds, so a
+/// The build compiles the shaders into `default.metallib` in the module bundle (DEP-4). A
+/// context loads that library, builds from it every pipeline state the package uses and draws
+/// once to measure the device. That blocks the calling thread for some milliseconds, so a
 /// context is made off the main thread: ``shared()`` does that and keeps the result for the
 /// life of the process.
 ///
@@ -40,15 +41,16 @@ public struct MetalCapabilities: Hashable, Sendable {
 /// ```
 ///
 /// Threading: a context is immutable and `Sendable`; its device, queue, library and pipeline
-/// states may be used from any thread. Creating one allocates, compiles shaders and draws
-/// once: not for the main thread, never for the analysis thread.
+/// states may be used from any thread. Creating one allocates, loads the shader library, builds
+/// the pipeline states and draws once: not for the main thread, never for the analysis thread.
 public final class MetalContext: Sendable {
     /// The GPU.
     public let device: any MTLDevice
     /// The queue every command buffer of the package goes through, in the order it was
     /// committed.
     public let commandQueue: any MTLCommandQueue
-    /// The package's shaders, compiled for `device`.
+    /// The package's shaders: the library the build compiled into the module bundle, loaded on
+    /// `device`.
     public let library: any MTLLibrary
     /// What `device` can do.
     public let capabilities: MetalCapabilities
@@ -62,30 +64,26 @@ public final class MetalContext: Sendable {
     /// Pass `MTLCreateSystemDefaultDevice()`: where there is no GPU that function returns
     /// `nil`, and so does this initialiser's argument.
     ///
-    /// Compiles the shaders and measures the device: call it off the main thread, or use
+    /// Loads the shader library that the build compiled into the module bundle, builds the
+    /// pipeline states and measures the device: call it off the main thread, or use
     /// ``shared()``.
     ///
     /// - Throws: `backendUnavailable` for an absent device, for a device that gives no command
-    ///   queue, and when the shaders do not compile on it.
+    ///   queue, when the module bundle holds no shader library that loads on the device, and
+    ///   when that library lacks a function the package draws or computes with.
     public convenience init(device: (any MTLDevice)?) throws(DSPError) {
-        try self.init(device: device, shaderSource: try ShaderSources.bundled())
-    }
-
-    /// A context whose library is compiled from `shaderSource`: the seam for the test of a
-    /// source that does not compile. `textureLimit` lowers the largest texture the context
-    /// permits below the device's, so that tests reach the paths for data no texture fits
-    /// without allocating such data.
-    init(device: (any MTLDevice)?, shaderSource: String, textureLimit: Int? = nil) throws(DSPError) {
         guard let device else {
             throw .backendUnavailable(reason: "this system has no Metal device")
         }
+        try self.init(device: device, library: try ShaderLibrary.bundled(on: device))
+    }
+
+    /// A context whose shaders are `library`: the seam for the tests of a library that lacks a
+    /// function. `textureLimit` lowers the largest texture the context permits below the
+    /// device's, so that tests reach the paths for data no texture fits without allocating
+    /// such data.
+    init(device: any MTLDevice, library: any MTLLibrary, textureLimit: Int? = nil) throws(DSPError) {
         guard let queue = device.makeCommandQueue() else { throw .backendUnavailable(reason: "the Metal device \(device.name) gives no command queue") }
-        let library: any MTLLibrary
-        do {
-            library = try device.makeLibrary(source: shaderSource, options: nil)
-        } catch {
-            throw .backendUnavailable(reason: "the shaders do not compile on \(device.name): \(error.localizedDescription)")
-        }
         let pipelines = try PipelineStates(device: device, library: library)
         self.device = device
         self.commandQueue = queue
@@ -110,19 +108,21 @@ public final class MetalContext: Sendable {
     /// executor (BG-1) and shared from then on.
     ///
     /// May be called from any context, the main actor included: the caller suspends while the
-    /// shaders compile the first time, and for a hop to the background executor afterwards.
+    /// context is made the first time, and for a hop to the background executor afterwards.
     ///
-    /// - Throws: `backendUnavailable` where there is no Metal device, every time it is asked;
-    ///   `cancelled` when the calling task was cancelled.
+    /// - Throws: `backendUnavailable` where there is no Metal device, or no shader library
+    ///   that the device can use (see ``init(device:)``), every time it is asked; `cancelled`
+    ///   when the calling task was cancelled.
     public static func shared() async throws(DSPError) -> MetalContext {
         try await BackgroundWork.run { _ throws(DSPError) -> MetalContext in try common.get() }
     }
 
     /// The same context for code that already runs off the main thread, such as a strategy
-    /// inside background work. The first call blocks while the shaders compile; never call it
+    /// inside background work. The first call blocks while the context is made; never call it
     /// on the main thread or on the analysis thread.
     ///
-    /// - Throws: `backendUnavailable` where there is no Metal device.
+    /// - Throws: `backendUnavailable` where there is no Metal device, or no shader library
+    ///   that the device can use.
     public static func sharedBlocking() throws(DSPError) -> MetalContext {
         try common.get()
     }
@@ -134,27 +134,46 @@ public final class MetalContext: Sendable {
     }
 }
 
-/// The shader sources of the module bundle (CR-011).
-enum ShaderSources {
-    /// The sources that travel in the module bundle.
-    static func bundled() throws(DSPError) -> String {
-        try load(from: Bundle.module.url(forResource: "Shaders", withExtension: nil))
+/// The shader library of the module bundle (DEP-4): the build compiles every `.metal` file of
+/// `Shaders/` and links them into `default.metallib` in the target's resource bundle; the
+/// package compiles no shader source at run time.
+enum ShaderLibrary {
+    /// The target's resource bundle, where the build puts the library.
+    static var bundle: Bundle { .module }
+
+    /// The library of the module bundle, loaded on `device` with
+    /// `makeDefaultLibrary(bundle: .module)`.
+    static func bundled(on device: any MTLDevice) throws(DSPError) -> any MTLLibrary {
+        try load(from: .module, on: device)
     }
 
-    /// Every `.metal` file of `folder`, in the order of their names, as one source:
-    /// `Common.metal` comes first and the others build on it. A file that cannot be read is
-    /// left out; what it defined is then missing from the library, which says so.
-    static func load(from folder: URL?) throws(DSPError) -> String {
-        guard let folder, let names = try? FileManager.default.contentsOfDirectory(atPath: folder.path) else {
-            throw .backendUnavailable(reason: "the shader sources are missing from the module bundle")
+    /// The `default.metallib` of `bundle`, loaded on `device`. A bundle without one, or a
+    /// library the device cannot load, is `backendUnavailable`, never a trap.
+    static func load(from bundle: Bundle, on device: any MTLDevice) throws(DSPError) -> any MTLLibrary {
+        do {
+            return try device.makeDefaultLibrary(bundle: bundle)
+        } catch {
+            throw .backendUnavailable(reason: "no shader library default.metallib in \(bundle.bundleURL.lastPathComponent) that loads on \(device.name): \(error.localizedDescription)")
         }
-        var source = ""
-        for name in names.sorted() where name.hasSuffix(".metal") {
-            let text = (try? String(contentsOf: folder.appendingPathComponent(name), encoding: .utf8)) ?? ""
-            source += "// ===== \(name) =====\n" + text + "\n"
-        }
-        return source
     }
+}
+
+/// The functions the package's pipelines take from the shader library, by their names in the
+/// shaders. It is the one list a pipeline asks through, and a test compares it with the
+/// library's `functionNames` both ways: no function asked for is missing, none compiled goes
+/// unused.
+enum ShaderFunction: String, CaseIterable, Sendable {
+    /// The vertex function of every render pipeline: the triangle that covers the target
+    /// (`Common.metal`).
+    case screenVertex = "ztd_screen_vertex"
+    /// The heat map's fragment function (`Heatmap.metal`).
+    case heatmapFragment = "ztd_heatmap_fragment"
+    /// The envelope's fragment function (`Waveform.metal`).
+    case waveformFragment = "ztd_waveform_fragment"
+    /// The fragment function of the filtering probe (`Probe.metal`).
+    case probeFragment = "ztd_probe_fragment"
+    /// The median kernel (`Median.metal`).
+    case medianKernel = "ztd_median_kernel"
 }
 
 /// The calls that give nothing back only when the system is out of memory or the device is
@@ -194,7 +213,8 @@ enum MetalResources {
     }
 }
 
-/// The package's pipeline states, by what they draw or compute.
+/// The package's pipeline states, by what they draw or compute. Every function they are built
+/// from is asked for through ``ShaderFunction``.
 struct PipelineStates: Sendable {
     /// The pixel formats the render pipelines are built for up front: what a Metal view
     /// presents by default, and what an off-screen target and a snapshot image use.
@@ -209,38 +229,39 @@ struct PipelineStates: Sendable {
         var heatmap: [MTLPixelFormat: any MTLRenderPipelineState] = [:]
         var waveform: [MTLPixelFormat: any MTLRenderPipelineState] = [:]
         for format in Self.prebuiltFormats {
-            heatmap[format] = try Self.render(device, library, fragment: "ztd_heatmap_fragment", format: format)
-            waveform[format] = try Self.render(device, library, fragment: "ztd_waveform_fragment", format: format)
+            heatmap[format] = try Self.render(device, library, fragment: .heatmapFragment, format: format)
+            waveform[format] = try Self.render(device, library, fragment: .waveformFragment, format: format)
         }
         self.heatmap = heatmap
         self.waveform = waveform
-        probe = try Self.render(device, library, fragment: "ztd_probe_fragment", format: .rgba8Unorm)
-        guard let function = library.makeFunction(name: "ztd_median_kernel"),
-              let median = try? device.makeComputePipelineState(function: function)
-        else {
-            throw .backendUnavailable(reason: "the shader library has no usable function ztd_median_kernel")
-        }
+        probe = try Self.render(device, library, fragment: .probeFragment, format: .rgba8Unorm)
+        let kernel = try Self.function(.medianKernel, of: library)
+        guard let median = try? device.makeComputePipelineState(function: kernel) else { throw .backendUnavailable(reason: "no compute pipeline for \(kernel.name) on \(device.name)") }
         self.median = median
+    }
+
+    /// `function` from `library`. A library without it is refused, by the name of the function
+    /// that is missing.
+    static func function(_ function: ShaderFunction, of library: any MTLLibrary) throws(DSPError) -> any MTLFunction {
+        guard let made = library.makeFunction(name: function.rawValue) else {
+            throw .backendUnavailable(reason: "the shader library has no function \(function.rawValue)")
+        }
+        return made
     }
 
     /// A render pipeline that draws the screen triangle with `fragment` into `format`.
     static func render(
-        _ device: any MTLDevice, _ library: any MTLLibrary, fragment: String, format: MTLPixelFormat
+        _ device: any MTLDevice, _ library: any MTLLibrary, fragment: ShaderFunction, format: MTLPixelFormat
     ) throws(DSPError) -> any MTLRenderPipelineState {
-        guard let vertexFunction = library.makeFunction(name: "ztd_screen_vertex"),
-              let fragmentFunction = library.makeFunction(name: fragment)
-        else {
-            throw .backendUnavailable(reason: "the shader library has no function \(fragment)")
-        }
         let description = MTLRenderPipelineDescriptor()
-        description.label = fragment
-        description.vertexFunction = vertexFunction
-        description.fragmentFunction = fragmentFunction
+        description.label = fragment.rawValue
+        description.vertexFunction = try function(.screenVertex, of: library)
+        description.fragmentFunction = try function(fragment, of: library)
         description.colorAttachments[0].pixelFormat = format
         // A format no target can have. Under Metal's validation, which a test run has on, the
         // process stops before this error is reported; an app without validation gets it.
         do { return try device.makeRenderPipelineState(descriptor: description) }
-        catch { throw .backendUnavailable(reason: "no pipeline for \(fragment) in the pixel format \(format.rawValue): \(error.localizedDescription)") }
+        catch { throw .backendUnavailable(reason: "no pipeline for \(fragment.rawValue) in the pixel format \(format.rawValue): \(error.localizedDescription)") }
     }
 }
 
@@ -249,13 +270,13 @@ extension MetalContext {
     /// new one for a format the context was not built for.
     func heatmapPipeline(for format: MTLPixelFormat) throws(DSPError) -> any MTLRenderPipelineState {
         if let state = pipelines.heatmap[format] { return state }
-        return try PipelineStates.render(device, library, fragment: "ztd_heatmap_fragment", format: format)
+        return try PipelineStates.render(device, library, fragment: .heatmapFragment, format: format)
     }
 
     /// The waveform pipeline for a target of `format`.
     func waveformPipeline(for format: MTLPixelFormat) throws(DSPError) -> any MTLRenderPipelineState {
         if let state = pipelines.waveform[format] { return state }
-        return try PipelineStates.render(device, library, fragment: "ztd_waveform_fragment", format: format)
+        return try PipelineStates.render(device, library, fragment: .waveformFragment, format: format)
     }
 }
 

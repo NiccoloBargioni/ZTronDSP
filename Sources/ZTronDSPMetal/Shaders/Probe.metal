@@ -5,6 +5,7 @@
 // texel centres come out in between.
 
 #include <metal_stdlib>
+#include "Common.h"
 using namespace metal;
 
 constexpr sampler ztd_probe_sampler(filter::linear, address::clamp_to_edge);

@@ -95,6 +95,17 @@ expect_lacks "… nor a computed property with a setter" "\`Frequency.both\`"
 expect_lacks "… nor one of a reference type" "\`Store.history\`"
 expect_lacks "… nor one of an internal type" "\`Internal.value\`"
 
+# The shaders are compiled by the build (DEP-4, brief 76): no production code makes a shader
+# library from source, in Swift or in Objective-C, however the call is spread over lines; a
+# comment or a string may name the call, and a test may make one (the trees hold unmarked cases).
+expect_status 1 "a shader library made from source under Sources/ fails part 4" "$LINT" --part 4 "$FIXTURES/part4"
+expect_contains "… and the message says what the build does instead" "Context/RuntimeShaders.swift:9: [DEP-4] \`makeLibrary(source:)\` compiles shader source when the package runs: the build compiles the .metal sources into default.metallib in the module bundle, which is loaded with makeDefaultLibrary(bundle: .module)"
+expect_contains "… a call spread over two lines" "Context/RuntimeShaders.swift:18: [DEP-4]"
+expect_contains "… the Objective-C spelling" "CZTronDSP/runtime_shaders.m:5: [DEP-4] \`newLibraryWithSource:\`"
+expect_lacks "… but not a test that makes one" "StubLibraryTests.swift"
+expect_lacks "… nor a comment that names the call" "RuntimeShaders.swift:4:"
+expect_lacks "… nor a string" "RuntimeShaders.swift:6:"
+
 expect_status 2 "an unknown part is a usage error" "$LINT" --part 5
 expect_status 2 "a missing tree is a usage error" "$LINT" "$FIXTURES/absent"
 expect_status 0 "the package itself is clean" "$LINT"

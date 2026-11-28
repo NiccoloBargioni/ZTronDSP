@@ -115,7 +115,7 @@ else
 fi
 logged "gate 1 builds each production scheme for the simulator with warnings as errors" "xcodebuild build -scheme ZTronDSPUI -destination platform=iOS Simulator,id=FAKE-UDID"
 logged "… and for a device" "xcodebuild build -scheme ZTronDSP -destination generic/platform=iOS"
-logged "… with the two settings" "SWIFT_TREAT_WARNINGS_AS_ERRORS=YES GCC_TREAT_WARNINGS_AS_ERRORS=YES"
+logged "… with the three settings, the Metal compiler's among them (DEP-4)" "SWIFT_TREAT_WARNINGS_AS_ERRORS=YES GCC_TREAT_WARNINGS_AS_ERRORS=YES MTL_TREAT_WARNINGS_AS_ERRORS=YES"
 logged "… from inside the package, wherever ci.sh was started" "CODE_SIGNING_ALLOWED=NO [in=$S]"
 logged "gate 1 builds the gallery application in Release, in derived data of its own" "gallery app [config=Release device= derived=ci-gallery-release]"
 logged "gate 5 runs the tests in Debug with coverage and a result bundle" "xc test-only [config=Debug device= derived=ci xcargs=-enableCodeCoverage YES -resultBundlePath .build/ci-results/Debug.xcresult]"
@@ -345,6 +345,10 @@ if [ "$SLOW" -eq 1 ]; then
     printf '\nfunc seededWarning() {\n    let unused = 1\n}\n' >> "$COPY/Sources/ZTronDSPCore/Placeholder.swift"
     expect_status 1 "gate 1 (real build): a seeded compiler warning in a production target fails" "$COPY/Scripts/ci.sh" --gate 1
     expect_contains "… as an error" "error: initialization of immutable value 'unused' was never used"
+    copy
+    printf '\n#warning "a seeded warning of the Metal compiler"\n' >> "$COPY/Sources/ZTronDSPMetal/Shaders/Common.metal"
+    expect_status 1 "gate 1 (real build): a seeded warning of the Metal compiler fails (DEP-4: the build compiles the shaders)" "$COPY/Scripts/ci.sh" --gate 1
+    expect_contains "… as an error" 'error: "a seeded warning of the Metal compiler" [-Werror,-W#warnings]'
 else
     echo "  SKIP  gate 1 with a real build and a seeded warning (run this test with --slow)"
 fi

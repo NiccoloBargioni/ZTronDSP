@@ -63,9 +63,9 @@ let package = Package(
         .target(
             name: "ZTronDSPMetal",
             dependencies: ["ZTronDSPCore"],
-            // The shader sources travel as they are and are compiled when a context is made:
-            // the build then needs no offline Metal toolchain (change request CR-011).
-            resources: [.copy("Shaders")],
+            // The build compiles Shaders/*.metal into default.metallib in the target's resource
+            // bundle, which MetalContext loads (DEP-4): building needs Xcode's Metal Toolchain
+            // component (`xcodebuild -downloadComponent MetalToolchain`).
             swiftSettings: swiftSettings
         ),
         .target(

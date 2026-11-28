@@ -7,9 +7,10 @@
                                                  branching on a source's type
     Part 3 (WP-011)  APR-1, APR-2, BIND-7, EXT-1 approval-gated API; the SwiftUI boundary; hidden channels,
                                                  the gallery's application included
-    Part 4 (WP-012)  API-6, IMM-1, IMM-2, VIS-1, §9.2, COV-4(a)
+    Part 4 (WP-012)  API-6, IMM-1, IMM-2, VIS-1, §9.2, COV-4(a), DEP-4
                                                  configuration-object names; the registers; the stored
-                                                 `var`s of public structs (WP-909)
+                                                 `var`s of public structs (WP-909); no shader source
+                                                 compiled at run time under Sources/
 
     lint_bans.py [--part N]… [--data DIR] [ROOT]
 
@@ -498,8 +499,14 @@ def part_3(files, data, findings, root):
 
 
 # ---------------------------------------------------------------------------------------------
-# Part 4 — configuration-object names (API-6) and the registers (IMM-1, IMM-2, VIS-1, §9.2, COV-4 a)
+# Part 4 — configuration-object names (API-6) and the registers (IMM-1, IMM-2, VIS-1, §9.2, COV-4 a);
+# shaders compiled by the build only (DEP-4)
 # ---------------------------------------------------------------------------------------------
+
+# DEP-4: the build compiles the .metal sources into default.metallib in the module bundle, and the
+# package loads that library. A library made from source when the package runs is the deviation of
+# change request CR-011, withdrawn: no production code calls it, in either spelling. Tests may.
+RUNTIME_SHADER_COMPILE = re.compile(r"\.\s*makeLibrary\s*\(\s*source\s*:|\bnewLibraryWithSource\s*:")
 
 BANNED_SUFFIXES = ("Configuration", "Options", "Settings", "Style", "Descriptor", "Specification", "Specs", "Params")
 ACCESS_LEVELS = ("public", "open", "internal", "fileprivate", "private", "package")
@@ -926,6 +933,12 @@ def part_4(files, data, findings, root):
         if not source.relative.startswith("Sources/"):
             continue
         masked = source.masked
+        for match in RUNTIME_SHADER_COMPILE.finditer(masked):
+            call = "makeLibrary(source:)" if "makeLibrary" in match.group(0) else "newLibraryWithSource:"
+            findings.append(Finding(source.relative, source.line(match.start()), "DEP-4",
+                                    "`%s` compiles shader source when the package runs: the build compiles the .metal sources "
+                                    "into default.metallib in the module bundle, which is loaded with "
+                                    "makeDefaultLibrary(bundle: .module)" % call))
         if source.is_swift:
             declarations = Declarations(masked)
             for name, kind, access, offset in declarations.types:

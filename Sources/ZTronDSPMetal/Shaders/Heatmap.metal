@@ -20,6 +20,7 @@
 //      256-entry colour table, linearly between neighbouring entries.
 
 #include <metal_stdlib>
+#include "Common.h"
 using namespace metal;
 
 struct ZTDHeatmapUniforms {

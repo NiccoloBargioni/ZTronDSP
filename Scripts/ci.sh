@@ -21,7 +21,8 @@
 #   --tsan-only       run only the Thread Sanitizer part of gate 5
 #
 # The gates:
-#   1  Build for simulator and device, warnings as errors in the production targets; the gallery
+#   1  Build for simulator and device, warnings as errors in the production targets, the Metal
+#      compiler's included (the build compiles the shaders, DEP-4); the gallery
 #      application in Release (Examples/ZTronDSPGallery/gallery.sh app, derived data of its own)
 #   2  Scripts/lint-bans.sh, all four parts; Scripts/check-dependency-graph.sh (DEP-1…DEP-3)
 #   3  Scripts/compile-fixtures.sh and the order matrix (Scripts/order-matrix.sh --check, WP-328)
@@ -273,10 +274,10 @@ gate_1() {
     for scheme in $PRODUCTION_SCHEMES; do
         run "build $scheme for the simulator, warnings as errors" \
             in_package "$XCODEBUILD" build -scheme "$scheme" -destination "platform=iOS Simulator,id=$udid" -derivedDataPath "$DERIVED-strict" \
-            -quiet SWIFT_TREAT_WARNINGS_AS_ERRORS=YES GCC_TREAT_WARNINGS_AS_ERRORS=YES || return
+            -quiet SWIFT_TREAT_WARNINGS_AS_ERRORS=YES GCC_TREAT_WARNINGS_AS_ERRORS=YES MTL_TREAT_WARNINGS_AS_ERRORS=YES || return
         run "build $scheme for a device, warnings as errors" \
             in_package "$XCODEBUILD" build -scheme "$scheme" -destination "generic/platform=iOS" -derivedDataPath "$DERIVED-strict" \
-            -quiet SWIFT_TREAT_WARNINGS_AS_ERRORS=YES GCC_TREAT_WARNINGS_AS_ERRORS=YES CODE_SIGNING_ALLOWED=NO || return
+            -quiet SWIFT_TREAT_WARNINGS_AS_ERRORS=YES GCC_TREAT_WARNINGS_AS_ERRORS=YES MTL_TREAT_WARNINGS_AS_ERRORS=YES CODE_SIGNING_ALLOWED=NO || return
     done
     run "build the gallery application in Release, in derived data of its own" \
         env ZTD_CONFIG=Release ZTD_DERIVED="$DERIVED-gallery-release" "$GALLERY" app || return

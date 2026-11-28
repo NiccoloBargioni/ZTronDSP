@@ -32,6 +32,13 @@ a stage needs to test it.
 Beneath them, the C module `CZTronDSP` holds everything that may run on Core Audio's I/O thread:
 the ring buffers, the kernel interface and the plan runner, the stock kernels.
 
+### Requirements
+
+iOS 15 or later, and Swift 6 language mode (tools version 6.2). The package is built and tested with
+`xcodebuild`; plain `swift build` is not a supported path. The build compiles the Metal shaders of
+`ZTronDSPMetal` into its resource bundle, so it needs Xcode's Metal Toolchain component, which a new
+installation of Xcode may lack: `xcodebuild -downloadComponent MetalToolchain` installs it.
+
 ### Describe, compile, run
 
 A pipeline is a description. Each stage is a value; the compiler accepts a stage only after a

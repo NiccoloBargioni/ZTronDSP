@@ -78,6 +78,23 @@ scheduled = isinstance(triggers, dict) and bool(triggers.get("schedule")) and bo
 print("nightly job on a schedule: %s" % ("yes" if scheduled else "no"))
 print("nightly job is not a gate: %s" % ("yes" if nightly and not any(re.search(r"--gate \d", s.get("run") or "") or jobs[n].get("needs") for n in nightly for s in jobs[n].get("steps", [])) else "no"))
 print("the nightly run skips the gates: %s" % ("yes" if all("schedule" in str(jobs[n].get("if", "")) for n in ("gates-1-4", "gate-9-external-parity")) else "no"))
+
+# DEP-4 (brief 76): the build compiles the Metal shaders, which needs the Metal Toolchain
+# component of Xcode. Every job that builds (one that runs Scripts/ci.sh for a gate other
+# than 7, or the nightly run) downloads it in a step before its first step that runs
+# Scripts/ci.sh.
+building, without = [], []
+for name, job in sorted(jobs.items()):
+    steps = job.get("steps", [])
+    runs = [(i, s.get("run") or "") for i, s in enumerate(steps) if "Scripts/ci.sh" in (s.get("run") or "")]
+    gates = {int(g) for _, run in runs for g in re.findall(r"--gate (\d)", run)}
+    if not runs or (gates <= {7} and not any("--nightly" in run for _, run in runs)):
+        continue
+    building.append(name)
+    if not any("xcodebuild -downloadComponent MetalToolchain" in (s.get("run") or "") for s in steps[:runs[0][0]]):
+        without.append(name)
+print("jobs that build: %s" % " ".join(building))
+print("jobs that build before the metal toolchain is downloaded: %s" % (" ".join(without) or "none"))
 ' 2>&1)"
 for gate in 1 2 3 4 5 6 7 8 9; do expect_contains "gate $gate is run through Scripts/ci.sh" "gate $gate: run by"; done
 expect_lacks "every gate runs after the one before it (§10.3: in order)" ": NO"
@@ -94,4 +111,6 @@ expect_contains "… on a schedule" "nightly job on a schedule: yes"
 expect_contains "… which is not a gate" "nightly job is not a gate: yes"
 expect_contains "… on each runtime of the matrix" "Scripts/ci.sh --nightly --runtime com.apple.CoreSimulator.SimRuntime.\${{ matrix.runtime }}"
 expect_contains "the nightly run skips the gates" "the nightly run skips the gates: yes"
+expect_contains "the jobs that build are the gates' and the nightly one, gate 7 aside" "jobs that build: gallery-ui-nightly gate-5-tests gate-5-thread-sanitizer gate-8-benchmarks gate-9-external-parity gates-1-4"
+expect_contains "… and each downloads Xcode's Metal Toolchain before its first gate (DEP-4)" "jobs that build before the metal toolchain is downloaded: none"
 finish

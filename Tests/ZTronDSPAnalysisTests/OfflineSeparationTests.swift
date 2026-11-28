@@ -76,7 +76,7 @@ struct OfflineSeparationTests {
     // MARK: `.automatic` follows the table (GPU-1, SEL-5)
 
     @Test func automaticFollowsTheTable() async throws {
-        // The shaders are compiled once, on the background executor, before anything here blocks on them.
+        // The shared context is made once, on the background executor, before anything here blocks on it.
         _ = try await MetalContext.shared()
         for axis in [MedianAxis.time, .frequency] {
             let cpu = try SelectionNetworkMedian().filter(values, rowCount: 33, kernel: 9, along: axis)

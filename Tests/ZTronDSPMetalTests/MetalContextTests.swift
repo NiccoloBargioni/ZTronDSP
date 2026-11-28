@@ -5,19 +5,19 @@ import ZTronDSPCore
 @testable import ZTronDSPMetal
 import ZTronDSPTesting
 
-/// `MetalContext` (WP-601): device, queue, the library compiled from the bundled sources
-/// (CR-011), capability flags.
+/// `MetalContext` (WP-601): device, queue, the library the build compiled into the module bundle
+/// (DEP-4), capability flags.
 @Suite("MetalContext")
 struct MetalContextTests {
     @Test func theSharedContextWorksOnTheSimulator() async throws {
         let start = Benchmark.ticks()
         let context = try await MetalContext.shared()
         let elapsed = Benchmark.nanoseconds(Benchmark.ticks() &- start) / 1e6
-        print("MetalContext.shared(): \(elapsed) ms, the first call compiles the shaders; \(context.capabilities)")
+        print("MetalContext.shared(): \(elapsed) ms, the first call makes the context (loads the library, builds the pipelines, measures the device); \(context.capabilities)")
 
         #expect(!context.device.name.isEmpty && context.capabilities.deviceName == context.device.name)
-        for name in ["ztd_screen_vertex", "ztd_heatmap_fragment", "ztd_waveform_fragment", "ztd_median_kernel", "ztd_probe_fragment"] {
-            #expect(context.library.functionNames.contains(name), "the library holds \(name)")
+        for function in ShaderFunction.allCases {
+            #expect(context.library.functionNames.contains(function.rawValue), "the library holds \(function.rawValue)")
         }
         #expect(context.pipelines.heatmap.count == 2 && context.pipelines.waveform.count == 2, "a pipeline per format a view and an image use")
         #expect(context.pipelines.heatmap[.bgra8Unorm] != nil && context.pipelines.heatmap[.rgba8Unorm] != nil)
@@ -34,44 +34,72 @@ struct MetalContextTests {
         let nothing: (any MTLDevice)? = nil
         #expect(throws: DSPError.backendUnavailable(reason: "this system has no Metal device")) { try MetalContext(device: nothing) }
         do throws(DSPError) {
-            _ = try MetalContext(device: nothing, shaderSource: "")
+            _ = try MetalContext(device: nothing)
             Issue.record("a context was made without a device")
         } catch {
             #expect(error.description.contains("backend is unavailable"), "the error says which backend: \(error)")
         }
     }
 
-    @Test func shadersThatDoNotCompileAreBackendUnavailable() async throws {
-        let device = try await MetalContext.shared().device
-        func reason(_ source: String) -> String? {
-            do throws(DSPError) {
-                _ = try MetalContext(device: device, shaderSource: source)
-                return nil
-            } catch {
-                if case .backendUnavailable(let reason, _) = error { return reason }
-                return "another error: \(error)"
-            }
+    /// DEP-4: the build compiles the `.metal` sources into `default.metallib`; what travels in the
+    /// module bundle is that library, and no source of it.
+    @Test func theModuleBundleHoldsTheCompiledLibraryAndNoShaderSource() throws {
+        let bundle = ShaderLibrary.bundle
+        let files = try #require(FileManager.default.subpaths(atPath: bundle.bundlePath), "the module bundle at \(bundle.bundlePath) can be listed")
+        #expect(files.contains("default.metallib"), "the build put default.metallib in \(bundle.bundleURL.lastPathComponent): \(files.sorted())")
+        let sources = files.filter { path in
+            ["metal", "h", "air"].contains(URL(fileURLWithPath: path).pathExtension) || path.split(separator: "/").contains("Shaders")
         }
-        let broken = reason("this is not the Metal shading language")
-        #expect(broken?.contains("do not compile") == true, "\(broken ?? "a context was made")")
-        // A library that compiles and lacks what the package draws with.
-        let incomplete = reason("#include <metal_stdlib>\nusing namespace metal;\nstatic float unused(float x) { return x; }\n")
-        #expect(incomplete?.contains("ztd_heatmap_fragment") == true, "\(incomplete ?? "a context was made")")
-        // The screen vertex and the fragments are there, the median kernel is not.
-        let bundled = try ShaderSources.bundled()
-        let withoutKernel = reason(bundled.replacingOccurrences(of: "ztd_median_kernel", with: "ztd_other_kernel"))
-        #expect(withoutKernel?.contains("ztd_median_kernel") == true, "\(withoutKernel ?? "a context was made")")
+        #expect(sources.isEmpty, "no shader source travels in the module bundle: \(sources.sorted())")
     }
 
-    @Test func theBundledSourcesAreEveryShaderFileInOrder() throws {
-        // No folder, or a folder that is not there: no sources, said plainly.
-        #expect(throws: DSPError.self) { try ShaderSources.load(from: nil) }
-        #expect(throws: DSPError.self) { try ShaderSources.load(from: URL(fileURLWithPath: "/no/such/folder/of/shaders")) }
-        let source = try ShaderSources.bundled()
-        let markers = ["Common.metal", "Heatmap.metal", "Median.metal", "Probe.metal", "Waveform.metal"].map { "// ===== \($0) =====" }
-        let positions = markers.compactMap { source.range(of: $0)?.lowerBound }
-        #expect(positions.count == markers.count, "every file is in the bundle")
-        #expect(positions == positions.sorted(), "Common.metal first: the others use what it declares")
+    /// One list, compared both ways: every function a pipeline asks for is in the library, and
+    /// the library holds no function that no pipeline asks for.
+    @Test func theLibraryHoldsExactlyTheFunctionsThePipelinesAskFor() async throws {
+        let context = try await sharedContext()
+        let mismatch = functionMismatch(of: context.library)
+        #expect(mismatch.missing.isEmpty, "asked for by a pipeline and missing from the library: \(mismatch.missing)")
+        #expect(mismatch.unused.isEmpty, "compiled into the library and asked for by no pipeline: \(mismatch.unused)")
+        #expect(context.library.functionNames.count == ShaderFunction.allCases.count, "\(context.library.functionNames.sorted())")
+
+        // The comparison sees either difference.
+        let device = context.device
+        let short = functionMismatch(of: try stubLibrary(on: device, with: ShaderFunction.allCases.filter { $0 != .probeFragment }))
+        #expect(short.missing == ["ztd_probe_fragment"] && short.unused.isEmpty, "\(short)")
+        let long = functionMismatch(of: try stubLibrary(on: device, with: ShaderFunction.allCases, extra: ["ztd_unused_kernel"]))
+        #expect(long.missing.isEmpty && long.unused == ["ztd_unused_kernel"], "\(long)")
+
+        // Every function of the list is asked for: a library without it makes no context, and the
+        // error names the function that is missing, not another one.
+        for function in ShaderFunction.allCases {
+            let lacking = try stubLibrary(on: device, with: ShaderFunction.allCases.filter { $0 != function })
+            do throws(DSPError) {
+                _ = try MetalContext(device: device, library: lacking)
+                Issue.record("a context was made from a library without \(function.rawValue)")
+            } catch {
+                #expect(error == .backendUnavailable(reason: "the shader library has no function \(function.rawValue)"), "\(error)")
+            }
+        }
+    }
+
+    @Test func aBundleWithoutTheLibraryIsBackendUnavailable() async throws {
+        let device = try await sharedContext().device
+        // The test bundle holds golden images and no default.metallib.
+        do throws(DSPError) {
+            _ = try ShaderLibrary.load(from: Bundle.module, on: device)
+            Issue.record("a library was loaded from a bundle that holds none")
+        } catch {
+            guard case .backendUnavailable(let reason, _) = error else {
+                Issue.record("another error: \(error)")
+                return
+            }
+            #expect(reason.contains("no shader library default.metallib in \(Bundle.module.bundleURL.lastPathComponent)"), "\(reason)")
+        }
+        // A library with none of the functions: the first one asked for is named.
+        let empty = try stubLibrary(on: device, with: [])
+        #expect(throws: DSPError.backendUnavailable(reason: "the shader library has no function ztd_screen_vertex")) {
+            try MetalContext(device: device, library: empty)
+        }
     }
 
     @Test func makingTheSharedContextIsBackgroundWork() async {
@@ -126,20 +154,50 @@ struct MetalContextTests {
         // The ones it was built for are handed out, not built again.
         #expect(try context.heatmapPipeline(for: .bgra8Unorm) === context.pipelines.heatmap[.bgra8Unorm])
         #expect(try context.waveformPipeline(for: .rgba8Unorm) === context.pipelines.waveform[.rgba8Unorm])
-        #expect(throws: DSPError.self) {
-            _ = try PipelineStates.render(context.device, context.library, fragment: "ztd_no_such_fragment", format: .rgba8Unorm)
+        // A library without the fragment gives no pipeline, and says which function it lacks.
+        let lacking = try stubLibrary(on: context.device, with: [.screenVertex])
+        #expect(throws: DSPError.backendUnavailable(reason: "the shader library has no function ztd_heatmap_fragment")) {
+            _ = try PipelineStates.render(context.device, lacking, fragment: .heatmapFragment, format: .rgba8Unorm)
         }
     }
 
     @Test func aContextCanBeHeldToSmallerTextures() async throws {
         // The seam the tests of data too large for a texture use.
         let shared = try await sharedContext()
-        let limited = try MetalContext(device: shared.device, shaderSource: try ShaderSources.bundled(), textureLimit: 64)
+        let limited = try MetalContext(device: shared.device, library: shared.library, textureLimit: 64)
         #expect(limited.capabilities.maximumTextureDimension == 64 && limited.permits(width: 64, height: 64) && !limited.permits(width: 65, height: 1))
-        #expect(try MetalContext(device: shared.device, shaderSource: try ShaderSources.bundled(), textureLimit: 1 << 20).capabilities.maximumTextureDimension
+        #expect(try MetalContext(device: shared.device, library: shared.library, textureLimit: 1 << 20).capabilities.maximumTextureDimension
             == shared.capabilities.maximumTextureDimension, "never above the device's")
-        #expect(try MetalContext(device: shared.device, shaderSource: try ShaderSources.bundled(), textureLimit: 0).capabilities.maximumTextureDimension == 1)
+        #expect(try MetalContext(device: shared.device, library: shared.library, textureLimit: 0).capabilities.maximumTextureDimension == 1)
     }
+}
+
+/// The two ways a library and the list the pipelines ask through can differ: functions asked for
+/// that the library lacks, and functions the library holds that nothing asks for.
+func functionMismatch(of library: any MTLLibrary) -> (missing: [String], unused: [String]) {
+    let compiled = Set(library.functionNames)
+    let asked = Set(ShaderFunction.allCases.map(\.rawValue))
+    return (asked.subtracting(compiled).sorted(), compiled.subtracting(asked).sorted())
+}
+
+/// A library compiled here, in the test, from a source with a function of the right kind for each
+/// of `functions` and a kernel for each name of `extra`: what a library that lacks a function, or
+/// holds one no pipeline uses, is to a context. The package itself compiles no shader source
+/// (DEP-4); a test may.
+func stubLibrary(on device: any MTLDevice, with functions: [ShaderFunction], extra: [String] = []) throws -> any MTLLibrary {
+    var source = "#include <metal_stdlib>\nusing namespace metal;\nstruct StubVertex { float4 position [[position]]; };\n"
+    for function in functions {
+        switch function {
+        case .screenVertex:
+            source += "vertex StubVertex \(function.rawValue)(uint id [[vertex_id]]) { StubVertex out; out.position = float4(0.0, 0.0, 0.0, 1.0); return out; }\n"
+        case .heatmapFragment, .waveformFragment, .probeFragment:
+            source += "fragment float4 \(function.rawValue)() { return float4(0.0); }\n"
+        case .medianKernel:
+            source += "kernel void \(function.rawValue)(uint id [[thread_position_in_grid]]) {}\n"
+        }
+    }
+    for name in extra { source += "kernel void \(name)(uint id [[thread_position_in_grid]]) {}\n" }
+    return try device.makeLibrary(source: source, options: nil)
 }
 
 extension Result {
